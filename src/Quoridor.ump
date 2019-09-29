@@ -1,0 +1,103 @@
+namespace ca.mcgill.ecse223.quoridor.model;
+
+class Player
+{
+  long timeRemaining;
+
+  1 associatedPlayer -- 0..10 Wall wallsLeft;
+  1 player -- 1 Username username;
+  * owner -- 0..10 Wall wallsOnBoard;
+}
+
+class Pawn
+{
+  isA GamePiece;
+
+  color;
+
+  1 pawn -- 1 Player player;
+}
+
+class Wall
+{
+  isA GamePiece;
+}
+
+class Game
+{
+  Integer id;
+ 
+  * games -- 2..4 Player currentPlayers;
+  1 game -- * Move moveHistory;
+  0..1 game -- 1 Player winner;
+}
+
+class Board
+{
+  * -<@> 1 Quoridor;
+  1 board -- 1 Game currentGame;
+  1 board -- 0..24 GamePiece onBoardPieces;
+  1 board -- * Position position;
+}
+
+class Move
+{
+  abstract;
+
+  Time startTime;
+  Time endTime;
+
+  0..1 move -- 1 Position destination;
+  * moves -- 1 Player player;
+}
+
+class GamePiece
+{
+  abstract;
+
+  0..1 piece -- 1 Position currentPosition;
+}
+
+class Position
+{   
+  Integer row;
+  column;
+}
+
+class WallPlacement
+{
+  isA Move;
+
+  enum Orientation {HORIZONTAL, VERTICAL}
+
+  Orientation orientation;
+
+  * placements -- 1 Wall wall;
+}
+
+class PawnMove
+{
+  isA Move;
+
+  * moves -- 1 Pawn pawn;
+  * moves -- * Position position;
+}
+
+class Username
+{
+  username;
+}
+
+class Quoridor
+{
+  1 <@>- * Game;
+  1 <@>- * Player;
+  1 <@>- * Username;
+
+  1 <@>- * Move;
+  
+  1 <@>- * GamePiece;
+  
+  1 <@>- * Position;
+}
+//$?[End_of_model]$?
