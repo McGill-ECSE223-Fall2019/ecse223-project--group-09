@@ -5,6 +5,10 @@ import java.lang.UnsupportedOperationException;
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.*;
 
+import java.io.Reader;
+import java.io.Writer;
+import java.io.IOException;
+
 /**
  * This is the controller class for the Quoridor application
  * 
@@ -65,7 +69,11 @@ public class QuoridorController {
 		
 	}
 	
+	public void savePosition(Writer destination) throws IOException {
+		throw new UnsupportedOperationException("Save Position is not implemented yet");
+	}
 	
-
-
+	public void loadPosition(Reader source) throws IOException {
+		throw new UnsupportedOperationException("Save Position is not implemented yet");
+	}
 }
