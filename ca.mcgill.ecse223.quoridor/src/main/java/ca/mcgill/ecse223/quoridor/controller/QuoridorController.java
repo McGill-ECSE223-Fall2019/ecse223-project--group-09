@@ -68,11 +68,25 @@ public class QuoridorController {
 		throw new UnsupportedOperationException();
 		
 	}
-	
+
+	/**
+	 * Writes out the current board
+	 *
+	 * @param destination The stream we are writing to
+	 * @throws IOException If writing operation fails
+	 * @author Paul Teng (260862906)
+	 */
 	public void savePosition(Writer destination) throws IOException {
 		throw new UnsupportedOperationException("Save Position is not implemented yet");
 	}
 	
+	/**
+	 * Reads in a previously saved board
+	 *
+	 * @param source The stream we are reading from
+	 * @throws IOException If reading operation fails
+	 * @author Paul Teng (260862906)
+	 */
 	public void loadPosition(Reader source) throws IOException {
 		throw new UnsupportedOperationException("Save Position is not implemented yet");
 	}
