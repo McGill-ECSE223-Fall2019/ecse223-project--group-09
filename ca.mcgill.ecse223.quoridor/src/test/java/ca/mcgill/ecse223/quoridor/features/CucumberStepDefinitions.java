@@ -125,13 +125,13 @@ public class CucumberStepDefinitions {
 	private String saveFileName;
 	private boolean justModified;
 
-	@Given("No file {String} exists in the filesystem")
+	@Given("No file {word} exists in the filesystem")
 	public void noFileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertFalse(file.exists());
 	}
 	
-	@When("The user initiates to save the game with name {String}")
+	@When("The user initiates to save the game with name {word}")
 	public void userInitiatesToSaveTheGameWithName(String filename) {
 		this.saveFileName = filename;
 		this.justModified = false;
@@ -142,7 +142,7 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-	@Then("A file with {String} is created in the filesystem")
+	@Then("A file with {word} is created in the filesystem")
 	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertTrue(file.exists());
@@ -158,7 +158,7 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-	@Then("File with {String} is updated in the filesystem")
+	@Then("File with {word} is updated in the filesystem")
 	public void fileIsUpdatedInTheFilesystem(String filename) {
 		Assert.assertEquals(filename, this.saveFileName);
 		Assert.assertTrue(this.justModified);
@@ -169,13 +169,13 @@ public class CucumberStepDefinitions {
 		// see this.userInitiatesToSaveTheGameWithName which does exactly this
 	}
 	
-	@Then("File {String} is not changed in the filesystem")
+	@Then("File {word} is not changed in the filesystem")
 	public void fileIsNotChangedInTheFilesystem(String filename) {
 		Assert.assertEquals(filename, this.saveFileName);
 		Assert.assertFalse(this.justModified);
 	}
 	
-	@Given("File {String} exists in the filesystem")
+	@Given("File {word} exists in the filesystem")
 	public void fileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertTrue(file.exists());
@@ -183,15 +183,24 @@ public class CucumberStepDefinitions {
 	
 	// ***** LoadPosition.feature *****
 
-	private boolean 
-
-	@When("I initiate to load a saved game {String}")
+	@When("I initiate to load a saved game {word}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
 			QuoridorController.loadPosition(filename);
+			// TODO: Do something about invalid positions
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
 		}
+	}
+	
+	@And("The position is invalid")
+	public void positionIsInvalid() {
+		// TODO: Depends on this.iInitiateToLoadASavedGame
+	}
+	
+	@Then("The load returns {word}")
+	public void loadReturns(String result) {
+		// TODO: Again, depends on this.iInitiateToLoadASavedGame
 	}
 
 	// ***********************************************
