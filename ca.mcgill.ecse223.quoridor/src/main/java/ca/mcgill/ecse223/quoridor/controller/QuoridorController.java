@@ -5,8 +5,11 @@ import java.lang.UnsupportedOperationException;
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.*;
 
+import java.io.File;
 import java.io.Reader;
 import java.io.Writer;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 /**
@@ -70,14 +73,51 @@ public class QuoridorController {
 	}
 
 	/**
+	 * Saves the current board to a file
+	 * 
+	 * @param filePath The file being saved to
+	 * @param overwriteIfExists Existing file will only be overwritten if true 
+	 * @throws IOException If writing operation fails
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	public void savePosition(String filePath, boolean overwriteIfExists) throws IOException {
+		final File file = new File(filePath);
+		if (file.exists() && !overwriteIfExists) {
+			// File exists but user does not want to
+			// overwrite the file we are done
+			return;
+		}
+		
+		try (final Writer writer = new FileWriter(file)) {
+			this.savePosition(writer);
+		}
+	}
+
+	/**
 	 * Writes out the current board
 	 *
 	 * @param destination The stream we are writing to
 	 * @throws IOException If writing operation fails
+	 * 
 	 * @author Paul Teng (260862906)
 	 */
 	public void savePosition(Writer destination) throws IOException {
-		throw new UnsupportedOperationException("Save Position is not implemented yet");
+		throw new UnsupportedOperationException("Helper method Save Position is not implemented yet");
+	}
+	
+	/**
+	 * Loads a previously saved board from a file 
+	 * 
+	 * @param filePath The file being read
+	 * @throws IOException If reading operation fails 
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	public void loadPosition(String filePath) throws IOException {
+		try (final Reader reader = new FileReader(filePath)) {
+			this.loadPosition(reader);
+		}
 	}
 	
 	/**
@@ -85,9 +125,10 @@ public class QuoridorController {
 	 *
 	 * @param source The stream we are reading from
 	 * @throws IOException If reading operation fails
+	 * 
 	 * @author Paul Teng (260862906)
 	 */
 	public void loadPosition(Reader source) throws IOException {
-		throw new UnsupportedOperationException("Save Position is not implemented yet");
+		throw new UnsupportedOperationException("Helper method Load Position is not implemented yet");
 	}
 }
