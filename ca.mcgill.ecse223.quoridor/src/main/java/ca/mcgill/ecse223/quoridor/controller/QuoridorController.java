@@ -52,6 +52,37 @@ public class QuoridorController {
 	}
 	
 	/**
+	 * 
+	 * @author mohamed mohamed
+	 * 
+	 * @param wall
+	 * @param destination
+	 * 
+	 * This methods allows you to place your wall on the board.
+	 * 
+	 * 
+	 */
+	
+	public void rotateWall() {
+		
+	}
+	
+	/**
+	 * 
+	 * @author mohamed mohamed
+	 * 
+	 * @param wall
+	 * @param destination
+	 * 
+	 * This methods allows you to place your wall on the board.
+	 * 
+	 * 
+	 */
+	public void dropWall() {
+		
+	}
+
+	/**
 	 * @author Group 9
 	 * 
 	 * @param move
