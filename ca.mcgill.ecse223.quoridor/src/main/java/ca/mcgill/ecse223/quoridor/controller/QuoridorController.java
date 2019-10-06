@@ -76,22 +76,24 @@ public class QuoridorController {
 	 * Saves the current board to a file
 	 * 
 	 * @param filePath The file being saved to
-	 * @param overwriteIfExists Existing file will only be overwritten if true 
+	 * @param overwriteIfExists Existing file will only be overwritten if true
+	 * @returns false if we do not overwrite, true if save operation succeeds
 	 * @throws IOException If writing operation fails
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static void savePosition(String filePath, boolean overwriteIfExists) throws IOException {
+	public static boolean savePosition(String filePath, boolean overwriteIfExists) throws IOException {
 		final File file = new File(filePath);
 		if (file.exists() && !overwriteIfExists) {
 			// File exists but user does not want to
-			// overwrite the file we are done
-			return;
+			// overwrite the file, so we are done
+			return false;
 		}
 		
 		try (final Writer writer = new FileWriter(file)) {
 			savePosition(writer);
 		}
+		return true;
 	}
 
 	/**

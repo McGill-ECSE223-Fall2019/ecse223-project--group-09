@@ -1,6 +1,7 @@
 package ca.mcgill.ecse223.quoridor.features;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -24,6 +26,7 @@ import ca.mcgill.ecse223.quoridor.model.WallMove;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class CucumberStepDefinitions {
@@ -119,6 +122,9 @@ public class CucumberStepDefinitions {
 	
 	// ***** SavePosition.feature *****
 
+	private String saveFileName;
+	private boolean justModified;
+
 	@Given("No file {String} exists in the filesystem")
 	public void noFileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
@@ -127,13 +133,65 @@ public class CucumberStepDefinitions {
 	
 	@When("The user initiates to save the game with name {String}")
 	public void userInitiatesToSaveTheGameWithName(String filename) {
-		
+		this.saveFileName = filename;
+		this.justModified = false;
+		try {
+			this.justModified = QuoridorController.savePosition(filename, false);
+		} catch (IOException ex) {
+			Assert.fail("No IOException should happen:" + ex.getMessage());
+		}
+	}
+	
+	@Then("A file with {String} is created in the filesystem")
+	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
+		final File file = new File(filename);
+		Assert.assertTrue(file.exists());
+	}
+	
+	@And("The user confirms to overwrite existing file")
+	public void userConfirmsToOverwriteExistingFile() {
+		final String filename = this.saveFileName;
+		try {
+			this.justModified = QuoridorController.savePosition(filename, true);
+		} catch (IOException ex) {
+			Assert.fail("No IOException should happen:" + ex.getMessage());
+		}
+	}
+	
+	@Then("File with {String} is updated in the filesystem")
+	public void fileIsUpdatedInTheFilesystem(String filename) {
+		Assert.assertEquals(filename, this.saveFileName);
+		Assert.assertTrue(this.justModified);
+	}
+	
+	@And("The user cancels to overwrite existing file")
+	public void userCancelsToOverwriteExistingFile() {
+		// see this.userInitiatesToSaveTheGameWithName which does exactly this
+	}
+	
+	@Then("File {String} is not changed in the filesystem")
+	public void fileIsNotChangedInTheFilesystem(String filename) {
+		Assert.assertEquals(filename, this.saveFileName);
+		Assert.assertFalse(this.justModified);
 	}
 	
 	@Given("File {String} exists in the filesystem")
 	public void fileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertTrue(file.exists());
+	}
+	
+	// ***** LoadPosition.feature *****
+
+	private boolean 
+
+	@When("I initiate to load a saved game {String}")
+	public void iInitiateToLoadASavedGame(String filename) {
+		try {
+			QuoridorController.loadPosition(filename);
+		} catch (IOException ex) {
+			Assert.fail("No IOException should happen:" + ex.getMessage());
+		}
 	}
 
 	// ***********************************************
