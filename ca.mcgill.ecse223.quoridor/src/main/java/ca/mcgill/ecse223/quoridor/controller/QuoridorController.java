@@ -81,7 +81,7 @@ public class QuoridorController {
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public void savePosition(String filePath, boolean overwriteIfExists) throws IOException {
+	public static void savePosition(String filePath, boolean overwriteIfExists) throws IOException {
 		final File file = new File(filePath);
 		if (file.exists() && !overwriteIfExists) {
 			// File exists but user does not want to
@@ -90,7 +90,7 @@ public class QuoridorController {
 		}
 		
 		try (final Writer writer = new FileWriter(file)) {
-			this.savePosition(writer);
+			savePosition(writer);
 		}
 	}
 
@@ -102,7 +102,7 @@ public class QuoridorController {
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public void savePosition(Writer destination) throws IOException {
+	public static void savePosition(Writer destination) throws IOException {
 		throw new UnsupportedOperationException("Helper method Save Position is not implemented yet");
 	}
 	
@@ -114,9 +114,9 @@ public class QuoridorController {
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public void loadPosition(String filePath) throws IOException {
+	public static void loadPosition(String filePath) throws IOException {
 		try (final Reader reader = new FileReader(filePath)) {
-			this.loadPosition(reader);
+			loadPosition(reader);
 		}
 	}
 	
@@ -128,7 +128,7 @@ public class QuoridorController {
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public void loadPosition(Reader source) throws IOException {
+	public static void loadPosition(Reader source) throws IOException {
 		throw new UnsupportedOperationException("Helper method Load Position is not implemented yet");
 	}
 }

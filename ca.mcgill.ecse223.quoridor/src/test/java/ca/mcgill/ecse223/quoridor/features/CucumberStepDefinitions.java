@@ -1,8 +1,11 @@
 package ca.mcgill.ecse223.quoridor.features;
 
+import java.io.File;
 import java.sql.Time;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
@@ -21,6 +24,7 @@ import ca.mcgill.ecse223.quoridor.model.WallMove;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
+import io.cucumber.java.en.When;
 
 public class CucumberStepDefinitions {
 
@@ -112,6 +116,25 @@ public class CucumberStepDefinitions {
 	 * are implemented
 	 * 
 	 */
+	
+	// ***** SavePosition.feature *****
+
+	@Given("No file {String} exists in the filesystem")
+	public void noFileExistsInTheFilesystem(String filename) {
+		final File file = new File(filename);
+		Assert.assertFalse(file.exists());
+	}
+	
+	@When("The user initiates to save the game with name {String}")
+	public void userInitiatesToSaveTheGameWithName(String filename) {
+		
+	}
+	
+	@Given("File {String} exists in the filesystem")
+	public void fileExistsInTheFilesystem(String filename) {
+		final File file = new File(filename);
+		Assert.assertTrue(file.exists());
+	}
 
 	// ***********************************************
 	// Clean up
