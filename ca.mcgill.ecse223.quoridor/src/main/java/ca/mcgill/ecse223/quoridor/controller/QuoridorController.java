@@ -50,6 +50,22 @@ public class QuoridorController {
 		throw new UnsupportedOperationException();
 		
 	}
+	
+	/**
+	 * @author Group 9
+	 * 
+	 * @param move
+	 * 
+	 * 
+	 * 
+	 */
+	
+	public void validatePosition(Move move) {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	
 
 
 }
