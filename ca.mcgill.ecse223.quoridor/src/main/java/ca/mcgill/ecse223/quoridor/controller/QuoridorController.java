@@ -1,21 +1,14 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
-<<<<<<< HEAD
-import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.model.Quoridor;
-=======
 import java.lang.UnsupportedOperationException;
-
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.*;
-
 import java.io.File;
 import java.io.Reader;
 import java.io.Writer;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
->>>>>>> 7358450468b5c404f4232f3ea0c7149f4cd69197
 
 /**
  * This is the controller class for the Quoridor application
@@ -23,10 +16,10 @@ import java.io.IOException;
  * @author GROUP-9 (Barry Chen, Mohamed Mohamed, Ada Andrei, Paul Teng, Alixe Delabrousse)
  * @version 04-10-2019
  */
-<<<<<<< HEAD
 
-public class String QuoridorController  {
-	
+
+public class QuoridorController {
+
 	/**
 	 * This method allows the user to create a new username.
 	 * 
@@ -37,12 +30,10 @@ public class String QuoridorController  {
 	 */
 
 	public static selectUsername() {
+		throw new UnsupportedOperationException;
+		
 
-		Quoridor quoridor = QuoridorApplication.getQuoridor(); 
-
-		java.lang.UnsupportedOperationExceptiontry {
-			throw new UnsupportedOperationException;
-		} catch (java.lang.UnsupportedOperationException e)
+		return 
 
 	}
 	
@@ -56,51 +47,40 @@ public class String QuoridorController  {
 	 */
 	
 	public static selectUsername() {
-
-		Quoridor quoridor = QuoridorApplication.getQuoridor(); 
-
-		try {
-			throw new UnsupportedOperationException;
-		} catch (java.lang.UnsupportedOperationException e)
+		throw new UnsupportedOperationException;
+		
 
 	}
 	
 	/**
 	 * This set the total thinking time (minutes and seconds) enforced for both players.
 	 * 
-	 * @param int time;
+	 * @param int time; 
 	 * @return Time remainingTime; 
 	 * 
 	 * @author Ada Andrei
 	 */
 	
 	public static setTime() {
-
-		Quoridor quoridor = QuoridorApplication.getQuoridor(); 
-
-		try {
-			throw new UnsupportedOperationException;
-		} catch (java.lang.UnsupportedOperationException e)
-
+		throw new UnsupportedOperationException;
+		
 		return remainingTime; 
 
-=======
+	}
 
 
-public class QuoridorController {
-
-/**
- * 
- * @author alixe delabrousse 
- * 
- * @param player
- * @param direction
- * 
- * This method allows the player to grab one if its walls from its remaining walls pile.
- * This method enables the use of RotateWall, DropWall, and MoveWall.
- * 
- * 
- */
+	/**
+ 	* 
+ 	* @author alixe delabrousse 
+	* 
+ 	* @param player
+ 	* @param direction
+ 	* 
+	* This method allows the player to grab one if its walls from its remaining walls pile.
+ 	* This method enables the use of RotateWall, DropWall, and MoveWall.
+ 	* 
+ 	* 
+ 	*/
 	
 	public void grabWall(Player player, Direction direction) {
 		throw new UnsupportedOperationException();
@@ -149,6 +129,7 @@ public class QuoridorController {
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
+
 	public static boolean savePosition(String filePath, boolean overwriteIfExists) throws IOException {
 		final File file = new File(filePath);
 		if (file.exists() && !overwriteIfExists) {
@@ -199,7 +180,7 @@ public class QuoridorController {
 	 */
 	public static void loadPosition(Reader source) throws IOException {
 		throw new UnsupportedOperationException("Helper method Load Position is not implemented yet");
->>>>>>> 7358450468b5c404f4232f3ea0c7149f4cd69197
 	}
-}
+
+}// end QuoridorController
 
