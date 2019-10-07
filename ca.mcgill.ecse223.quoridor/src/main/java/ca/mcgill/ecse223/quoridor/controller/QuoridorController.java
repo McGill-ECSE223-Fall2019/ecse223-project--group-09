@@ -23,50 +23,63 @@ public class QuoridorController {
 	/**
 	 * This method allows the user to create a new username.
 	 * 
-	 * @param String user; 
-	 * @return String user; 
+	 * @param String user;  
 	 * 
 	 * @author Ada Andrei
 	 */
 
-	public static selectUsername() {
+	public static void selectUsername(String user) {
 		throw new UnsupportedOperationException;
-		
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
 
-		return 
+		try {
+			quoridor.addPlayer(user, false);
+		}
+		catch (RuntimeException e) {
+			throw new InvalidInputException(e.getMessage());
+		}
 
 	}
 	
 	/**
 	 * This method allows the user to select a username already created. 
 	 *  
-	 * @param String user; 
-	 * @return String user; 
+	 * @param int index;
 	 * 
 	 * @author Ada Andrei
 	 */
 	
-	public static selectUsername() {
+	public static selectUsername(int index) {
 		throw new UnsupportedOperationException;
-		
+
+			
 
 	}
 	
 	/**
 	 * This set the total thinking time (minutes and seconds) enforced for both players.
 	 * 
-	 * @param int time; 
-	 * @return Time remainingTime; 
+	 * @param int remainingTime; 
 	 * 
 	 * @author Ada Andrei
 	 */
 	
-	public static setTime() {
+	public static void setTime(int remainingTime) throws InvalidInputException {
 		throw new UnsupportedOperationException;
+		String error = "";
+		if (time <= 0) {
+			error = "The time must be greater than zero. ";
+		}
+		if (error.length() > 0) {
+			throw new InvalidInputException(error.trim());
+		}
 		
-		return remainingTime; 
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		try {
+		quoridor.addTime(remainingtime);
+		}
 
-	}
+		}
 
 
 	/**
