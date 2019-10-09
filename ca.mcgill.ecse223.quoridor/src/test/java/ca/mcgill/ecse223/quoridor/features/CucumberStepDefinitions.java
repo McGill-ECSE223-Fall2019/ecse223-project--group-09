@@ -271,6 +271,25 @@ public class CucumberStepDefinitions {
 			Assert.fail("Unknown result: " + result);
 		}
 	}
+	
+	// ***** GrabWall.feature *****
+	
+	@Given("I have more walls on stock")
+	public void moreWallsOnStock() {
+		
+		Assert.assertTrue(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()) != null);
+	
+	}
+	
+	@When("I try to grab a wall from my stock")
+	public void playerTryToGrabWall() {
+		throw new PendingException();
+	}
+	
+	@Then("I have a wall in my hand over the board")
+	public void wallOverBoard() {
+		throw new PendingException();
+	}
 
 	// ***********************************************
 	// Clean up
