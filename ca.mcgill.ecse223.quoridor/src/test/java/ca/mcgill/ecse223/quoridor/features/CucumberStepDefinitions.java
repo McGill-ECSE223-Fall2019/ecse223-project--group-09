@@ -123,6 +123,67 @@ public class CucumberStepDefinitions {
 	 * 
 	 */
 	
+	@Given("A new game is initializing") //only once - correct if not
+	public void newGameInitializing() {
+		quoridor = QuoridorApplication.getQuoridor();
+	}
+
+	// ProvideOrSelectUserName.feature (Ada)
+	// Scenario: Select existing user name
+
+	@Given("Next player to set user name is <color>")
+	public void nextPlayerToSetUserNameIsColor(String color) {
+
+	}
+
+	@And("There is existing user <username>")
+	public void existingUser(boolean user) {
+		Assert.assertTrue(user); 
+	}
+
+	@When("The player selects existing <username>") 
+	public void playerSelectsExistingUsername(String user) {
+		QuoridorController.selectUsername(user);
+	}
+
+
+	@Then("The name of player <color> in the new game shall be <username>")
+	public void nameOfPlayerInNewGameShallBeUsername() {
+
+	}
+
+
+	//Scenario: Create new user name
+
+	@And("There is no existing user")
+	public void noExistingUser(boolean user) {
+		Assert.assertFalse(user); 
+	}
+	
+	@When("The player provides new user name: <username>")
+	public void playerProvidesNewUserName(String user) {
+		QuoridorController.createUsername(user);		
+	}
+
+	//Scenario: User name already exists
+
+	@Then("The player shall be warned that <username> already exists") 
+	public void playerShallBeWarnedThatUsernameAlreadyExists() {
+		throw new PendingException(); 
+	}
+	
+	// SetTotalThinkingTime.feature (Ada)
+
+	@When("<min>:<sec> is set as the thinking time")
+	public void setAsThinkingTime(Time remainingTime) {
+		QuoridorController.setTime(remainingTime); 
+	}
+
+	@Then("Both players shall have <min>:<sec> remaining time left")
+	public void bothPlayersShallHaveRemainingTimeLeft(Time remainingTime) {
+
+	}
+
 	// ***** SavePosition.feature *****
 
 	private String saveFileName;
