@@ -9,7 +9,8 @@ import java.io.Writer;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.sql.Time;
+
 
 /**
  * This is the controller class for the Quoridor application
@@ -22,9 +23,10 @@ import java.util.List;
 public class QuoridorController {
 
 	/**
-	 * This method allows the user to create a new username or choose an existing one. 
+	 * This method allows the user to create a new username 
 	 * 
 	 * @param String user;  
+	 * @return void; 
 	 * 
 	 * @author Ada Andrei
 	 */
@@ -34,16 +36,32 @@ public class QuoridorController {
 			throw new UnsupportedOperationException();
 		}
 	}
+
+	/**
+	 * This method allows the user to select it an existing username
+	 * 
+	 * @param int userIndex;  
+	 * @return void; 
+	 * 
+	 * @author Ada Andrei
+	 */
+
+	public static void selectUsername(int userIndex) throws UnsupportedOperationException{
+		if (true) {
+			throw new UnsupportedOperationException();
+		}
+	}
 	
 	/**
-	 * This set the total thinking time (minutes and seconds) enforced for both players.
+	 * This sets the total thinking time (minutes and seconds) enforced for both players.
 	 * 
-	 * @param int remainingTime; 
+	 * @param Time remainingTime; 
+	 * @return void;
 	 * 
 	 * @author Ada Andrei
 	 */
 	
-	public static void setTime(int remainingTime) throws UnsupportedOperationException {
+	public static void setTime(Time remainingTime) throws UnsupportedOperationException {
 		if (true) {
 			throw new UnsupportedOperationException();
 		}
