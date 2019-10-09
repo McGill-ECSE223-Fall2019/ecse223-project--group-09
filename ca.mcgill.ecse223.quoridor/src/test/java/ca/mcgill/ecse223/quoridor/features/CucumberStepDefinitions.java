@@ -9,6 +9,8 @@ import java.util.Map;
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
@@ -200,52 +202,74 @@ public class CucumberStepDefinitions {
 	
 	// ***** LoadPosition.feature *****
 
+	private boolean positionValidFlag;
+
 	@When("I initiate to load a saved game {word}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
-			QuoridorController.loadPosition(filename);
-			// TODO: Do something about invalid positions
-            throw new PendingException();
+			this.positionValidFlag = QuoridorController.loadPosition(filename);
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
 		}
 	}
 
-    @And("The position to load is valid")
-    public void positionToLoadIsValid() {
-        throw new PendingException();
-    }
+	@And("The position to load is valid")
+	public void positionToLoadIsValid() {
+		Assert.assertTrue(this.positionValidFlag);
+	}
 
-    @Then("It is {word}'s turn")
-    public void itIsPlayersTurn(String player) {
-        throw new PendingException();
-    }
+	@Then("It is {word}'s turn")
+	public void itIsPlayersTurn(String playerName) {
+		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+		Assert.assertNotNull(player);
+		Assert.assertEquals(playerName, player.getName());
+	}
 
-    @And("{word} is at {int}:{int}")
-    public void playerIsAtRowCol(String player, int row, int col) {
-        throw new PendingException();
-    }
+	@And("{word} is at {int}:{int}")
+	public void playerIsAtRowCol(String playerName, int row, int col) {
+		final TOPlayer player = QuoridorController.getPlayerByName(playerName);
+		Assert.assertNotNull(player);
+		Assert.assertEquals(row, player.getRow());
+		Assert.assertEquals(col, player.getColumn());
+	}
 
-    @And("{word} has a {word} wall at {int}:{int}")
-    public void playerHasOrientedWallAtRowCol(String player, String orientation, int row, int col) {
-        throw new PendingException();
-    }
+	@And("{word} has a {word} wall at {int}:{int}")
+	public void playerHasOrientedWallAtRowCol(String playerName, String orientation, int row, int col) {
+		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(playerName);
+		Assert.assertNotNull(walls);
 
-    @And("Both players have {int} in their stacks")
-    public void bothPlayersHaveWallCountInTheirStacks(int remainingWalls) {
-        throw new PendingException();
-    }
+		// Count the walls that satisfy the orientation and location
+		// We expect only 1 that matches:
+		int matches = 0;
+		for (final TOWall wall : walls) {
+			if (orientation.equalsIgnoreCase(wall.getOrientation().name())
+					&& wall.getRow() == row && wall.getColumn() == col) {
+				++matches;
+			}
+		}
+		Assert.assertEquals(1, matches);
+	}
+
+	@And("Both players have {int} in their stacks")
+	public void bothPlayersHaveWallCountInTheirStacks(int remainingWalls) {
+		Assert.assertEquals(remainingWalls, QuoridorController.getWhiteWallsInStock());
+		Assert.assertEquals(remainingWalls, QuoridorController.getBlackWallsInStock());
+	}
 
 	@And("The position to load is invalid")
 	public void positionToLoadIsInvalid() {
-		// TODO: Depends on this.iInitiateToLoadASavedGame
-        throw new PendingException();
+		Assert.assertFalse(this.positionValidFlag);
 	}
 	
 	@Then("The load returns {word}")
 	public void loadReturns(String result) {
-		// TODO: Again, depends on this.iInitiateToLoadASavedGame
-        throw new PendingException();
+		if ("success".equals(result)) {
+			Assert.assertTrue(this.positionValidFlag);
+		} else if ("error".equals(result)) {
+			Assert.assertFalse(this.positionValidFlag);
+		} else {
+			Assert.fail("Unknown result: " + result);
+		}
 	}
 
 	// ***********************************************
