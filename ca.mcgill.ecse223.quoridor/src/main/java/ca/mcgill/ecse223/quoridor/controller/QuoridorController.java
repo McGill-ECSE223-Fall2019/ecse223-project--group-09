@@ -22,6 +22,50 @@ import java.util.List;
 
 
 public class QuoridorController {
+	
+	/**
+	 * 
+	 * @author Barry Chen 
+	 * 
+	 *
+	 * This method sets up a new game
+	 * 
+	 * 
+	 */
+	
+	public Game startNewGame(){
+		throw new UnsupportedOperationException("method startNewGame is not implemented yet");
+	}
+	
+	
+	/**
+	 * 
+	 * @author Barry Chen 
+	 * 
+	 * @param none
+	 * @returns initialized board
+	 * 
+	 * This method initialize the board which place both players' pawn at its initial position
+	 * 
+	 * 
+	 */
+	
+	public Board initiateBoard() {
+		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+	}
+	
+	/**
+	 * 
+	 * @author alixe delabrousse 
+	 * 
+	 * @param player
+	 * @param direction
+	 * 
+	 * This method allows the player to grab one if its walls from its remaining walls pile.
+	 * This method enables the use of RotateWall, DropWall, and MoveWall.
+	 * 
+	 * 
+	 */
 
 	/**
 	 * This method allows the user to create a new username 
