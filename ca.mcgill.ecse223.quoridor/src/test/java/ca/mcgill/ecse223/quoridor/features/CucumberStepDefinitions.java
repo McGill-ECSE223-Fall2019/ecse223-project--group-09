@@ -133,7 +133,6 @@ public class CucumberStepDefinitions {
 
 	@Given("Next player to set user name is <color>")
 	public void nextPlayerToSetUserNameIsColor(String color) {
-
 	}
 
 	@And("There is existing user <username>")
@@ -149,9 +148,7 @@ public class CucumberStepDefinitions {
 
 	@Then("The name of player <color> in the new game shall be <username>")
 	public void nameOfPlayerInNewGameShallBeUsername() {
-
 	}
-
 
 	//Scenario: Create new user name
 
@@ -181,7 +178,6 @@ public class CucumberStepDefinitions {
 
 	@Then("Both players shall have <min>:<sec> remaining time left")
 	public void bothPlayersShallHaveRemainingTimeLeft(Time remainingTime) {
-
 	}
 
 	// ***** SavePosition.feature *****
