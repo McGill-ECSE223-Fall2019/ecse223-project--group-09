@@ -142,15 +142,16 @@ public class QuoridorController {
 	 * Loads a previously saved board from a file 
 	 * 
 	 * @param filePath The file being read
+	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails 
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static void loadPosition(String filePath) throws IOException {
+	public static boolean loadPosition(String filePath) throws IOException {
 		throw new UnsupportedOperationException("Method Load Position is not implemented yet");
 
 //		try (final Reader reader = new FileReader(filePath)) {
-//			loadPosition(reader);
+//			return loadPosition(reader);
 //		}
 	}
 	
@@ -158,6 +159,7 @@ public class QuoridorController {
 	 * Reads in a previously saved board
 	 *
 	 * @param source The stream we are reading from
+	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails
 	 * 
 	 * @author Paul Teng (260862906)
