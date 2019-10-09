@@ -181,6 +181,7 @@ public class CucumberStepDefinitions {
 
 	@Then("Both players shall have <min>:<sec> remaining time left")
 	public void bothPlayersShallHaveRemainingTimeLeft(Time remainingTime) {
+		Assert.assertEquals(expected,actual);
 	}
 
 	// ***** SavePosition.feature *****
@@ -380,6 +381,15 @@ public class CucumberStepDefinitions {
 		
 	}
 
+	
+	// ***** RotateWall feature ***** @Author Mohamed Mohamed
+	
+	@Given("The game is running")
+	public void gameisRunning() {
+		//check if the fame is running
+	}
+	
+	
 	// ***********************************************
 	// Clean up
 	// ***********************************************
