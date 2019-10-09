@@ -125,63 +125,77 @@ public class CucumberStepDefinitions {
 	
 	// ***** SavePosition.feature *****
 
-	private String saveFileName;
-	private boolean justModified;
+	private String fileName;
+	private boolean fileOverwriteFlag;
 
 	@Given("No file {word} exists in the filesystem")
 	public void noFileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertFalse(file.exists());
 	}
-	
+
 	@When("The user initiates to save the game with name {word}")
 	public void userInitiatesToSaveTheGameWithName(String filename) {
-		this.saveFileName = filename;
-		this.justModified = false;
-		try {
-			this.justModified = QuoridorController.savePosition(filename, false);
-		} catch (IOException ex) {
-			Assert.fail("No IOException should happen:" + ex.getMessage());
-		}
+		this.fileName = filename;
 	}
-	
+
 	@Then("A file with {word} is created in the filesystem")
 	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
+		try {
+			// Passing false as argument since file does not exist:
+			// we are not overwriting any file (but this argument
+			// is ignored in this case)
+			Assert.assertTrue(QuoridorController.savePosition(this.fileName, false));
+		} catch (IOException ex) {
+			Assert.fail("No IOException should happen: " + ex.getMessage());
+		}
+
 		final File file = new File(filename);
 		Assert.assertTrue(file.exists());
 	}
-	
+
+	@Given("File {word} exists in the filesystem")
+	public void fileExistsInTheFilesystem(String filename) {
+		final File file = new File(filename);
+		Assert.assertTrue(file.exists());
+	}
+
 	@And("The user confirms to overwrite existing file")
 	public void userConfirmsToOverwriteExistingFile() {
-		final String filename = this.saveFileName;
 		try {
-			this.justModified = QuoridorController.savePosition(filename, true);
+			// Pass true since we are overwriting a file
+			this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, true);
 		} catch (IOException ex) {
-			Assert.fail("No IOException should happen:" + ex.getMessage());
+			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
 	}
 	
 	@Then("File with {word} is updated in the filesystem")
 	public void fileIsUpdatedInTheFilesystem(String filename) {
-		Assert.assertEquals(filename, this.saveFileName);
-		Assert.assertTrue(this.justModified);
+		// Just a sanity check
+		Assert.assertEquals(filename, this.fileName);
+
+		// Actual file-updated check
+		Assert.assertTrue(this.fileOverwriteFlag);
 	}
 	
 	@And("The user cancels to overwrite existing file")
 	public void userCancelsToOverwriteExistingFile() {
-		// see this.userInitiatesToSaveTheGameWithName which does exactly this
+		try {
+			// Pass false since we are not overwriting a filex
+			this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, false);
+		} catch (IOException ex) {
+			Assert.fail("No IOException should happen: " + ex.getMessage());
+		}
 	}
 	
 	@Then("File {word} is not changed in the filesystem")
 	public void fileIsNotChangedInTheFilesystem(String filename) {
-		Assert.assertEquals(filename, this.saveFileName);
-		Assert.assertFalse(this.justModified);
-	}
-	
-	@Given("File {word} exists in the filesystem")
-	public void fileExistsInTheFilesystem(String filename) {
-		final File file = new File(filename);
-		Assert.assertTrue(file.exists());
+		// Just a sanity check
+		Assert.assertEquals(filename, this.fileName);
+
+		// Actual file-updated check
+		Assert.assertFalse(this.fileOverwriteFlag);
 	}
 	
 	// ***** LoadPosition.feature *****
