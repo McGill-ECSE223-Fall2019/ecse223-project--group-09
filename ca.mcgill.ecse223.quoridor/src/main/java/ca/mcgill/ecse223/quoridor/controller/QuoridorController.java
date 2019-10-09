@@ -9,6 +9,7 @@ import java.io.Writer;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This is the controller class for the Quoridor application
@@ -166,6 +167,58 @@ public class QuoridorController {
 	 */
 	public static void loadPosition(Reader source) throws IOException {
 		throw new UnsupportedOperationException("Helper method Load Position is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @returns the player associated with the current turn
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static TOPlayer getPlayerOfCurrentTurn() {
+		throw new UnsupportedOperationException("Query method get-player-of-current-turn is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @param name The name of the desired player
+	 * @returns the player associated with the name, null if no such player exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static TOPlayer getPlayerByName(String name) {
+		throw new UnsupportedOperationException("Query method get-player-by-name is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @param name The name of the player who owns the walls
+	 * @returns the walls associated to the player, null if no such player exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<TOWall> getWallsOwnedByPlayer(String name) {
+		throw new UnsupportedOperationException("Query method get-walls-owned-by-player is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @returns the number of walls in stock of player with white pawn
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getWhiteWallsInStock() {
+		throw new UnsupportedOperationException("Query method get-white-walls-in-stock is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @returns the number of walls in stock of player with black pawn
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getBlackWallsInStock() {
+		throw new UnsupportedOperationException("Query method get-black-walls-in-stock is not implemented yet");
 	}
 
 }// end QuoridorController
