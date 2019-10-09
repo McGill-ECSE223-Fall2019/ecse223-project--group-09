@@ -28,6 +28,7 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import cucumber.api.PendingException;
 
 public class CucumberStepDefinitions {
 
@@ -72,7 +73,9 @@ public class CucumberStepDefinitions {
 			Integer wcol = Integer.decode(map.get("wcol"));
 			// Wall to place
 			// Walls are placed on an alternating basis wrt. the owners
-			Wall wall = Wall.getWithId(playerIdx * 10 + wallIdxForPlayer);
+			//Wall wall = Wall.getWithId(playerIdx * 10 + wallIdxForPlayer);
+			Wall wall = players[playerIdx].getWall(wallIdxForPlayer); // above implementation sets wall to null
+
 
 			String dir = map.get("wdir");
 
@@ -188,19 +191,47 @@ public class CucumberStepDefinitions {
 		try {
 			QuoridorController.loadPosition(filename);
 			// TODO: Do something about invalid positions
+            throw new PendingException();
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
 		}
 	}
-	
-	@And("The position is invalid")
-	public void positionIsInvalid() {
+
+    @And("The position to load is valid")
+    public void positionToLoadIsValid() {
+        throw new PendingException();
+    }
+
+    @Then("It is {word}'s turn")
+    public void itIsPlayersTurn(String player) {
+        throw new PendingException();
+    }
+
+    @And("{word} is at {int}:{int}")
+    public void playerIsAtRowCol(String player, int row, int col) {
+        throw new PendingException();
+    }
+
+    @And("{word} has a {word} wall at {int}:{int}")
+    public void playerHasOrientedWallAtRowCol(String player, String orientation, int row, int col) {
+        throw new PendingException();
+    }
+
+    @And("Both players have {int} in their stacks")
+    public void bothPlayersHaveWallCountInTheirStacks(int remainingWalls) {
+        throw new PendingException();
+    }
+
+	@And("The position to load is invalid")
+	public void positionToLoadIsInvalid() {
 		// TODO: Depends on this.iInitiateToLoadASavedGame
+        throw new PendingException();
 	}
 	
 	@Then("The load returns {word}")
 	public void loadReturns(String result) {
 		// TODO: Again, depends on this.iInitiateToLoadASavedGame
+        throw new PendingException();
 	}
 
 	// ***********************************************
@@ -210,8 +241,11 @@ public class CucumberStepDefinitions {
 	// After each scenario, the test model is discarded
 	@After
 	public void tearDown() {
-		quoridor.delete();
-		quoridor = null;
+		// Avoid null pointer for step definitions that are not yet implemented.
+		if (quoridor != null) {
+			quoridor.delete();
+			quoridor = null;
+		}
 	}
 
 	// ***********************************************
