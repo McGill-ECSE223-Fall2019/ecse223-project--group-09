@@ -111,17 +111,19 @@ public class QuoridorController {
 	 */
 
 	public static boolean savePosition(String filePath, boolean overwriteIfExists) throws IOException {
-		final File file = new File(filePath);
-		if (file.exists() && !overwriteIfExists) {
-			// File exists but user does not want to
-			// overwrite the file, so we are done
-			return false;
-		}
-		
-		try (final Writer writer = new FileWriter(file)) {
-			savePosition(writer);
-		}
-		return true;
+		throw new UnsupportedOperationException("Method Save Position is not implemented yet");
+
+//		final File file = new File(filePath);
+//		if (file.exists() && !overwriteIfExists) {
+//			// File exists but user does not want to
+//			// overwrite the file, so we are done
+//			return false;
+//		}
+//		
+//		try (final Writer writer = new FileWriter(file)) {
+//			savePosition(writer);
+//		}
+//		return true;
 	}
 
 	/**
@@ -145,9 +147,11 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static void loadPosition(String filePath) throws IOException {
-		try (final Reader reader = new FileReader(filePath)) {
-			loadPosition(reader);
-		}
+		throw new UnsupportedOperationException("Method Load Position is not implemented yet");
+
+//		try (final Reader reader = new FileReader(filePath)) {
+//			loadPosition(reader);
+//		}
 	}
 	
 	/**
