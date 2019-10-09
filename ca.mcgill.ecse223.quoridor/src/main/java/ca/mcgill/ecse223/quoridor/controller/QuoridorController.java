@@ -21,39 +21,17 @@ import java.io.IOException;
 public class QuoridorController {
 
 	/**
-	 * This method allows the user to create a new username.
+	 * This method allows the user to create a new username or choose an existing one. 
 	 * 
 	 * @param String user;  
 	 * 
 	 * @author Ada Andrei
 	 */
 
-	public static void selectUsername(String user) {
-		throw new UnsupportedOperationException;
-		Quoridor quoridor = QuoridorApplication.getQuoridor();
-
-		try {
-			quoridor.addPlayer(user, false);
+	public static void selectUsername(String user) throws UnsupportedOperationException{
+		if (true) {
+			throw new UnsupportedOperationException();
 		}
-		catch (RuntimeException e) {
-			throw new InvalidInputException(e.getMessage());
-		}
-
-	}
-	
-	/**
-	 * This method allows the user to select a username already created. 
-	 *  
-	 * @param int index;
-	 * 
-	 * @author Ada Andrei
-	 */
-	
-	public static selectUsername(int index) {
-		throw new UnsupportedOperationException;
-
-			
-
 	}
 	
 	/**
@@ -64,22 +42,11 @@ public class QuoridorController {
 	 * @author Ada Andrei
 	 */
 	
-	public static void setTime(int remainingTime) throws InvalidInputException {
-		throw new UnsupportedOperationException;
-		String error = "";
-		if (time <= 0) {
-			error = "The time must be greater than zero. ";
+	public static void setTime(int remainingTime) throws UnsupportedOperationException {
+		if (true) {
+			throw new UnsupportedOperationException();
 		}
-		if (error.length() > 0) {
-			throw new InvalidInputException(error.trim());
-		}
-		
-		Quoridor quoridor = QuoridorApplication.getQuoridor();
-		try {
-		quoridor.addTime(remainingtime);
-		}
-
-		}
+	}
 
 
 	/**
