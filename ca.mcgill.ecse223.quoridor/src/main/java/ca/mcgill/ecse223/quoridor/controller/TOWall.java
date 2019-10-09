@@ -14,6 +14,7 @@ public final class TOWall {
     private Orientation orientation;
     private int row;
     private int column;
+    public boolean grabbed;
 
     public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
@@ -38,6 +39,16 @@ public final class TOWall {
     public int getColumn() {
         return this.column;
     }
-}
 
+    
+    public void SetGrabbed(boolean grabbed) {
+    	this.grabbed = grabbed;
+    }
+    
+    public boolean isGrabbed() {
+    	if (this.grabbed) return true;
+    	else return false;
+    }
+    
+}
 
