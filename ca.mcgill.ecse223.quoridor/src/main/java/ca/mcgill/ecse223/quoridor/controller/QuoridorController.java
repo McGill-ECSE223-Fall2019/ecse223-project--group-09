@@ -130,17 +130,19 @@ public class QuoridorController {
 	 */
 
 	public static boolean savePosition(String filePath, boolean overwriteIfExists) throws IOException {
-		final File file = new File(filePath);
-		if (file.exists() && !overwriteIfExists) {
-			// File exists but user does not want to
-			// overwrite the file, so we are done
-			return false;
-		}
-		
-		try (final Writer writer = new FileWriter(file)) {
-			savePosition(writer);
-		}
-		return true;
+		throw new UnsupportedOperationException("Method Save Position is not implemented yet");
+
+//		final File file = new File(filePath);
+//		if (file.exists() && !overwriteIfExists) {
+//			// File exists but user does not want to
+//			// overwrite the file, so we are done
+//			return false;
+//		}
+//		
+//		try (final Writer writer = new FileWriter(file)) {
+//			savePosition(writer);
+//		}
+//		return true;
 	}
 
 	/**
@@ -159,26 +161,82 @@ public class QuoridorController {
 	 * Loads a previously saved board from a file 
 	 * 
 	 * @param filePath The file being read
+	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails 
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static void loadPosition(String filePath) throws IOException {
-		try (final Reader reader = new FileReader(filePath)) {
-			loadPosition(reader);
-		}
+	public static boolean loadPosition(String filePath) throws IOException {
+		throw new UnsupportedOperationException("Method Load Position is not implemented yet");
+
+//		try (final Reader reader = new FileReader(filePath)) {
+//			return loadPosition(reader);
+//		}
 	}
 	
 	/**
 	 * Reads in a previously saved board
 	 *
 	 * @param source The stream we are reading from
+	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
 	public static void loadPosition(Reader source) throws IOException {
 		throw new UnsupportedOperationException("Helper method Load Position is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @returns the player associated with the current turn
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static TOPlayer getPlayerOfCurrentTurn() {
+		throw new UnsupportedOperationException("Query method get-player-of-current-turn is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @param name The name of the desired player
+	 * @returns the player associated with the name, null if no such player exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static TOPlayer getPlayerByName(String name) {
+		throw new UnsupportedOperationException("Query method get-player-by-name is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @param name The name of the player who owns the walls
+	 * @returns the walls associated to the player, null if no such player exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<TOWall> getWallsOwnedByPlayer(String name) {
+		throw new UnsupportedOperationException("Query method get-walls-owned-by-player is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @returns the number of walls in stock of player with white pawn
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getWhiteWallsInStock() {
+		throw new UnsupportedOperationException("Query method get-white-walls-in-stock is not implemented yet");
+	}
+
+	/**
+	 *
+	 * @returns the number of walls in stock of player with black pawn
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getBlackWallsInStock() {
+		throw new UnsupportedOperationException("Query method get-black-walls-in-stock is not implemented yet");
 	}
 
 }// end QuoridorController
