@@ -66,6 +66,10 @@ public class QuoridorController {
 	 * 
 	 * 
 	 */
+	
+	public void grabWall() {
+		
+	}
 
 	/**
 	 * This method checks if the given username already exists
@@ -296,6 +300,17 @@ public class QuoridorController {
 	 */
 	public static int getBlackWallsInStock() {
 		throw new UnsupportedOperationException("Query method get-black-walls-in-stock is not implemented yet");
+	}
+	
+	/**
+	 * 
+	 * @returns the current wall grabbed by the player
+	 * 
+	 * @author Alixe Delabrousse (260868412)
+	 * 
+	 */
+	public static TOWall getCurrentGrabbedWall() {
+		throw new UnsupportedOperationException("Query method get-current-grabbed-wall is not implemented yet");
 	}
 
 }// end QuoridorController

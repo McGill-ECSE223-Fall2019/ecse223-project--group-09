@@ -331,6 +331,8 @@ public class CucumberStepDefinitions {
 	
 	// ***** GrabWall.feature *****
 	
+
+	
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
 		
@@ -340,12 +342,22 @@ public class CucumberStepDefinitions {
 	
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
+		
 		throw new PendingException();
 	}
 	
 	@Then("I have a wall in my hand over the board")
 	public void wallOverBoard() {
-		throw new PendingException();
+		
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);	
+	}
+	
+	@And("The wall in my hand should disappear from my stock")
+	public void removeWallFromStock() {
+		
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
+		QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()).remove(QuoridorController.getCurrentGrabbedWall());
+		
 	}
 
 	// ***********************************************
