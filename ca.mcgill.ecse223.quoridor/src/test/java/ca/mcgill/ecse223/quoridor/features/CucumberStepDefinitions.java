@@ -27,6 +27,7 @@ import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
+import io.cucumber.java.en.But;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -309,8 +310,8 @@ public class CucumberStepDefinitions {
 
 	@And("Both players have {int} in their stacks")
 	public void bothPlayersHaveWallCountInTheirStacks(int remainingWalls) {
-		Assert.assertEquals(remainingWalls, QuoridorController.getWhiteWallsInStock());
-		Assert.assertEquals(remainingWalls, QuoridorController.getBlackWallsInStock());
+		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("black"));
+		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("white"));
 	}
 
 	@And("The position to load is invalid")
@@ -331,33 +332,51 @@ public class CucumberStepDefinitions {
 	
 	// ***** GrabWall.feature *****
 	
-
+		//Start wall placement
 	
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
-		
-		
 		Assert.assertNotNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
 	
 	}
 	
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
-		
 		throw new PendingException();
 	}
 	
 	@Then("I have a wall in my hand over the board")
 	public void wallOverBoard() {
-		
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);	
 	}
 	
 	@And("The wall in my hand should disappear from my stock")
 	public void removeWallFromStock() {
-		
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
 		QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()).remove(QuoridorController.getCurrentGrabbedWall());
+		
+	}
+	
+	@And("A wall move candidate shall be created at initial position")
+	public void createWallMoveCandidate() {
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
+		throw new PendingException();
+		
+	}
+		
+		//No more walls in stock
+	@Given("I have no more walls on stock")
+	public void noMoreWallsOnStock() {
+		Assert.assertNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
+	}
+	
+	@Then("I should be notified that I have no more walls")
+	public void notifNoMoreWalls() {
+		
+	}
+	
+	@But("I do not have a wall in my hand ")
+	public void noWallInHand() {
 		
 	}
 
