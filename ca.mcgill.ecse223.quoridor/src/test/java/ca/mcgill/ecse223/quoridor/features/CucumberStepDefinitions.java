@@ -241,7 +241,7 @@ public class CucumberStepDefinitions {
 	@And("The user cancels to overwrite existing file")
 	public void userCancelsToOverwriteExistingFile() {
 		try {
-			// Pass false since we are not overwriting a filex
+			// Pass false since we are not overwriting a file
 			this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, false);
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
@@ -331,21 +331,38 @@ public class CucumberStepDefinitions {
 	
 	// ***** GrabWall.feature *****
 	
+	private boolean wallGrabbedFlag;
+	
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
 		
-		Assert.assertTrue(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()) != null);
+		
+		Assert.assertNotNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
 	
 	}
 	
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
+		
+		
+		this.wallGrabbedFlag = true;
 		throw new PendingException();
 	}
 	
 	@Then("I have a wall in my hand over the board")
 	public void wallOverBoard() {
+		
+		Assert.assertTrue(this.wallGrabbedFlag);
 		throw new PendingException();
+		
+	}
+	
+	@And("The wall in my hand should disappear from my stock")
+	public void removeWallFromStock() {
+		Assert.assertTrue(this.wallGrabbedFlag);
+		
+		QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()).remove(o);
+		
 	}
 
 	// ***********************************************
