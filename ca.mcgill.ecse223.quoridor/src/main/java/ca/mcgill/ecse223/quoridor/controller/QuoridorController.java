@@ -14,19 +14,50 @@ import ca.mcgill.ecse223.quoridor.model.*;
 
 
 public class QuoridorController {
-
-/**
- * 
- * @author alixe delabrousse 
- * 
- * @param player
- * @param direction
- * 
- * This method allows the player to grab one if its walls from its remaining walls pile.
- * This method enables the use of RotateWall, DropWall, and MoveWall.
- * 
- * 
- */
+	
+	/**
+	 * 
+	 * @author Barry Chen 
+	 * 
+	 * @param board
+	 * 
+	 * This method sets up a new game
+	 * 
+	 * 
+	 */
+	
+	public Game startNewGame {
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @author Barry Chen 
+	 * 
+	 * @param board
+	 * 
+	 * This method initiates the board
+	 * 
+	 * 
+	 */
+	
+	public void initiateBoard(Board B) {
+		
+	}
+	
+	/**
+	 * 
+	 * @author alixe delabrousse 
+	 * 
+	 * @param player
+	 * @param direction
+	 * 
+	 * This method allows the player to grab one if its walls from its remaining walls pile.
+	 * This method enables the use of RotateWall, DropWall, and MoveWall.
+	 * 
+	 * 
+	 */
 	
 	public void grabWall(Player player, Direction direction) {
 		throw new UnsupportedOperationException();
