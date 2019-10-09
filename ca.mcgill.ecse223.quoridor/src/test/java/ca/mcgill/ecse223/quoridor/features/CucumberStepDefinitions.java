@@ -364,6 +364,16 @@ public class CucumberStepDefinitions {
 		QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()).remove(o);
 		
 	}
+	
+	
+	// ***** RotateWall feature ***** @Author Mohamed Mohamed
+	
+	@Given("The game is running")
+	public void gameisRunning() {
+		//check if the fame is running
+	}
+	
+	
 
 	// ***********************************************
 	// Clean up

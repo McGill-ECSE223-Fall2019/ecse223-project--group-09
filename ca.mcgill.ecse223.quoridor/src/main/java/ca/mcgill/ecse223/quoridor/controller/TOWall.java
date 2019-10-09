@@ -6,6 +6,7 @@ package ca.mcgill.ecse223.quoridor.controller;
  *
  * @author Paul Teng (260862906)
  */
+
 public final class TOWall {
 
     public enum Orientation { HORIZONTAL, VERTICAL }
@@ -38,3 +39,5 @@ public final class TOWall {
         return this.column;
     }
 }
+
+

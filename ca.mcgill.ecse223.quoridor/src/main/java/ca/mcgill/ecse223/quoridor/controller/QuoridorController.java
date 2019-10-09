@@ -156,12 +156,16 @@ public class QuoridorController {
 	 * @param wall
 	 * @param destination
 	 * 
-	 * This methods allows you to place your wall on the board.
+	 * Rotate Wall
 	 * 
+	 * Move Wall
+  	 *As a player who grabbed a wall, I wish to move the wall between possible rows and columns of the board 
+  	 *so that I could move it to its designated target position. 
+     *I wish to get feedback from the game if a designated wall position is illegal.
 	 * 
 	 */
 	
-	public void rotateWall() {
+	public void rotateWall(Wall wall,) {
 		
 	}
 	
