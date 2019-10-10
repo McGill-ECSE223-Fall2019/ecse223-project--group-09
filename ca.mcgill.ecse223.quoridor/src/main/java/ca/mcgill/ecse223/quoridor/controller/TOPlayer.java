@@ -15,6 +15,7 @@ public final class TOPlayer {
     private int column;
     private Time timeRemaining;
     private String color;
+    private boolean wallInHand = false;
     
     public void setName(String name) {
         this.name = name;
@@ -47,6 +48,13 @@ public final class TOPlayer {
     }
     public String getColor() {
     	return this.color;
+    }
+    public void addWallInHand() {
+    	this.wallInHand = true;
+    }
+    
+    public boolean hasWallInHand() {
+    	return this.wallInHand;
     }
     
 }

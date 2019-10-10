@@ -11,6 +11,7 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
@@ -202,18 +203,18 @@ public class CucumberStepDefinitions {
 	private String fileName;
 	private boolean fileOverwriteFlag;
 
-	@Given("No file {word} exists in the filesystem")
+	@Given("No file {string} exists in the filesystem")
 	public void noFileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertFalse(file.exists());
 	}
 
-	@When("The user initiates to save the game with name {word}")
+	@When("The user initiates to save the game with name {string}")
 	public void userInitiatesToSaveTheGameWithName(String filename) {
 		this.fileName = filename;
 	}
 
-	@Then("A file with {word} is created in the filesystem")
+	@Then("A file with {string} shall be created in the filesystem")
 	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
 		try {
 			// Passing false as argument since file does not exist:
@@ -228,7 +229,7 @@ public class CucumberStepDefinitions {
 		Assert.assertTrue(file.exists());
 	}
 
-	@Given("File {word} exists in the filesystem")
+	@Given("File {string} exists in the filesystem")
 	public void fileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertTrue(file.exists());
@@ -244,7 +245,7 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-	@Then("File with {word} is updated in the filesystem")
+	@Then("File with {string} is updated in the filesystem")
 	public void fileIsUpdatedInTheFilesystem(String filename) {
 		// Just a sanity check
 		Assert.assertEquals(filename, this.fileName);
@@ -263,7 +264,7 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-	@Then("File {word} is not changed in the filesystem")
+	@Then("File {string} shall not be changed in the filesystem")
 	public void fileIsNotChangedInTheFilesystem(String filename) {
 		// Just a sanity check
 		Assert.assertEquals(filename, this.fileName);
@@ -276,7 +277,7 @@ public class CucumberStepDefinitions {
 
 	private boolean positionValidFlag;
 
-	@When("I initiate to load a saved game {word}")
+	@When("I initiate to load a saved game {string}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
 			this.positionValidFlag = QuoridorController.loadPosition(filename);
@@ -290,14 +291,14 @@ public class CucumberStepDefinitions {
 		Assert.assertTrue(this.positionValidFlag);
 	}
 
-	@Then("It is {word}'s turn")
-	public void itIsPlayersTurn(String playerName) {
+	@Then("It shall be {string}'s turn")
+	public void itShallBePlayersTurn(String playerName) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
 		Assert.assertEquals(playerName, player.getName());
 	}
 
-	@And("{word} is at {int}:{int}")
+	@And("{string} shall be at {int}:{int}")
 	public void playerIsAtRowCol(String playerName, int row, int col) {
 		final TOPlayer player = QuoridorController.getPlayerByName(playerName);
 		Assert.assertNotNull(player);
@@ -305,7 +306,7 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(col, player.getColumn());
 	}
 
-	@And("{word} has a {word} wall at {int}:{int}")
+	@And("{string} shall have a {string} wall at {int}:{int}")
 	public void playerHasOrientedWallAtRowCol(String playerName, String orientation, int row, int col) {
 		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(playerName);
 		Assert.assertNotNull(walls);
@@ -322,7 +323,7 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(1, matches);
 	}
 
-	@And("Both players have {int} in their stacks")
+	@And("Both players shall have {int} in their stacks")
 	public void bothPlayersHaveWallCountInTheirStacks(int remainingWalls) {
 		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("black"));
 		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("white"));
@@ -333,15 +334,9 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(this.positionValidFlag);
 	}
 	
-	@Then("The load returns {word}")
-	public void loadReturns(String result) {
-		if ("success".equals(result)) {
-			Assert.assertTrue(this.positionValidFlag);
-		} else if ("error".equals(result)) {
-			Assert.assertFalse(this.positionValidFlag);
-		} else {
-			Assert.fail("Unknown result: " + result);
-		}
+	@Then("The load shall return an error")
+	public void loadReturns() {
+		Assert.assertFalse(this.positionValidFlag);
 	}
 	
 	// ***** GrabWall.feature *****
@@ -374,26 +369,37 @@ public class CucumberStepDefinitions {
 	@And("A wall move candidate shall be created at initial position")
 	public void createWallMoveCandidate() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
+		QuoridorController.getCurrentGrabbedWall().createWallCandidate();
 		throw new PendingException();
 		
 	}
 		
 		//No more walls in stock
 	@Given("I have no more walls on stock")
-	public void noMoreWallsOnStock() {
+	public boolean noMoreWallsOnStock() {
 		Assert.assertNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
+		return true;
 	}
 	
 	@Then("I should be notified that I have no more walls")
 	public void notifNoMoreWalls() {
+		Assert.assertTrue(noMoreWallsOnStock());
+		throw new PendingException();
 		
 	}
 	
 	@But("I do not have a wall in my hand ")
 	public void noWallInHand() {
-		
+		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
 	}
-
+	
+	// ***** MoveWall.feature *****
+	
+	@Given("A wall move candidate exists with {word} at position ({int}, {int})")
+	public void wallCandidateExists() {
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().getWallCandidate() != null);
+	}
+	
 	
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
 	
