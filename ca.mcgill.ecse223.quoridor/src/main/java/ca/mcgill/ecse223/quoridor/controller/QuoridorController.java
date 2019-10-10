@@ -66,10 +66,6 @@ public class QuoridorController {
 	 * 
 	 * 
 	 */
-	
-	public void grabWall() {
-		
-	}
 
 	/**
 	 * This method checks if the given username already exists
@@ -84,6 +80,11 @@ public class QuoridorController {
 		throw new UnsupportedOperationException();
 		
 	}
+
+	public void grabWall() {
+		
+	}
+	
 
 	/**
 	 * This method allows the user to create a new username 
@@ -118,18 +119,18 @@ public class QuoridorController {
 	/**
 	 * This sets the total thinking time (minutes and seconds) enforced for both players.
 	 * 
-	 * @param Time remainingTime; 
+	 * @param int mins;
+	 * @param int secs; 
 	 * @return void;
 	 * 
 	 * @author Ada Andrei
 	 */
 	
-	public static void setTime(Time remainingTime) throws UnsupportedOperationException {
+	public static void setTime(int mins, int secs) throws UnsupportedOperationException {
 		if (true) {
 			throw new UnsupportedOperationException();
 		}
 	}
-
 
 	/**
  	* 
@@ -167,41 +168,6 @@ public class QuoridorController {
 		
 	}
 	
-	/**
-	 * 
-	 * @author mohamed mohamed
-	 * 
-	 * @param wall
-	 * @param destination
-	 * 
-	 * Rotate Wall
-	 * 
-	 * Move Wall
-  	 *As a player who grabbed a wall, I wish to move the wall between possible rows and columns of the board 
-  	 *so that I could move it to its designated target position. 
-     *I wish to get feedback from the game if a designated wall position is illegal.
-	 * 
-	 */
-	
-	public void rotateWall(Wall wall) {
-		
-	}
-	
-	/**
-	 * 
-	 * @author mohamed mohamed
-	 * 
-	 * @param wall
-	 * @param destination
-	 * 
-	 * This methods allows you to place your wall on the board.
-	 * 
-	 * 
-	 */
-	public void dropWall() {
-		
-	}
-
 	/**
 	 * @author Group 9
 	 * 
@@ -343,23 +309,16 @@ public class QuoridorController {
 	}
 
 	/**
+	 * 
+	 * @param String color - prompts the color of the Pawn of which you want the number of walls
+	 * 
+	 * @returns the number of walls in stock of player with the specified color
 	 *
-	 * @returns the number of walls in stock of player with white pawn
-	 *
-	 * @author Paul Teng (260862906)
+	 * @author Paul Teng (260862906) and Alixe Delabrousse (260868412)
 	 */
-	public static int getWhiteWallsInStock() {
-		throw new UnsupportedOperationException("Query method get-white-walls-in-stock is not implemented yet");
-	}
-
-	/**
-	 *
-	 * @returns the number of walls in stock of player with black pawn
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	public static int getBlackWallsInStock() {
-		throw new UnsupportedOperationException("Query method get-black-walls-in-stock is not implemented yet");
+	
+	public static int getWallsInStockOfColoredPawn(String color) {
+		throw new UnsupportedOperationException("Query method get-walls-in-stock-of-colored-pawn is not implemented yet");
 	}
 	
 	/**
@@ -372,7 +331,23 @@ public class QuoridorController {
 	public static TOWall getCurrentGrabbedWall() {
 		throw new UnsupportedOperationException("Query method get-current-grabbed-wall is not implemented yet");
 	}
-	
-	
+
+	/**
+	 * 
+	 * @return TOPlayer; 
+	 */
+
+	public static TOPlayer getWhitePlayer(){
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * 
+	 * 
+	 * @return TOPlayer;
+	 */
+	public static TOPlayer getBlackPlayer()	{
+		throw new UnsupportedOperationException();
+	}
 }// end QuoridorController
 

@@ -1,3 +1,4 @@
+
 package ca.mcgill.ecse223.quoridor.controller;
 
 /**
@@ -15,6 +16,7 @@ public final class TOWall {
     private int row;
     private int column;
     public boolean grabbed;
+    public TOWallCandidate wallCandidate = null;
 
     public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
@@ -50,5 +52,12 @@ public final class TOWall {
     	else return false;
     }
     
+    public void createWallCandidate() {
+    	this.wallCandidate = new TOWallCandidate(this.orientation,this.row, this.column);
+    }
+    
+    public TOWallCandidate getWallCandidate() {
+    	if (wallCandidate!=null) return this.wallCandidate;
+    	else return null;
+    }
 }
-
