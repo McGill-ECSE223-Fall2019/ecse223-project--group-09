@@ -396,6 +396,42 @@ public class CucumberStepDefinitions {
 		//check if the fame is running
 	}
 	
+	// ***** ValidatePosition.feature *****
+
+	@Given("A game position is supplied with pawn coordinate {int}:{int}")
+	public void gamePositionIsSuppliedWithPawn(int row, int column) {
+		// TODO:
+	}
+
+	@When("Validation of the position is initiated")
+	public void validationOfThePositionIsInitiated() {
+		// TODO:
+	}
+
+	@Then("The position shall be {string}")
+	public void positionShallBe(String result) {
+		// TODO:
+	}
+
+	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
+	public void gamePositionIsSuppliedWithWall(int row, int column, String orientation) {
+		// TODO:
+	}
+
+	@Given("The following walls exist:")
+	public void followingWallsExist(io.cucumber.datatable.DataTable dataTable) {
+		// TODO:
+	}
+
+	@Then("The position shall be valid")
+	public void positionShallBeValid() {
+		// TODO:
+	}
+
+	@Then("The position shall be invalid")
+	public void positionShallBeInvalid() {
+		// TODO:
+	}
 	
 	// ***********************************************
 	// Clean up
