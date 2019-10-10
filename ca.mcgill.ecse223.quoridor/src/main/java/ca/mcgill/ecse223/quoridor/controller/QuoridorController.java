@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.sql.Time;
 import java.util.List;
 
-import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
-
-
 /**
  * This is the controller class for the Quoridor application
  * 

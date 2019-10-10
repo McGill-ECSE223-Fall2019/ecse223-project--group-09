@@ -9,8 +9,6 @@ package ca.mcgill.ecse223.quoridor.controller;
  */
 
 public final class TOWall {
-	
-	public enum Orientation{HORIZONTAL, VERTICAL};
 
     private Orientation orientation;
     private int row;
