@@ -252,7 +252,7 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-	@Then("File with {string} is updated in the filesystem")
+	@Then("File with {string} shall be updated in the filesystem")
 	public void fileIsUpdatedInTheFilesystem(String filename) {
 		// Just a sanity check
 		Assert.assertEquals(filename, this.fileName);
@@ -313,7 +313,7 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(col, player.getColumn());
 	}
 
-	@And("{string} shall have a {string} wall at {int}:{int}")
+	@And("{string} shall have a {word} wall at {int}:{int}")
 	public void playerHasOrientedWallAtRowCol(String playerName, String orientation, int row, int col) {
 		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(playerName);
 		Assert.assertNotNull(walls);
