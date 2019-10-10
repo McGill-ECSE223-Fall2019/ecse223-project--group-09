@@ -191,18 +191,18 @@ public class CucumberStepDefinitions {
 	private String fileName;
 	private boolean fileOverwriteFlag;
 
-	@Given("No file {word} exists in the filesystem")
+	@Given("No file {string} exists in the filesystem")
 	public void noFileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertFalse(file.exists());
 	}
 
-	@When("The user initiates to save the game with name {word}")
+	@When("The user initiates to save the game with name {string}")
 	public void userInitiatesToSaveTheGameWithName(String filename) {
 		this.fileName = filename;
 	}
 
-	@Then("A file with {word} is created in the filesystem")
+	@Then("A file with {string} shall be created in the filesystem")
 	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
 		try {
 			// Passing false as argument since file does not exist:
@@ -217,7 +217,7 @@ public class CucumberStepDefinitions {
 		Assert.assertTrue(file.exists());
 	}
 
-	@Given("File {word} exists in the filesystem")
+	@Given("File {string} exists in the filesystem")
 	public void fileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertTrue(file.exists());
@@ -233,7 +233,7 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-	@Then("File with {word} is updated in the filesystem")
+	@Then("File with {string} is updated in the filesystem")
 	public void fileIsUpdatedInTheFilesystem(String filename) {
 		// Just a sanity check
 		Assert.assertEquals(filename, this.fileName);
@@ -252,7 +252,7 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-	@Then("File {word} is not changed in the filesystem")
+	@Then("File {string} shall not be changed in the filesystem")
 	public void fileIsNotChangedInTheFilesystem(String filename) {
 		// Just a sanity check
 		Assert.assertEquals(filename, this.fileName);
