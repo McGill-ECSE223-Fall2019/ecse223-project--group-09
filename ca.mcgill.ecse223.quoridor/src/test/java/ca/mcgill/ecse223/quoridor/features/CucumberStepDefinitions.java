@@ -418,11 +418,6 @@ public class CucumberStepDefinitions {
 		// TODO:
 	}
 
-	@Given("The following walls exist:")
-	public void followingWallsExist(io.cucumber.datatable.DataTable dataTable) {
-		// TODO:
-	}
-
 	@Then("The position shall be valid")
 	public void positionShallBeValid() {
 		// TODO:
