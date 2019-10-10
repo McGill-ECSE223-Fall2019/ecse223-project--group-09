@@ -265,7 +265,7 @@ public class CucumberStepDefinitions {
 
 	private boolean positionValidFlag;
 
-	@When("I initiate to load a saved game {word}")
+	@When("I initiate to load a saved game {string}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
 			this.positionValidFlag = QuoridorController.loadPosition(filename);
@@ -279,14 +279,14 @@ public class CucumberStepDefinitions {
 		Assert.assertTrue(this.positionValidFlag);
 	}
 
-	@Then("It is {word}'s turn")
-	public void itIsPlayersTurn(String playerName) {
+	@Then("It shall be {string}'s turn")
+	public void itShallBePlayersTurn(String playerName) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
 		Assert.assertEquals(playerName, player.getName());
 	}
 
-	@And("{word} is at {int}:{int}")
+	@And("{string} shall be at {int}:{int}")
 	public void playerIsAtRowCol(String playerName, int row, int col) {
 		final TOPlayer player = QuoridorController.getPlayerByName(playerName);
 		Assert.assertNotNull(player);
@@ -294,7 +294,7 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(col, player.getColumn());
 	}
 
-	@And("{word} has a {word} wall at {int}:{int}")
+	@And("{string} shall have a {string} wall at {int}:{int}")
 	public void playerHasOrientedWallAtRowCol(String playerName, String orientation, int row, int col) {
 		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(playerName);
 		Assert.assertNotNull(walls);
@@ -311,7 +311,7 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(1, matches);
 	}
 
-	@And("Both players have {int} in their stacks")
+	@And("Both players shall have {int} in their stacks")
 	public void bothPlayersHaveWallCountInTheirStacks(int remainingWalls) {
 		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("black"));
 		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("white"));
@@ -322,15 +322,9 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(this.positionValidFlag);
 	}
 	
-	@Then("The load returns {word}")
-	public void loadReturns(String result) {
-		if ("success".equals(result)) {
-			Assert.assertTrue(this.positionValidFlag);
-		} else if ("error".equals(result)) {
-			Assert.assertFalse(this.positionValidFlag);
-		} else {
-			Assert.fail("Unknown result: " + result);
-		}
+	@Then("The load shall return an error")
+	public void loadReturns() {
+		Assert.assertFalse(this.positionValidFlag);
 	}
 	
 	// ***** GrabWall.feature *****
