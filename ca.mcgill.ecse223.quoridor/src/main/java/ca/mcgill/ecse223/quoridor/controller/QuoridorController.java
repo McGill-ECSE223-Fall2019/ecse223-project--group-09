@@ -1,6 +1,7 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
 import java.lang.UnsupportedOperationException;
+
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.*;
 import java.io.File;
@@ -12,12 +13,13 @@ import java.io.IOException;
 import java.sql.Time;
 import java.util.List;
 
-
 /**
  * This is the controller class for the Quoridor application
  * 
  * @author GROUP-9 (Barry Chen, Mohamed Mohamed, Ada Andrei, Paul Teng, Alixe Delabrousse)
  * @version 04-10-2019
+ * 
+ * 
  */
 
 
@@ -55,18 +57,43 @@ public class QuoridorController {
 	}
 	
 	/**
+ 	* 
+ 	* @author alixe delabrousse 
+	* 
+ 	* @param player
+ 	* @param direction
+ 	* 
+	* This method allows the player to grab one if its walls from its remaining walls pile.
+ 	* This method enables the use of RotateWall, DropWall, and MoveWall.
+ 	* 
+ 	* 
+ 	*/
+	
+	public void grabWall(Player player, Direction direction) {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	
+	/**
 	 * 
-	 * @author alixe delabrousse 
+	 * @author alixe delabrousse
 	 * 
-	 * @param player
-	 * @param direction
+	 * @param wall
+	 * @param destination
 	 * 
-	 * This method allows the player to grab one if its walls from its remaining walls pile.
-	 * This method enables the use of RotateWall, DropWall, and MoveWall.
+	 * This methods is enabled by the method grabWall.
+	 * This methods allows the user to move their wall candidate around on the board.
 	 * 
 	 * 
 	 */
-
+	
+	public void moveWall(Wall wall, GamePosition destination) {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	
 	/**
 	 * This method checks if the given username already exists
 	 * 
@@ -80,11 +107,6 @@ public class QuoridorController {
 		throw new UnsupportedOperationException();
 		
 	}
-
-	public void grabWall() {
-		
-	}
-	
 
 	/**
 	 * This method allows the user to create a new username 
@@ -130,42 +152,6 @@ public class QuoridorController {
 		if (true) {
 			throw new UnsupportedOperationException();
 		}
-	}
-
-	/**
- 	* 
- 	* @author alixe delabrousse 
-	* 
- 	* @param player
- 	* @param direction
- 	* 
-	* This method allows the player to grab one if its walls from its remaining walls pile.
- 	* This method enables the use of RotateWall, DropWall, and MoveWall.
- 	* 
- 	* 
- 	*/
-	
-	public void grabWall(Player player, Direction direction) {
-		throw new UnsupportedOperationException();
-		
-	}
-	
-	
-	/**
-	 * 
-	 * @author alixe delabrousse
-	 * 
-	 * @param wall
-	 * @param destination
-	 * 
-	 * This methods allows you to place your wall on the board.
-	 * 
-	 * 
-	 */
-	
-	public void moveWall(Wall wall, GamePosition destination) {
-		throw new UnsupportedOperationException();
-		
 	}
 	
 	/**
@@ -362,6 +348,8 @@ public class QuoridorController {
 
 	/**
 	 * 
+	 * @author alixe delabrousse
+	 * 
 	 * @return TOPlayer; 
 	 */
 
@@ -371,6 +359,7 @@ public class QuoridorController {
 
 	/**
 	 * 
+	 * @author alixe delabrousse
 	 * 
 	 * @return TOPlayer;
 	 */

@@ -117,6 +117,13 @@ public class CucumberStepDefinitions {
 		// GUI-related feature -- TODO for later
 	}
 	
+	@Given("^A new game is initializing$")
+	public void aNewGameIsInitializing() throws Throwable {
+		initQuoridorAndBoard();
+		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
+		new Game(GameStatus.Initializing, MoveMode.PlayerMove, players.get(0), players.get(1), QuoridorApplication.getQuoridor());
+	}
+
 	// ***********************************************
 	// Scenario and scenario outline step definitions
 	// ***********************************************
@@ -128,11 +135,6 @@ public class CucumberStepDefinitions {
 	 * are implemented
 	 * 
 	 */
-	
-	@Given("A new game is initializing") //only once - correct if not
-	public void newGameInitializing() {
-		quoridor = QuoridorApplication.getQuoridor();
-	}
 
 	// ProvideOrSelectUserName.feature (Ada)
 	// Scenario: Select existing user name
@@ -353,7 +355,15 @@ public class CucumberStepDefinitions {
 		throw new PendingException();
 	}
 	
-	@Then("I have a wall in my hand over the board")
+	@Then("A wall move candidate shall be created at initial position")
+	public void createWallMoveCandidate() {
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
+		QuoridorController.getCurrentGrabbedWall().createWallCandidate();
+		throw new PendingException();
+		
+	}
+	
+	@And("I have a wall in my hand over the board")
 	public void wallOverBoard() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);	
 	}
@@ -365,24 +375,16 @@ public class CucumberStepDefinitions {
 		
 	}
 	
-	@And("A wall move candidate shall be created at initial position")
-	public void createWallMoveCandidate() {
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
-		QuoridorController.getCurrentGrabbedWall().createWallCandidate();
-		throw new PendingException();
-		
-	}
+	
 		
 		//No more walls in stock
 	@Given("I have no more walls on stock")
-	public boolean noMoreWallsOnStock() {
+	public void noMoreWallsOnStock() {
 		Assert.assertNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
-		return true;
 	}
 	
 	@Then("I should be notified that I have no more walls")
 	public void notifNoMoreWalls() {
-		Assert.assertTrue(noMoreWallsOnStock());
 		throw new PendingException();
 		
 	}
@@ -394,18 +396,18 @@ public class CucumberStepDefinitions {
 	
 	// ***** MoveWall.feature *****
 	
-	@Given("A wall move candidate exists with {word} at position ({int}, {int})")
+	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
 	public void wallCandidateExists() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().getWallCandidate() != null);
 	}
 	
+	@And("The wall candidate is not at the \"<side>\" edge of the board")
+	public void wallCandidateNotOnBorder() {
+		
+	}
+	
 	
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
-	
-	@Given("The game is running")
-	public void gameisRunning() {
-		//check if the fame is running
-	}
 	
 	// ***** ValidatePosition.feature *****
 
@@ -465,6 +467,11 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(this.positionValidityFlag);
 	}
 	
+	// ***********************************************
+	// Clean up
+	// ***********************************************
+
+
 	// ***********************************************
 	// Clean up
 	// ***********************************************
@@ -571,5 +578,4 @@ public class CucumberStepDefinitions {
 
 		game.setCurrentPosition(gamePosition);
 	}
-
 }

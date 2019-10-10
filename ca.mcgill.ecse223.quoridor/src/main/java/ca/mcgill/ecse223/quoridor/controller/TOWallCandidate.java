@@ -1,8 +1,15 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
-import ca.mcgill.ecse223.quoridor.controller.Orientation;
-
 public class TOWallCandidate {
+	
+	/**
+	 * This is the Wall Candidate class. The constructor creates a 
+	 * 
+	 * 
+	 * @author Alixe Delabrousse
+	 * 
+	 * 
+	 */
 
     private Orientation orientation;
     private int row;
