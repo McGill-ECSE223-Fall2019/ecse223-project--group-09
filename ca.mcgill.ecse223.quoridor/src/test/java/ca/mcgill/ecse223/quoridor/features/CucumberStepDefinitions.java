@@ -194,8 +194,6 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(0, time2.getHours());
 		Assert.assertEquals(mins, time2.getMinutes());
 		Assert.assertEquals(secs, time2.getSeconds());
-		mins = getTimeRemaining.getMins(); 
-		secs = getTimeRemaining.getSecs(); 
 
 	}
 
