@@ -183,7 +183,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public void rotateWall(Wall wall,) {
+	public void rotateWall(Wall wall) {
 		
 	}
 	
@@ -206,14 +206,39 @@ public class QuoridorController {
 	 * @author Group 9
 	 * 
 	 * @param move
-	 * 
+	 * @return boolean
 	 * 
 	 * 
 	 */
 	
-	public void validatePosition(Move move) {
+	public boolean validatePawnPosition(Move StepMove) {
 		throw new UnsupportedOperationException();
 		
+	}
+	
+	/**
+	 * @author Group 9
+	 * 
+	 * @param move
+	 * @return boolean
+	 * 
+	 * 
+	 */
+	
+	public boolean validateWallPosition(Move WallMove) {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	/**
+	 * @author Group 9
+	 * 
+	 * @return boolean
+	 * 
+	 * 
+	 */
+	public static void switchCurrentPlayer() {
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -347,6 +372,7 @@ public class QuoridorController {
 	public static TOWall getCurrentGrabbedWall() {
 		throw new UnsupportedOperationException("Query method get-current-grabbed-wall is not implemented yet");
 	}
-
+	
+	
 }// end QuoridorController
 

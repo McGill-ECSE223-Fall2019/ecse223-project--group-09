@@ -50,6 +50,10 @@ public class CucumberStepDefinitions {
 		initQuoridorAndBoard();
 		createUsersAndPlayers("user1", "user2");
 	}
+	
+	@When("^A new game is initiating")
+	
+	@And ("")
 
 	@Given("^The game is running$")
 	public void theGameIsRunning() {
