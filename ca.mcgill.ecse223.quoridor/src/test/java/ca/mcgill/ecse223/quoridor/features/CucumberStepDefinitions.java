@@ -396,7 +396,7 @@ public class CucumberStepDefinitions {
 	
 	// ***** MoveWall.feature *****
 	
-	@Given("A wall move candidate exists with {string} at position ({int}, {int})")
+	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
 	public void wallCandidateExists() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().getWallCandidate() != null);
 	}
@@ -408,11 +408,6 @@ public class CucumberStepDefinitions {
 	
 	
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
-	
-	@Given("The game is running")
-	public void gameisRunning() {
-		//check if the fame is running
-	}
 	
 	// ***** ValidatePosition.feature *****
 
