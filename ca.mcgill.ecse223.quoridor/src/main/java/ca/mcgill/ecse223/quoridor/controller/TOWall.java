@@ -1,3 +1,4 @@
+
 package ca.mcgill.ecse223.quoridor.controller;
 
 /**
@@ -59,5 +60,4 @@ public final class TOWall {
     	if (wallCandidate!=null) return this.wallCandidate;
     	else return null;
     }
-    
 }

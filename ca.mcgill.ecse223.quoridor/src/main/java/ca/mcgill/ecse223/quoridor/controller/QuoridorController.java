@@ -66,6 +66,7 @@ public class QuoridorController {
 	 * 
 	 * 
 	 */
+
 	/**
 	 * This method checks if the given username already exists
 	 * 
@@ -84,20 +85,6 @@ public class QuoridorController {
 		
 	}
 	
-	/**
-	 * This method checks if the given username already exists
-	 * 
-	 * @param String user;  
-	 * @return boolean user; 
-	 * 
-	 * @author Ada Andrei
-	 */
-
-	public static boolean usernameExists(boolean user) throws UnsupportedOperationException{
-		throw new UnsupportedOperationException();
-		
-	}
-
 
 	/**
 	 * This method allows the user to create a new username 
@@ -123,7 +110,7 @@ public class QuoridorController {
 	 * @author Ada Andrei
 	 */
 
-	public static void selectUsername(int userIndex) throws UnsupportedOperationException{
+	public static void createUsername(String user) throws UnsupportedOperationException{
 		if (true) {
 			throw new UnsupportedOperationException();
 		}
