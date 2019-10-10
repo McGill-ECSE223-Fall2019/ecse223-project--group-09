@@ -10,6 +10,7 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
@@ -361,26 +362,37 @@ public class CucumberStepDefinitions {
 	@And("A wall move candidate shall be created at initial position")
 	public void createWallMoveCandidate() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
+		QuoridorController.getCurrentGrabbedWall().createWallCandidate();
 		throw new PendingException();
 		
 	}
 		
 		//No more walls in stock
 	@Given("I have no more walls on stock")
-	public void noMoreWallsOnStock() {
+	public boolean noMoreWallsOnStock() {
 		Assert.assertNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
+		return true;
 	}
 	
 	@Then("I should be notified that I have no more walls")
 	public void notifNoMoreWalls() {
+		Assert.assertTrue(noMoreWallsOnStock());
+		throw new PendingException();
 		
 	}
 	
 	@But("I do not have a wall in my hand ")
 	public void noWallInHand() {
-		
+		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
 	}
-
+	
+	// ***** MoveWall.feature *****
+	
+	@Given("A wall move candidate exists with {word} at position ({int}, {int})")
+	public void wallCandidateExists() {
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().getWallCandidate() != null);
+	}
+	
 	
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
 	
