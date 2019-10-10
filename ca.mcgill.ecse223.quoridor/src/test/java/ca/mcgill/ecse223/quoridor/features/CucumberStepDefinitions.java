@@ -210,17 +210,29 @@ public class CucumberStepDefinitions {
 	private String fileName;
 	private boolean fileOverwriteFlag;
 
+	/**
+	 * @param filename Name of file
+	 * @author Paul Teng (260862906)
+	 */
 	@Given("No file {string} exists in the filesystem")
 	public void noFileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertFalse(file.exists());
 	}
 
+	/**
+	 * @param filename Name of file
+	 * @author Paul Teng (260862906)
+	 */
 	@When("The user initiates to save the game with name {string}")
 	public void userInitiatesToSaveTheGameWithName(String filename) {
 		this.fileName = filename;
 	}
 
+	/**
+	 * @param filename Name of file
+	 * @author Paul Teng (260862906)
+	 */
 	@Then("A file with {string} shall be created in the filesystem")
 	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
 		try {
@@ -236,12 +248,19 @@ public class CucumberStepDefinitions {
 		Assert.assertTrue(file.exists());
 	}
 
+	/**
+	 * @param filename Name of file
+	 * @author Paul Teng (260862906)
+	 */
 	@Given("File {string} exists in the filesystem")
 	public void fileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
 		Assert.assertTrue(file.exists());
 	}
 
+	/**
+	 * @author Paul Teng (260862906)
+	 */
 	@And("The user confirms to overwrite existing file")
 	public void userConfirmsToOverwriteExistingFile() {
 		try {
@@ -252,6 +271,11 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
+
+	/**
+	 * @param filename Name of file
+	 * @author Paul Teng (260862906)
+	 */
 	@Then("File with {string} shall be updated in the filesystem")
 	public void fileIsUpdatedInTheFilesystem(String filename) {
 		// Just a sanity check
@@ -261,6 +285,9 @@ public class CucumberStepDefinitions {
 		Assert.assertTrue(this.fileOverwriteFlag);
 	}
 	
+	/**
+	 * @author Paul Teng (260862906)
+	 */
 	@And("The user cancels to overwrite existing file")
 	public void userCancelsToOverwriteExistingFile() {
 		try {
@@ -271,6 +298,10 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
+	/**
+	 * @param filename Name of file
+	 * @author Paul Teng (260862906)
+	 */
 	@Then("File {string} shall not be changed in the filesystem")
 	public void fileIsNotChangedInTheFilesystem(String filename) {
 		// Just a sanity check
@@ -284,6 +315,10 @@ public class CucumberStepDefinitions {
 
 	private boolean positionValidFlag;
 
+	/**
+	 * @param filename Name of file
+	 * @author Paul Teng (260862906)
+	 */
 	@When("I initiate to load a saved game {string}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
@@ -293,11 +328,18 @@ public class CucumberStepDefinitions {
 		}
 	}
 
+	/**
+	 * @author Paul Teng (260862906)
+	 */
 	@And("The position to load is valid")
 	public void positionToLoadIsValid() {
 		Assert.assertTrue(this.positionValidFlag);
 	}
 
+	/**
+	 * @param playerName Name of player
+	 * @author Paul Teng (260862906)
+	 */
 	@Then("It shall be {string}'s turn")
 	public void itShallBePlayersTurn(String playerName) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
@@ -305,6 +347,12 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(playerName, player.getName());
 	}
 
+	/**
+	 * @param playerName Name of player
+	 * @param row Row of player's pawn piece (pawn coordinates)
+	 * @param col Column of player's pawn piece (pawn coordinates)
+	 * @author Paul Teng (260862906)
+	 */
 	@And("{string} shall be at {int}:{int}")
 	public void playerIsAtRowCol(String playerName, int row, int col) {
 		final TOPlayer player = QuoridorController.getPlayerByName(playerName);
@@ -313,6 +361,13 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(col, player.getColumn());
 	}
 
+	/**
+	 * @param playerName Name of player
+	 * @param orientation Orientation of player's wall piece
+	 * @param row Row of player's wall piece (wall coordinates)
+	 * @param col Column of player's wall piece (wall coordinates)
+	 * @author Paul Teng (260862906)
+	 */
 	@And("{string} shall have a {word} wall at {int}:{int}")
 	public void playerHasOrientedWallAtRowCol(String playerName, String orientation, int row, int col) {
 		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(playerName);
@@ -330,17 +385,27 @@ public class CucumberStepDefinitions {
 		Assert.assertEquals(1, matches);
 	}
 
+	/**
+	 * @param remainingWalls the number of walls remaining
+	 * @author Paul Teng (260862906)
+	 */
 	@And("Both players shall have {int} in their stacks")
 	public void bothPlayersHaveWallCountInTheirStacks(int remainingWalls) {
 		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("black"));
 		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("white"));
 	}
 
+	/**
+	 * @author Paul Teng (260862906)
+	 */
 	@And("The position to load is invalid")
 	public void positionToLoadIsInvalid() {
 		Assert.assertFalse(this.positionValidFlag);
 	}
 	
+	/**
+	 * @author Paul Teng (260862906)
+	 */
 	@Then("The load shall return an error")
 	public void loadReturns() {
 		Assert.assertFalse(this.positionValidFlag);
