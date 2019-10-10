@@ -171,7 +171,7 @@ public class QuoridorController {
 	/**
 	 * @author Group 9
 	 * 
-	 * @param move
+	 * @param StepMove
 	 * @return boolean
 	 * 
 	 * 
@@ -185,7 +185,7 @@ public class QuoridorController {
 	/**
 	 * @author Group 9
 	 * 
-	 * @param move
+	 * @param WallMove
 	 * @return boolean
 	 * 
 	 * 
@@ -204,6 +204,34 @@ public class QuoridorController {
 	 * 
 	 */
 	public static void switchCurrentPlayer() {
+		throw new UnsupportedOperationException();
+
+	}
+
+	/**
+	 * Validates a placement of a pawn
+	 *
+	 * @param row Row of pawn
+	 * @param column Column of pawn
+	 * @returns true if position is valid, false otherwise
+	 *
+	 * @author Group 9
+	 */
+	public static boolean validatePawnPlacement(int row, int column) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Validates a placement of a wall
+	 *
+	 * @param row Row of wall
+	 * @param column Column of wall
+	 * @param orientation Orientation of wall
+	 * @returns true if position is valid, false otherwise
+	 *
+	 * @author Group 9
+	 */
+	public static boolean validateWallPlacement(int row, int column, Orientation orientation) {
 		throw new UnsupportedOperationException();
 	}
 
