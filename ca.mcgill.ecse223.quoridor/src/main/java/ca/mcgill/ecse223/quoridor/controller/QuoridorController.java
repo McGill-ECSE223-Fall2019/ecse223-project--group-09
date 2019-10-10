@@ -1,6 +1,7 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
 import java.lang.UnsupportedOperationException;
+
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.*;
 import java.io.File;
@@ -11,6 +12,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Time;
 import java.util.List;
+
+import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
 
 
 /**
@@ -141,33 +144,84 @@ public class QuoridorController {
 	/**
 	 * This sets the total thinking time (minutes and seconds) enforced for both players.
 	 * 
-	 * @param Time remainingTime; 
+	 * @param int mins;
+	 * @param int secs; 
 	 * @return void;
 	 * 
 	 * @author Ada Andrei
 	 */
 	
-	public static void setTime(Time remainingTime) throws UnsupportedOperationException {
+	public static void setTime(int mins, int secs) throws UnsupportedOperationException {
 		if (true) {
 			throw new UnsupportedOperationException();
 		}
 	}
-
-
-
 	
 	/**
 	 * @author Group 9
 	 * 
-	 * @param move
-	 * 
+	 * @param StepMove
+	 * @return boolean
 	 * 
 	 * 
 	 */
 	
-	public void validatePosition(Move move) {
+	public boolean validatePawnPosition(Move StepMove) {
 		throw new UnsupportedOperationException();
 		
+	}
+	
+	/**
+	 * @author Group 9
+	 * 
+	 * @param WallMove
+	 * @return boolean
+	 * 
+	 * 
+	 */
+	
+	public boolean validateWallPosition(Move WallMove) {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	/**
+	 * @author Group 9
+	 * 
+	 * @return boolean
+	 * 
+	 * 
+	 */
+	public static void switchCurrentPlayer() {
+		throw new UnsupportedOperationException();
+
+	}
+
+	/**
+	 * Validates a placement of a pawn
+	 *
+	 * @param row Row of pawn
+	 * @param column Column of pawn
+	 * @returns true if position is valid, false otherwise
+	 *
+	 * @author Group 9
+	 */
+	public static boolean validatePawnPlacement(int row, int column) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * Validates a placement of a wall
+	 *
+	 * @param row Row of wall
+	 * @param column Column of wall
+	 * @param orientation Orientation of wall
+	 * @returns true if position is valid, false otherwise
+	 *
+	 * @author Group 9
+	 */
+	public static boolean validateWallPlacement(int row, int column, Orientation orientation) {
+		throw new UnsupportedOperationException();
 	}
 
 	/**
@@ -295,5 +349,25 @@ public class QuoridorController {
 		throw new UnsupportedOperationException("Query method get-current-grabbed-wall is not implemented yet");
 	}
 
+	/**
+	 * 
+	 * @author alixe delabrousse
+	 * 
+	 * @return TOPlayer; 
+	 */
+
+	public static TOPlayer getWhitePlayer(){
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * 
+	 * @author alixe delabrousse
+	 * 
+	 * @return TOPlayer;
+	 */
+	public static TOPlayer getBlackPlayer()	{
+		throw new UnsupportedOperationException();
+	}
 }// end QuoridorController
 
