@@ -582,6 +582,42 @@ public class CucumberStepDefinitions {
 	public void positionShallBeInvalid() {
 		Assert.assertFalse(this.positionValidityFlag);
 	}
+
+	// ***** SwitchCurrentPlayer.feature *****
+
+	@Given("The player to move is {string}")
+	public void playerToMoveIs(String playerName) {
+		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+		Assert.assertNotNull(player);
+		Assert.assertEquals(playerName, player.getName());
+	}
+
+	@And("The clock of {string} is running")
+	public void clockOfPlayerIsRunning(String playerName) {
+		throw new PendingException();
+	}
+
+	@And("The clock of {string} is stopped")
+	public void clockOfPlayerIsStopped(String playerName) {
+		throw new PendingException();
+	}
+
+	@When("Player {string} completes his move")
+	public void playerCompletesHisMove(String playerName) {
+		throw new PendingException();
+	}
+
+	@Then("The user interface shall be showing it is {string} turn")
+	public void userInterfaceShallBeShowingItIsOpponentsTurn(String opponentName) {
+		throw new PendingException();
+	}
+
+	@And("The next player to move shall be {string}")
+	public void nextPlayerToMoveShallBe(String playerName) {
+		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+		Assert.assertNotNull(player);
+		Assert.assertEquals(playerName, player.getName());
+	}
 	
 	// ***********************************************
 	// Clean up
