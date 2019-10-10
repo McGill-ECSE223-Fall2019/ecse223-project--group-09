@@ -348,7 +348,15 @@ public class CucumberStepDefinitions {
 		throw new PendingException();
 	}
 	
-	@Then("I have a wall in my hand over the board")
+	@Then("A wall move candidate shall be created at initial position")
+	public void createWallMoveCandidate() {
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
+		QuoridorController.getCurrentGrabbedWall().createWallCandidate();
+		throw new PendingException();
+		
+	}
+	
+	@And("I have a wall in my hand over the board")
 	public void wallOverBoard() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);	
 	}
@@ -360,24 +368,16 @@ public class CucumberStepDefinitions {
 		
 	}
 	
-	@And("A wall move candidate shall be created at initial position")
-	public void createWallMoveCandidate() {
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
-		QuoridorController.getCurrentGrabbedWall().createWallCandidate();
-		throw new PendingException();
-		
-	}
+	
 		
 		//No more walls in stock
 	@Given("I have no more walls on stock")
-	public boolean noMoreWallsOnStock() {
+	public void noMoreWallsOnStock() {
 		Assert.assertNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
-		return true;
 	}
 	
 	@Then("I should be notified that I have no more walls")
 	public void notifNoMoreWalls() {
-		Assert.assertTrue(noMoreWallsOnStock());
 		throw new PendingException();
 		
 	}
@@ -389,9 +389,14 @@ public class CucumberStepDefinitions {
 	
 	// ***** MoveWall.feature *****
 	
-	@Given("A wall move candidate exists with {word} at position ({int}, {int})")
+	@Given("A wall move candidate exists with {string} at position ({int}, {int})")
 	public void wallCandidateExists() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().getWallCandidate() != null);
+	}
+	
+	@And("The wall candidate is not at the \"<side>\" edge of the board")
+	public void wallCandidateNotOnBorder() {
+		
 	}
 	
 	
