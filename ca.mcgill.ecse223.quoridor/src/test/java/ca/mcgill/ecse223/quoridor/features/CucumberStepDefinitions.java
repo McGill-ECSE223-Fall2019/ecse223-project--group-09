@@ -135,23 +135,25 @@ public class CucumberStepDefinitions {
 	// ProvideOrSelectUserName.feature (Ada)
 	// Scenario: Select existing user name
 
-	@Given("Next player to set user name is <color>")
+	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIsColor(String color) {
+		throw new PendingException();
 	}
 
-	@And("There is existing user <username>")
+	@And("There is existing user {string}")
 	public void existingUser(boolean user) {
 		Assert.assertTrue(user); 
 	}
 
-	@When("The player selects existing <username>") 
+	@When("The player selects existing {string}") 
 	public void playerSelectsExistingUsername(String user) {
 		QuoridorController.selectUsername(user);
 	}
 
 
-	@Then("The name of player <color> in the new game shall be <username>")
+	@Then("The name of player {string} in the new game shall be <username>")
 	public void nameOfPlayerInNewGameShallBeUsername() {
+		throw new PendingException();
 	}
 
 	//Scenario: Create new user name
@@ -161,28 +163,38 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(user); 
 	}
 	
-	@When("The player provides new user name: <username>")
+	@When("The player provides new user name: {string}")
 	public void playerProvidesNewUserName(String user) {
 		QuoridorController.createUsername(user);		
 	}
 
 	//Scenario: User name already exists
 
-	@Then("The player shall be warned that <username> already exists") 
+	@Then("The player shall be warned that {string} already exists") 
 	public void playerShallBeWarnedThatUsernameAlreadyExists() {
 		throw new PendingException(); 
 	}
 	
 	// SetTotalThinkingTime.feature (Ada)
 
-	@When("<min>:<sec> is set as the thinking time")
-	public void setAsThinkingTime(Time remainingTime) {
-		QuoridorController.setTime(remainingTime); 
+	@When("{int}:{int} is set as the thinking time")
+	public void setAsThinkingTime(int mins, int secs) {
+		QuoridorController.setTime(mins, secs); 
 	}
 
-	@Then("Both players shall have <min>:<sec> remaining time left")
-	public void bothPlayersShallHaveRemainingTimeLeft(Time remainingTime) {
-		Assert.assertEquals(expected,actual);
+	@Then("Both players shall have {int}:{int} remaining time left")
+	public void bothPlayersShallHaveRemainingTimeLeft(int mins, int secs) {
+		Time time1 = QuoridorController.getBlackPlayer().getTimeRemaining();
+		Time time2 = QuoridorController.getWhitePlayer().getTimeRemaining();
+		Assert.assertEquals(0, time1.getHours());
+		Assert.assertEquals(mins, time1.getMinutes());
+		Assert.assertEquals(secs, time1.getSeconds());
+		Assert.assertEquals(0, time2.getHours());
+		Assert.assertEquals(mins, time2.getMinutes());
+		Assert.assertEquals(secs, time2.getSeconds());
+		mins = getTimeRemaining.getMins(); 
+		secs = getTimeRemaining.getSecs(); 
+
 	}
 
 	// ***** SavePosition.feature *****

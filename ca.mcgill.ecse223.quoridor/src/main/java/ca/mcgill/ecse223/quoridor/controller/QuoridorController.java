@@ -119,18 +119,18 @@ public class QuoridorController {
 	/**
 	 * This sets the total thinking time (minutes and seconds) enforced for both players.
 	 * 
-	 * @param Time remainingTime; 
+	 * @param int mins;
+	 * @param int secs; 
 	 * @return void;
 	 * 
 	 * @author Ada Andrei
 	 */
 	
-	public static void setTime(Time remainingTime) throws UnsupportedOperationException {
+	public static void setTime(int mins, int secs) throws UnsupportedOperationException {
 		if (true) {
 			throw new UnsupportedOperationException();
 		}
 	}
-
 
 	/**
  	* 
@@ -307,5 +307,22 @@ public class QuoridorController {
 		throw new UnsupportedOperationException("Query method get-current-grabbed-wall is not implemented yet");
 	}
 
+	/**
+	 * 
+	 * @return TOPlayer; 
+	 */
+
+	public static TOPlayer getWhitePlayer(){
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * 
+	 * 
+	 * @return TOPlayer;
+	 */
+	public static TOPlayer getBlackPlayer()	{
+		throw new UnsupportedOperationException();
+	}
 }// end QuoridorController
 
