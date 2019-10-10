@@ -110,11 +110,17 @@ public class CucumberStepDefinitions {
 	@And("I do not have a wall in my hand")
 	public void iDoNotHaveAWallInMyHand() {
 		// GUI-related feature -- TODO for later
+		throw new PendingException();
+
+		// Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
 	}
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
 		// GUI-related feature -- TODO for later
+		throw new PendingException();
+
+		// Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
 	}
 	
 	@Given("^A new game is initializing$")
@@ -363,11 +369,6 @@ public class CucumberStepDefinitions {
 		
 	}
 	
-	@And("I have a wall in my hand over the board")
-	public void wallOverBoard() {
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);	
-	}
-	
 	@And("The wall in my hand should disappear from my stock")
 	public void removeWallFromStock() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
@@ -375,9 +376,7 @@ public class CucumberStepDefinitions {
 		
 	}
 	
-	
-		
-		//No more walls in stock
+	//No more walls in stock
 	@Given("I have no more walls on stock")
 	public void noMoreWallsOnStock() {
 		Assert.assertNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
@@ -387,11 +386,6 @@ public class CucumberStepDefinitions {
 	public void notifNoMoreWalls() {
 		throw new PendingException();
 		
-	}
-	
-	@But("I do not have a wall in my hand ")
-	public void noWallInHand() {
-		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
 	}
 	
 	// ***** MoveWall.feature *****
