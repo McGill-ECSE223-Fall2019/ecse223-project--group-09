@@ -604,7 +604,7 @@ public class CucumberStepDefinitions {
 
 	@When("Player {string} completes his move")
 	public void playerCompletesHisMove(String playerName) {
-		throw new PendingException();
+		QuoridorController.switchCurrentPlayer();
 	}
 
 	@Then("The user interface shall be showing it is {string} turn")
