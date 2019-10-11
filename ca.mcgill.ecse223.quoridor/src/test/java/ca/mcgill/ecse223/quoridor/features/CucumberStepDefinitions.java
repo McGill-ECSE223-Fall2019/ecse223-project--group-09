@@ -509,6 +509,11 @@ public class CucumberStepDefinitions {
 
 	private boolean positionValidityFlag;
 
+	/**
+	 * @param row Row in pawn coordinates
+	 * @param column Column in pawn coordinates
+	 * @author Group 9
+	 */
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void gamePositionIsSuppliedWithPawn(int row, int column) {
 		this.row = row;
@@ -517,6 +522,9 @@ public class CucumberStepDefinitions {
 		this.orientation = null;
 	}
 
+	/**
+	 * @author Group 9
+	 */
 	@When("Validation of the position is initiated")
 	public void validationOfThePositionIsInitiated() {
 		if (this.orientation == null) {
@@ -528,6 +536,10 @@ public class CucumberStepDefinitions {
 		}
 	}
 
+	/**
+	 * @param result Either "ok" or "error"
+	 * @author Group 9
+	 */
 	@Then("The position shall be {string}")
 	public void positionShallBe(String result) {
 		switch (result) {
@@ -542,6 +554,12 @@ public class CucumberStepDefinitions {
 		}
 	}
 
+	/**
+	 * @param row Row in wall coordinates
+	 * @param column Column in wall coordinates
+	 * @param orientation either "horizontal" or "vertical"
+	 * @author Group 9
+	 */
 	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
 	public void gamePositionIsSuppliedWithWall(int row, int column, String orientation) {
 		this.row = row;
@@ -549,11 +567,17 @@ public class CucumberStepDefinitions {
 		this.orientation = Orientation.valueOf(orientation.toUpperCase());
 	}
 
+	/**
+	 * @author Group 9
+	 */
 	@Then("The position shall be valid")
 	public void positionShallBeValid() {
 		Assert.assertTrue(this.positionValidityFlag);
 	}
 
+	/**
+	 * @author Group 9
+	 */
 	@Then("The position shall be invalid")
 	public void positionShallBeInvalid() {
 		Assert.assertFalse(this.positionValidityFlag);
