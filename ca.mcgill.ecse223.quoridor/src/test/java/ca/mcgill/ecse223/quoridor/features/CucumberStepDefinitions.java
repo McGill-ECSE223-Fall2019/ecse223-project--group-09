@@ -142,56 +142,89 @@ public class CucumberStepDefinitions {
 	 * 
 	 */
 
-	// ProvideOrSelectUserName.feature (Ada)
-	// Scenario: Select existing user name
+	// ***** ProvideOrSelectUserName.feature *****
+
+	/**
+	*@param String color;
+	*@author Ada Andrei
+	*/
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIsColor(String color) {
 		throw new PendingException();
 	}
 
+	/**
+	*@param boolean user; 
+	*@author Ada Andrei
+	*/
+
 	@And("There is existing user {string}")
 	public void existingUser(boolean user) {
 		Assert.assertTrue(user); 
 	}
 
+	/**
+	*@param String user; 
+	*@author Ada Andrei
+	*/
 	@When("The player selects existing {string}") 
 	public void playerSelectsExistingUsername(String user) {
 		QuoridorController.selectUsername(user);
 	}
 
-
+	/**
+	*@author Ada Andrei
+	*/
 	@Then("The name of player {string} in the new game shall be <username>")
 	public void nameOfPlayerInNewGameShallBeUsername() {
 		throw new PendingException();
 	}
 
-	//Scenario: Create new user name
 
+	/**
+	*@param boolean user;
+	*@author Ada Andrei
+	*/
 	@And("There is no existing user")
 	public void noExistingUser(boolean user) {
 		Assert.assertFalse(user); 
 	}
 	
+	/**
+	*@param String color;
+	*@author Ada Andrei
+	*/
 	@When("The player provides new user name: {string}")
 	public void playerProvidesNewUserName(String user) {
 		QuoridorController.createUsername(user);		
 	}
 
-	//Scenario: User name already exists
-
+	/**
+	*@author Ada Andrei
+	*/
 	@Then("The player shall be warned that {string} already exists") 
 	public void playerShallBeWarnedThatUsernameAlreadyExists() {
 		throw new PendingException(); 
 	}
 	
-	// SetTotalThinkingTime.feature (Ada)
+	// ***** SetTotalThinkingTime.feature *****
 
+	/**
+	*@param int mins;
+	*@param int secs;
+	*@author Ada Andrei
+	*/
 	@When("{int}:{int} is set as the thinking time")
 	public void setAsThinkingTime(int mins, int secs) {
 		QuoridorController.setTime(mins, secs); 
 	}
 
+	/**
+	*@param int mins;
+	*@param int secs; 
+	*@author Ada Andrei
+	*/
 	@Then("Both players shall have {int}:{int} remaining time left")
 	public void bothPlayersShallHaveRemainingTimeLeft(int mins, int secs) {
 		Time time1 = QuoridorController.getBlackPlayer().getTimeRemaining();

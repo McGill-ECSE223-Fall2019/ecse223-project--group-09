@@ -95,7 +95,7 @@ public class QuoridorController {
 	
 	
 	/**
-	 * This method checks if the given username already exists
+	 * This method checks if the given username already exists.
 	 * 
 	 * @param String user;  
 	 * @return boolean user; 
@@ -109,7 +109,7 @@ public class QuoridorController {
 	}
 
 	/**
-	 * This method allows the user to create a new username 
+	 * This method allows the user to create a new username.
 	 * 
 	 * @param String user;  
 	 * @return void; 
@@ -124,7 +124,7 @@ public class QuoridorController {
 	}
 
 	/**
-	 * This method allows the user to select it an existing username
+	 * This method allows the user to select it an existing username.
 	 * 
 	 * @param int userIndex;  
 	 * @return void; 
