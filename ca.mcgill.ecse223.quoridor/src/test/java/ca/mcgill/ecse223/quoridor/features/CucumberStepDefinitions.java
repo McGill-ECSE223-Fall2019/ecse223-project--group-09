@@ -563,11 +563,6 @@ public class CucumberStepDefinitions {
 	// Clean up
 	// ***********************************************
 
-
-	// ***********************************************
-	// Clean up
-	// ***********************************************
-
 	// After each scenario, the test model is discarded
 	@After
 	public void tearDown() {
