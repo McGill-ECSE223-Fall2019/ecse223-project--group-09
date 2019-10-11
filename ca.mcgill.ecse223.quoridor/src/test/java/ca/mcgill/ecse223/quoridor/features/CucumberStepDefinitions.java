@@ -582,6 +582,84 @@ public class CucumberStepDefinitions {
 	public void positionShallBeInvalid() {
 		Assert.assertFalse(this.positionValidityFlag);
 	}
+
+	// ***** SwitchCurrentPlayer.feature *****
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
+	@Given("The player to move is {string}")
+	public void playerToMoveIs(String playerName) {
+		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+		Assert.assertNotNull(player);
+		Assert.assertEquals(playerName, player.getName());
+	}
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
+	@And("The clock of {string} is running")
+	public void clockOfPlayerIsRunning(String playerName) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
+	@And("The clock of {string} is stopped")
+	public void clockOfPlayerIsStopped(String playerName) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
+	@When("Player {string} completes his move")
+	public void playerCompletesHisMove(String playerName) {
+		QuoridorController.switchCurrentPlayer();
+	}
+
+	/**
+	 * @param opponentName name of opponent
+	 * @author Group-9
+	 */
+	@Then("The user interface shall be showing it is {string} turn")
+	public void userInterfaceShallBeShowingItIsOpponentsTurn(String opponentName) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
+	@And("The clock of {string} shall be running")
+	public void clockOfPlayerShallBeRunning(String playerName) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
+	@And("The clock of {string} shall be stopped")
+	public void clockOfPlayerShallBeStopped(String playerName) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
+	@And("The next player to move shall be {string}")
+	public void nextPlayerToMoveShallBe(String playerName) {
+		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+		Assert.assertNotNull(player);
+		Assert.assertEquals(playerName, player.getName());
+	}
 	
 	// ***********************************************
 	// Clean up
