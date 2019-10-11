@@ -636,6 +636,24 @@ public class CucumberStepDefinitions {
 	 * @param playerName name of player
 	 * @author Group-9
 	 */
+	@And("The clock of {string} shall be running")
+	public void clockOfPlayerShallBeRunning(String playerName) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
+	@And("The clock of {string} shall be stopped")
+	public void clockOfPlayerShallBeStopped(String playerName) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param playerName name of player
+	 * @author Group-9
+	 */
 	@And("The next player to move shall be {string}")
 	public void nextPlayerToMoveShallBe(String playerName) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
