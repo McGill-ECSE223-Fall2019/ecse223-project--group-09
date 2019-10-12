@@ -11,9 +11,9 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
-import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
@@ -131,7 +131,7 @@ public class CucumberStepDefinitions {
 	
 	@Given("A new game is initializing") //only once - correct if not
 	public void newGameInitializing() {
-		quoridor = QuoridorApplication.getQuoridor();
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
 	}
 
 	// ProvideOrSelectUserName.feature (Ada)
@@ -339,18 +339,22 @@ public class CucumberStepDefinitions {
 	}
 	
 	// ***** GrabWall.feature *****
+	// @author Alixe Delabrousse (260868412)
 	
 		//Start wall placement
 	
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
 		Assert.assertNotNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
-	
+		TOWall currentGrabbedWall = QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()).get(QuoridorController.getPlayerOfCurrentTurn().getWallsRemaining());
 	}
 	
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
+		
+		Assert.assertNotNull(QuoridorController.getCurrentGrabbedWall());
 		throw new PendingException();
+		
 	}
 	
 	@Then("A wall move candidate shall be created at initial position")
@@ -361,9 +365,9 @@ public class CucumberStepDefinitions {
 		
 	}
 	
-	@And("I have a wall in my hand over the board")
+	@And("I shall have a wall in my hand over the board")
 	public void wallOverBoard() {
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);	
+		throw new PendingException();
 	}
 	
 	@And("The wall in my hand should disappear from my stock")
@@ -387,19 +391,23 @@ public class CucumberStepDefinitions {
 		
 	}
 	
-	@But("I do not have a wall in my hand ")
+	@But("I shall have no walls in my hand")
 	public void noWallInHand() {
 		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall() == null);
 	}
 	
 	// ***** MoveWall.feature *****
+	//@author Alixe Delabrousse (260868412)
 	
 	@Given("A wall move candidate exists with {string} at position ({int}, {int})")
 	public void wallCandidateExists() {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().getWallCandidate() != null);
+		Assert.assertEquals(QuoridorController.getCurrentGrabbedWall().getRow(), QuoridorController.getCurrentGrabbedWall().getWallCandidate().getRow());
+		Assert.assertEquals(QuoridorController.getCurrentGrabbedWall().getColumn(), QuoridorController.getCurrentGrabbedWall().getWallCandidate().getColumn());
 	}
 	
-	@And("The wall candidate is not at the \"<side>\" edge of the board")
+	@And("The wall candidate is not at the {string} edge of the board")
 	public void wallCandidateNotOnBorder() {
 		
 	}

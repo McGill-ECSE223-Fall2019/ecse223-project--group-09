@@ -17,7 +17,8 @@ public final class TOWall {
     private int column;
     public boolean grabbed;
     public TOWallCandidate wallCandidate = null;
-
+    
+    
     public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
     }
