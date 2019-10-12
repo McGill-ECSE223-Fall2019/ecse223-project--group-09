@@ -58,7 +58,7 @@ public class QuoridorController {
 	
 	/**
  	* 
- 	* @author alixe delabrousse (260868412)
+ 	* @author Alixe Delabrousse (260868412)
 	* 
  	* @param player
  	* @param direction
@@ -69,7 +69,7 @@ public class QuoridorController {
  	* 
  	*/
 	
-	public void grabWall(Player player, Direction direction) {
+	public static void grabWall(List<TOWall> wallStock) {
 		throw new UnsupportedOperationException();
 		
 	}
@@ -77,7 +77,7 @@ public class QuoridorController {
 	
 	/**
 	 * 
-	 * @author alixe delabrousse (260868412)
+	 * @author Alixe Delabrousse (260868412)
 	 * 
 	 * @param wall
 	 * @param destination
@@ -88,7 +88,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public void moveWall(Wall wall, GamePosition destination) {
+	public static void moveWall(TOWall wall) {
 		throw new UnsupportedOperationException();
 		
 	}
@@ -348,23 +348,23 @@ public class QuoridorController {
 
 	/**
 	 * 
-	 * @author alixe delabrousse
+	 * @author Alixe Delabrousse (260868412)
 	 * 
 	 * @return TOPlayer; 
 	 */
 
 	public static TOPlayer getWhitePlayer(){
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Query method get-white-player is not implemented yet");
 	}
 
 	/**
 	 * 
-	 * @author alixe delabrousse
+	 * @author Alixe Delabrousse (260868412)
 	 * 
 	 * @return TOPlayer;
 	 */
 	public static TOPlayer getBlackPlayer()	{
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Query method get-black-player is not implemented yet");
 	}
 }// end QuoridorController
 
