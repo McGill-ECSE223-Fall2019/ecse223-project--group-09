@@ -183,6 +183,40 @@ public class QuoridorController {
 	}
 	
 	/**
+	 * 
+	 * @author mohamed Mohamed
+	 * 
+	 * @param wall
+	 * @param Direction
+	 * 
+	 * This method allows you to rotate a wall that is already held and change it's orientation to horizontal or to vertical
+	 * 
+	 * 
+	 */
+	
+	public void rotateWall(Wall wall, Direction orientation) {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	/**
+	 * 
+	 * @author Mohamed Mohamed
+	 * 
+	 * @param wall
+	 * @param destination
+	 * 
+	 * This methods allows you to drop the wall that it is in the users hand.
+	 * 
+	 * 
+	 */
+	
+	public void dropWall(Wall wall, GamePosition destination) {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	/**
 	 * @author Group 9
 	 * 
 	 * @return boolean
