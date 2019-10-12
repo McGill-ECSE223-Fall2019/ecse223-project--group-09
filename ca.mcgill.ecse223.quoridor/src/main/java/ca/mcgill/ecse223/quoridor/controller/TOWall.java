@@ -1,6 +1,9 @@
 
 package ca.mcgill.ecse223.quoridor.controller;
 
+
+
+
 /**
  * Transfer object for wall information:
  * To ensure only controller interacts with data from model
@@ -10,12 +13,17 @@ package ca.mcgill.ecse223.quoridor.controller;
 
 public final class TOWall {
 
+	public enum Orientation{HORIZONTAL,VERTICAL};
+	
     private Orientation orientation;
     private int row;
     private int column;
     public boolean grabbed;
     public TOWallCandidate wallCandidate = null;
-
+    private final int initialRowPosition = 1;
+    private final int initialColumnPosition = 1;
+    
+    
     public void setOrientation(Orientation orientation) {
         this.orientation = orientation;
     }
@@ -50,8 +58,9 @@ public final class TOWall {
     	else return false;
     }
     
-    public void createWallCandidate() {
-    	this.wallCandidate = new TOWallCandidate(this.orientation,this.row, this.column);
+    public TOWallCandidate createWallCandidate() {
+    	return this.wallCandidate = new TOWallCandidate(this.orientation,this.initialRowPosition, this.initialColumnPosition);
+    	
     }
     
     public TOWallCandidate getWallCandidate() {

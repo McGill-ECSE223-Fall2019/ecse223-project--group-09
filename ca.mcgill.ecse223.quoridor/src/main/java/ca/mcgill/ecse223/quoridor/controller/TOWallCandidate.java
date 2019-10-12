@@ -1,5 +1,7 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
+import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
+
 public class TOWallCandidate {
 	
 	/**
@@ -20,6 +22,29 @@ public class TOWallCandidate {
     	this.orientation = orientation;
     	this.row = row;
     	this.column = column;
+    }
+    
+    public int getRow() {
+    	return this.row;
+    }
+    
+    public void setRow(int row) {
+    	this.row = row;
+    }
+    
+    public int getColumn() {
+    	return this.column;
+    }
+    
+    public void setColumn(int column) {
+    	this.column = column;
+    }
+    public Orientation getOrientatin() {
+    	return this.orientation;
+    }
+    
+    public void setOrientation(Orientation orientation) {
+    	this.orientation = orientation;
     }
     
 }

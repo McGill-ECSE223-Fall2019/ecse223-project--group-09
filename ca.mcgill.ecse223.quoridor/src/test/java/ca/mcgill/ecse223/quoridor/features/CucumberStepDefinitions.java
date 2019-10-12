@@ -10,7 +10,11 @@ import java.util.Map;
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.controller.*;
+import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -24,6 +28,11 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
+
+import ca.mcgill.ecse223.quoridor.controller.*;
+import ca.mcgill.ecse223.quoridor.model.*;
+import ca.mcgill.ecse223.quoridor.model.Game.*;
+
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -137,6 +146,7 @@ public class CucumberStepDefinitions {
 	 * are implemented
 	 * 
 	 */
+
 
 	// ***** ProvideOrSelectUserName.feature *****
 
@@ -448,54 +458,251 @@ public class CucumberStepDefinitions {
 	
 		//Start wall placement
 	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
-		Assert.assertNotNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
-	
+		List<TOWall> wallStock = new ArrayList<TOWall>();
+		Assert.assertNotNull(wallStock);
 	}
+	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
 	
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
+		
 		throw new PendingException();
+		
 	}
+	
+	/**
+	 * @author Alixe Delabrousse
+	 * @param currentGrabbedWall
+	 */
 	
 	@Then("A wall move candidate shall be created at initial position")
-	public void createWallMoveCandidate() {
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
-		QuoridorController.getCurrentGrabbedWall().createWallCandidate();
+	public void createWallMoveCandidate(TOWall currentGrabbedWall) {
+		TOWallCandidate wallCandidate = currentGrabbedWall.createWallCandidate();
+			
+	}
+	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
+	
+	@And("I shall have a wall in my hand over the board")
+	public void wallOverBoard() {
 		throw new PendingException();
-		
 	}
-	
+
+	/**
+	 * 
+	 * @author Alixe Delabrousse (260868412)
+	 * 
+	 * @param wallGrabbed
+	 */
 	@And("The wall in my hand should disappear from my stock")
-	public void removeWallFromStock() {
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
-		QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()).remove(QuoridorController.getCurrentGrabbedWall());
-		
+	public void removeWallFromStock(TOWall wallGrabbed) {
+		throw new PendingException();
+		// UI related method
 	}
 	
-	//No more walls in stock
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
 	@Given("I have no more walls on stock")
 	public void noMoreWallsOnStock() {
-		Assert.assertNull(QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()));
+		List<TOWall> wallStock = new ArrayList<TOWall>();
+		wallStock = null;
+		Assert.assertNull(wallStock);
 	}
 	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
 	@Then("I should be notified that I have no more walls")
 	public void notifNoMoreWalls() {
 		throw new PendingException();
-		
+		//UI related method
 	}
 	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 * 
+	 */
+	@But("I shall have no walls in my hand")
+	public void noWallInHand() {
+		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall() == null);
+	}
+	
+
 	// ***** MoveWall.feature *****
 	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
 	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
 	public void wallCandidateExists() {
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().getWallCandidate() != null);
+		
+		TOWall currentGrabbedWall = new TOWall();
+		TOWallCandidate wallCandidate = currentGrabbedWall.createWallCandidate();
+		Assert.assertTrue(wallCandidate != null);
 	}
 	
-	@And("The wall candidate is not at the \"<side>\" edge of the board")
-	public void wallCandidateNotOnBorder() {
+	
+	/**
+	 * 
+	 * @author Alixe Delabrousse (260868412)
+	 * 
+	 * @param wallCandidate
+	 */
+	@And("The wall candidate is not at the {string} edge of the board")
+	public void wallCandidateNotOnBorder(TOWallCandidate wallCandidate) {
+		Assert.assertTrue(wallCandidate.getRow() > 0 && wallCandidate.getRow() < 10);
+		Assert.assertTrue(wallCandidate.getColumn() > 0 && wallCandidate.getColumn() < 10);
+	
+	}
+	
+	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
+	@When("I try to move the wall {string}")
+	public void attemptToMoveWall() {
+		throw new PendingException();
+		//UI related method
 		
+	}
+	
+	/**
+	 * 
+	 * @author Alixe Delabrouse (260868412)
+	 * 
+	 * @param mouseXPosition
+	 * @param mouseYPosition
+	 */
+	@Then("The wall shall be moved over the board to position ({int}, {int})")
+	public void wallMoving(int mousePositionRow, int mousePositionColumn) {
+		throw new PendingException();
+		//UI related method
+	}
+	
+	/**
+	 * 
+	 * @author Alixe Delabrousse
+	 * 
+	 * @param currentWallCandidate
+	 * @param mousePositionRow
+	 * @param mousePositionColumn
+	 */
+	
+	@And("A wall move candidate shall exist with {string} at position ({int}, {int})")
+	public void wallCandidateAtRightPosition(TOWallCandidate currentWallCandidate, int mousePositionRow, int mousePositionColumn) {
+		Assert.assertTrue(currentWallCandidate.getColumn() == mousePositionColumn);
+		Assert.assertTrue(currentWallCandidate.getRow() == mousePositionRow);
+
+	}
+	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 * 
+	 * @param currentWallCandidate
+	 */
+	@And("The wall candidate is at the {string} edge of the board")
+	public void wallCandidateAtEdge(TOWallCandidate currentWallCandidate) {
+		Assert.assertTrue(currentWallCandidate.getColumn() == 1 || currentWallCandidate.getColumn() == 9);
+		Assert.assertTrue(currentWallCandidate.getRow() == 1 || currentWallCandidate.getRow() == 9);
+		
+	}
+	
+	// ***** RotateWall feature ***** @Author Mohamed Mohamed
+	
+		//background feature is already written 
+	
+	@Given("A wall move candidate exists with {dir} at position {row}, {col}")
+	public void wallMoveCandidateExists(String direction, int row, int col) {
+		//create a wall  candidate at the given direction that is given as a string
+		/*int aMoveNumber = 0; int aRoundNumber = 0; Player aPlayer = null; Tile aTargetTile = null; Game aGame = null; Direction aWallDirection = null; Wall aWallPlaced = null;
+		WallMove wallmove= new WallMove(aMoveNumber, aRoundNumber, aPlayer, aTargetTile, aGame, aWallDirection,aWallPlaced);*/
+		TOWall wall=new TOWall();
+		Orientation thisOrientation = Orientation.valueOf(direction.toUpperCase());//takes the string direction and converts it to the enum of type orientation
+		wall.setOrientation(thisOrientation);
+		wall.setRow(row);
+		wall.setColumn(col);
+		wall.createWallCandidate();//now the wall became a wall candidate
+		wall.SetGrabbed(true);//make the wall grabbed bc to rotate a wall it must be grabbed
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall()!=null);
+		
+		
+	}
+		
+	@When("I try to flip the wall")
+	public void tryFlipWall() {
+		
+	}
+		
+	@Then("The wall shall be rotated over the board to {newdir}")
+	public void rotateWall() {
+	}
+		
+	@And("A wall move candidate shall exist with <newdir> at position ({row}, {col})")
+	public void createWallMoveCandidate() {
+		
+	}
+		
+	// ***** DropWall feature ***** @Author Mohamed Mohamed
+	//background feature is already written 
+	
+	
+		
+	@Given("The wall move candidate with <dir> at position (<row>, <col>) is valid")
+	public void wallMoveCandidateIsValid(String direction, GamePosition gameposition) {
+		Assert.assertTrue(QuoridorController.);
+		
+	}
+		
+	@When("I release the wall in my hand")
+	public void realeaseWall() {
+		
+	}
+		
+	@Then("I do not have a wall in my hand")
+	public void removeWallFromHand() {
+		
+	}
+	@But("A wall move is registered with <dir> at position ({row}, {col})")
+	public void aWallIsRegisteredAt(){
+			
+	}
+		
+	@And("My move is completed")
+	public void CompleteMove() {
+			
+	}
+		
+	@And("It is not my turn to move")
+	public void finishMove() {
+			
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
+	@When("I try to move the wall {string}")
+	public void attemptToMoveWallOutOfBoard() {
+		throw new PendingException();
+		//UI related method
+	}
+	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
+	@Then("I shall be notified that my move is illegal")
+	public void notificationIllegalMove() {
+		throw new PendingException();
+		//UI related method
 	}
 	
 	
