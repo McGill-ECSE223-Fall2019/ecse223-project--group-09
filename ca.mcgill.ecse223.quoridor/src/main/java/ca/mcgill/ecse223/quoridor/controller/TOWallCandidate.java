@@ -1,7 +1,5 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
-import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
-
 public class TOWallCandidate {
 	
 	/**

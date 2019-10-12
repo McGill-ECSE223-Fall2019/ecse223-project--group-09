@@ -11,7 +11,7 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
-import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
+
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
@@ -31,7 +31,12 @@ import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 import ca.mcgill.ecse223.quoridor.controller.*;
 import ca.mcgill.ecse223.quoridor.model.*;
+
+import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
+import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+
 import ca.mcgill.ecse223.quoridor.model.Game.*;
+
 
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
@@ -150,13 +155,17 @@ public class CucumberStepDefinitions {
 
 	// ***** ProvideOrSelectUserName.feature *****
 
+	private Color color;
+
+
 	/**
-	*@param Enum color;
+	*@param String color;
 	*@author Ada Andrei
 	*/
 
 	@Given("Next player to set user name is {string}")
-	public void nextPlayerToSetUserNameIsColor(Enum color) {
+	public void nextPlayerToSetUserNameIsColor(String color) {
+		this.color = Color.valueOf(color.toUpperCase());
 		throw new PendingException();
 	}
 
@@ -468,9 +477,8 @@ public class CucumberStepDefinitions {
 	 */
 	
 	@When("I try to grab a wall from my stock")
-	public void playerTryToGrabWall() {
-		
-		throw new PendingException();
+	public void playerTryToGrabWall(List<TOWall> wallStock) {
+		QuoridorController.grabWall(wallStock);
 		
 	}
 	
@@ -501,7 +509,7 @@ public class CucumberStepDefinitions {
 	 * @param wallGrabbed
 	 */
 	@And("The wall in my hand should disappear from my stock")
-	public void removeWallFromStock(TOWall wallGrabbed) {
+	public void removeWallFromStock() {
 		throw new PendingException();
 		// UI related method
 	}
@@ -535,8 +543,14 @@ public class CucumberStepDefinitions {
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall() == null);
 	}
 	
-
+	// ****** WALL FEATURES ******
+	
+	private TOWall currentWall;
+	private TOWallCandidate wallCandidate;
+	
 	// ***** MoveWall.feature *****
+	
+	
 	
 	/**
 	 * @author Alixe Delabrousse (260868412)
@@ -544,9 +558,9 @@ public class CucumberStepDefinitions {
 	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
 	public void wallCandidateExists() {
 		
-		TOWall currentGrabbedWall = new TOWall();
-		TOWallCandidate wallCandidate = currentGrabbedWall.createWallCandidate();
-		Assert.assertTrue(wallCandidate != null);
+		this.currentWall = QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()).get(QuoridorController.getPlayerOfCurrentTurn().getWallsRemaining());
+		this.wallCandidate = currentWall.createWallCandidate();
+		Assert.assertTrue(this.wallCandidate != null);
 	}
 	
 	
@@ -557,20 +571,20 @@ public class CucumberStepDefinitions {
 	 * @param wallCandidate
 	 */
 	@And("The wall candidate is not at the {string} edge of the board")
-	public void wallCandidateNotOnBorder(TOWallCandidate wallCandidate) {
-		Assert.assertTrue(wallCandidate.getRow() > 0 && wallCandidate.getRow() < 10);
-		Assert.assertTrue(wallCandidate.getColumn() > 0 && wallCandidate.getColumn() < 10);
+	public void wallCandidateNotOnBorder() {
+		Assert.assertTrue(this.wallCandidate.getRow() > 0 && wallCandidate.getRow() < 10);
+		Assert.assertTrue(this.wallCandidate.getColumn() > 0 && wallCandidate.getColumn() < 10);
 	
 	}
 	
+
 	
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 */
 	@When("I try to move the wall {string}")
 	public void attemptToMoveWall() {
-		throw new PendingException();
-		//UI related method
+		QuoridorController.moveWall(this.currentWall);
 		
 	}
 	
@@ -578,10 +592,10 @@ public class CucumberStepDefinitions {
 	 * 
 	 * @author Alixe Delabrouse (260868412)
 	 * 
-	 * @param mouseXPosition
-	 * @param mouseYPosition
+	 * @param mousePositionColumn
+	 * @param mousePositionRow
 	 */
-	@Then("The wall shall be moved over the board to position ({int}, {int})")
+	@Then("The wall shall be moved over the board to position \\({int}, {int})")
 	public void wallMoving(int mousePositionRow, int mousePositionColumn) {
 		throw new PendingException();
 		//UI related method
@@ -589,14 +603,14 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author Alixe Delabrousse
+	 * @author Alixe Delabrousse (260868412)
 	 * 
 	 * @param currentWallCandidate
 	 * @param mousePositionRow
 	 * @param mousePositionColumn
 	 */
 	
-	@And("A wall move candidate shall exist with {string} at position ({int}, {int})")
+	@And("A wall move candidate shall exist with {string} at position \\({int}, {int})")
 	public void wallCandidateAtRightPosition(TOWallCandidate currentWallCandidate, int mousePositionRow, int mousePositionColumn) {
 		Assert.assertTrue(currentWallCandidate.getColumn() == mousePositionColumn);
 		Assert.assertTrue(currentWallCandidate.getRow() == mousePositionRow);
@@ -615,6 +629,8 @@ public class CucumberStepDefinitions {
 		
 	}
 	
+
+
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
 	
 		//background feature is already written 
@@ -658,7 +674,7 @@ public class CucumberStepDefinitions {
 		
 	@Given("The wall move candidate with <dir> at position (<row>, <col>) is valid")
 	public void wallMoveCandidateIsValid(String direction, GamePosition gameposition) {
-		Assert.assertTrue(QuoridorController.);
+
 		
 	}
 		
@@ -683,6 +699,8 @@ public class CucumberStepDefinitions {
 		
 	@And("It is not my turn to move")
 	public void finishMove() {
+		
+	}
 			
 	/**
 	 * @author Alixe Delabrousse (260868412)
@@ -692,6 +710,7 @@ public class CucumberStepDefinitions {
 		throw new PendingException();
 		//UI related method
 	}
+
 	
 	/**
 	 * @author Alixe Delabrousse (260868412)
