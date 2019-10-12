@@ -39,4 +39,12 @@ public class TOWallCandidate {
     public void setColumn(int column) {
     	this.column = column;
     }
+    public Orientation getOrientatin() {
+    	return this.orientation;
+    }
+    
+    public void setOrientation(Orientation orientation) {
+    	this.orientation = orientation;
+    }
+    
 }

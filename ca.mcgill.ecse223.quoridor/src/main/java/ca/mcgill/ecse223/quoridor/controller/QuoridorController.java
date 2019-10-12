@@ -13,9 +13,6 @@ import java.io.IOException;
 import java.sql.Time;
 import java.util.List;
 
-import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
-
-
 /**
  * This is the controller class for the Quoridor application
  * 
@@ -61,7 +58,7 @@ public class QuoridorController {
 	
 	/**
  	* 
- 	* @author alixe delabrousse 
+ 	* @author alixe delabrousse (260868412)
 	* 
  	* @param player
  	* @param direction
@@ -80,7 +77,7 @@ public class QuoridorController {
 	
 	/**
 	 * 
-	 * @author alixe delabrousse
+	 * @author alixe delabrousse (260868412)
 	 * 
 	 * @param wall
 	 * @param destination
@@ -98,7 +95,7 @@ public class QuoridorController {
 	
 	
 	/**
-	 * This method checks if the given username already exists
+	 * This method checks if the given username already exists.
 	 * 
 	 * @param String user;  
 	 * @return boolean user; 
@@ -112,7 +109,7 @@ public class QuoridorController {
 	}
 
 	/**
-	 * This method allows the user to create a new username 
+	 * This method allows the user to create a new username.
 	 * 
 	 * @param String user;  
 	 * @return void; 
@@ -127,7 +124,7 @@ public class QuoridorController {
 	}
 
 	/**
-	 * This method allows the user to select it an existing username
+	 * This method allows the user to select it an existing username.
 	 * 
 	 * @param int userIndex;  
 	 * @return void; 
