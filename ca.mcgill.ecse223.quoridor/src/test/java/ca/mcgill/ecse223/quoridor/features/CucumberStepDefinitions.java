@@ -11,6 +11,7 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
@@ -397,9 +398,74 @@ public class CucumberStepDefinitions {
 	
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
 	
-	@Given("The game is running")
-	public void gameisRunning() {
-		//check if the fame is running
+	// ***** RotateWall feature ***** @Author Mohamed Mohamed
+	
+		//background feature is already written 
+	
+	@Given("A wall move candidate exists with {dir} at position {row}, {col}")
+	public void wallMoveCandidateExists(String direction, int row, int col) {
+		//create a wall  candidate at the given direction that is given as a string
+		/*int aMoveNumber = 0; int aRoundNumber = 0; Player aPlayer = null; Tile aTargetTile = null; Game aGame = null; Direction aWallDirection = null; Wall aWallPlaced = null;
+		WallMove wallmove= new WallMove(aMoveNumber, aRoundNumber, aPlayer, aTargetTile, aGame, aWallDirection,aWallPlaced);*/
+		TOWall wall=new TOWall();
+		Orientation thisOrientation = Orientation.valueOf(direction.toUpperCase());//takes the string direction and converts it to the enum of type orientation
+		wall.setOrientation(thisOrientation);
+		wall.setRow(row);
+		wall.setColumn(col);
+		wall.createWallCandidate();//now the wall became a wall candidate
+		wall.SetGrabbed(true);//make the wall grabbed bc to rotate a wall it must be grabbed
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall()!=null);
+		
+		
+	}
+		
+	@When("I try to flip the wall")
+	public void tryFlipWall() {
+		
+	}
+		
+	@Then("The wall shall be rotated over the board to {newdir}")
+	public void rotateWall() {
+	}
+		
+	@And("A wall move candidate shall exist with <newdir> at position ({row}, {col})")
+	public void createWallMoveCandidate() {
+		
+	}
+		
+	// ***** DropWall feature ***** @Author Mohamed Mohamed
+	//background feature is already written 
+	
+	
+		
+	@Given("The wall move candidate with <dir> at position (<row>, <col>) is valid")
+	public void wallMoveCandidateIsValid(String direction, GamePosition gameposition) {
+		Assert.assertTrue(QuoridorController.);
+		
+	}
+		
+	@When("I release the wall in my hand")
+	public void realeaseWall() {
+		
+	}
+		
+	@Then("I do not have a wall in my hand")
+	public void removeWallFromHand() {
+		
+	}
+	@But("A wall move is registered with <dir> at position ({row}, {col})")
+	public void aWallIsRegisteredAt(){
+			
+	}
+		
+	@And("My move is completed")
+	public void CompleteMove() {
+			
+	}
+		
+	@And("It is not my turn to move")
+	public void finishMove() {
+			
 	}
 	
 	
