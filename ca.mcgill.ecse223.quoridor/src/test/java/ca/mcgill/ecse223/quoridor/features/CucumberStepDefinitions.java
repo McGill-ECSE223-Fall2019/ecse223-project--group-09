@@ -145,12 +145,12 @@ public class CucumberStepDefinitions {
 	// ***** ProvideOrSelectUserName.feature *****
 
 	/**
-	*@param String color;
+	*@param Enum color;
 	*@author Ada Andrei
 	*/
 
 	@Given("Next player to set user name is {string}")
-	public void nextPlayerToSetUserNameIsColor(String color) {
+	public void nextPlayerToSetUserNameIsColor(Enum color) {
 		throw new PendingException();
 	}
 
@@ -192,7 +192,7 @@ public class CucumberStepDefinitions {
 	}
 	
 	/**
-	*@param String color;
+	*@param String user; 
 	*@author Ada Andrei
 	*/
 	@When("The player provides new user name: {string}")
