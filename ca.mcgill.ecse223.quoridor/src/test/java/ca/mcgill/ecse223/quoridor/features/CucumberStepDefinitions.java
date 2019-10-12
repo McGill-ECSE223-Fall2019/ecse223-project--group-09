@@ -10,24 +10,10 @@ import java.util.Map;
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.controller.TOWall;
-import ca.mcgill.ecse223.quoridor.controller.TOWall.Orientation;
-import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
-import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
-import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
-import ca.mcgill.ecse223.quoridor.model.Board;
-import ca.mcgill.ecse223.quoridor.model.Direction;
-import ca.mcgill.ecse223.quoridor.model.Game;
-import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
-import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
-import ca.mcgill.ecse223.quoridor.model.GamePosition;
-import ca.mcgill.ecse223.quoridor.model.Player;
-import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
-import ca.mcgill.ecse223.quoridor.model.Quoridor;
-import ca.mcgill.ecse223.quoridor.model.Tile;
-import ca.mcgill.ecse223.quoridor.model.User;
-import ca.mcgill.ecse223.quoridor.model.Wall;
-import ca.mcgill.ecse223.quoridor.model.WallMove;
+
+import ca.mcgill.ecse223.quoridor.controller.*;
+import ca.mcgill.ecse223.quoridor.model.*;
+
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -146,12 +132,12 @@ public class CucumberStepDefinitions {
 	// ***** ProvideOrSelectUserName.feature *****
 
 	/**
-	*@param String color;
+	*@param Enum color;
 	*@author Ada Andrei
 	*/
 
 	@Given("Next player to set user name is {string}")
-	public void nextPlayerToSetUserNameIsColor(String color) {
+	public void nextPlayerToSetUserNameIsColor(Enum color) {
 		throw new PendingException();
 	}
 
@@ -193,7 +179,7 @@ public class CucumberStepDefinitions {
 	}
 	
 	/**
-	*@param String color;
+	*@param String user; 
 	*@author Ada Andrei
 	*/
 	@When("The player provides new user name: {string}")
@@ -425,8 +411,8 @@ public class CucumberStepDefinitions {
 	 */
 	@And("Both players shall have {int} in their stacks")
 	public void bothPlayersHaveWallCountInTheirStacks(int remainingWalls) {
-		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("black"));
-		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn("white"));
+		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn(Color.BLACK));
+		Assert.assertEquals(remainingWalls, QuoridorController.getWallsInStockOfColoredPawn(Color.WHITE));
 	}
 
 	/**
