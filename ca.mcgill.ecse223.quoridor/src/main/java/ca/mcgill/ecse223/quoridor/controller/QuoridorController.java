@@ -324,14 +324,14 @@ public class QuoridorController {
 
 	/**
 	 * 
-	 * @param String color - prompts the color of the Pawn of which you want the number of walls
+	 * @param color - prompts the color of the Pawn of which you want the number of walls
 	 * 
 	 * @returns the number of walls in stock of player with the specified color
 	 *
 	 * @author Paul Teng (260862906) and Alixe Delabrousse (260868412)
 	 */
 	
-	public static int getWallsInStockOfColoredPawn(String color) {
+	public static int getWallsInStockOfColoredPawn(Color color) {
 		throw new UnsupportedOperationException("Query method get-walls-in-stock-of-colored-pawn is not implemented yet");
 	}
 	
