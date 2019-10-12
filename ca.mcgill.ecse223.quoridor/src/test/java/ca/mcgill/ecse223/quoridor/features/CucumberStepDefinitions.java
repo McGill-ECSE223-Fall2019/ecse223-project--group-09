@@ -636,9 +636,10 @@ public class CucumberStepDefinitions {
 		
 	}
 		
+
 	@When("I try to flip the wall")
 	public void tryFlipWall() {
-		
+		//this method will only create an exception because this is only related to the UI 
 	}
 		
 	@Then("The wall shall be rotated over the board to {newdir}")

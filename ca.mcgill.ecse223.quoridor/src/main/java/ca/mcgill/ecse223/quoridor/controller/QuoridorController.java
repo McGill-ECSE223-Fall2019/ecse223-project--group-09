@@ -194,7 +194,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public void rotateWall(Wall wall, Direction orientation) {
+	public static void rotateWall(Wall wall, Direction orientation) {
 		throw new UnsupportedOperationException();
 		
 	}
@@ -211,7 +211,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public void dropWall(Wall wall, GamePosition destination) {
+	public static void dropWall(Wall wall, GamePosition destination) {
 		throw new UnsupportedOperationException();
 		
 	}
