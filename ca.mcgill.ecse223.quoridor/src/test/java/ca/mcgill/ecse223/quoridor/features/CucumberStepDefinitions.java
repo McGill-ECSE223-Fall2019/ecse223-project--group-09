@@ -13,6 +13,7 @@ import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 
 import ca.mcgill.ecse223.quoridor.controller.*;
 import ca.mcgill.ecse223.quoridor.model.*;
+import ca.mcgill.ecse223.quoridor.model.Game.*;
 
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
