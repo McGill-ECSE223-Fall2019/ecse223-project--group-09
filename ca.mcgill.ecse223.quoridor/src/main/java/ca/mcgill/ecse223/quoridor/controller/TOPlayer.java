@@ -16,6 +16,7 @@ public final class TOPlayer {
     private Time timeRemaining;
     private String color;
     private boolean wallInHand = false;
+    private int wallsRemaining;
     
     public void setName(String name) {
         this.name = name;
@@ -55,6 +56,10 @@ public final class TOPlayer {
     
     public boolean hasWallInHand() {
     	return this.wallInHand;
+    }
+    
+    public int getWallsRemaining() {
+    	return this.wallsRemaining;
     }
     
 }
