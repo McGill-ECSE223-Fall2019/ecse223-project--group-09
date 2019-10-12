@@ -150,13 +150,17 @@ public class CucumberStepDefinitions {
 
 	// ***** ProvideOrSelectUserName.feature *****
 
+	private Color color;
+
+
 	/**
-	*@param Enum color;
+	*@param String color;
 	*@author Ada Andrei
 	*/
 
 	@Given("Next player to set user name is {string}")
-	public void nextPlayerToSetUserNameIsColor(Enum color) {
+	public void nextPlayerToSetUserNameIsColor(String color) {
+		this.color = Color.valueOf(color.toUpperCase());
 		throw new PendingException();
 	}
 
