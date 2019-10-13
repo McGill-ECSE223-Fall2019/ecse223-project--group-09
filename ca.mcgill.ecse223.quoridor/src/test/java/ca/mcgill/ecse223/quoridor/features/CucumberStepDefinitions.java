@@ -57,6 +57,7 @@ public class CucumberStepDefinitions {
 		initQuoridorAndBoard();
 		createUsersAndPlayers("user1", "user2");
 	}
+	
 
 	@Given("^The game is running$")
 	public void theGameIsRunning() {
@@ -152,12 +153,160 @@ public class CucumberStepDefinitions {
 	 * 
 	 */
 
-
+	// ***** InitializeBoard.feature *****
+		
+	/**
+	* @author Barry Chen
+	*/
+	@When("The initialization of the board is initiated")
+	public void initializationOfTheBoardInitiated() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@Then("It shall be white player to move")
+	public void whitePlayerToMove() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("White's pawn shall be in its initial position")
+	public void whitePawnBeAtInitialPosition() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("Black's pawn shall be in its initial position")
+	public void blackPawnBeAtInitialPosition() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("All of White's walls shall be in stock")
+	public void allWhiteWallsBeInStock() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("All of Black's walls shall be in stock")
+	public void allBlackWallsBeInStock() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("White's clock shall be counting down")
+	public void whiteClockShallBeCoutingDown() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("It shall be shown that this is White's turn")
+	public void ShownThatIsWhiteTurn() {
+		throw new PendingException();
+	}
+	
+	
+	// ***** StartNewGame.feature *****
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@When("A new game is being initialized")
+	public void aNewGameIsBeingInitialized() {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@And("White player chooses a username")
+	public void whitePlayerChoosesUsername( ) {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@And("Black player chooses a username")
+	public void blackPlayerChoosesUsername( ) {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@And("Total thinking time is set")
+	public void totalThinkingTimeSet( ) {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@Then("The game shall become ready to start")
+	public void gameShallBecomeReadyToStart( ) {
+		throw new PendingException();
+	}
+	
+	/*
+	Given The game is ready to start
+  	When I start the clock
+  	Then The game shall be running
+  	And The board shall be initialized
+	 */
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@Given("The game is ready to start")
+	public void gameIsReadyToStart() {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@When("I start the clock")
+	public void startTheClock() {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@Then("The game shall be running")
+	public void gameShallBeRunning() {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@And("The board shall be initialized")
+	public void boardShallBeInitialized() {
+		throw new PendingException();
+	}
+	
+	
 	// ***** ProvideOrSelectUserName.feature *****
 
 	private Color color;
-
-
+		
+		
 	/**
 	*@param String color;
 	*@author Ada Andrei
