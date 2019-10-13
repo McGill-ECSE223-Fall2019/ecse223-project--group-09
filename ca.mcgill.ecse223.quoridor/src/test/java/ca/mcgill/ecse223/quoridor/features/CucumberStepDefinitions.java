@@ -635,72 +635,96 @@ public class CucumberStepDefinitions {
 	
 		//background feature is already written 
 	
-	@Given("A wall move candidate exists with {dir} at position {row}, {col}")
-	public void wallMoveCandidateExists(String direction, int row, int col) {
-		//create a wall  candidate at the given direction that is given as a string
-		/*int aMoveNumber = 0; int aRoundNumber = 0; Player aPlayer = null; Tile aTargetTile = null; Game aGame = null; Direction aWallDirection = null; Wall aWallPlaced = null;
-		WallMove wallmove= new WallMove(aMoveNumber, aRoundNumber, aPlayer, aTargetTile, aGame, aWallDirection,aWallPlaced);*/
-		TOWall wall=new TOWall();
-		Orientation thisOrientation = Orientation.valueOf(direction.toUpperCase());//takes the string direction and converts it to the enum of type orientation
-		wall.setOrientation(thisOrientation);
-		wall.setRow(row);
-		wall.setColumn(col);
-		wall.createWallCandidate();//now the wall became a wall candidate
-		wall.SetGrabbed(true);//make the wall grabbed bc to rotate a wall it must be grabbed
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall()!=null);
-		
-		
-	}
+	
 		
 
 	@When("I try to flip the wall")
 	public void tryFlipWall() {
 		//this method will only create an exception because this is only related to the UI 
+		throw new PendingException();
 	}
 		
 	@Then("The wall shall be rotated over the board to {newdir}")
-	public void rotateWall() {
-	}
-		
-	@And("A wall move candidate shall exist with <newdir> at position ({row}, {col})")
-	public void createWallMoveCandidate() {
+	public void rotateWall(String newdir) {
+		QuoridorController.rotateWall(this.wallCandidate);
 		
 	}
+		
 		
 	// ***** DropWall feature ***** @Author Mohamed Mohamed
 	//background feature is already written 
 	
 	
-		
 	@Given("The wall move candidate with <dir> at position (<row>, <col>) is valid")
-	public void wallMoveCandidateIsValid(String direction, GamePosition gameposition) {
-
+	public void wallMoveCandidateIsValid(String direction, int row, int col) {
+		//controller method that asks if it;s a valid position
+		//the method should return something valid
+		//fr invalid check if it returs nothing
 		
 	}
 		
 	@When("I release the wall in my hand")
 	public void realeaseWall() {
-		
+		this.currentWall.setOrientation(this.wallCandidate.getOrientatin());
+		this.currentWall.setRow(this.wallCandidate.getRow());
+		this.currentWall.setColumn(this.wallCandidate.getColumn());
+		QuoridorController.dropWall(this.currentWall);
 	}
 		
-	@Then("I do not have a wall in my hand")
+	@Then("I shall not have a wall in my hand")
 	public void removeWallFromHand() {
-		
+		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());//check if the player has a wall or not
 	}
-	@But("A wall move is registered with <dir> at position ({row}, {col})")
+	@Then("A wall move is registered with <dir> at position ({row}, {col})")
 	public void aWallIsRegisteredAt(){
-			
+		QuoridorController.validateWallPlacement(row, column, orientation)
 	}
 		
-	@And("My move is completed")
+	@And("^I shall not have a wall in my hand$")
+    public void i_shall_not_have_a_wall_in_my_hand() throws Throwable {
+        throw new PendingException();
+    }
+	
+	@And("My move shall be completed")
 	public void CompleteMove() {
-			
+			//get the current player and than switch player using the CM
 	}
 		
-	@And("It is not my turn to move")
+	@And("It it shall not be my turn to move")
 	public void finishMove() {
+		//get the current player and it shouldnt have the same player
+	}
+	
+
+	
+
+	@Given("The wall move candidate with <dir> at position (<row>, <col>) is invalid")
+	public void wallMoveCandidateIsInvalid(String direction, int row, int col) {
+		
 		
 	}
+    
+    @Then("^I shall be notified that my wall move is invalid$")
+    public void i_shall_be_notified_that_my_wall_move_is_invalid() throws Throwable {
+        throw new PendingException();
+    }
+
+
+    @And("^I shall have a wall in my hand over the board$")
+    public void i_shall_have_a_wall_in_my_hand_over_the_board() throws Throwable {
+        throw new PendingException();
+    }
+
+    @And("^It shall be my turn to move$")
+    public void it_shall_be_my_turn_to_move() throws Throwable {
+        throw new PendingException();
+    }
+
+    @But("^No wall move shall be registered with with <dir> at position (<row>, <col>)")
+    public void no_wall_move_shall_be_registered_with_something_at_position_(String dir, String row, String col, String strArg1) throws Throwable {
+        throw new PendingException();
+    }
+	
 			
 	/**
 	 * @author Alixe Delabrousse (260868412)
