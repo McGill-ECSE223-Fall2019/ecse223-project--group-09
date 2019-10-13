@@ -796,7 +796,7 @@ public class CucumberStepDefinitions {
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
 	
 		//background feature is already written 
-	
+		//given clause already implemented
 	
 		
 
@@ -804,11 +804,12 @@ public class CucumberStepDefinitions {
 	public void tryFlipWall() {
 		//this method will only create an exception because this is only related to the UI 
 		throw new PendingException();
+		QuoridorController.rotateWall(this.wallCandidate);
 	}
 		
 	@Then("The wall shall be rotated over the board to {newdir}")
 	public void rotateWall(String newdir) {
-		QuoridorController.rotateWall(this.wallCandidate);
+		
 		
 	}
 		
@@ -830,6 +831,7 @@ public class CucumberStepDefinitions {
 		this.currentWall.setOrientation(this.wallCandidate.getOrientatin());
 		this.currentWall.setRow(this.wallCandidate.getRow());
 		this.currentWall.setColumn(this.wallCandidate.getColumn());
+		//calling the method drop wall that should drop the wall by
 		QuoridorController.dropWall(this.currentWall);
 	}
 		
@@ -839,7 +841,8 @@ public class CucumberStepDefinitions {
 	}
 	@Then("A wall move is registered with <dir> at position ({row}, {col})")
 	public void aWallIsRegisteredAt(){
-		QuoridorController.validateWallPlacement(row, column, orientation)
+	//	QuoridorController.validateWallPlacement(row, column, orientation)
+		
 	}
 		
 	@And("^I shall not have a wall in my hand$")
