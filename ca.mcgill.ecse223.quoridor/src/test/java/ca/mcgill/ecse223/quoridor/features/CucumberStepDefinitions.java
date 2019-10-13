@@ -840,10 +840,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("The wall move candidate with <dir> at position (<row>, <col>) is valid")
 	public void wallMoveCandidateIsValid(String direction, int row, int col) {
-		//controller method that asks if it's a valid position
-		//the method should return something valid
-		//fr invalid check if it returs nothing
-		
+			
 		this.wallCandidate.setOrientation(Orientation.valueOf(direction.toUpperCase()));
 		this.wallCandidate.setRow(row);
 		this.wallCandidate.setColumn(col);
