@@ -728,9 +728,9 @@ public class CucumberStepDefinitions {
 	@And("The wall candidate is not at the {string} edge of the board")
 	public void wallCandidateNotOnEdge(String side) {
 		if (side.equals("up")) {
-			Assert.assertTrue(this.wallCandidate.getRow() != 9);
-		} else if (side.equals("down")) {
 			Assert.assertTrue(this.wallCandidate.getRow() != 1);
+		} else if (side.equals("down")) {
+			Assert.assertTrue(this.wallCandidate.getRow() != 9);
 		} else if (side.equals("left")) {
 			Assert.assertTrue(this.wallCandidate.getColumn() != 1);
 		} else if (side.equals("right")) {
@@ -788,9 +788,9 @@ public class CucumberStepDefinitions {
 	@And("The wall candidate is at the {string} edge of the board")
 	public void wallCandidateAtEdge(String side) {
 		if (side.equals("up")) {
-			Assert.assertTrue(this.wallCandidate.getRow() == 9);
-		} else if (side.equals("down")) {
 			Assert.assertTrue(this.wallCandidate.getRow() == 1);
+		} else if (side.equals("down")) {
+			Assert.assertTrue(this.wallCandidate.getRow() == 9);
 		} else if (side.equals("left")) {
 			Assert.assertTrue(this.wallCandidate.getColumn() == 1);
 		} else if (side.contentEquals("right")) {
@@ -800,7 +800,7 @@ public class CucumberStepDefinitions {
 	}
 	
 	/**
-	 * @author alixe delabrousse (260868412)
+	 * @author alixe delabrousse (260868412) & mohamed mohamed (260855731)
 	 */
 	
 	@Then("I shall be notified that my move is illegal")
