@@ -221,6 +221,8 @@ public class QuoridorController {
 
 	/**
 	 * creates a wall move that will be than given to validate a wall placement
+	 * should call the validwallposition, if true, allowing the
+	 * creation of the wall move.
 	 *
 	 * @param row The row of the wall.
 	 * @param column The column of the wall

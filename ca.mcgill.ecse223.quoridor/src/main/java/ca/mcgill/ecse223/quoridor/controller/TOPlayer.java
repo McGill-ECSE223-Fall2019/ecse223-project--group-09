@@ -50,8 +50,8 @@ public final class TOPlayer {
     public String getColor() {
     	return this.color;
     }
-    public void addWallInHand() {
-    	this.wallInHand = true;
+    public void setWallInHand(boolean hasWall) {
+    	this.wallInHand = hasWall;//set if a player has a wall in hand or no
     }
     
     public boolean hasWallInHand() {
