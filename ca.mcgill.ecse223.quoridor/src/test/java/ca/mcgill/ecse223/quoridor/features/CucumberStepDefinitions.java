@@ -653,7 +653,7 @@ public class CucumberStepDefinitions {
 	}
 	
 	/**
-	 * @author Alixe Delabrousse (260868412)
+	 * @author Alixe Delabrousse (260868412) & Mohamed Mohamed (260855731)
 	 */
 	
 	@And("I shall have a wall in my hand over the board")
@@ -829,7 +829,7 @@ public class CucumberStepDefinitions {
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
-	@Then("The wall shall be rotated over the board to {newdir}")
+	@Then("The wall shall be rotated over the board to {string}")
 	public void rotateWall(String newdir) {
 		//checking if the wall actually got rotated to newdir
 		Orientation newDir=Orientation.valueOf(newdir.toUpperCase());//constructor takes an Orientation enum so the conversion is necessary
@@ -850,7 +850,7 @@ public class CucumberStepDefinitions {
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
-	@Given("The wall move candidate with <dir> at position (<row>, <col>) is valid")
+	@Given("The wall move candidate with {string} at position \\({int}, {int}) is valid")
 	public void wallMoveCandidateIsValid(String direction, int row, int col) {
 			
 		this.wallCandidate.setOrientation(Orientation.valueOf(direction.toUpperCase()));
@@ -879,7 +879,7 @@ public class CucumberStepDefinitions {
 	 * @param row Row is the row of the wall
 	 * @param col Col is the column of the wall
 	 */
-	@Then("A wall move is registered with <dir> at position ({row}, {col})")
+	@Then("A wall move is registered with {string} at position \\({int}, {int})")
 	public void aWallIsRegisteredAt(String dir, int row , int col){
 	//	check if a wall exists at the given information //implemented by the drop wall method
 		Assert.assertTrue(QuoridorController.createWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));
@@ -919,7 +919,7 @@ public class CucumberStepDefinitions {
 	 * @param row Row is the row of the wall
 	 * @param col Col is the column of the wall
 	 */
-	@Given("The wall move candidate with <dir> at position (<row>, <col>) is invalid")
+	@Given("The wall move candidate with {string} at position \\({int}, {int}) is invalid")
 	public void wallMoveCandidateIsInvalid(String direction, int row, int col) {
 		
 		this.wallCandidate.setOrientation(Orientation.valueOf(direction.toUpperCase()));
@@ -943,15 +943,6 @@ public class CucumberStepDefinitions {
     /**
 	 * @author Mohamed Mohamed (260855731)
 	 */
-    @And("I shall have a wall in my hand over the board")
-    public void wallIsGrabbed() throws Throwable {
-    	Assert.assertTrue(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
-
-    }
-
-    /**
-	 * @author Mohamed Mohamed (260855731)
-	 */
     @And("It shall be my turn to move")
     public void continueMove() {
     	Assert.assertTrue(this.player==QuoridorController.getPlayerOfCurrentTurn());//condition should be true
@@ -960,30 +951,12 @@ public class CucumberStepDefinitions {
     /**
 	 * @author Mohamed Mohamed (260855731)
 	 */
-    @But("No wall move shall be registered with with <dir> at position (<row>, <col>)")
+    @But("No wall move shall be registered with with {string} at position \\({int}, {int})")
     public void unregisteredWallMove(String dir, int row, int col){
     	Assert.assertFalse(QuoridorController.createWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));  
     }
 	
-			
-	/**
-	 * @author Alixe Delabrousse (260868412)
-	 */
-	@When("I try to move the wall {string}")
-	public void attemptToMoveWallOutOfBoard() {
-		throw new PendingException();
-		//UI related method
-	}
-
 	
-	/**
-	 * @author Alixe Delabrousse (260868412)
-	 */
-	@Then("I shall be notified that my move is illegal")
-	public void notificationIllegalMove() {
-		throw new PendingException();
-		//UI related method
-	}
 	
 	
 	
