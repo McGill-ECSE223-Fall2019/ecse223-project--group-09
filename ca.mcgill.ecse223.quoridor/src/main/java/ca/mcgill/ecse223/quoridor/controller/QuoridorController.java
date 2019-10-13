@@ -157,40 +157,12 @@ public class QuoridorController {
 		}
 	}
 	
-	/**
-	 * @author Group 9
-	 * 
-	 * @param StepMove
-	 * @return boolean
-	 * 
-	 * 
-	 */
-	
-	public boolean validatePawnPosition(Move StepMove) {
-		throw new UnsupportedOperationException();
-		
-	}
-	
-	/**
-	 * @author Group 9
-	 * 
-	 * @param WallMove
-	 * @return boolean
-	 * 
-	 * 
-	 */
-	
-	public boolean validateWallPosition(Move WallMove) {
-		throw new UnsupportedOperationException();
-		
-	}
 	
 	/**
 	 * 
 	 * @author mohamed Mohamed
 	 * 
-	 * @param wall
-	 * @param Direction
+	 * @param wallCandidate
 	 * 
 	 * This method allows you to rotate a wall that is already held and change it's orientation to horizontal or to vertical
 	 * 
@@ -222,6 +194,7 @@ public class QuoridorController {
 	}
 	
 	/**
+	 * This method is called when the player finishes his turn
 	 * @author Group 9
 	 * 
 	 * @return boolean
@@ -246,6 +219,35 @@ public class QuoridorController {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * creates a wall move that will be than given to validate a wall placement
+	 *
+	 * @param row The row of the wall.
+	 * @param column The column of the wall
+	 * @param orientation Orientation of the wall
+	 * @returns true if the wall move is created, false otherwise
+	 *
+	 * @author Mohamed Mohamed
+	 */
+	public static boolean createWallMove(int row, int column, Orientation orientation) {
+		throw new UnsupportedOperationException();
+	}
+	
+	/**
+	 * indicates if a wall placement is valid (i.e if the wall could possible put at this position
+	 * should tell the user if the wall move is not valid
+	 *
+	 * @param row The row of the wall.
+	 * @param column The column of the wall
+	 * @param orientation Orientation of the wall
+	 * @returns true if the position is valid, false otherwise
+	 *
+	 * @author Mohamed Mohamed
+	 */
+	public static boolean validWallPlacement(int row, int column, Orientation orientation) {
+		throw new UnsupportedOperationException();
+	}
+	
 	/**
 	 * Validates a placement of a wall
 	 *
@@ -432,13 +434,9 @@ public class QuoridorController {
 
 	/**
 	 * 
-<<<<<<< HEAD
-	 * @author alixe delabrousse
-=======
 	 *
 	 * 
 	 * @author Alixe Delabrousse (260868412)
->>>>>>> 66c4aab2e88b7aa43f4d14b3faa9285e9d2634a9
 	 * 
 	 * @return TOPlayer - returns the player associated with the white pawn
 	 */
@@ -457,16 +455,7 @@ public class QuoridorController {
 		throw new UnsupportedOperationException();
 	}
 	
-	/**
-	 * 
-	 * @author Mohamed Mohamed
-	 * 
-	 * @return boolean;
-	 */
-	
-	public static boolean getBlackPlayer()	{
-		throw new UnsupportedOperationException();
-	}
+
 	
 }// end QuoridorController
 

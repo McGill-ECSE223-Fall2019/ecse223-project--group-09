@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.validator.ValidateWith;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
@@ -302,8 +303,10 @@ public class CucumberStepDefinitions {
 	}
 	
 	
+	
 	// ***** ProvideOrSelectUserName.feature *****
 
+	
 	private Color color;
 		
 		
@@ -372,6 +375,7 @@ public class CucumberStepDefinitions {
 		throw new PendingException(); 
 	}
 	
+	
 	// ***** SetTotalThinkingTime.feature *****
 
 	/**
@@ -402,6 +406,7 @@ public class CucumberStepDefinitions {
 
 	}
 
+	
 	// ***** SavePosition.feature *****
 
 	private String fileName;
@@ -706,7 +711,7 @@ public class CucumberStepDefinitions {
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
 		
 		Assert.assertTrue(this.wallCandidate != null);
-		Assert.assertTrue(this.wallCandidate.getOrientatin() == orientation);
+		Assert.assertTrue(this.wallCandidate.getOrientation() == orientation);
 		Assert.assertTrue(this.wallCandidate.getColumn() == column);
 		Assert.assertTrue(this.wallCandidate.getRow() == row);
 
@@ -759,7 +764,7 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author Alixe Delabrousse (260868412) 
+	 * @author Alixe Delabrousse (260868412) & Mohamed Mohamed (260855731)
 	 * 
 	 * @param direction
 	 * @param nrow
@@ -767,8 +772,8 @@ public class CucumberStepDefinitions {
 	 */
 	
 	@And("A wall move candidate shall exist with {string} at position \\({int}, {int})")
-	public void newWallCandidate(String direction, int nrow, int ncolumn) {
-		this.wallCandidate = QuoridorController.createWallCandidateAtPosition(direction,  nrow, ncolumn);
+	public void newWallCandidate(String direction, int row, int col) {
+		this.wallCandidate = QuoridorController.createWallCandidateAtPosition(direction,  row, col);
 	}
 	
 	/**
@@ -797,97 +802,158 @@ public class CucumberStepDefinitions {
 	
 		//background feature is already written 
 		//given clause already implemented
+		//then clause implemented
 	
 		
-
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 */
 	@When("I try to flip the wall")
 	public void tryFlipWall() {
-		//this method will only create an exception because this is only related to the UI 
-		throw new PendingException();
 		QuoridorController.rotateWall(this.wallCandidate);
+		//this method will do the rotate wall method on a wall candidate that will do the following -->
 	}
-		
+	
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 */
 	@Then("The wall shall be rotated over the board to {newdir}")
 	public void rotateWall(String newdir) {
+		//checking if the wall actually got rotated to newdir
+		Orientation newDir=Orientation.valueOf(newdir.toUpperCase());//constructor takes an Orientation enum so the conversion is necessary
+		Assert.assertTrue(this.wallCandidate.getOrientation()==newDir);
 		
 		
 	}
 		
-		
+	
+	
 	// ***** DropWall feature ***** @Author Mohamed Mohamed
-	//background feature is already written 
+	
+			//background feature is already written 
 	
 	
+	private TOPlayer player=null; //will be used to switch current player
+	
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 */
 	@Given("The wall move candidate with <dir> at position (<row>, <col>) is valid")
 	public void wallMoveCandidateIsValid(String direction, int row, int col) {
-		//controller method that asks if it;s a valid position
+		//controller method that asks if it's a valid position
 		//the method should return something valid
 		//fr invalid check if it returs nothing
 		
+		this.wallCandidate.setOrientation(Orientation.valueOf(direction.toUpperCase()));
+		this.wallCandidate.setRow(row);
+		this.wallCandidate.setColumn(col);
+		//now check if the position is valid
+		boolean isValid= QuoridorController.validWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
+		Assert.assertTrue(isValid);//if valid it will be true
 	}
-		
+	
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 */	
 	@When("I release the wall in my hand")
 	public void realeaseWall() {
-		this.currentWall.setOrientation(this.wallCandidate.getOrientatin());
+		this.currentWall.setOrientation(this.wallCandidate.getOrientation());
 		this.currentWall.setRow(this.wallCandidate.getRow());
 		this.currentWall.setColumn(this.wallCandidate.getColumn());
-		//calling the method drop wall that should drop the wall by
-		QuoridorController.dropWall(this.currentWall);
+		//calling the method drop wall that should drop the wall by removing the wall form hand and registering the position
+		QuoridorController.dropWall(this.currentWall);//method drop wall will take as constructor a transfer object of wall
 	}
 		
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 * @param dir Dir is a string that indicates the direction of the wall
+	 * @param row Row is the row of the wall
+	 * @param col Col is the column of the wall
+	 */
+	@Then("A wall move is registered with <dir> at position ({row}, {col})")
+	public void aWallIsRegisteredAt(String dir, int row , int col){
+	//	check if a wall exists at the given information //implemented by the drop wall method
+		Assert.assertTrue(QuoridorController.createWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));
+		
+	}
+	
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 */
 	@Then("I shall not have a wall in my hand")
 	public void removeWallFromHand() {
 		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());//check if the player has a wall or not
 	}
-	@Then("A wall move is registered with <dir> at position ({row}, {col})")
-	public void aWallIsRegisteredAt(){
-	//	QuoridorController.validateWallPlacement(row, column, orientation)
-		
-	}
-		
-	@And("^I shall not have a wall in my hand$")
-    public void i_shall_not_have_a_wall_in_my_hand() throws Throwable {
-        throw new PendingException();
-    }
 	
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 */
 	@And("My move shall be completed")
 	public void CompleteMove() {
-			//get the current player and than switch player using the CM
+		this.player=QuoridorController.getPlayerOfCurrentTurn();
+		//move completed hence switch player
+		QuoridorController.switchCurrentPlayer();//
 	}
 		
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 */
 	@And("It it shall not be my turn to move")
 	public void finishMove() {
-		//get the current player and it shouldnt have the same player
+		//if it's no longer my move than player is no longer referencing the current player
+		Assert.assertTrue(this.player!=QuoridorController.getPlayerOfCurrentTurn());//condition should be true
 	}
-	
 
-	
-
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 * @param direction Direction is a string that indicates the direction of the wall
+	 * @param row Row is the row of the wall
+	 * @param col Col is the column of the wall
+	 */
 	@Given("The wall move candidate with <dir> at position (<row>, <col>) is invalid")
 	public void wallMoveCandidateIsInvalid(String direction, int row, int col) {
 		
+		this.wallCandidate.setOrientation(Orientation.valueOf(direction.toUpperCase()));
+		this.wallCandidate.setRow(row);
+		this.wallCandidate.setColumn(col);
+		//now check if the position is valid
+		boolean isValid=QuoridorController.validWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
+		Assert.assertFalse(isValid);//should be false since there is no move available
 		
 	}
     
-    @Then("^I shall be notified that my wall move is invalid$")
-    public void i_shall_be_notified_that_my_wall_move_is_invalid() throws Throwable {
+	/**
+	 * @author Mohamed Mohamed (260855731)
+	 */
+    @Then("I shall be notified that my wall move is invalid")
+    public void invalidWallMove(){
+    	//UI implemented method that will tell the user that he can't place the wall there
         throw new PendingException();
     }
 
+    /**
+	 * @author Mohamed Mohamed (260855731)
+	 */
+    @And("I shall have a wall in my hand over the board")
+    public void wallIsGrabbed() throws Throwable {
+    	Assert.assertTrue(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
 
-    @And("^I shall have a wall in my hand over the board$")
-    public void i_shall_have_a_wall_in_my_hand_over_the_board() throws Throwable {
-        throw new PendingException();
     }
 
-    @And("^It shall be my turn to move$")
-    public void it_shall_be_my_turn_to_move() throws Throwable {
-        throw new PendingException();
+    /**
+	 * @author Mohamed Mohamed (260855731)
+	 */
+    @And("It shall be my turn to move")
+    public void continueMove() {
+    	Assert.assertTrue(this.player==QuoridorController.getPlayerOfCurrentTurn());//condition should be true
     }
 
-    @But("^No wall move shall be registered with with <dir> at position (<row>, <col>)")
-    public void no_wall_move_shall_be_registered_with_something_at_position_(String dir, String row, String col, String strArg1) throws Throwable {
-        throw new PendingException();
+    /**
+	 * @author Mohamed Mohamed (260855731)
+	 */
+    @But("No wall move shall be registered with with <dir> at position (<row>, <col>)")
+    public void unregisteredWallMove(String dir, int row, int col){
+    	Assert.assertFalse(QuoridorController.createWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));  
     }
 	
 			
@@ -911,7 +977,6 @@ public class CucumberStepDefinitions {
 	}
 	
 	
-	// ***** RotateWall feature ***** @Author Mohamed Mohamed
 	
 	// ***** ValidatePosition.feature *****
 
