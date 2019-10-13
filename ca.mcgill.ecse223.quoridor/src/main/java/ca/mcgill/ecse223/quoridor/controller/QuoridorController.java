@@ -89,6 +89,9 @@ public class QuoridorController {
 	 */
 	
 	public void moveWall(Wall wall, GamePosition destination) {
+	
+	}
+	public static void moveWall(String side) {
 		throw new UnsupportedOperationException();
 		
 	}
@@ -346,6 +349,28 @@ public class QuoridorController {
 	public static TOPlayer getPlayerByName(String name) {
 		throw new UnsupportedOperationException("Query method get-player-by-name is not implemented yet");
 	}
+	
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @return a new wall candidate (wall move)
+	 */
+	public static TOWallCandidate createWallCandidateAtInitialPosition() {
+		throw new UnsupportedOperationException("Query method create-wall-candidate is not implemented yet");
+	}
+	
+	public static TOWallCandidate createWallCandidateAtPosition(String direction, int row, int column) {
+		throw new UnsupportedOperationException("Query method create-wall-candidate-at-position is not implemented yet");
+	}
+	
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @return the current wall candidate, the current wall move
+	 */
+	public static TOWallCandidate getWallCandidate() {
+		throw new UnsupportedOperationException("Query method get-wall-candidate is not implemented yet");
+	}
 
 	/**
 	 *
@@ -356,6 +381,18 @@ public class QuoridorController {
 	 */
 	public static List<TOWall> getWallsOwnedByPlayer(String name) {
 		throw new UnsupportedOperationException("Query method get-walls-owned-by-player is not implemented yet");
+	}
+	
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @param nrow
+	 * @param ncolumn
+	 * @param TOWall
+	 */
+	
+	public static void updateWallPosition(TOWall wall, int nrow, int ncolumn) {
+		throw new UnsupportedOperationException("Query method update-wall-position is not implemented yet");
 	}
 
 	/**
@@ -395,9 +432,15 @@ public class QuoridorController {
 
 	/**
 	 * 
+<<<<<<< HEAD
 	 * @author alixe delabrousse
+=======
+	 *
 	 * 
-	 * @return TOPlayer; 
+	 * @author Alixe Delabrousse (260868412)
+>>>>>>> 66c4aab2e88b7aa43f4d14b3faa9285e9d2634a9
+	 * 
+	 * @return TOPlayer - returns the player associated with the white pawn
 	 */
 
 	public static TOPlayer getWhitePlayer(){
@@ -408,7 +451,7 @@ public class QuoridorController {
 	 * 
 	 * @author alixe delabrousse
 	 * 
-	 * @return TOPlayer;
+	 * @return TOPlayer - returns the player associated with the black pawn
 	 */
 	public static TOPlayer getBlackPlayer()	{
 		throw new UnsupportedOperationException();

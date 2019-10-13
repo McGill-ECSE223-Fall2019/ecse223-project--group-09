@@ -19,9 +19,8 @@ public final class TOWall {
     private int row;
     private int column;
     public boolean grabbed;
-    public TOWallCandidate wallCandidate = null;
-    private final int initialRowPosition = 1;
-    private final int initialColumnPosition = 1;
+
+
     
     
     public void setOrientation(Orientation orientation) {
@@ -49,22 +48,21 @@ public final class TOWall {
     }
 
     
+    /**
+     * @author alixe delabrousse
+     * @param grabbed
+     */
+    
     public void SetGrabbed(boolean grabbed) {
     	this.grabbed = grabbed;
     }
     
+    /**
+     * @author alixe delabrousse
+     */
+    
     public boolean isGrabbed() {
-    	if (this.grabbed) return true;
-    	else return false;
+    	return this.isGrabbed();
     }
     
-    public TOWallCandidate createWallCandidate() {
-    	return this.wallCandidate = new TOWallCandidate(this.orientation,this.initialRowPosition, this.initialColumnPosition);
-    	
-    }
-    
-    public TOWallCandidate getWallCandidate() {
-    	if (wallCandidate!=null) return this.wallCandidate;
-    	else return null;
-    }
 }

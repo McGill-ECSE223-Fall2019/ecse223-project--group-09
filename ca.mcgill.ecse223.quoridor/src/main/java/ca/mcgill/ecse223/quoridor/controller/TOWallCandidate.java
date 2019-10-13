@@ -15,6 +15,8 @@ public class TOWallCandidate {
     private int row;
     private int column;
     
+    private TOWall associatedWall;
+    
     TOWallCandidate(Orientation orientation, int row, int column) {
     	
     	this.orientation = orientation;
@@ -43,6 +45,11 @@ public class TOWallCandidate {
     
     public void setOrientation(Orientation orientation) {
     	this.orientation = orientation;
+    }
+    
+    public TOWall getAssociatedWall(){
+    	return this.associatedWall;
+    	
     }
     
 }

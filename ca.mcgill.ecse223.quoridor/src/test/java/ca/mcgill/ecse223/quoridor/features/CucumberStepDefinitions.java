@@ -57,6 +57,7 @@ public class CucumberStepDefinitions {
 		initQuoridorAndBoard();
 		createUsersAndPlayers("user1", "user2");
 	}
+	
 
 	@Given("^The game is running$")
 	public void theGameIsRunning() {
@@ -152,12 +153,160 @@ public class CucumberStepDefinitions {
 	 * 
 	 */
 
-
+	// ***** InitializeBoard.feature *****
+		
+	/**
+	* @author Barry Chen
+	*/
+	@When("The initialization of the board is initiated")
+	public void initializationOfTheBoardInitiated() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@Then("It shall be white player to move")
+	public void whitePlayerToMove() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("White's pawn shall be in its initial position")
+	public void whitePawnBeAtInitialPosition() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("Black's pawn shall be in its initial position")
+	public void blackPawnBeAtInitialPosition() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("All of White's walls shall be in stock")
+	public void allWhiteWallsBeInStock() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("All of Black's walls shall be in stock")
+	public void allBlackWallsBeInStock() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("White's clock shall be counting down")
+	public void whiteClockShallBeCoutingDown() {
+		throw new PendingException();
+	}
+	
+	/**
+	* @author Barry Chen
+	*/
+	@And("It shall be shown that this is White's turn")
+	public void ShownThatIsWhiteTurn() {
+		throw new PendingException();
+	}
+	
+	
+	// ***** StartNewGame.feature *****
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@When("A new game is being initialized")
+	public void aNewGameIsBeingInitialized() {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@And("White player chooses a username")
+	public void whitePlayerChoosesUsername( ) {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@And("Black player chooses a username")
+	public void blackPlayerChoosesUsername( ) {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@And("Total thinking time is set")
+	public void totalThinkingTimeSet( ) {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@Then("The game shall become ready to start")
+	public void gameShallBecomeReadyToStart( ) {
+		throw new PendingException();
+	}
+	
+	/*
+	Given The game is ready to start
+  	When I start the clock
+  	Then The game shall be running
+  	And The board shall be initialized
+	 */
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@Given("The game is ready to start")
+	public void gameIsReadyToStart() {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@When("I start the clock")
+	public void startTheClock() {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@Then("The game shall be running")
+	public void gameShallBeRunning() {
+		throw new PendingException();
+	}
+	
+	/**
+	 * @author Barry Chen
+	 */
+	@And("The board shall be initialized")
+	public void boardShallBeInitialized() {
+		throw new PendingException();
+	}
+	
+	
 	// ***** ProvideOrSelectUserName.feature *****
 
 	private Color color;
-
-
+		
+		
 	/**
 	*@param String color;
 	*@author Ada Andrei
@@ -459,6 +608,11 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(this.positionValidFlag);
 	}
 	
+	
+	private List<TOWall> wallStock;
+	private TOWall currentWall;
+	private TOWallCandidate wallCandidate;
+	
 	// ***** GrabWall.feature *****
 	
 		//Start wall placement
@@ -468,7 +622,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
-		List<TOWall> wallStock = new ArrayList<TOWall>();
+		this.wallStock = QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName());
 		Assert.assertNotNull(wallStock);
 	}
 	
@@ -477,8 +631,8 @@ public class CucumberStepDefinitions {
 	 */
 	
 	@When("I try to grab a wall from my stock")
-	public void playerTryToGrabWall(List<TOWall> wallStock) {
-		QuoridorController.grabWall(wallStock);
+	public void playerTryToGrabWall() {
+		QuoridorController.grabWall(this.wallStock);
 		
 	}
 	
@@ -488,9 +642,9 @@ public class CucumberStepDefinitions {
 	 */
 	
 	@Then("A wall move candidate shall be created at initial position")
-	public void createWallMoveCandidate(TOWall currentGrabbedWall) {
-		TOWallCandidate wallCandidate = currentGrabbedWall.createWallCandidate();
-			
+	public void createNewWallMoveCandidate() {
+		this.wallCandidate = QuoridorController.createWallCandidateAtInitialPosition();
+;		this.currentWall = this.wallCandidate.getAssociatedWall();
 	}
 	
 	/**
@@ -506,12 +660,10 @@ public class CucumberStepDefinitions {
 	 * 
 	 * @author Alixe Delabrousse (260868412)
 	 * 
-	 * @param wallGrabbed
 	 */
-	@And("The wall in my hand should disappear from my stock")
+	@And("The wall in my hand shall disappear from my stock")
 	public void removeWallFromStock() {
-		throw new PendingException();
-		// UI related method
+		Assert.assertFalse(this.wallStock.contains(this.currentWall));
 	}
 	
 	/**
@@ -519,9 +671,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("I have no more walls on stock")
 	public void noMoreWallsOnStock() {
-		List<TOWall> wallStock = new ArrayList<TOWall>();
-		wallStock = null;
-		Assert.assertNull(wallStock);
+		Assert.assertTrue(wallStock.isEmpty());
 	}
 	
 	/**
@@ -540,27 +690,26 @@ public class CucumberStepDefinitions {
 	@But("I shall have no walls in my hand")
 	public void noWallInHand() {
 		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall() == null);
+		
 	}
 	
-	// ****** WALL FEATURES ******
-	
-	private TOWall currentWall;
-	private TOWallCandidate wallCandidate;
+
 	
 	// ***** MoveWall.feature *****
 	
-	
-	
 	/**
-	 * @author Alixe Delabrousse (260868412)
+	 * @author Alixe Delabrousse (260868412) & Mohamed Mohamed (260855731)
 	 */
 	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
-	public void wallCandidateExists() {
+	public void wallCandidateExists(String direction, int row, int column) {
 		
-		this.currentWall = QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName()).get(QuoridorController.getPlayerOfCurrentTurn().getWallsRemaining());
-		this.wallCandidate = currentWall.createWallCandidate();
+		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
+		
 		Assert.assertTrue(this.wallCandidate != null);
+		Assert.assertTrue(this.wallCandidate.getOrientatin() == orientation);
+		Assert.assertTrue(this.wallCandidate.getColumn() == column);
+		Assert.assertTrue(this.wallCandidate.getRow() == row);
+
 	}
 	
 	
@@ -571,9 +720,16 @@ public class CucumberStepDefinitions {
 	 * @param wallCandidate
 	 */
 	@And("The wall candidate is not at the {string} edge of the board")
-	public void wallCandidateNotOnBorder() {
-		Assert.assertTrue(this.wallCandidate.getRow() > 0 && wallCandidate.getRow() < 10);
-		Assert.assertTrue(this.wallCandidate.getColumn() > 0 && wallCandidate.getColumn() < 10);
+	public void wallCandidateNotOnEdge(String side) {
+		if (side.equals("up")) {
+			Assert.assertTrue(this.wallCandidate.getRow() != 9);
+		} else if (side.equals("down")) {
+			Assert.assertTrue(this.wallCandidate.getRow() != 1);
+		} else if (side.equals("left")) {
+			Assert.assertTrue(this.wallCandidate.getColumn() != 1);
+		} else if (side.equals("right")) {
+			Assert.assertTrue(this.wallCandidate.getColumn() != 9);
+		}
 	
 	}
 	
@@ -583,8 +739,8 @@ public class CucumberStepDefinitions {
 	 * @author Alixe Delabrousse (260868412)
 	 */
 	@When("I try to move the wall {string}")
-	public void attemptToMoveWall() {
-		QuoridorController.moveWall(this.currentWall);
+	public void attemptToMoveWall(String side) {
+		QuoridorController.moveWall(side);
 		
 	}
 	
@@ -592,40 +748,46 @@ public class CucumberStepDefinitions {
 	 * 
 	 * @author Alixe Delabrouse (260868412)
 	 * 
-	 * @param mousePositionColumn
-	 * @param mousePositionRow
+	 * @param row
+	 * @param column
 	 */
 	@Then("The wall shall be moved over the board to position \\({int}, {int})")
-	public void wallMoving(int mousePositionRow, int mousePositionColumn) {
-		throw new PendingException();
-		//UI related method
+	public void wallMoving(int row, int column) {
+		QuoridorController.updateWallPosition(this.currentWall, row, column);
+		
 	}
 	
 	/**
 	 * 
-	 * @author Alixe Delabrousse (260868412)
+	 * @author Alixe Delabrousse (260868412) 
 	 * 
-	 * @param currentWallCandidate
-	 * @param mousePositionRow
-	 * @param mousePositionColumn
+	 * @param direction
+	 * @param nrow
+	 * @param ncolumn
 	 */
 	
 	@And("A wall move candidate shall exist with {string} at position \\({int}, {int})")
-	public void wallCandidateAtRightPosition(TOWallCandidate currentWallCandidate, int mousePositionRow, int mousePositionColumn) {
-		Assert.assertTrue(currentWallCandidate.getColumn() == mousePositionColumn);
-		Assert.assertTrue(currentWallCandidate.getRow() == mousePositionRow);
-
+	public void newWallCandidate(String direction, int nrow, int ncolumn) {
+		this.wallCandidate = QuoridorController.createWallCandidateAtPosition(direction,  nrow, ncolumn);
 	}
 	
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 * 
-	 * @param currentWallCandidate
+	 * 
 	 */
+	
 	@And("The wall candidate is at the {string} edge of the board")
-	public void wallCandidateAtEdge(TOWallCandidate currentWallCandidate) {
-		Assert.assertTrue(currentWallCandidate.getColumn() == 1 || currentWallCandidate.getColumn() == 9);
-		Assert.assertTrue(currentWallCandidate.getRow() == 1 || currentWallCandidate.getRow() == 9);
+	public void wallCandidateAtEdge(String side) {
+		if (side.equals("up")) {
+			Assert.assertTrue(this.wallCandidate.getRow() == 9);
+		} else if (side.equals("down")) {
+			Assert.assertTrue(this.wallCandidate.getRow() == 1);
+		} else if (side.equals("left")) {
+			Assert.assertTrue(this.wallCandidate.getColumn() == 1);
+		} else if (side.contentEquals("right")) {
+			Assert.assertTrue(this.wallCandidate.getColumn() == 9);
+		}
 		
 	}
 	
