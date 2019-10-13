@@ -56,45 +56,7 @@ public class QuoridorController {
 		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
 	}
 	
-	/**
- 	* 
- 	* @author alixe delabrousse (260868412)
-	* 
- 	* @param player
- 	* @param direction
- 	* 
-	* This method allows the player to grab one if its walls from its remaining walls pile.
- 	* This method enables the use of RotateWall, DropWall, and MoveWall.
- 	* 
- 	* 
- 	*/
-	
-	public void grabWall(Player player, Direction direction) {
-		throw new UnsupportedOperationException();
-		
-	}
-	
-	
-	/**
-	 * 
-	 * @author alixe delabrousse (260868412)
-	 * 
-	 * @param wall
-	 * @param destination
-	 * 
-	 * This methods is enabled by the method grabWall.
-	 * This methods allows the user to move their wall candidate around on the board.
-	 * 
-	 * 
-	 */
-	
-	public void moveWall(Wall wall, GamePosition destination) {
-	
-	}
-	public static void moveWall(String side) {
-		throw new UnsupportedOperationException();
-		
-	}
+
 	
 	
 	/**
@@ -157,6 +119,50 @@ public class QuoridorController {
 		}
 	}
 	
+	/**
+ 	* 
+ 	* @author alixe delabrousse (260868412)
+	* 
+ 	* @param List<TOWall> wallStock - list of walls remaining of the current player
+ 	* 
+	* This method allows the player to grab one if its walls from its remaining walls pile.
+ 	* This method enables the use of RotateWall, DropWall, and MoveWall.
+ 	* 
+ 	* If the player has no more wall remaining, a notification will appear.
+ 	* If the player has walls remaining, one of them will disappear from the
+ 	* stock and be placed at the initial position on the board.
+ 	* 
+ 	* 
+ 	*/
+	
+	public static void grabWall(List<TOWall> wallStock) {
+		throw new UnsupportedOperationException();
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @author alixe delabrousse (260868412)
+	 * 
+	 * @param String side - the side in which the player wishes to move the wall.
+	 * 
+	 * This methods is enabled by the method grabWall.
+	 * This methods allows the user to move their wall candidate around on the board.
+	 * If the wall is not on the edge of the board:
+	 * 		You can move the wall either "up", "down", "left" or "right".
+	 * If the wall is on one edge of the board:
+	 * 		You cannot move further in that direction.
+	 * Each time the wall moves, new wall candidates (wall moves) are created
+	 * at the positions the wall is allowed to move to (at its left, right, above or below)
+	 * 
+	 * 
+	 */
+	
+	public static void moveWall(String side) {
+		throw new UnsupportedOperationException();
+		
+	}
 	
 	/**
 	 * 
@@ -363,7 +369,16 @@ public class QuoridorController {
 		throw new UnsupportedOperationException("Query method create-wall-candidate is not implemented yet");
 	}
 	
-	public static TOWallCandidate createWallCandidateAtPosition(String direction, int row, int column) {
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @param direction
+	 * @param row
+	 * @param column
+	 * @return
+	 */
+	
+	public static TOWallCandidate createWallCandidateAtPosition(Orientation direction, int row, int column) {
 		throw new UnsupportedOperationException("Query method create-wall-candidate-at-position is not implemented yet");
 	}
 	

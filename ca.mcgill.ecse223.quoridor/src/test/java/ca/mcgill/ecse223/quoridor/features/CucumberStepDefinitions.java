@@ -659,6 +659,7 @@ public class CucumberStepDefinitions {
 	@And("I shall have a wall in my hand over the board")
 	public void wallOverBoard() {
 		throw new PendingException();
+		//This is a UI related method
 	}
 
 	/**
@@ -773,7 +774,9 @@ public class CucumberStepDefinitions {
 	
 	@And("A wall move candidate shall exist with {string} at position \\({int}, {int})")
 	public void newWallCandidate(String direction, int row, int col) {
-		this.wallCandidate = QuoridorController.createWallCandidateAtPosition(direction,  row, col);
+		
+		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
+		this.wallCandidate = QuoridorController.createWallCandidateAtPosition(orientation,  row, col);
 	}
 	
 	/**
@@ -796,6 +799,15 @@ public class CucumberStepDefinitions {
 		
 	}
 	
+	/**
+	 * @author alixe delabrousse (260868412)
+	 */
+	
+	@Then("I shall be notified that my move is illegal")
+	public void notifIllegalMove() {
+		throw new PendingException();
+		//UI related method
+	}
 
 
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
