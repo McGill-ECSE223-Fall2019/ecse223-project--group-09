@@ -336,7 +336,7 @@ public class CucumberStepDefinitions {
 	*@param String user; 
 	*@author Ada Andrei
 	*/
-	@When("The player selects existing user {string}") 
+	@When("The player selects existing {string}") 
 	public void playerSelectsExistingUsername(String user) {
 		QuoridorController.selectUsername(user);
 	}
