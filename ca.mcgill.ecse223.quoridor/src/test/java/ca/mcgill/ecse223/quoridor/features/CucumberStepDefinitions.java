@@ -683,7 +683,7 @@ public class CucumberStepDefinitions {
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 */
-	@Then("I should be notified that I have no more walls")
+	@Then("I shall be notified that I have no more walls")
 	public void notifNoMoreWalls() {
 		throw new PendingException();
 		//UI related method
