@@ -892,7 +892,7 @@ public class CucumberStepDefinitions {
 	 * @param row Row is the row of the wall
 	 * @param col Col is the column of the wall
 	 */
-	@Then("A wall move is registered with {string} at position \\({int}, {int})")
+	@Then("A wall move shall be registered with {string} at position \\({int}, {int})")
 	public void aWallIsRegisteredAt(String dir, int row , int col){
 	//	check if a wall exists at the given information //implemented by the drop wall method
 		Assert.assertTrue(QuoridorController.createWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));
@@ -920,7 +920,7 @@ public class CucumberStepDefinitions {
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
-	@And("It it shall not be my turn to move")
+	@And("It shall not be my turn to move")
 	public void finishMove() {
 		//if it's no longer my move than player is no longer referencing the current player
 		Assert.assertTrue(this.player!=QuoridorController.getPlayerOfCurrentTurn());//condition should be true
@@ -964,7 +964,7 @@ public class CucumberStepDefinitions {
     /**
 	 * @author Mohamed Mohamed (260855731)
 	 */
-    @But("No wall move shall be registered with with {string} at position \\({int}, {int})")
+    @But("No wall move shall be registered with {string} at position \\({int}, {int})")
     public void unregisteredWallMove(String dir, int row, int col){
     	Assert.assertFalse(QuoridorController.createWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));  
     }
