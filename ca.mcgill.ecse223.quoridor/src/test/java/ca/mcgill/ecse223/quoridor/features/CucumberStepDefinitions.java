@@ -308,7 +308,8 @@ public class CucumberStepDefinitions {
 
 	
 	private Color color;
-		
+	
+	// selecting an existing username
 		
 	/**
 	*@param String color;
@@ -335,7 +336,7 @@ public class CucumberStepDefinitions {
 	*@param String user; 
 	*@author Ada Andrei
 	*/
-	@When("The player selects existing {string}") 
+	@When("The player selects existing user {string}") 
 	public void playerSelectsExistingUsername(String user) {
 		QuoridorController.selectUsername(user);
 	}
@@ -343,17 +344,18 @@ public class CucumberStepDefinitions {
 	/**
 	*@author Ada Andrei
 	*/
-	@Then("The name of player {string} in the new game shall be <username>")
-	public void nameOfPlayerInNewGameShallBeUsername() {
+	@Then("The name of player {string} in the new game shall be {string}")
+	public void nameOfPlayerInNewGameShallBeUsername(String color, String user) {
 		throw new PendingException();
 	}
 
+	// create new user name
 
 	/**
 	*@param boolean user;
 	*@author Ada Andrei
 	*/
-	@And("There is no existing user")
+	@And("There is no existing user {string}")
 	public void noExistingUser(boolean user) {
 		Assert.assertFalse(user); 
 	}
@@ -366,6 +368,8 @@ public class CucumberStepDefinitions {
 	public void playerProvidesNewUserName(String user) {
 		QuoridorController.createUsername(user);		
 	}
+
+	// user name already exists
 
 	/**
 	*@author Ada Andrei
