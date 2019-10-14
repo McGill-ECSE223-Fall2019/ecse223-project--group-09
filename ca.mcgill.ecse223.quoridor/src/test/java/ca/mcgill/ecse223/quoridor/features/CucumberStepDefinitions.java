@@ -342,6 +342,8 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
+	*@param String color;
+	*@param String user;
 	*@author Ada Andrei
 	*/
 	@Then("The name of player {string} in the new game shall be {string}")
@@ -379,6 +381,13 @@ public class CucumberStepDefinitions {
 		throw new PendingException(); 
 	}
 	
+	/**
+	*@author Ada Andrei
+	*/
+	@And("Next player to set user name shall be {string}")
+	public void nextPlayerToSetUserNameShallBe(String color) {
+		throw new PendingException();
+	}
 	
 	// ***** SetTotalThinkingTime.feature *****
 
