@@ -328,19 +328,17 @@ public class QuoridorController {
 	 */
 
 	public static boolean savePosition(String filePath, boolean overwriteIfExists) throws IOException {
-		throw new UnsupportedOperationException("Method Save Position is not implemented yet");
-
-//		final File file = new File(filePath);
-//		if (file.exists() && !overwriteIfExists) {
-//			// File exists but user does not want to
-//			// overwrite the file, so we are done
-//			return false;
-//		}
-//		
-//		try (final Writer writer = new FileWriter(file)) {
-//			savePosition(writer);
-//		}
-//		return true;
+		final File file = new File(filePath);
+		if (file.exists() && !overwriteIfExists) {
+			// File exists but user does not want to
+			// overwrite the file, so we are done
+			return false;
+		}
+		
+		try (final Writer writer = new FileWriter(file)) {
+			savePosition(writer);
+		}
+		return true;
 	}
 
 	/**
@@ -365,11 +363,9 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static boolean loadPosition(String filePath) throws IOException {
-		throw new UnsupportedOperationException("Method Load Position is not implemented yet");
-
-//		try (final Reader reader = new FileReader(filePath)) {
-//			return loadPosition(reader);
-//		}
+		try (final Reader reader = new FileReader(filePath)) {
+			return loadPosition(reader);
+		}
 	}
 	
 	/**
@@ -381,7 +377,7 @@ public class QuoridorController {
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static void loadPosition(Reader source) throws IOException {
+	public static boolean loadPosition(Reader source) throws IOException {
 		throw new UnsupportedOperationException("Helper method Load Position is not implemented yet");
 	}
 
@@ -517,8 +513,6 @@ public class QuoridorController {
 	public static TOPlayer getBlackPlayer()	{
 		throw new UnsupportedOperationException();
 	}
-	
 
-	
 }// end QuoridorController
 
