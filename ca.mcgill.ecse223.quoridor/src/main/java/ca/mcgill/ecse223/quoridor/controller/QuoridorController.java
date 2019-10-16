@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This is the controller class for the Quoridor application
@@ -388,7 +389,18 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static TOPlayer getPlayerOfCurrentTurn() {
-		throw new UnsupportedOperationException("Query method get-player-of-current-turn is not implemented yet");
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return null;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		if (!game.hasCurrentPosition()) {
+			return null;
+		}
+
+		final GamePosition pos = game.getCurrentPosition();
+		return fromPlayer(pos.getPlayerToMove());
 	}
 
 	/**
@@ -399,7 +411,94 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static TOPlayer getPlayerByName(String name) {
-		throw new UnsupportedOperationException("Query method get-player-by-name is not implemented yet");
+		final Player p = getModelPlayerByName(name);
+		if (p == null) {
+			return null;
+		}
+
+		return fromPlayer(p);
+	}
+
+	/**
+	 * Converts a Player to TOPlayer
+	 *
+	 * @param p the Player
+	 * @returns the corresponding TOPlayer
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static TOPlayer fromPlayer(Player p) {
+		final TOPlayer player = new TOPlayer();
+		player.setName(p.getUser().getName());
+
+		final Game g;
+		final Color c;
+		if (p.hasGameAsBlack()) {
+			g = p.getGameAsBlack();
+			player.setColor((c = Color.BLACK));
+		} else {
+			g = p.getGameAsWhite();
+			player.setColor((c = Color.WHITE));
+		}
+
+		player.setRow(-1);
+		player.setColumn(-1);
+		player.setWallsRemaining(-1);
+
+		if (g.hasCurrentPosition()) {
+			final GamePosition pos = g.getCurrentPosition();
+			Tile t = null;
+			switch (c) {
+				case BLACK:
+					t = pos.getBlackPosition().getTile();
+					player.setWallsRemaining(pos.numberOfBlackWallsInStock());
+					break;
+				case WHITE:
+					t = pos.getWhitePosition().getTile();
+					player.setWallsRemaining(pos.numberOfWhiteWallsInStock());
+					break;
+			}
+
+			if (t != null) {
+				player.setRow(t.getRow());
+				player.setColumn(t.getColumn());
+			}
+		}
+
+		player.setTimeRemaining(p.getRemainingTime());
+
+		// TODO: Figure out how to grab a wall
+
+		return player;
+	}
+
+	/**
+	 *
+	 * @param name The name of the desired player
+	 * @returns the player associated with the name, null if no such player exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static Player getModelPlayerByName(String name) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// There isn't even a game!
+			return null;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+
+		Player aPlayer = game.getWhitePlayer();
+		if (aPlayer.getUser().getName().equals(name)) {
+			return aPlayer;
+		}
+		
+		aPlayer = game.getBlackPlayer();
+		if (aPlayer.getUser().getName().equals(name)) {
+			return aPlayer;
+		}
+
+		return null;
 	}
 	
 	/**
@@ -441,7 +540,42 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static List<TOWall> getWallsOwnedByPlayer(String name) {
-		throw new UnsupportedOperationException("Query method get-walls-owned-by-player is not implemented yet");
+		final Player p = getModelPlayerByName(name);
+		if (p == null) {
+			return null;
+		}
+
+		return p.getWalls().stream()
+				.map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Converts a Wall to TOWall
+	 *
+	 * @param wall the Wall
+	 * @returns the corresponding TOWall
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static TOWall fromWall(Wall wall) {
+		final TOWall toWall = new TOWall();
+		if (wall.hasMove()) {
+			WallMove move = wall.getMove();
+			switch (move.getWallDirection()) {
+				case Horizontal:
+					toWall.setOrientation(Orientation.HORIZONTAL);
+					break;
+				case Vertical:
+					toWall.setOrientation(Orientation.VERTICAL);
+					break;
+			}
+
+			final Tile tile = move.getTargetTile();
+			toWall.setRow(tile.getRow());
+			toWall.setColumn(tile.getColumn());
+		}
+		return toWall;
 	}
 	
 	/**
