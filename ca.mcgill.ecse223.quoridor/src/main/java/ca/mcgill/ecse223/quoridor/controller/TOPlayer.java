@@ -14,7 +14,7 @@ public final class TOPlayer {
     private int row;
     private int column;
     private Time timeRemaining;
-    private String color;
+    private Color color;
     private boolean wallInHand = false;
     private int wallsRemaining;
     
@@ -38,16 +38,24 @@ public final class TOPlayer {
         this.column = col;
     }
 
+    public void setTimeRemaining(Time time) {
+        this.timeRemaining = time;
+    }
+
+    public void setWallsRemaining(int remaining) {
+        this.wallsRemaining = remaining;
+    }
+
     public int getColumn() {
         return this.column;
     }
     public Time getTimeRemaining() {
     	return this.timeRemaining;
     }
-    public void setColor(String color) {
+    public void setColor(Color color) {
     	this.color = color;
     }
-    public String getColor() {
+    public Color getColor() {
     	return this.color;
     }
     public void setWallInHand(boolean hasWall) {
