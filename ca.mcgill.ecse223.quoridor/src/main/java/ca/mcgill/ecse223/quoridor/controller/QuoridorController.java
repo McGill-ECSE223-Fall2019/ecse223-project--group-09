@@ -4,11 +4,16 @@ import java.lang.UnsupportedOperationException;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.*;
+import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
+import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+
 import java.io.File;
 import java.io.Reader;
 import java.io.Writer;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
@@ -345,13 +350,72 @@ public class QuoridorController {
 	/**
 	 * Writes out the current board
 	 *
+	 * Note: this method does not close any streams; it is the caller's
+	 * responsibility to do so.
+	 * 
 	 * @param destination The stream we are writing to
 	 * @throws IOException If writing operation fails
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
 	public static void savePosition(Writer destination) throws IOException {
-		throw new UnsupportedOperationException("Helper method Save Position is not implemented yet");
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// Nothing to save, we are done
+			return;
+		}
+
+		final PrintWriter pw = new PrintWriter(destination);
+		final Game game = quoridor.getCurrentGame();
+
+		pw.printf("status:%s\n", game.getGameStatus());
+		pw.printf("move:%s\n", game.getMoveMode());
+
+		savePlayer(pw, game.getWhitePlayer());
+		savePlayer(pw, game.getBlackPlayer());
+
+		final GamePosition gamePosition = game.getCurrentPosition();
+		pw.printf("id:%d\n", gamePosition.getId());
+		saveTile(pw, gamePosition.getWhitePosition().getTile());
+		saveTile(pw, gamePosition.getBlackPosition().getTile());
+		if (gamePosition.getPlayerToMove() == game.getWhitePlayer()) {
+			pw.printf("start:%s\n", Color.WHITE);
+		} else {
+			pw.printf("start:%s\n", Color.BLACK);
+		}
+
+		// TODO: Walls...
+	}
+
+	/**
+	 * Writes out a tile position
+	 * 
+	 * @param pw The stream we are writing to
+	 * @param tile The tile being saved
+	 * @throws IOException If writing operation fails
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static void saveTile(PrintWriter pw, Tile tile) throws IOException {
+		pw.printf("row:%d\n", tile.getRow());
+		pw.printf("col:%d\n", tile.getColumn());
+	}
+
+	/**
+	 * Writes out a player
+	 * 
+	 * @param pw The stream we are writing to
+	 * @param p The player being saved
+	 * @throws IOException If writing operation fails
+	 */
+	private static void savePlayer(PrintWriter pw, Player p) throws IOException {
+		final Time t = p.getRemainingTime();
+		pw.printf("time:%d:%d:%d\n", t.getHours(), t.getMinutes(), t.getSeconds());
+		pw.printf("name:%s\n", p.getUser().getName());
+
+		final Destination d = p.getDestination();
+		pw.printf("target:%d\n", d.getTargetNumber());
+		pw.printf("dir:%s\n", d.getDirection());
 	}
 	
 	/**
@@ -366,12 +430,18 @@ public class QuoridorController {
 	public static boolean loadPosition(String filePath) throws IOException {
 		try (final Reader reader = new FileReader(filePath)) {
 			return loadPosition(reader);
+		} catch (IllegalArgumentException ex) {
+			// Reading failed due to formatting
+			throw new IOException(ex);
 		}
 	}
 	
 	/**
 	 * Reads in a previously saved board
 	 *
+	 * Note: this method does not close any streams; it is the caller's
+	 * responsibility to do so.
+	 * 
 	 * @param source The stream we are reading from
 	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails
@@ -379,7 +449,163 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static boolean loadPosition(Reader source) throws IOException {
-		throw new UnsupportedOperationException("Helper method Load Position is not implemented yet");
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		
+		final BufferedReader br = new BufferedReader(source);
+
+		final GameStatus status = matchForEnum(br, "status", GameStatus.class);
+		final MoveMode move = matchForEnum(br, "move", MoveMode.class);
+
+		final Player whitePlayer = readPlayer(br);
+		final Player blackPlayer = readPlayer(br);
+		whitePlayer.setNextPlayer(blackPlayer);
+		blackPlayer.setNextPlayer(whitePlayer);
+
+		final Game game;
+		if (!quoridor.hasCurrentGame()) {
+			game = new Game(status, move, whitePlayer, blackPlayer, quoridor);
+		} else {
+			game = quoridor.getCurrentGame();
+			game.setGameStatus(status);
+			game.setMoveMode(move);
+			game.setWhitePlayer(whitePlayer);
+			game.setBlackPlayer(blackPlayer);
+		}
+
+		final int id = matchForInt(br, "id");
+		final Tile whitePlayerTile = readTile(br);
+		final Tile blackPlayerTile = readTile(br);
+
+		PlayerPosition whitePosition = new PlayerPosition(whitePlayer, whitePlayerTile);
+		PlayerPosition blackPosition = new PlayerPosition(blackPlayer, blackPlayerTile);
+		final Color startingColor = matchForEnum(br, "start", Color.class);
+
+		GamePosition gp = new GamePosition(
+				id,
+				whitePosition,
+				blackPosition,
+				startingColor == Color.WHITE ? whitePlayer : blackPlayer,
+				game);
+
+		// TODO: Walls...
+
+		game.setCurrentPosition(gp);
+		return true;
+	}
+
+	/**
+	 * Reads in a tile position
+	 * 
+	 * @param br The stream we are reading from
+	 * @return The tile being read
+	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static Tile readTile(BufferedReader br) throws IOException {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+
+		final int row = matchForInt(br, "row");
+		final int col = matchForInt(br, "col");
+
+		// based off indexing scheme used in
+		// CucumberStepDefintions#createAndStartGame(ArrayList<Player>)
+		return quoridor.getBoard().getTile(row * 9 + col);
+	}
+
+	/**
+	 * Reads in a player
+	 * 
+	 * @param br The stream we are reading from
+	 * @return The player being read
+	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static Player readPlayer(BufferedReader br) throws IOException {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+
+		final Time remainingTime = matchForTime(br, "time");
+		final String name = matchForString(br, "name");
+		final User user = User.hasWithName(name) ? User.getWithName(name) : quoridor.addUser(name);
+
+		final int targetNumber = matchForInt(br, "target");
+		final Direction direction = matchForEnum(br, "dir", Direction.class);
+
+		return new Player(remainingTime, user, targetNumber, direction);
+	}
+	
+	/**
+	 * Retrieves a line with format: {@code $key:[+-]?\d+}
+	 * 
+	 * @param br The stream we are reading from
+	 * @param key The key (stuff before colon)
+	 * @return stuff after colon as integer
+	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static int matchForInt(BufferedReader br, String key) throws IOException {
+		String line = br.readLine();
+		if (line == null || !line.matches('^' + key + ":[+-]?\\d+$")) {
+			throw new IllegalArgumentException("Invalid numeric format `" + line + "`");
+		}
+		return Integer.parseInt(line.substring(key.length() + 1));
+	}
+
+	/**
+	 * Retrieves a line with format: {@code $key:\d{1,2}:\d{1,2}:\d{1,2}}
+	 * 
+	 * @param br The stream we are reading from
+	 * @param key The key (stuff before colon)
+	 * @return stuff after colon as integer
+	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static Time matchForTime(BufferedReader br, String key) throws IOException {
+		String line = br.readLine();
+		if (line == null || !line.matches('^' + key + ":\\d{1,2}:\\d{1,2}:\\d{1,2}$")) {
+			throw new IllegalArgumentException("Invalid time format `" + line + "`");
+		}
+		final String[] seq = line.substring(key.length() + 1).split(":");
+		return new Time(
+				Integer.parseInt(seq[0]),
+				Integer.parseInt(seq[1]),
+				Integer.parseInt(seq[2]));
+	}
+	
+	/**
+	 * Retrieves a line with format: {@code $key:.*}
+	 * 
+	 * @param br The stream we are reading from
+	 * @param key The key (stuff before colon)
+	 * @return stuff after colon as integer
+	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static String matchForString(BufferedReader br, String key) throws IOException {
+		String line = br.readLine();
+		if (line == null || !line.matches('^' + key + ":.*$")) {
+			throw new IllegalArgumentException("Invalid string format `" + line + "`");
+		}
+		return line.substring(key.length() + 1);
+	}
+	
+	/**
+	 * Retrieves a line with format: {@code $key:{enum values}}
+	 * 
+	 * @param br The stream we are reading from
+	 * @param key The key (stuff before colon)
+	 * @param type The enum with values (stuff before colon)
+	 * @return stuff after colon as integer
+	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static <T extends Enum<T>> T matchForEnum(BufferedReader br, String key, Class<T> type) throws IOException {
+		return Enum.valueOf(type, matchForString(br, key).trim());
 	}
 
 	/**
