@@ -1058,79 +1058,79 @@ public class CucumberStepDefinitions {
 	// ***** SwitchCurrentPlayer.feature *****
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@Given("The player to move is {string}")
-	public void playerToMoveIs(String playerName) {
+	public void playerToMoveIs(String playerColor) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(playerName, player.getName());
+		Assert.assertEquals(playerColor, player.getName());
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The clock of {string} is running")
-	public void clockOfPlayerIsRunning(String playerName) {
+	public void clockOfPlayerIsRunning(String playerColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The clock of {string} is stopped")
-	public void clockOfPlayerIsStopped(String playerName) {
+	public void clockOfPlayerIsStopped(String playerColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@When("Player {string} completes his move")
-	public void playerCompletesHisMove(String playerName) {
+	public void playerCompletesHisMove(String playerColor) {
 		QuoridorController.switchCurrentPlayer();
 	}
 
 	/**
-	 * @param opponentName name of opponent
+	 * @param opponentColor color of opponent
 	 * @author Group-9
 	 */
 	@Then("The user interface shall be showing it is {string} turn")
-	public void userInterfaceShallBeShowingItIsOpponentsTurn(String opponentName) {
+	public void userInterfaceShallBeShowingItIsOpponentsTurn(String opponentColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The clock of {string} shall be running")
-	public void clockOfPlayerShallBeRunning(String playerName) {
+	public void clockOfPlayerShallBeRunning(String playerColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The clock of {string} shall be stopped")
-	public void clockOfPlayerShallBeStopped(String playerName) {
+	public void clockOfPlayerShallBeStopped(String playerColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The next player to move shall be {string}")
-	public void nextPlayerToMoveShallBe(String playerName) {
+	public void nextPlayerToMoveShallBe(String playerColor) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(playerName, player.getName());
+		Assert.assertEquals(playerColor, player.getName());
 	}
 	
 	// ***********************************************
