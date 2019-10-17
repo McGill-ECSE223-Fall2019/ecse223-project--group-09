@@ -268,8 +268,8 @@ public class QuoridorController {
 		final Tile whiteTile = pos.getWhitePosition().getTile();
 		final Tile blackTile = pos.getBlackPosition().getTile();
 
-		return (whiteTile.getRow() == row && whiteTile.getColumn() == column)
-			|| (blackTile.getRow() == row && blackTile.getColumn() == column);
+		return !(whiteTile.getRow() == row && whiteTile.getColumn() == column)
+			&& !(blackTile.getRow() == row && blackTile.getColumn() == column);
 	}
 
 	/**
