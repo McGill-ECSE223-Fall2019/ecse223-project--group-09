@@ -255,6 +255,11 @@ public class QuoridorController {
 	 * @author Group 9
 	 */
 	public static boolean validatePawnPlacement(final int row, final int column) {
+		// Position must be on the board for it to be potentially valid
+		if (row < 1 || row > 9 || column < 1 || column > 9) {
+			return false;
+		}
+
 		// Check all (2 of them) pawns on the board.
 		// If no overlapping, it must be good to place it down
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
