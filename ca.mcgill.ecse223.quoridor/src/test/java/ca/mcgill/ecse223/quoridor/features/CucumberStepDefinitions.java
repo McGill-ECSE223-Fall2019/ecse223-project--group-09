@@ -8,14 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.validator.ValidateWith;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.controller.TOWall;
-
-import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
-import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
-import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.controller.*;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -29,23 +24,13 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
-
-import ca.mcgill.ecse223.quoridor.controller.*;
-import ca.mcgill.ecse223.quoridor.model.*;
-
-import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
-import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
-
-import ca.mcgill.ecse223.quoridor.model.Game.*;
-
-
+import cucumber.api.PendingException;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import cucumber.api.PendingException;
 
 public class CucumberStepDefinitions {
 
@@ -432,7 +417,9 @@ public class CucumberStepDefinitions {
 	@Given("No file {string} exists in the filesystem")
 	public void noFileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
-		Assert.assertFalse(file.exists());
+		if (file.exists()) {
+			file.delete();
+	}
 	}
 
 	/**
@@ -470,7 +457,14 @@ public class CucumberStepDefinitions {
 	@Given("File {string} exists in the filesystem")
 	public void fileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
-		Assert.assertTrue(file.exists());
+		if (!file.exists()) {
+			try {
+				// Create a blank file with the same name
+				file.createNewFile();
+			} catch (IOException ex) {
+				Assert.fail("No IOException should happen: " + ex.getMessage());
+	}
+		}
 	}
 
 	/**
@@ -486,7 +480,6 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-
 	/**
 	 * @param filename Name of file
 	 * @author Paul Teng (260862906)
