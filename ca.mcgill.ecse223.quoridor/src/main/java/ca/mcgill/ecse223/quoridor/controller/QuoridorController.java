@@ -1,20 +1,17 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
-import java.lang.UnsupportedOperationException;
-
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.*;
-import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
-import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+import ca.mcgill.ecse223.quoridor.model.Game.*;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.Reader;
-import java.io.Writer;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -247,6 +244,133 @@ public class QuoridorController {
 
 		final GamePosition snapshot = quoridor.getCurrentGame().getCurrentPosition();
 		snapshot.setPlayerToMove(snapshot.getPlayerToMove().getNextPlayer());
+	}
+
+	/**
+	 * Validates all positions associated to the current game position
+	 * 
+	 * @return true if positions are all valid,
+	 * 	       false if at least one of them is invalid
+	 * 
+	 * @author Group 9
+	 */
+	public static boolean validateCurrentGamePosition() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to validate game position when not in game");
+		}
+		
+		return validateGamePosition(quoridor.getCurrentGame().getCurrentPosition());
+	}
+	
+	/**
+	 * Validates all positions associated to a particular game position
+	 * 
+	 * @param pos The game position being validated
+	 * @return true if positions are all valid,
+	 * 	       false if at least one of them is invalid
+	 * 
+	 * @author Group 9
+	 */
+	public static boolean validateGamePosition(GamePosition pos) {
+		// GamePosition is only valid if both pawns
+		// and walls are in valid positions
+		try {
+			return validatePawnsOnBoard(pos) && validateWallsOnBoard(pos);
+		} catch (RuntimeException ex) {
+			// If exception occurs, then position cannot be valid
+			return false;
+		}
+	}
+
+	/**
+	 * Validates all pawn positions associated to a particular game position
+	 * 
+	 * @param pos The game position being validated
+	 * @return true if pawns are all in valid positions,
+	 * 	       false if at least one of them is invalid
+	 * 
+	 * @author Group 9
+	 */
+	private static boolean validatePawnsOnBoard(GamePosition pos) {
+		final Tile blackTile = pos.getBlackPosition().getTile();
+		final Tile whiteTile = pos.getWhitePosition().getTile();
+
+		return blackTile.getRow() != whiteTile.getRow()
+			|| blackTile.getColumn() != whiteTile.getColumn();
+	}
+	
+	/**
+	 * Validates all wall positions associated to a particular game position
+	 * 
+	 * @param pos The game position being validated
+	 * @return true if walls are all in valid positions,
+	 * 	       false if at least one of them is invalid
+	 * 
+	 * @author Group 9
+	 */
+	private static boolean validateWallsOnBoard(GamePosition pos) {
+		// Board is 9-by-9
+		final boolean[][] tileMap = new boolean[9][9];
+
+		for (Wall w : pos.getWhiteWallsOnBoard()) {
+			// Since on board, must have WallMove associated with it
+			if (!checkWallMoveAgainstTileMap(w.getMove(), tileMap)) {
+				return false;
+			}
+		}
+
+		for (Wall w : pos.getBlackWallsOnBoard()) {
+			// Since on board, must have WallMove associated with it
+			if (!checkWallMoveAgainstTileMap(w.getMove(), tileMap)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Checks if wall is on top of a tile that has already been occupied
+	 * 
+	 * @param move The move with wall placement information
+	 * @param tileMap The tile map, cells will be toggled
+	 * @return true if wall is in valid position, false otherwise
+	 * 
+	 * @author Group 9
+	 */
+	private static boolean checkWallMoveAgainstTileMap(WallMove move, boolean[][] tileMap) {
+		final Direction dir = move.getWallDirection();
+		final Tile tile = move.getTargetTile();
+		
+		// Change indexing from 1-based to 0-based
+		final int row = tile.getRow() - 1;
+		final int col = tile.getColumn() - 1;
+
+		// These two lines check if a particular spot on the tile map
+		// is already occupied (toggled). If it is, then wall is not
+		// in a valid position, hence it returns false. Otherwise,
+		// the particular spot will be toggled (as this wall now
+		// occupies this spot)
+		if (tileMap[row][col]) return false;
+		tileMap[row][col] = true;
+		
+		// The Direction test looks counter intuitive because
+		// the tile map actually stores the transpose of the
+		// expected grid (which is why increments look inverted)
+		switch (dir) {
+			case Vertical:
+				if (tileMap[row + 1][col]) return false;
+				tileMap[row + 1][col] = true;
+				break;
+			case Horizontal:
+				if (tileMap[row][col + 1]) return false;
+				tileMap[row][col + 1] = true;
+				break;
+			default:
+				throw new AssertionError("Unrecognized wall direction: " + dir);
+		}
+
+		return true;
 	}
 
 	/**
