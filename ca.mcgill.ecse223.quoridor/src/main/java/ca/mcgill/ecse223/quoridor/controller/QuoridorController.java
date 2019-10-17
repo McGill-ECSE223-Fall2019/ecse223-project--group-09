@@ -802,6 +802,8 @@ public class QuoridorController {
 				startingColor == Color.WHITE ? whitePlayer : blackPlayer,
 				game);
 
+		final GamePosition oldGamePosition = game.getCurrentPosition();
+
 		game.setCurrentPosition(gp);
 
 		System.err.println("Number of walls:");
@@ -823,8 +825,13 @@ public class QuoridorController {
 		readWallsOnBoard(br, whitePlayer, game);
 		readWallsOnBoard(br, blackPlayer, game);
 
-		// And then validate, done :white-box:
-		return validateCurrentGamePosition();
+		// And then validate
+		final boolean result;
+		if (!(result = validateCurrentGamePosition())) {
+			// If invalid, then switch the game position back to old one
+			game.setCurrentPosition(oldGamePosition);
+		}
+		return result;
 	}
 
 	/**
