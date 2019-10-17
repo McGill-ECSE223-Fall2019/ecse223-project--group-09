@@ -1,9 +1,5 @@
 package ca.mcgill.ecse223.quoridor.controller;
 
-import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.model.*;
-import ca.mcgill.ecse223.quoridor.model.Game.*;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -16,6 +12,22 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.model.Board;
+import ca.mcgill.ecse223.quoridor.model.Destination;
+import ca.mcgill.ecse223.quoridor.model.Direction;
+import ca.mcgill.ecse223.quoridor.model.Game;
+import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
+import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
+import ca.mcgill.ecse223.quoridor.model.GamePosition;
+import ca.mcgill.ecse223.quoridor.model.Player;
+import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
+import ca.mcgill.ecse223.quoridor.model.Quoridor;
+import ca.mcgill.ecse223.quoridor.model.Tile;
+import ca.mcgill.ecse223.quoridor.model.User;
+import ca.mcgill.ecse223.quoridor.model.Wall;
+import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 /**
  * This is the controller class for the Quoridor application
@@ -384,7 +396,7 @@ public class QuoridorController {
 	 */
 	public static boolean validatePawnPlacement(final int row, final int column) {
 		// Position must be on the board for it to be potentially valid
-		if (row < 1 || row > 9 || column < 1 || column > 9) {
+		if (!isValidPawnCoordinate(row, column)) {
 			return false;
 		}
 
@@ -403,6 +415,19 @@ public class QuoridorController {
 
 		return !(whiteTile.getRow() == row && whiteTile.getColumn() == column)
 			&& !(blackTile.getRow() == row && blackTile.getColumn() == column);
+	}
+
+	/**
+	 * Checks if position is a valid pawn coordinate (if it is still on board)
+	 * 
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if position is on board, false if not
+	 * 
+	 * @author Group 9
+	 */
+	private static boolean isValidPawnCoordinate(int row, int col) {
+		return !(row < 1 || row > 9 || col < 1 || col > 9);
 	}
 
 	/**
@@ -465,8 +490,110 @@ public class QuoridorController {
 	 *
 	 * @author Group 9
 	 */
-	public static boolean validateWallPlacement(int row, int column, Orientation orientation) {
-		throw new UnsupportedOperationException();
+	public static boolean validateWallPlacement(final int row, final int column, Orientation orientation) {
+		// If both of the tiles are out of the board, the placement must be invalid
+		if (!isValidWallCoordinate(row, column)) {
+			return false;
+		}
+
+		// Calculate the location of the 2nd tile occupied by wall
+		final int t2Row;
+		final int t2Col;
+		switch (orientation) {
+			case HORIZONTAL:
+				t2Row = row + 1;
+				t2Col = column;
+				break;
+			case VERTICAL:
+				t2Row = row;
+				t2Col = column + 1;
+				break;
+			default:
+				throw new AssertionError("Unrecognized wall orientation: " + orientation);
+		}
+
+		// Check against pawn coordinate because near edge, walls
+		// go one over the wall coordinate (which then will fail
+		// the wall coordinate test despite being valid)
+		if (!isValidPawnCoordinate(t2Row, t2Col)) {
+			return false;
+		}
+
+		// Check all walls on the board
+		// If no overlapping, it must be good to place it down
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to check for wall placement when not in game");
+		}
+		
+		final Game game = quoridor.getCurrentGame();
+		final GamePosition pos = game.getCurrentPosition();
+
+		for (Wall w : pos.getWhiteWallsOnBoard()) {
+			// Since on board, must have WallMove associated with it
+			if (wallMoveOverlapsWithPlacement(w.getMove(), row, column, t2Row, t2Col)) {
+				return false;
+			}
+		}
+
+		for (Wall w : pos.getBlackWallsOnBoard()) {
+			// Since on board, must have WallMove associated with it
+			if (wallMoveOverlapsWithPlacement(w.getMove(), row, column, t2Row, t2Col)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Checks if position is a valid wall coordinate (if it is still on board)
+	 * 
+	 * @param row Row in wall coordinates
+	 * @param col Column in wall coordinates
+	 * @return true if position is on board, false if not
+	 * 
+	 * @author Group 9
+	 */
+	private static boolean isValidWallCoordinate(int row, int col) {
+		return !(row < 1 || row > 8 || col < 1 || col > 8);
+	}
+
+	/**
+	 * Checks if wall move overlaps with a wall placement
+	 * 
+	 * @param move Wall move being tested
+	 * @param t1Row Row of first tile of wall placement
+	 * @param t1Col Column of first tile of wall placement
+	 * @param t2Row Row of second tile of wall placement
+	 * @param t2Col Column of second tile of wall placement
+	 * @return true if overlaps, false if no overlap
+	 * 
+	 * @author Group 9
+	 */
+	private static boolean wallMoveOverlapsWithPlacement(WallMove move, final int t1Row, final int t1Col, final int t2Row, final int t2Col) {
+		final Direction dir = move.getWallDirection();
+		final Tile tile = move.getTargetTile();
+
+		// Compute first tile
+		int row = tile.getRow();
+		int col = tile.getColumn();
+
+		if ((row == t1Row && col == t1Col) || (row == t2Row && col == t2Col)) {
+			// Overlapping with one of the tiles happened
+			return true;
+		}
+		
+		// Compute second tile
+		switch (dir) {
+			case Vertical:      ++row; break;
+			case Horizontal:    ++col; break;
+			default:
+			throw new AssertionError("Unrecognized wall direction: " + dir);
+		}
+		
+		return (row == t1Row && col == t1Col)
+			|| (row == t2Row && col == t2Col);
 	}
 
 	/**
