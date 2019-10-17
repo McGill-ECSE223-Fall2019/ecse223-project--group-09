@@ -1065,7 +1065,7 @@ public class CucumberStepDefinitions {
 	public void playerToMoveIs(String playerColor) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(playerColor, player.getName());
+		Assert.assertEquals(Color.valueOf(playerColor.toUpperCase()), player.getColor());
 	}
 
 	/**
@@ -1130,7 +1130,7 @@ public class CucumberStepDefinitions {
 	public void nextPlayerToMoveShallBe(String playerColor) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(playerColor, player.getName());
+		Assert.assertEquals(Color.valueOf(playerColor.toUpperCase()), player.getColor());
 	}
 	
 	// ***********************************************

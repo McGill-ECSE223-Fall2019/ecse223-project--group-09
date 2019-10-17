@@ -233,16 +233,20 @@ public class QuoridorController {
 	}
 	
 	/**
-	 * This method is called when the player finishes his turn
+	 * Switches the player-to-move to the next player.
+	 * 
+	 * This method is called when the player finishes his turn.
+	 * 
 	 * @author Group 9
-	 * 
-	 * @return boolean
-	 * 
-	 * 
 	 */
 	public static void switchCurrentPlayer() {
-		throw new UnsupportedOperationException();
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to switch player when not in game");
+		}
 
+		final GamePosition snapshot = quoridor.getCurrentGame().getCurrentPosition();
+		snapshot.setPlayerToMove(snapshot.getPlayerToMove().getNextPlayer());
 	}
 
 	/**
