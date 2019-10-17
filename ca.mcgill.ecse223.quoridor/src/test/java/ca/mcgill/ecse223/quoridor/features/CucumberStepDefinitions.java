@@ -968,11 +968,8 @@ public class CucumberStepDefinitions {
 	
 	// ***** ValidatePosition.feature *****
 
-	private int row;
-	private int column;
-	private Orientation orientation;
-
 	private boolean positionValidityFlag;
+	private boolean positionFailedEarly;
 
 	/**
 	 * @param row Row in pawn coordinates
@@ -981,10 +978,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void gamePositionIsSuppliedWithPawn(int row, int column) {
-		this.row = row;
-		this.column = column;
-		// hack for this#validationOfThePositionIsInitiated to work!
-		this.orientation = null;
+		this.positionFailedEarly = !QuoridorController.validatePawnPlacement(row, column);
 	}
 
 	/**
@@ -992,13 +986,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("Validation of the position is initiated")
 	public void validationOfThePositionIsInitiated() {
-		if (this.orientation == null) {
-			// This is a pawn position
-			this.positionValidityFlag = QuoridorController.validatePawnPlacement(this.row, this.column);
-		} else {
-			// This is a wall position
-			this.positionValidityFlag = QuoridorController.validateWallPlacement(this.row, this.column, this.orientation);
-		}
+		this.positionValidityFlag = QuoridorController.validateCurrentGamePosition();
 	}
 
 	/**
@@ -1008,15 +996,18 @@ public class CucumberStepDefinitions {
 	@Then("The position shall be {string}")
 	public void positionShallBe(String result) {
 		switch (result) {
-			case "ok":
-				Assert.assertTrue(this.positionValidityFlag);
-				break;
 			case "error":
-				Assert.assertFalse(this.positionValidityFlag);
+				// Either position failed early or position is invalid
+				Assert.assertTrue(this.positionFailedEarly || !this.positionValidityFlag);
+				break;
+			case "ok":
+				// Opposite of the error case
+				Assert.assertFalse(this.positionFailedEarly || !this.positionValidityFlag);
 				break;
 			default:
 				Assert.fail("Unhandled result: " + result);
 		}
+		this.positionFailedEarly = false;
 	}
 
 	/**
@@ -1027,9 +1018,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
 	public void gamePositionIsSuppliedWithWall(int row, int column, String orientation) {
-		this.row = row;
-		this.column = column;
-		this.orientation = Orientation.valueOf(orientation.toUpperCase());
+		this.positionFailedEarly = !QuoridorController.validateWallPlacement(row, column, Orientation.valueOf(orientation.toUpperCase()));
 	}
 
 	/**
