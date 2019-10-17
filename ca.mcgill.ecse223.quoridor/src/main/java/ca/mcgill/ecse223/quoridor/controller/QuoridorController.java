@@ -254,8 +254,22 @@ public class QuoridorController {
 	 *
 	 * @author Group 9
 	 */
-	public static boolean validatePawnPlacement(int row, int column) {
-		throw new UnsupportedOperationException();
+	public static boolean validatePawnPlacement(final int row, final int column) {
+		// Check all (2 of them) pawns on the board.
+		// If no overlapping, it must be good to place it down
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to check for pawn placement when not in game");
+		}
+		
+		final Game game = quoridor.getCurrentGame();
+		final GamePosition pos = game.getCurrentPosition();
+
+		final Tile whiteTile = pos.getWhitePosition().getTile();
+		final Tile blackTile = pos.getBlackPosition().getTile();
+
+		return (whiteTile.getRow() == row && whiteTile.getColumn() == column)
+			|| (blackTile.getRow() == row && blackTile.getColumn() == column);
 	}
 
 	/**
