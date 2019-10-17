@@ -645,13 +645,25 @@ public class QuoridorController {
 		pw.printf("status:%s\n", game.getGameStatus());
 		pw.printf("move:%s\n", game.getMoveMode());
 
+		pw.println("# White Player Info");
 		savePlayer(pw, game.getWhitePlayer());
+		pw.println("#");
+		
+		pw.println("# Black Player Info");
 		savePlayer(pw, game.getBlackPlayer());
-
+		pw.println("#");
+		
 		final GamePosition gamePosition = game.getCurrentPosition();
 		pw.printf("id:%d\n", gamePosition.getId());
+
+		pw.println("# White Player Position");
 		saveTile(pw, gamePosition.getWhitePosition().getTile());
+		pw.println("#");
+
+		pw.println("# Black Player Position");
 		saveTile(pw, gamePosition.getBlackPosition().getTile());
+		pw.println("#");
+
 		if (gamePosition.getPlayerToMove() == game.getWhitePlayer()) {
 			pw.printf("start:%s\n", Color.WHITE);
 		} else {
@@ -820,7 +832,7 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static int matchForInt(BufferedReader br, String key) throws IOException {
-		String line = br.readLine();
+		String line = getNextUsefulLine(br);
 		if (line == null || !line.matches('^' + key + ":[+-]?\\d+$")) {
 			throw new IllegalArgumentException("Invalid numeric format `" + line + "`");
 		}
@@ -838,7 +850,7 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static Time matchForTime(BufferedReader br, String key) throws IOException {
-		String line = br.readLine();
+		String line = getNextUsefulLine(br);
 		if (line == null || !line.matches('^' + key + ":\\d{1,2}:\\d{1,2}:\\d{1,2}$")) {
 			throw new IllegalArgumentException("Invalid time format `" + line + "`");
 		}
@@ -860,7 +872,7 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static String matchForString(BufferedReader br, String key) throws IOException {
-		String line = br.readLine();
+		String line = getNextUsefulLine(br);
 		if (line == null || !line.matches('^' + key + ":.*$")) {
 			throw new IllegalArgumentException("Invalid string format `" + line + "`");
 		}
@@ -880,6 +892,26 @@ public class QuoridorController {
 	 */
 	private static <T extends Enum<T>> T matchForEnum(BufferedReader br, String key, Class<T> type) throws IOException {
 		return Enum.valueOf(type, matchForString(br, key).trim());
+	}
+	
+	/**
+	 * Retrieves the next line that is not a comment (starts with '#') nor empty
+	 * 
+	 * @param br The stream we are reading from
+	 * @return next line that is not a comment nor empty; can still return null
+	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static String getNextUsefulLine(BufferedReader br) throws IOException {
+		String line;
+		while ((line = br.readLine()) != null) {
+			if (!line.isEmpty() && line.charAt(0) != '#') {
+				// Found it!
+				break;
+			}
+		}
+		return line;
 	}
 
 	/**
