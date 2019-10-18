@@ -1,0 +1,65 @@
+# Gherkin Scenario: Load Position
+# Author:           Paul Teng (260862906)
+#
+# Note:
+# - Black player is the player
+# - White player is the opponent
+#
+status:Running
+move:PlayerMove
+# White Player Info
+time:19:0:0
+name:user1
+target:9
+dir:Horizontal
+walls:10
+id:0
+id:1
+id:2
+id:3
+id:4
+id:5
+id:6
+id:7
+id:8
+id:9
+#
+# Black Player Info
+time:19:0:0
+name:user2
+target:1
+dir:Horizontal
+walls:10
+id:10
+id:11
+id:12
+id:13
+id:14
+id:15
+id:16
+id:17
+id:18
+id:19
+#
+id:0
+# White Player Position
+row:7
+col:7
+#
+# Black Player Position
+row:3
+col:3
+#
+start:BLACK
+# White Walls On Board
+cnt:1
+dir:Horizontal
+row:1
+col:1
+#
+# Black Walls On Board
+cnt:1
+dir:Vertical
+row:5
+col:5
+#
