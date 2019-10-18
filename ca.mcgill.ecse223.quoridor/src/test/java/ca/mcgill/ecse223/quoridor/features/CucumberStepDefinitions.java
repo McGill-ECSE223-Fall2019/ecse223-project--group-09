@@ -10,7 +10,12 @@ import java.util.Map;
 import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.controller.*;
+import ca.mcgill.ecse223.quoridor.controller.Color;
+import ca.mcgill.ecse223.quoridor.controller.Orientation;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -545,14 +550,14 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	 * @param playerName Name of player
+	 * @param playerColor Color of player
 	 * @author Paul Teng (260862906)
 	 */
 	@Then("It shall be {string}'s turn")
-	public void itShallBePlayersTurn(String playerName) {
+	public void itShallBePlayersTurn(String playerColor) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(playerName, player.getName());
+		Assert.assertEquals(Color.valueOf(playerColor.toUpperCase()), player.getColor());
 	}
 
 	/**
