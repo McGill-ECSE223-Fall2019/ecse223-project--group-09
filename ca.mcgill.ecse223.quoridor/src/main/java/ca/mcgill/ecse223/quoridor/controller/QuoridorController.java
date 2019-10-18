@@ -731,6 +731,12 @@ public class QuoridorController {
 		final Destination d = p.getDestination();
 		pw.printf("target:%d\n", d.getTargetNumber());
 		pw.printf("dir:%s\n", d.getDirection().name());
+
+		final List<Wall> walls = p.getWalls();
+		pw.printf("walls:%d\n", walls.size());
+		for (Wall w : walls) {
+			pw.printf("id:%d\n", w.getId());
+	}
 	}
 	
 	/**
@@ -805,10 +811,6 @@ public class QuoridorController {
 		final GamePosition oldGamePosition = game.getCurrentPosition();
 
 		game.setCurrentPosition(gp);
-
-		System.err.println("Number of walls:");
-		System.err.println("- white has " + whitePlayer.numberOfWalls());
-		System.err.println("- black has " + blackPlayer.numberOfWalls());
 
 		// Make sure all player's walls are in stock
 		for (Wall w : whitePlayer.getWalls()) {
@@ -901,7 +903,19 @@ public class QuoridorController {
 		final int targetNumber = matchForInt(br, "target");
 		final Direction direction = matchForEnum(br, "dir", Direction.class);
 
-		return new Player(remainingTime, user, targetNumber, direction);
+		final Player p = new Player(remainingTime, user, targetNumber, direction);
+
+		final int numberOfWalls = matchForInt(br, "walls");
+		for (int i = 0; i < numberOfWalls; ++i) {
+			int wallId = matchForInt(br, "id");
+			if (Wall.hasWithId(wallId)) {
+				p.addWall(Wall.getWithId(wallId));
+			} else {
+				p.addWall(wallId);
+			}
+		}
+
+		return p;
 	}
 	
 	/**
