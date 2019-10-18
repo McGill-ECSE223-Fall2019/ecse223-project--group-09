@@ -561,36 +561,43 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	 * @param playerName Name of player
+	 * @param playerColor Color of player
 	 * @param row Row of player's pawn piece (pawn coordinates)
 	 * @param col Column of player's pawn piece (pawn coordinates)
 	 * @author Paul Teng (260862906)
 	 */
 	@And("{string} shall be at {int}:{int}")
-	public void playerIsAtRowCol(String playerName, int row, int col) {
-		final TOPlayer player = QuoridorController.getPlayerByName(playerName);
+	public void playerIsAtRowCol(String playerColor, int row, int col) {
+		final TOPlayer player = QuoridorController.getPlayerByColor(Color.valueOf(playerColor.toUpperCase()));
 		Assert.assertNotNull(player);
 		Assert.assertEquals(row, player.getRow());
 		Assert.assertEquals(col, player.getColumn());
 	}
 
 	/**
-	 * @param playerName Name of player
+	 * @param playerColor Color of player
 	 * @param orientation Orientation of player's wall piece
 	 * @param row Row of player's wall piece (wall coordinates)
 	 * @param col Column of player's wall piece (wall coordinates)
 	 * @author Paul Teng (260862906)
 	 */
 	@And("{string} shall have a {word} wall at {int}:{int}")
-	public void playerHasOrientedWallAtRowCol(String playerName, String orientation, int row, int col) {
-		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(playerName);
+	public void playerHasOrientedWallAtRowCol(String playerColor, String orientation, int row, int col) {
+		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(Color.valueOf(playerColor.toUpperCase()));
 		Assert.assertNotNull(walls);
 
 		// Count the walls that satisfy the orientation and location
 		// We expect only 1 that matches:
 		int matches = 0;
 		for (final TOWall wall : walls) {
-			if (orientation.equalsIgnoreCase(wall.getOrientation().name())
+			final Orientation wallOrientation = wall.getOrientation();
+			if (wallOrientation == null) {
+				// Wall has no orientation because it is not on board
+				// definitely cannot match
+				continue;
+			}
+
+			if (orientation.equalsIgnoreCase(wallOrientation.name())
 					&& wall.getRow() == row && wall.getColumn() == col) {
 				++matches;
 			}
