@@ -727,7 +727,7 @@ public class QuoridorController {
 		final Time t = p.getRemainingTime();
 		pw.printf("time:%d:%d:%d\n", t.getHours(), t.getMinutes(), t.getSeconds());
 		pw.printf("name:%s\n", p.getUser().getName());
-
+		
 		final Destination d = p.getDestination();
 		pw.printf("target:%d\n", d.getTargetNumber());
 		pw.printf("dir:%s\n", d.getDirection().name());
@@ -736,7 +736,7 @@ public class QuoridorController {
 		pw.printf("walls:%d\n", walls.size());
 		for (Wall w : walls) {
 			pw.printf("id:%d\n", w.getId());
-	}
+		}
 	}
 	
 	/**
@@ -899,10 +899,10 @@ public class QuoridorController {
 		final Time remainingTime = matchForTime(br, "time");
 		final String name = matchForString(br, "name");
 		final User user = User.hasWithName(name) ? User.getWithName(name) : quoridor.addUser(name);
-
+		
 		final int targetNumber = matchForInt(br, "target");
 		final Direction direction = matchForEnum(br, "dir", Direction.class);
-
+		
 		final Player p = new Player(remainingTime, user, targetNumber, direction);
 
 		final int numberOfWalls = matchForInt(br, "walls");
@@ -1044,8 +1044,34 @@ public class QuoridorController {
 		if (p == null) {
 			return null;
 		}
-
+		
 		return fromPlayer(p);
+	}
+	
+	/**
+	 * 
+	 * @param color The color of the desired player
+	 * @return the player with the associated color, null if no such player exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static TOPlayer getPlayerByColor(Color color) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// There isn't even a game!
+			return null;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+
+		switch (color) {
+			case WHITE:
+				return fromPlayer(game.getWhitePlayer());
+			case BLACK:
+				return fromPlayer(game.getBlackPlayer());
+			default:
+				return null;
+		}
 	}
 
 	/**
@@ -1173,6 +1199,39 @@ public class QuoridorController {
 		if (p == null) {
 			return null;
 		}
+		
+		return p.getWalls().stream()
+				.map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
+	}
+	
+	/**
+	 *
+	 * @param color The color of the player who owns the walls
+	 * @returns the walls associated to the player, null if no such player exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<TOWall> getWallsOwnedByPlayer(Color color) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// There isn't even a game!
+			return null;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+
+		final Player p;
+		switch (color) {
+			case WHITE:
+				p = game.getWhitePlayer();
+				break;
+			case BLACK:
+				p = game.getBlackPlayer();
+				break;
+			default:
+				return null;
+		}
 
 		return p.getWalls().stream()
 				.map(QuoridorController::fromWall)
@@ -1223,13 +1282,19 @@ public class QuoridorController {
 	 * 
 	 * @param color - prompts the color of the Pawn of which you want the number of walls
 	 * 
-	 * @returns the number of walls in stock of player with the specified color
+	 * @return the number of walls in stock of player with the specified color, 
+	 *         -1 if no such player exists
 	 *
 	 * @author Paul Teng (260862906) and Alixe Delabrousse (260868412)
 	 */
 	
 	public static int getWallsInStockOfColoredPawn(Color color) {
-		throw new UnsupportedOperationException("Query method get-walls-in-stock-of-colored-pawn is not implemented yet");
+		final TOPlayer p = getPlayerByColor(color);
+		if (p == null) {
+			return -1;
+		}
+
+		return p.getWallsRemaining();
 	}
 	
 	/**
