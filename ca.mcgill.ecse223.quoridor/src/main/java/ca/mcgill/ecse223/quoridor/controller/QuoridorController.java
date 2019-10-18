@@ -754,6 +754,9 @@ public class QuoridorController {
 		} catch (IllegalArgumentException ex) {
 			// Reading failed due to formatting
 			throw new IOException(ex);
+		} catch (RuntimeException ex) {
+			// Happens if getTile is called with invalid coordinates
+			return false;
 		}
 	}
 	
@@ -878,6 +881,10 @@ public class QuoridorController {
 
 		final int row = matchForInt(br, "row");
 		final int col = matchForInt(br, "col");
+
+		if (!isValidPawnCoordinate(row, col)) {
+			throw new RuntimeException("Illegal coordinate (" + row + "," + col + ")");
+		}
 
 		// based off indexing scheme used in
 		// CucumberStepDefintions#theFollowingWallsExist(DataTable)
