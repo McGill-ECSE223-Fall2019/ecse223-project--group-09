@@ -3,12 +3,17 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.sql.Time;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -24,14 +29,14 @@ public class GameSetupView extends JPanel {
 
     // Change to 4 if we ever get want to support 4 players!
     private static final int MAX_PLAYERS = 2;
+    private static final String DEFAULT_TIME_LIMIT = "15:00";
 
     // ***** Rendering State Variables *****
     private int displayPlayerCount = 0;
     private final Vector<String> nameHints = new Vector<>();
 
     // ***** Additional UI Components *****
-    private final JTextField intMinutes = new JTextField();
-    private final JTextField intSeconds = new JTextField();
+    private final JTextField timeField = new JTextField();
 
     @SuppressWarnings("unchecked")
     private final JComboBox<String>[] cboxPlayerNames = new JComboBox[MAX_PLAYERS];
@@ -88,7 +93,7 @@ public class GameSetupView extends JPanel {
             final GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
             c.gridy = 0;
-            panel.add(new JLabel("Minutes"), c);
+            panel.add(new JLabel("mm:ss format"), c);
         }
 
         {
@@ -97,23 +102,10 @@ public class GameSetupView extends JPanel {
             c.gridy = 0;
             c.weightx = 1.0;
             c.fill = GridBagConstraints.HORIZONTAL;
-            panel.add(this.intMinutes, c);
-        }
+            panel.add(this.timeField, c);
 
-        {
-            final GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 2;
-            c.gridy = 0;
-            panel.add(new JLabel("Seconds"), c);
-        }
-
-        {
-            final GridBagConstraints c = new GridBagConstraints();
-            c.gridx = 3;
-            c.gridy = 0;
-            c.weightx = 1.0;
-            c.fill = GridBagConstraints.HORIZONTAL;
-            panel.add(this.intSeconds, c);
+            this.timeField.setText(DEFAULT_TIME_LIMIT);
+            this.timeField.setInputVerifier(new TimeInputVerifier());
         }
 
         this.add(panel);
@@ -227,6 +219,33 @@ public class GameSetupView extends JPanel {
      */
     public JButton getCancelButton() {
         return this.btnCancel;
+    }
+
+
+    /**
+     * Verifies if the input is a valid time
+     *
+     * Assumption: - Use this only on JTextField
+     *
+     * @author Group 9
+     */
+    private static class TimeInputVerifier extends InputVerifier {
+
+        // CHANGE THIS PATTERN WITH CARE AS THERE ARE
+        // CODE THAT DEPEND ON THE GROUPINGS OF THIS!
+        public static final Pattern TIME_FMT = Pattern.compile("^(?:(?:([0-5]?[0-9]):)?([0-5]?[0-9]):)?([0-5]?[0-9])$");
+
+        @Override
+        public boolean verify(JComponent component) {
+            // We will only use this on a JTextField
+            JTextField field = (JTextField) component;
+            final boolean result = TIME_FMT.matcher(field.getText()).matches();
+
+            // Change to red if input is bad!
+            field.setForeground(result ? Color.black : Color.red);
+
+            return result;
+        }
     }
 
 }
