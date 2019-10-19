@@ -3,11 +3,17 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
+import ca.mcgill.ecse223.quoridor.view.event.*;
 
 /**
  * A specialized JPanel that displays a grid (9-by-9) for a game of Quoridor.
@@ -26,6 +32,8 @@ public class BoardView extends JPanel {
     private static final Color PAWN_CELL_COLOR = Color.lightGray;
     private static final Color WALL_CELL_COLOR = Color.cyan;
 
+    // ***** Event-handling Variables *****
+    private List<PawnCellListener> pawnCellListeners = new ArrayList<>();
     // ***** Rendering State Variables *****
     private JPanel whitePawnTile;
     private JPanel blackPawnTile;
@@ -95,10 +103,31 @@ public class BoardView extends JPanel {
                 c.fill = GridBagConstraints.BOTH;
                 this.add(cell, c);
 
-                // List is linearly indexed
+                cell.addMouseListener(this.createPawnMouseListener(i, j));
                 this.pawnCells[i][j] = cell;
             }
         }
+    }
+
+    /**
+     * Creates a mouse listener for pawns that will delegate the clicked event
+     * to installed PawnCellListener
+     * 
+     * @param i Array's i
+     * @param j Array's j
+     * @return Mouse listener for a particular pawn
+     * 
+     * @author Group 9
+     */
+    private MouseListener createPawnMouseListener(int i, int j) {
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                for (final PawnCellListener lis : pawnCellListeners) {
+                    lis.pawnCellClicked(i + 1, j + 1);
+                }
+            }
+        };
     }
 
     /**
@@ -321,4 +350,25 @@ public class BoardView extends JPanel {
         }
     }
 
+    /**
+     * Installs another pawn cell listener
+     * 
+     * @param lis Listener, ignored if null
+     */
+    public void addPawnCellListener(final PawnCellListener lis) {
+        if (lis != null) {
+            this.pawnCellListeners.add(lis);
+        }
+    }
+
+    /**
+     * Removes a previously installed pawn cell listener
+     * 
+     * @param lis Listener, ignored if null
+     */
+    public void removePawnCellListener(final PawnCellListener lis) {
+        if (lis != null) {
+            this.pawnCellListeners.remove(lis);
+        }
+    }
     }
