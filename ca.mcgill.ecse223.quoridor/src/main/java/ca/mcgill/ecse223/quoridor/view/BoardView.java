@@ -338,20 +338,37 @@ public class BoardView extends JPanel {
     }
 
     /**
-     * Resets the position of all pawns as if none ever existed on the board
+     * Resets the position of the white pawn by removing it from the wall
      * 
      * @author Group 9
      */
-    public void resetPawnPositions() {
+    public void resetWhitePawnPosition() {
         if (this.whitePawnTile != null) {
             this.whitePawnTile.setBackground(PAWN_CELL_COLOR);
             this.whitePawnTile = null;
         }
+    }
 
+    /**
+     * Resets the position of the black pawn by removing it from the wall
+     *
+     * @author Group 9
+     */
+    public void resetBlackPawnPosition() {
         if (this.blackPawnTile != null) {
             this.blackPawnTile.setBackground(PAWN_CELL_COLOR);
             this.blackPawnTile = null;
         }
+    }
+
+    /**
+     * Resets the position of all pawns as if none ever existed on the board
+     *
+     * @author Group 9
+     */
+    public void resetPawnPositions() {
+        this.resetWhitePawnPosition();
+        this.resetBlackPawnPosition();
     }
 
     /**
