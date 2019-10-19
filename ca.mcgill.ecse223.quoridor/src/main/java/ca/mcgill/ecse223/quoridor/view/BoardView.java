@@ -13,7 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
-import ca.mcgill.ecse223.quoridor.view.event.*;
+import ca.mcgill.ecse223.quoridor.view.event.PawnCellListener;
+import ca.mcgill.ecse223.quoridor.view.event.WallCellListener;
 
 /**
  * A specialized JPanel that displays a grid (9-by-9) for a game of Quoridor.
@@ -34,6 +35,8 @@ public class BoardView extends JPanel {
 
     // ***** Event-handling Variables *****
     private List<PawnCellListener> pawnCellListeners = new ArrayList<>();
+    private List<WallCellListener> wallCellListeners = new ArrayList<>();
+
     // ***** Rendering State Variables *****
     private JPanel whitePawnTile;
     private JPanel blackPawnTile;
@@ -144,6 +147,27 @@ public class BoardView extends JPanel {
     }
 
     /**
+     * Creates a mouse listener for walls that will delegate the clicked event
+     * to installed WallCellListener
+     * 
+     * @param i Array's i
+     * @param j Array's j
+     * @return Mouse listener for a particular wall
+     * 
+     * @author Group 9
+     */
+    private MouseListener createWallMouseListener(int i, int j) {
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                for (final WallCellListener lis : wallCellListeners) {
+                    lis.wallCellClicked(i + 1, j + 1);
+                }
+            }
+        };
+    }
+
+    /**
      * Initialize the horizontal wall cells
      * 
      * @author Group 9
@@ -159,6 +183,7 @@ public class BoardView extends JPanel {
                 c.fill = GridBagConstraints.BOTH;
                 this.add(cell, c);
                 
+                cell.addMouseListener(this.createWallMouseListener(i, j));
                 this.horizontalCells[i][j] = cell;
             }
         }
@@ -180,6 +205,7 @@ public class BoardView extends JPanel {
                 c.fill = GridBagConstraints.BOTH;
                 this.add(cell, c);
 
+                cell.addMouseListener(this.createWallMouseListener(i, j));
                 this.verticalCells[i][j] = cell;
             }
         }
@@ -201,6 +227,9 @@ public class BoardView extends JPanel {
                 c.fill = GridBagConstraints.BOTH;
                 this.add(cell, c);
 
+                // Junction cells are awkward since these don't
+                // actually exists in the wall coordinate system
+                // so no mouse listener for these
                 this.junctionCells[i][j] = cell;
             }
         }
@@ -369,6 +398,28 @@ public class BoardView extends JPanel {
     public void removePawnCellListener(final PawnCellListener lis) {
         if (lis != null) {
             this.pawnCellListeners.remove(lis);
+        }
+    }
+
+    /**
+     * Installs another wall cell listener
+     * 
+     * @param lis Listener, ignored if null
+     */
+    public void addWallCellListener(final WallCellListener lis) {
+        if (lis != null) {
+            this.wallCellListeners.add(lis);
+        }
+    }
+
+    /**
+     * Removes a previously installed wall cell listener
+     * 
+     * @param lis Listener, ignored if null
+     */
+    public void removeWallCellListener(final WallCellListener lis) {
+        if (lis != null) {
+            this.wallCellListeners.remove(lis);
         }
     }
     }
