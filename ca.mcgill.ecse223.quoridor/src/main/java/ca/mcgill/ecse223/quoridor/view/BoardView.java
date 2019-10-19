@@ -58,6 +58,7 @@ public class BoardView extends JPanel {
             final GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
             c.gridy = 2 * (ROWS - 1 - i);
+            c.weighty = 1.0;
             this.add(new JLabel(Integer.toString(i + 1)), c);
         }
     }
@@ -72,6 +73,7 @@ public class BoardView extends JPanel {
             final GridBagConstraints c = new GridBagConstraints();
             c.gridx = 2 * i + 1;
             c.gridy = 2 * ROWS - 1;
+            c.weightx = 1.0;
             this.add(new JLabel(Character.toString('a' + i)), c);
         }
     }
