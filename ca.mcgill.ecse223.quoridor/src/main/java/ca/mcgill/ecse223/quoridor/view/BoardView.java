@@ -32,6 +32,9 @@ public class BoardView extends JPanel {
     // ***** Additional UI Components *****
     private final JPanel[][] pawnCells = new JPanel[ROWS][COLS];
 
+    private final JPanel[][] horizontalCells = new JPanel[ROWS - 1][COLS];
+    private final JPanel[][] verticalCells = new JPanel[ROWS][COLS - 1];
+    private final JPanel[][] junctionCells = new JPanel[ROWS - 1][COLS - 1];
 
     public BoardView() {
         // Use the GridBagLayout
@@ -41,6 +44,7 @@ public class BoardView extends JPanel {
         this.initializeColumnLabels();
 
         this.initializePawnCells();
+        this.initializeWallCells();
     }
 
     /**
@@ -95,6 +99,83 @@ public class BoardView extends JPanel {
     }
 
     /**
+     * Initialize cells for the wall
+     * 
+     * @author Group 9
+     */
+    private void initializeWallCells() {
+        this.initializeHorizontalCells();
+        this.initializeVerticalCells();
+        this.initializeJunctionCells();
+    }
+
+    /**
+     * Initialize the horizontal wall cells
+     * 
+     * @author Group 9
+     */
+    private void initializeHorizontalCells() {
+        for (int i = 0; i < ROWS - 1; ++i) {
+            for (int j = 0; j < COLS; ++j) {
+                final JPanel cell = new JPanel();
+                cell.setBackground(BOARD_COLOR);
+                
+                final GridBagConstraints c = new GridBagConstraints();
+                c.gridx = 2 * j + 1;
+                c.gridy = 2 * (ROWS - 1 - i) - 1;
+                c.fill = GridBagConstraints.BOTH;
+                this.add(cell, c);
+                
+                this.horizontalCells[i][j] = cell;
+            }
+        }
+    }
+
+    /**
+     * Initialize the vertical wall cells
+     * 
+     * @author Group 9
+     */
+    private void initializeVerticalCells() {
+        for (int i = 0; i < ROWS; ++i) {
+            for (int j = 0; j < COLS - 1; ++j) {
+                final JPanel cell = new JPanel();
+                cell.setBackground(BOARD_COLOR);
+
+                final GridBagConstraints c = new GridBagConstraints();
+                c.gridx = 2 * (j + 1);
+                c.gridy = 2 * (ROWS - 1 - i);
+                c.fill = GridBagConstraints.BOTH;
+                this.add(cell, c);
+
+                this.verticalCells[i][j] = cell;
+            }
+        }
+    }
+
+    /**
+     * Initialize the wall cells that are at the junctions
+     * 
+     * @author Group 9
+     */
+    private void initializeJunctionCells() {
+        for (int i = 0; i < ROWS - 1; ++i) {
+            for (int j = 0; j < COLS - 1; ++j) {
+                final JPanel cell = new JPanel();
+                cell.setBackground(BOARD_COLOR);
+
+                final GridBagConstraints c = new GridBagConstraints();
+                c.gridx = 2 * (j + 1);
+                c.gridy = 2 * (ROWS - 1 - i) - 1;
+                c.fill = GridBagConstraints.BOTH;
+                this.add(cell, c);
+
+                this.junctionCells[i][j] = cell;
+            }
+        }
+    }
+
+    /**
      * Updates the position of the white pawn
      *
      * @param row Row in pawn coordinates
@@ -139,6 +220,63 @@ public class BoardView extends JPanel {
             this.blackPawnTile.setBackground(Color.black);
         }
     }
+
+    /**
+     * Adds a wall of the white player on to the board
+     * 
+     * @param row Row in wall coordinates
+     * @param col Column in wall coordinates
+     * @param orientation Orientation of the wall
+     * 
+     * @author Group 9
+     */
+    public void addWhiteWall(int row, int col, Orientation orientation) {
+        switch (orientation) {
+            case VERTICAL: {
+                this.verticalCells[row - 1][col - 1].setBackground(Color.white);
+                this.junctionCells[row - 1][col - 1].setBackground(Color.white);
+                this.verticalCells[row][col - 1].setBackground(Color.white);
+                break;
+            }
+            case HORIZONTAL: {
+                this.horizontalCells[row - 1][col - 1].setBackground(Color.white);
+                this.junctionCells[row - 1][col - 1].setBackground(Color.white);
+                this.horizontalCells[row - 1][col].setBackground(Color.white);
+                break;
+            }
+            default:
+                throw new AssertionError("Unhandled orientation: " + orientation);
+        }
+    }
+
+    /**
+     * Adds a wall of the black player on to the board
+     * 
+     * @param row Row in wall coordinates
+     * @param col Column in wall coordinates
+     * @param orientation Orientation of the wall
+     * 
+     * @author Group 9
+     */
+    public void addBlackWall(int row, int col, Orientation orientation) {
+        switch (orientation) {
+            case VERTICAL: {
+                this.verticalCells[row - 1][col - 1].setBackground(Color.black);
+                this.junctionCells[row - 1][col - 1].setBackground(Color.black);
+                this.verticalCells[row][col - 1].setBackground(Color.black);
+                break;
+            }
+            case HORIZONTAL: {
+                this.horizontalCells[row - 1][col - 1].setBackground(Color.black);
+                this.junctionCells[row - 1][col - 1].setBackground(Color.black);
+                this.horizontalCells[row - 1][col].setBackground(Color.black);
+                break;
+            }
+            default:
+                throw new AssertionError("Unhandled orientation: " + orientation);
+        }
+    }
+
     /**
      * Resets the position of all pawns as if none ever existed on the board
      * 
@@ -153,6 +291,31 @@ public class BoardView extends JPanel {
         if (this.blackPawnTile != null) {
             this.blackPawnTile.setBackground(BOARD_COLOR);
             this.blackPawnTile = null;
+        }
+    }
+
+    /**
+     * Resets the position of all walls as if none ever existed on the board
+     * 
+     * @author Group 9
+     */
+    public void resetWallPositions() {
+        resetWallHelper(this.horizontalCells);
+        resetWallHelper(this.verticalCells);
+        resetWallHelper(this.junctionCells);
+    }
+
+    /**
+     * Sets the JPanel's color to the board's color
+     * 
+     * @param array a 2D JPanel array whose colors being set
+     */
+    private static void resetWallHelper(final JPanel[][] array) {
+        for (int i = 0; i < array.length; ++i) {
+            final JPanel[] linear = array[i];
+            for (int j = 0; j < linear.length; ++j) {
+                linear[j].setBackground(BOARD_COLOR);
+            }
         }
     }
 
