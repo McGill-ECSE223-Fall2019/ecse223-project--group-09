@@ -221,6 +221,30 @@ public class GameSetupView extends JPanel {
         return this.btnCancel;
     }
 
+    /**
+     *
+     * @return the thinking time based on the values provided by the user; null if
+     *         input has bad format and is not a *time*
+     *
+     * @author Group 9
+     */
+    public Time getThinkingTime() {
+        final String text = this.timeField.getText();
+        final Matcher matcher = TimeInputVerifier.TIME_FMT.matcher(text);
+        if (!matcher.matches()) {
+            // Bad format
+            return null;
+        }
+
+        final String hstr = matcher.group(1);
+        final String mstr = matcher.group(2);
+        final String sstr = matcher.group(3);
+
+        return new Time(
+                hstr == null ? 0 : Integer.parseInt(hstr),
+                mstr == null ? 0 : Integer.parseInt(mstr),
+                sstr == null ? 0 : Integer.parseInt(sstr));
+    }
 
     /**
      * Verifies if the input is a valid time
