@@ -23,7 +23,8 @@ public class BoardView extends JPanel {
     private static final int ROWS = 9;
     private static final int COLS = 9;
 
-    private static final Color BOARD_COLOR = Color.lightGray;
+    private static final Color PAWN_CELL_COLOR = Color.lightGray;
+    private static final Color WALL_CELL_COLOR = Color.cyan;
 
     // ***** Rendering State Variables *****
     private JPanel whitePawnTile;
@@ -84,7 +85,7 @@ public class BoardView extends JPanel {
         for (int i = 0; i < ROWS; ++i) {
             for (int j = 0; j < COLS; ++j) {
                 final JPanel cell = new JPanel();
-                cell.setBackground(BOARD_COLOR);
+                cell.setBackground(PAWN_CELL_COLOR);
 
                 final GridBagConstraints c = new GridBagConstraints();
                 c.gridx = 2 * j + 1;
@@ -107,6 +108,8 @@ public class BoardView extends JPanel {
         this.initializeHorizontalCells();
         this.initializeVerticalCells();
         this.initializeJunctionCells();
+
+        this.resetWallPositions();
     }
 
     /**
@@ -118,7 +121,6 @@ public class BoardView extends JPanel {
         for (int i = 0; i < ROWS - 1; ++i) {
             for (int j = 0; j < COLS; ++j) {
                 final JPanel cell = new JPanel();
-                cell.setBackground(BOARD_COLOR);
                 
                 final GridBagConstraints c = new GridBagConstraints();
                 c.gridx = 2 * j + 1;
@@ -140,7 +142,6 @@ public class BoardView extends JPanel {
         for (int i = 0; i < ROWS; ++i) {
             for (int j = 0; j < COLS - 1; ++j) {
                 final JPanel cell = new JPanel();
-                cell.setBackground(BOARD_COLOR);
 
                 final GridBagConstraints c = new GridBagConstraints();
                 c.gridx = 2 * (j + 1);
@@ -162,7 +163,6 @@ public class BoardView extends JPanel {
         for (int i = 0; i < ROWS - 1; ++i) {
             for (int j = 0; j < COLS - 1; ++j) {
                 final JPanel cell = new JPanel();
-                cell.setBackground(BOARD_COLOR);
 
                 final GridBagConstraints c = new GridBagConstraints();
                 c.gridx = 2 * (j + 1);
@@ -186,7 +186,7 @@ public class BoardView extends JPanel {
     public void setWhitePawnPosition(int row, int col) {
         // Unset previous location if exists
         if (this.whitePawnTile != null) {
-            this.whitePawnTile.setBackground(BOARD_COLOR);
+            this.whitePawnTile.setBackground(PAWN_CELL_COLOR);
         }
 
         // Get the new position
@@ -209,7 +209,7 @@ public class BoardView extends JPanel {
     public void setBlackPawnPosition(int row, int col) {
         // Unset previous location if exists
         if (this.blackPawnTile != null) {
-            this.blackPawnTile.setBackground(BOARD_COLOR);
+            this.blackPawnTile.setBackground(PAWN_CELL_COLOR);
         }
         
         // Get the new position
@@ -284,12 +284,12 @@ public class BoardView extends JPanel {
      */
     public void resetPawnPositions() {
         if (this.whitePawnTile != null) {
-            this.whitePawnTile.setBackground(BOARD_COLOR);
+            this.whitePawnTile.setBackground(PAWN_CELL_COLOR);
             this.whitePawnTile = null;
         }
 
         if (this.blackPawnTile != null) {
-            this.blackPawnTile.setBackground(BOARD_COLOR);
+            this.blackPawnTile.setBackground(PAWN_CELL_COLOR);
             this.blackPawnTile = null;
         }
     }
@@ -314,7 +314,7 @@ public class BoardView extends JPanel {
         for (int i = 0; i < array.length; ++i) {
             final JPanel[] linear = array[i];
             for (int j = 0; j < linear.length; ++j) {
-                linear[j].setBackground(BOARD_COLOR);
+                linear[j].setBackground(WALL_CELL_COLOR);
             }
         }
     }
