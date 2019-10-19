@@ -207,6 +207,29 @@ public class GameSetupView extends JPanel {
 
     /**
      *
+     * @return number of players that are being displayed
+     * 
+     * @author Group 9
+     */
+    public int getNumberOfDisplayingPlayers() {
+        return this.displayPlayerCount;
+    }
+    
+    /**
+     * Note: Output is only defined if the index is in the correct range
+     * 
+     * @param idx index of the player [0, {@link GameSetupView#getNumberOfDisplayingPlayers()})
+     * @return the selected name of the particular player
+     * 
+     * @author Group 9
+     */
+    public String getPlayerName(int idx) {
+        // Cast is safe since JComboBox all work with strings
+        return (String) this.cboxPlayerNames[idx].getSelectedItem();
+    }
+
+    /**
+     *
      * @return the start-game button instance
      *
      * @author Group 9
