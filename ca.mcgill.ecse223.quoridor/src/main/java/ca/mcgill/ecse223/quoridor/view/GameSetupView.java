@@ -54,13 +54,17 @@ public class GameSetupView extends JPanel {
         this.panePlayers.setLayout(new BoxLayout(this.panePlayers, BoxLayout.Y_AXIS));
         this.add(this.panePlayers);
 
+        {
         final JComboBox<String> player1Names = new JComboBox<>(this.nameHints);
         this.cboxPlayerNames[0] = player1Names;
         this.initializePlayerOptions("Player 1", player1Names);
+        }
 
+        {
         final JComboBox<String> player2Names = new JComboBox<>(this.nameHints);
-        this.cboxPlayerNames[1] = player1Names;
+            this.cboxPlayerNames[1] = player2Names;
         this.initializePlayerOptions("Player 2", player2Names);
+        }
 
         this.initializeButtons();
 
