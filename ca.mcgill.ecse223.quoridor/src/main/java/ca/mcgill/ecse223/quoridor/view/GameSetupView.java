@@ -223,7 +223,7 @@ public class GameSetupView extends JPanel {
      * 
      * @author Group 9
      */
-    public String getPlayerName(int idx) {
+    public String getSelectedPlayerName(int idx) {
         // Cast is safe since JComboBox all work with strings
         return (String) this.cboxPlayerNames[idx].getSelectedItem();
     }
