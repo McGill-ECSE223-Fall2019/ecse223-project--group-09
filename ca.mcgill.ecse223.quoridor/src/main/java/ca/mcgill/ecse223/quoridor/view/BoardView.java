@@ -61,7 +61,7 @@ public class BoardView extends JPanel {
 
     /**
      * Initializes row labels
-     * 
+     *
      * @author Group 9
      */
     private void initializeRowLabels() {
@@ -76,7 +76,7 @@ public class BoardView extends JPanel {
 
     /**
      * Initializes column labels
-     * 
+     *
      * @author Group 9
      */
     private void initializeColumnLabels() {
@@ -91,7 +91,7 @@ public class BoardView extends JPanel {
 
     /**
      * Initializes cells for the pawn
-     * 
+     *
      * @author Group 9
      */
     private void initializePawnCells() {
@@ -115,19 +115,29 @@ public class BoardView extends JPanel {
     /**
      * Creates a mouse listener for pawns that will delegate the clicked event
      * to installed PawnCellListener
-     * 
+     *
      * @param i Array's i
      * @param j Array's j
      * @return Mouse listener for a particular pawn
-     * 
+     *
      * @author Group 9
      */
     private MouseListener createPawnMouseListener(int i, int j) {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                final Object source = e.getSource();
+                final JPanel whiteTile = whitePawnTile;
+                final JPanel blackTile = blackPawnTile;
+
                 for (final PawnCellListener lis : pawnCellListeners) {
-                    lis.pawnCellClicked(i + 1, j + 1);
+                    if (source == whiteTile) {
+                        lis.whitePawnCellClicked(BoardView.this, i + 1, j + 1);
+                    } else if (source == blackTile) {
+                        lis.blackPawnCellClicked(BoardView.this, i + 1, j + 1);
+                    } else {
+                        lis.emptyPawnCellClicked(BoardView.this, i + 1, j + 1);
+                    }
                 }
             }
         };
@@ -135,7 +145,7 @@ public class BoardView extends JPanel {
 
     /**
      * Initialize cells for the wall
-     * 
+     *
      * @author Group 9
      */
     private void initializeWallCells() {
@@ -149,11 +159,11 @@ public class BoardView extends JPanel {
     /**
      * Creates a mouse listener for walls that will delegate the clicked event
      * to installed WallCellListener
-     * 
+     *
      * @param i Array's i
      * @param j Array's j
      * @return Mouse listener for a particular wall
-     * 
+     *
      * @author Group 9
      */
     private MouseListener createWallMouseListener(int i, int j) {
@@ -169,20 +179,20 @@ public class BoardView extends JPanel {
 
     /**
      * Initialize the horizontal wall cells
-     * 
+     *
      * @author Group 9
      */
     private void initializeHorizontalCells() {
         for (int i = 0; i < ROWS - 1; ++i) {
             for (int j = 0; j < COLS; ++j) {
                 final JPanel cell = new JPanel();
-                
+
                 final GridBagConstraints c = new GridBagConstraints();
                 c.gridx = 2 * j + 1;
                 c.gridy = 2 * (ROWS - 1 - i) - 1;
                 c.fill = GridBagConstraints.BOTH;
                 this.add(cell, c);
-                
+
                 cell.addMouseListener(this.createWallMouseListener(i, j));
                 this.horizontalCells[i][j] = cell;
             }
@@ -191,7 +201,7 @@ public class BoardView extends JPanel {
 
     /**
      * Initialize the vertical wall cells
-     * 
+     *
      * @author Group 9
      */
     private void initializeVerticalCells() {
@@ -213,7 +223,7 @@ public class BoardView extends JPanel {
 
     /**
      * Initialize the wall cells that are at the junctions
-     * 
+     *
      * @author Group 9
      */
     private void initializeJunctionCells() {
@@ -271,10 +281,10 @@ public class BoardView extends JPanel {
         if (this.blackPawnTile != null) {
             this.blackPawnTile.setBackground(PAWN_CELL_COLOR);
         }
-        
+
         // Get the new position
         this.blackPawnTile = this.pawnCells[row - 1][col - 1];
-        
+
         // Paint it to black
         if (this.blackPawnTile != null) {
             this.blackPawnTile.setBackground(Color.black);
@@ -283,11 +293,11 @@ public class BoardView extends JPanel {
 
     /**
      * Adds a wall of the white player on to the board
-     * 
+     *
      * @param row Row in wall coordinates
      * @param col Column in wall coordinates
      * @param orientation Orientation of the wall
-     * 
+     *
      * @author Group 9
      */
     public void addWhiteWall(int row, int col, Orientation orientation) {
@@ -311,11 +321,11 @@ public class BoardView extends JPanel {
 
     /**
      * Adds a wall of the black player on to the board
-     * 
+     *
      * @param row Row in wall coordinates
      * @param col Column in wall coordinates
      * @param orientation Orientation of the wall
-     * 
+     *
      * @author Group 9
      */
     public void addBlackWall(int row, int col, Orientation orientation) {
@@ -339,7 +349,7 @@ public class BoardView extends JPanel {
 
     /**
      * Resets the position of the white pawn by removing it from the wall
-     * 
+     *
      * @author Group 9
      */
     public void resetWhitePawnPosition() {
@@ -373,7 +383,7 @@ public class BoardView extends JPanel {
 
     /**
      * Resets the position of all walls as if none ever existed on the board
-     * 
+     *
      * @author Group 9
      */
     public void resetWallPositions() {
@@ -384,7 +394,7 @@ public class BoardView extends JPanel {
 
     /**
      * Sets the JPanel's color to the board's color
-     * 
+     *
      * @param array a 2D JPanel array whose colors being set
      */
     private static void resetWallHelper(final JPanel[][] array) {
@@ -398,7 +408,7 @@ public class BoardView extends JPanel {
 
     /**
      * Installs another pawn cell listener
-     * 
+     *
      * @param lis Listener, ignored if null
      */
     public void addPawnCellListener(final PawnCellListener lis) {
@@ -409,7 +419,7 @@ public class BoardView extends JPanel {
 
     /**
      * Removes a previously installed pawn cell listener
-     * 
+     *
      * @param lis Listener, ignored if null
      */
     public void removePawnCellListener(final PawnCellListener lis) {
@@ -420,7 +430,7 @@ public class BoardView extends JPanel {
 
     /**
      * Installs another wall cell listener
-     * 
+     *
      * @param lis Listener, ignored if null
      */
     public void addWallCellListener(final WallCellListener lis) {
@@ -431,7 +441,7 @@ public class BoardView extends JPanel {
 
     /**
      * Removes a previously installed wall cell listener
-     * 
+     *
      * @param lis Listener, ignored if null
      */
     public void removeWallCellListener(final WallCellListener lis) {
@@ -439,4 +449,4 @@ public class BoardView extends JPanel {
             this.wallCellListeners.remove(lis);
         }
     }
-    }
+}

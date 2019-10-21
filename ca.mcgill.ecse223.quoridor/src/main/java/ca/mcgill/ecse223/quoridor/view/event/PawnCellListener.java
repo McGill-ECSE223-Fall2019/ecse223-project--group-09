@@ -6,14 +6,37 @@ package ca.mcgill.ecse223.quoridor.view.event;
  * @author Group 9
  */
 public interface PawnCellListener {
-    
+
     /**
-     * Called when pawn cell is clicked
+     * Called when an empty pawn cell is clicked
      *
+     * @param source Object where the event occurred
      * @param row Row in pawn coordinates
      * @param col Column in pawn coordinates
      *
      * @author Group 9
      */
-    public void pawnCellClicked(int row, int col);
+    public void emptyPawnCellClicked(Object source, int row, int col);
+
+    /**
+     * Called when the white pawn cell is clicked
+     *
+     * @param source Object where the event occurred
+     * @param row Row in pawn coordinates
+     * @param col Column in pawn coordinates
+     *
+     * @author Group 9
+     */
+    public void whitePawnCellClicked(Object source, int row, int col);
+
+    /**
+     * Called when the black pawn cell is clicked
+     *
+     * @param source Object where the event occurred
+     * @param row Row in pawn coordinates
+     * @param col Column in pawn coordinates
+     *
+     * @author Group 9
+     */
+    public void blackPawnCellClicked(Object source, int row, int col);
 }
