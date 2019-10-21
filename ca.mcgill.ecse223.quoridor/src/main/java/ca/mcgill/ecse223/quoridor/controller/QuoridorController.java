@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +25,18 @@ import java.util.List;
 
 
 public class QuoridorController {
+
+	/////////////////////////// FIELDS ///////////////////////////
+	
+	private static Quoridor quoridor;
+	private static Board board;
+	private static Game game; 
+	private static Player player1; 
+	private static Player player2;
+	private static Player player3;
+	private static Player player4;
+	private static Player currentPlayer; // ??? should this be our flag?
+	
 	
 	/**
 	 * 
@@ -177,7 +190,8 @@ public class QuoridorController {
 	
 	public static void rotateWall(TOWallCandidate wallCandidate) {
 		//this method should change the direction of the candidate
-		throw new UnsupportedOperationException();
+		wallCandidate.rotate(); // change the orientation of the wall
+		
 		
 	}
 	
@@ -195,7 +209,20 @@ public class QuoridorController {
 	
 	public static void dropWall(TOWall wall) {
 		//this method will drop 
-		throw new UnsupportedOperationException();
+		int row= wall.getRow();
+		int column= wall.getColumn();
+		Orientation orientation= wall.getOrientation();
+		
+		
+		boolean isValid = validWallPlacement(row, column, orientation);
+		if (isValid==true) {
+			//if true create a wallmove
+			Move myMove= createWallMove(row, column, orientation);
+		}else {
+			throw new UnsupportedOperationException();	
+		}
+		
+		
 		
 	}
 	
@@ -237,8 +264,27 @@ public class QuoridorController {
 	 *
 	 * @author Mohamed Mohamed
 	 */
-	public static boolean createWallMove(int row, int column, Orientation orientation) {
-		throw new UnsupportedOperationException();
+	public static WallMove createWallMove(int row, int column, Orientation orientation) {
+	
+	//        game has his list of moves
+	//        player has his list of walls	
+		
+	Tile tile = new Tile(row, column, board); 
+	int moveNumber= 0; // ????
+	int roundNumber= 0; // ????
+	int numOfWall= 0; // ????
+	Direction direction=null;
+	
+	
+	if(orientation==orientation.HORIZONTAL) {
+		direction=direction.Horizontal;
+	}else {
+		direction=direction.Vertical;
+	}
+	int index = 0; // ????
+	Wall thisWall= currentPlayer.getWall(index);
+	WallMove wallMove= new WallMove(moveNumber, roundNumber, currentPlayer, tile, game, direction, thisWall);
+	return wallMove;
 	}
 	
 	/**

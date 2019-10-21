@@ -47,9 +47,21 @@ public class TOWallCandidate {
     	this.orientation = orientation;
     }
     
+    public void rotate() {
+    	if(this.orientation==orientation.HORIZONTAL) {
+    		
+    		this.setOrientation(orientation.VERTICAL);
+    	}else { // if the orientation is vertcial
+    		
+    		this.setOrientation(orientation.HORIZONTAL);
+    	}
+    }
+    
     public TOWall getAssociatedWall(){
     	return this.associatedWall;
     	
     }
+
+	
     
 }
