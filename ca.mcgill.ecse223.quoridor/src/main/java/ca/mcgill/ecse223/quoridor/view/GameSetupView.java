@@ -229,6 +229,59 @@ public class GameSetupView extends JPanel {
     }
 
     /**
+     * Checks if list of player name hints is empty
+     *
+     * @return true if empty, false otherwise
+     *
+     * @author Group 9
+     */
+    public boolean nameHintsIsEmpty() {
+        return this.nameHints.isEmpty();
+    }
+
+    /**
+     * Removes all player name hints
+     *
+     * @author Group 9
+     */
+    public void removeAllNameHints() {
+        this.nameHints.clear();
+    }
+
+    /**
+     * Adds a name to the list of player name hints
+     *
+     * Note: name is added even if the name already exists
+     *
+     * @param name name being added
+     *
+     * @see GameSetupView#addNewNameHint(String)
+     * @author Group 9
+     */
+    public void addNameHint(String name) {
+        this.nameHints.add(name);
+    }
+
+    /**
+     * Adds a new name to the list of player name hints
+     *
+     * Note: name is not added if name already exists
+     *
+     * @param name new name being added
+     * @return true if name is added, false if name already exists
+     *
+     * @see GameSetupView#addNameHint(String)
+     * @author Group 9
+     */
+    public boolean addNewNameHint(String name) {
+        if (this.nameHints.contains(name)) {
+            return false;
+        }
+        this.nameHints.add(name);
+        return true;
+    }
+
+    /**
      *
      * @return the start-game button instance
      *
