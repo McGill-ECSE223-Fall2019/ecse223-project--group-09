@@ -30,12 +30,35 @@ import ca.mcgill.ecse223.quoridor.view.event.WallCellListener;
  */
 public class BoardView extends JPanel {
 
+    /**
+     * A predicate for whether or not a pawn tile should be displayed with
+     * placement cue
+     * 
+     * @author Group 9
+     */
+    public static interface PawnPlacementCuePredicate {
+
+        /**
+         * 
+         * @param row Row in pawn coordinates
+         * @param col Column in pawn coordinates
+         * @return true if this tile should be displayed with a placement cue,
+         *         false otherwise
+         * 
+         * @author Group 9
+         */
+        public boolean shouldRenderCue(int row, int col);
+    }
+
     private static final int ROWS = 9;
     private static final int COLS = 9;
 
     private static final Color PAWN_CELL_COLOR = Color.lightGray;
     private static final Color WALL_CELL_COLOR = Color.cyan;
     private static final Color PLACEMENT_CUE_COLOR = Color.red;
+
+    // By default, no tiles are displayed as placement cues
+    private static final PawnPlacementCuePredicate DEFAULT_PAWN_CUE_PREDICATE = (row, col) -> false;
 
     // ***** Event-handling Variables *****
     private List<PawnCellListener> pawnCellListeners = new ArrayList<>();
@@ -46,6 +69,8 @@ public class BoardView extends JPanel {
     private JPanel blackPawnTile;
 
     private boolean pawnTileCue = false;
+    private PawnPlacementCuePredicate pawnCuePredicate = DEFAULT_PAWN_CUE_PREDICATE;
+
     private Orientation wallTileCue = null;
 
     // ***** Additional UI Components *****
@@ -420,6 +445,19 @@ public class BoardView extends JPanel {
     }
 
     /**
+     * Sets the predicate for deciding if a certain tile should be rendered
+     * with the placement cue
+     * 
+     * @param predicate The predicate, null will cause all tiles to not be
+     *                  rendered with the placement cue
+     * 
+     * @author Group 9
+     */
+    public void setPawnPlacementCuePredicate(PawnPlacementCuePredicate predicate) {
+        this.pawnCuePredicate = predicate != null ? predicate : DEFAULT_PAWN_CUE_PREDICATE;
+    }
+
+    /**
      * Set the orientation of the wall placement cue
      *
      * @param orientation Orientation of the wall hint, null to disable
@@ -621,12 +659,7 @@ public class BoardView extends JPanel {
                 return;
             }
 
-            // Change color to display placement-cue
-            // if the tile is vacant
-                final JPanel whiteTile = this.board.whitePawnTile;
-                final JPanel blackTile = this.board.blackPawnTile;
-
-                if (this.panel != whiteTile && this.panel != blackTile) {
+            if (this.board.pawnCuePredicate.shouldRenderCue(x, y)) {
                     this.panel.setBackground(BoardView.PLACEMENT_CUE_COLOR);
             }
         }
@@ -638,10 +671,7 @@ public class BoardView extends JPanel {
          */
         private void revertCorrectedColor() {
             // Correct color back if necessary
-                final JPanel whiteTile = this.board.whitePawnTile;
-                final JPanel blackTile = this.board.blackPawnTile;
-
-                if (this.panel != whiteTile && this.panel != blackTile) {
+            if (this.board.pawnCuePredicate.shouldRenderCue(x, y)) {
                     this.panel.setBackground(BoardView.PAWN_CELL_COLOR);
             }
         }
