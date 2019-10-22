@@ -46,6 +46,7 @@ public class BoardView extends JPanel {
     private JPanel blackPawnTile;
 
     private boolean pawnTileCue = false;
+    private Orientation wallTileCue = null;
 
     // ***** Additional UI Components *****
     private final JPanel[][] pawnCells = new JPanel[ROWS][COLS];
@@ -169,6 +170,7 @@ public class BoardView extends JPanel {
                 this.add(cell, c);
 
                 cell.addMouseListener(this.createWallMouseListener(i, j));
+                cell.addMouseListener(new WallHintingEventListener(this, i + 1, j + 1));
                 this.horizontalCells[i][j] = cell;
             }
         }
@@ -191,6 +193,7 @@ public class BoardView extends JPanel {
                 this.add(cell, c);
 
                 cell.addMouseListener(this.createWallMouseListener(i, j));
+                cell.addMouseListener(new WallHintingEventListener(this, i + 1, j + 1));
                 this.verticalCells[i][j] = cell;
             }
         }
@@ -214,7 +217,9 @@ public class BoardView extends JPanel {
 
                 // Junction cells are awkward since these don't
                 // actually exists in the wall coordinate system
-                // so no mouse listener for these
+                // so this.createWallMouseListener for these
+
+                cell.addMouseListener(new WallHintingEventListener(this, i + 1, j + 1));
                 this.junctionCells[i][j] = cell;
             }
         }
@@ -324,6 +329,25 @@ public class BoardView extends JPanel {
     }
 
     /**
+     * Retrieves the background color of the wall
+     *
+     * Note: Assumes junction cells to not be tampered with
+     *
+     * @param row Row in wall coordinates
+     * @param col Column in wall coordinates
+     * @return The background color of that wall, null if out of bounds!
+     *
+     * @author Group 9
+     */
+    private Color getWallBackgroundColor(int row, int col) {
+        try {
+            return this.junctionCells[row - 1][col - 1].getBackground();
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            return null;
+        }
+    }
+
+    /**
      * Resets the position of the white pawn by removing it from the wall
      *
      * @author Group 9
@@ -396,6 +420,17 @@ public class BoardView extends JPanel {
     }
 
     /**
+     * Set the orientation of the wall placement cue
+     *
+     * @param orientation Orientation of the wall hint, null to disable
+     *
+     * @author Group 9
+     */
+    public void setWallTilePlacementCueOrientation(Orientation orientation) {
+        this.wallTileCue = orientation;
+    }
+
+    /**
      * Installs another pawn cell listener
      *
      * @param lis Listener, ignored if null
@@ -444,6 +479,77 @@ public class BoardView extends JPanel {
     public void removeWallCellListener(final WallCellListener lis) {
         if (lis != null) {
             this.wallCellListeners.remove(lis);
+        }
+    }
+
+
+    private static class WallHintingEventListener extends MouseAdapter implements ActionListener {
+
+        private final BoardView board;
+        private final int x;
+        private final int y;
+        private final Timer timer;
+
+        private Orientation lastOrientation = null;
+
+        public WallHintingEventListener(BoardView board, int x, int y) {
+            this.board = board;
+            this.x = x;
+            this.y = y;
+
+            this.timer = new Timer(500, this);
+            this.timer.setInitialDelay(0);
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            // Have timer handle the hover event
+            // see actinPerformed(ActionEvent)
+            this.timer.start();
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+            this.timer.stop();
+
+            this.revertCorrectedColor();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Handles the hovering stuff here
+
+            final Orientation orientation = this.board.wallTileCue;
+            if (orientation == null) {
+                // Not drawing visual cues, done!
+                // Might need to reset previously drawn cues
+                this.revertCorrectedColor();
+                return;
+            }
+
+            // Change color to display placement-cue
+            // if the tile is vacant
+            if (this.lastOrientation == null) {
+                if (this.board.getWallBackgroundColor(x, y) == BoardView.WALL_CELL_COLOR) {
+                    this.board.setWallBackgroundColor(x, y, orientation, BoardView.PLACEMENT_CUE_COLOR);
+                    this.lastOrientation = orientation;
+                }
+            }
+        }
+
+        /**
+         * Reverts a color change due to placement cues if needed
+         *
+         * @author Group 9
+         */
+        private void revertCorrectedColor() {
+            // Correct color back if necessary
+            if (this.lastOrientation != null) {
+                if (this.board.getWallBackgroundColor(x, y) == BoardView.PLACEMENT_CUE_COLOR) {
+                    this.board.setWallBackgroundColor(x, y, this.lastOrientation, BoardView.WALL_CELL_COLOR);
+                    this.lastOrientation = null;
+                }
+            }
         }
     }
 
