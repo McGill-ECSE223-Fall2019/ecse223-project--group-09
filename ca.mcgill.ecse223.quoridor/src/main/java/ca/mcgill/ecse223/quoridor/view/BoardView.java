@@ -396,6 +396,8 @@ public class BoardView extends JPanel {
      * Sets the JPanel's color to the board's color
      *
      * @param array a 2D JPanel array whose colors being set
+     * 
+     * @author Group 9
      */
     private static void resetWallHelper(final JPanel[][] array) {
         for (int i = 0; i < array.length; ++i) {
@@ -410,6 +412,8 @@ public class BoardView extends JPanel {
      * Installs another pawn cell listener
      *
      * @param lis Listener, ignored if null
+     * 
+     * @author Group 9
      */
     public void addPawnCellListener(final PawnCellListener lis) {
         if (lis != null) {
@@ -421,6 +425,8 @@ public class BoardView extends JPanel {
      * Removes a previously installed pawn cell listener
      *
      * @param lis Listener, ignored if null
+     * 
+     * @author Group 9
      */
     public void removePawnCellListener(final PawnCellListener lis) {
         if (lis != null) {
@@ -432,6 +438,8 @@ public class BoardView extends JPanel {
      * Installs another wall cell listener
      *
      * @param lis Listener, ignored if null
+     * 
+     * @author Group 9
      */
     public void addWallCellListener(final WallCellListener lis) {
         if (lis != null) {
@@ -443,6 +451,8 @@ public class BoardView extends JPanel {
      * Removes a previously installed wall cell listener
      *
      * @param lis Listener, ignored if null
+     * 
+     * @author Group 9
      */
     public void removeWallCellListener(final WallCellListener lis) {
         if (lis != null) {
