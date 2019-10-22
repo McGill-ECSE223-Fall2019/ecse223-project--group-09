@@ -3,6 +3,8 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -11,6 +13,7 @@ import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.view.event.PawnCellListener;
@@ -32,6 +35,7 @@ public class BoardView extends JPanel {
 
     private static final Color PAWN_CELL_COLOR = Color.lightGray;
     private static final Color WALL_CELL_COLOR = Color.cyan;
+    private static final Color PLACEMENT_CUE_COLOR = Color.red;
 
     // ***** Event-handling Variables *****
     private List<PawnCellListener> pawnCellListeners = new ArrayList<>();
@@ -40,6 +44,8 @@ public class BoardView extends JPanel {
     // ***** Rendering State Variables *****
     private JPanel whitePawnTile;
     private JPanel blackPawnTile;
+
+    private boolean pawnTileCue = false;
 
     // ***** Additional UI Components *****
     private final JPanel[][] pawnCells = new JPanel[ROWS][COLS];
@@ -106,41 +112,10 @@ public class BoardView extends JPanel {
                 c.fill = GridBagConstraints.BOTH;
                 this.add(cell, c);
 
-                cell.addMouseListener(this.createPawnMouseListener(i, j));
+                cell.addMouseListener(new PawnCellEventBridge(this, cell, i, j));
                 this.pawnCells[i][j] = cell;
             }
         }
-    }
-
-    /**
-     * Creates a mouse listener for pawns that will delegate the clicked event
-     * to installed PawnCellListener
-     *
-     * @param i Array's i
-     * @param j Array's j
-     * @return Mouse listener for a particular pawn
-     *
-     * @author Group 9
-     */
-    private MouseListener createPawnMouseListener(int i, int j) {
-        return new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                final Object source = e.getSource();
-                final JPanel whiteTile = whitePawnTile;
-                final JPanel blackTile = blackPawnTile;
-
-                for (final PawnCellListener lis : pawnCellListeners) {
-                    if (source == whiteTile) {
-                        lis.whitePawnCellClicked(BoardView.this, i + 1, j + 1);
-                    } else if (source == blackTile) {
-                        lis.blackPawnCellClicked(BoardView.this, i + 1, j + 1);
-                    } else {
-                        lis.emptyPawnCellClicked(BoardView.this, i + 1, j + 1);
-                    }
-                }
-            }
-        };
     }
 
     /**
@@ -409,6 +384,17 @@ public class BoardView extends JPanel {
     }
 
     /**
+     * Set whether or not placement cues for pawn tiles are enabled
+     * 
+     * @param flag true if placement cues should be enabled, false otherwise
+     * 
+     * @author Group 9
+     */
+    public void setPawnTilePlacementCueEnabled(boolean flag) {
+        this.pawnTileCue = flag;
+    }
+
+    /**
      * Installs another pawn cell listener
      *
      * @param lis Listener, ignored if null
@@ -457,6 +443,108 @@ public class BoardView extends JPanel {
     public void removeWallCellListener(final WallCellListener lis) {
         if (lis != null) {
             this.wallCellListeners.remove(lis);
+        }
+    }
+
+    /**
+     * An event listener for pawn cells
+     * 
+     * @author Group 9
+     */
+    private static class PawnCellEventBridge extends MouseAdapter implements ActionListener {
+
+        private final BoardView board;
+        private final JPanel panel;
+        private final int x;
+        private final int y;
+        private final Timer timer;
+
+        private boolean colorCorrected = false;
+
+        public PawnCellEventBridge(BoardView board, JPanel panel, int i, int j) {
+            this.board = board;
+            this.panel = panel;
+            this.x = i + 1;
+            this.y = j + 1;
+
+            this.timer = new Timer(500, this); // called every half a second
+            this.timer.setInitialDelay(0);
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            final JPanel whiteTile = this.board.whitePawnTile;
+            final JPanel blackTile = this.board.blackPawnTile;
+
+            // Do not convert the following loop to a foreach loop:
+            // Could get ConcurrentModificationException for that!
+            final List<PawnCellListener> list = this.board.pawnCellListeners;
+            for (int i = 0; i < list.size(); ++i) {
+                final PawnCellListener lis = list.get(i);
+                if (this.panel == whiteTile) {
+                    lis.whitePawnCellClicked(this.board, x, y);
+                } else if (this.panel == blackTile) {
+                    lis.blackPawnCellClicked(this.board, x, y);
+                } else {
+                    lis.emptyPawnCellClicked(this.board, x, y);
+                }
+            }
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            // Have timer handle the hover event
+            // see actionPerformed(ActionEvent)
+            this.timer.start();
+        }
+        
+        @Override
+        public void mouseExited(MouseEvent e) {
+            this.timer.stop();
+
+            this.revertCorrectedColor();
+        }
+        
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Handles the hovering stuff here
+            
+            if (!this.board.pawnTileCue) {
+                // Not drawing visual cues, done!
+                // Might need to reset previously drawn cues
+                this.revertCorrectedColor();
+                return;
+            }
+
+            // Change color to display placement-cue
+            // if the tile is vacant
+            if (!this.colorCorrected) {
+                final JPanel whiteTile = this.board.whitePawnTile;
+                final JPanel blackTile = this.board.blackPawnTile;
+
+                if (this.panel != whiteTile && this.panel != blackTile) {
+                    this.panel.setBackground(BoardView.PLACEMENT_CUE_COLOR);
+                    this.colorCorrected = true;
+                }
+            }
+        }
+
+        /**
+         * Reverts a color change due to placement cues if needed
+         * 
+         * @author Group 9
+         */
+        private void revertCorrectedColor() {
+            // Correct color back if necessary
+            if (this.colorCorrected) {
+                final JPanel whiteTile = this.board.whitePawnTile;
+                final JPanel blackTile = this.board.blackPawnTile;
+
+                if (this.panel != whiteTile && this.panel != blackTile) {
+                    this.panel.setBackground(BoardView.PAWN_CELL_COLOR);
+                    this.colorCorrected = false;
+                }
+            }
         }
     }
 }
