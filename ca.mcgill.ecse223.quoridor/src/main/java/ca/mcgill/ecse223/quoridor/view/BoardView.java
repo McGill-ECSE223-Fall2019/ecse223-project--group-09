@@ -566,8 +566,6 @@ public class BoardView extends JPanel {
         private final int y;
         private final Timer timer;
 
-        private boolean colorCorrected = false;
-
         public PawnCellEventBridge(BoardView board, JPanel panel, int i, int j) {
             this.board = board;
             this.panel = panel;
@@ -625,14 +623,11 @@ public class BoardView extends JPanel {
 
             // Change color to display placement-cue
             // if the tile is vacant
-            if (!this.colorCorrected) {
                 final JPanel whiteTile = this.board.whitePawnTile;
                 final JPanel blackTile = this.board.blackPawnTile;
 
                 if (this.panel != whiteTile && this.panel != blackTile) {
                     this.panel.setBackground(BoardView.PLACEMENT_CUE_COLOR);
-                    this.colorCorrected = true;
-                }
             }
         }
 
@@ -643,14 +638,11 @@ public class BoardView extends JPanel {
          */
         private void revertCorrectedColor() {
             // Correct color back if necessary
-            if (this.colorCorrected) {
                 final JPanel whiteTile = this.board.whitePawnTile;
                 final JPanel blackTile = this.board.blackPawnTile;
 
                 if (this.panel != whiteTile && this.panel != blackTile) {
                     this.panel.setBackground(BoardView.PAWN_CELL_COLOR);
-                    this.colorCorrected = false;
-                }
             }
         }
     }
