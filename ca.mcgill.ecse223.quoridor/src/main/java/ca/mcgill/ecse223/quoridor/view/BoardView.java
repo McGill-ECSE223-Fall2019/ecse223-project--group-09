@@ -31,6 +31,27 @@ import ca.mcgill.ecse223.quoridor.view.event.WallCellListener;
 public class BoardView extends JPanel {
 
     /**
+     * A predicate for whether or not a wall slot should be displayed with
+     * placement cue
+     * 
+     * @author Group 9
+     */
+    public static interface WallPlacementCuePredicate {
+
+        /**
+         * 
+         * @param row Row in wall coordinates
+         * @param col Column in wall coordinates
+         * @param orientation Orientation of the wall
+         * @return true if this slot should be displayed with a placement cue,
+         *         false otherwise
+         * 
+         * @author Group 9
+         */
+        public boolean shouldRenderCue(int row, int col, Orientation orientation);
+    }
+
+    /**
      * A predicate for whether or not a pawn tile should be displayed with
      * placement cue
      * 
@@ -57,8 +78,9 @@ public class BoardView extends JPanel {
     private static final Color WALL_CELL_COLOR = Color.cyan;
     private static final Color PLACEMENT_CUE_COLOR = Color.red;
 
-    // By default, no tiles are displayed as placement cues
+    // By default, nothing are displayed as placement cues
     private static final PawnPlacementCuePredicate DEFAULT_PAWN_CUE_PREDICATE = (row, col) -> false;
+    private static final WallPlacementCuePredicate DEFAULT_WALL_CUE_PREDICATE = (row, col, or) -> false;
 
     // ***** Event-handling Variables *****
     private List<PawnCellListener> pawnCellListeners = new ArrayList<>();
@@ -72,6 +94,7 @@ public class BoardView extends JPanel {
     private PawnPlacementCuePredicate pawnCuePredicate = DEFAULT_PAWN_CUE_PREDICATE;
 
     private Orientation wallTileCue = null;
+    private WallPlacementCuePredicate wallCuePredicate = DEFAULT_WALL_CUE_PREDICATE;
 
     // ***** Additional UI Components *****
     private final JPanel[][] pawnCells = new JPanel[ROWS][COLS];
@@ -469,6 +492,19 @@ public class BoardView extends JPanel {
     }
 
     /**
+     * Sets the predicate for deciding if a certain slot should be rendered
+     * with the placement cue
+     * 
+     * @param predicate The predicate, null will cause all slots to not be
+     *                  rendered with the placement cue
+     * 
+     * @author Group 9
+     */
+    public void setWallPlacementCuePredicate(WallPlacementCuePredicate predicate) {
+        this.wallCuePredicate = predicate != null ? predicate : DEFAULT_WALL_CUE_PREDICATE;
+    }
+
+    /**
      * Installs another pawn cell listener
      *
      * @param lis Listener, ignored if null
@@ -568,7 +604,7 @@ public class BoardView extends JPanel {
             // Change color to display placement-cue
             // if the tile is vacant
             if (this.lastOrientation == null) {
-                if (this.board.getWallBackgroundColor(x, y) == BoardView.WALL_CELL_COLOR) {
+                if (this.board.wallCuePredicate.shouldRenderCue(x, y, orientation)) {
                     this.board.setWallBackgroundColor(x, y, orientation, BoardView.PLACEMENT_CUE_COLOR);
                     this.lastOrientation = orientation;
                 }
@@ -582,9 +618,10 @@ public class BoardView extends JPanel {
          */
         private void revertCorrectedColor() {
             // Correct color back if necessary
-            if (this.lastOrientation != null) {
-                if (this.board.getWallBackgroundColor(x, y) == BoardView.PLACEMENT_CUE_COLOR) {
-                    this.board.setWallBackgroundColor(x, y, this.lastOrientation, BoardView.WALL_CELL_COLOR);
+            final Orientation orientation = this.lastOrientation;
+            if (orientation != null) {
+                if (this.board.wallCuePredicate.shouldRenderCue(x, y, orientation)) {
+                    this.board.setWallBackgroundColor(x, y, orientation, BoardView.WALL_CELL_COLOR);
                     this.lastOrientation = null;
                 }
             }
