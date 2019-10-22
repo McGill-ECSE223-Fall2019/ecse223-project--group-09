@@ -218,7 +218,12 @@ public class BoardView extends JPanel {
                 this.add(cell, c);
 
                 cell.addMouseListener(this.createWallMouseListener(i, j));
+                if (j + 1 == COLS) {
+                    // If at edge, it should act like the wall of the previous horizontal cell
+                    cell.addMouseListener(new WallHintingEventListener(this, i + 1, j));
+                } else {
                 cell.addMouseListener(new WallHintingEventListener(this, i + 1, j + 1));
+                }
                 this.horizontalCells[i][j] = cell;
             }
         }
@@ -241,7 +246,12 @@ public class BoardView extends JPanel {
                 this.add(cell, c);
 
                 cell.addMouseListener(this.createWallMouseListener(i, j));
+                if (i + 1 == ROWS) {
+                    // If at edge, it should act like the wall of the previous vertical cell
+                    cell.addMouseListener(new WallHintingEventListener(this, i, j + 1));
+                } else {
                 cell.addMouseListener(new WallHintingEventListener(this, i + 1, j + 1));
+                }
                 this.verticalCells[i][j] = cell;
             }
         }
