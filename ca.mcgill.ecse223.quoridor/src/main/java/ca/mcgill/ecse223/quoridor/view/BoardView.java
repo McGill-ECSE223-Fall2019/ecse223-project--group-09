@@ -614,7 +614,7 @@ public class BoardView extends JPanel {
             // Change color to display placement-cue
             // if the tile is vacant
             if (this.lastOrientation == null) {
-                if (this.board.wallCuePredicate.shouldRenderCue(x, y, orientation)) {
+                if (this.shouldRenderSlot(orientation)) {
                     this.board.setWallBackgroundColor(x, y, orientation, BoardView.PLACEMENT_CUE_COLOR);
                     this.lastOrientation = orientation;
                 }
@@ -630,12 +630,36 @@ public class BoardView extends JPanel {
             // Correct color back if necessary
             final Orientation orientation = this.lastOrientation;
             if (orientation != null) {
-                if (this.board.wallCuePredicate.shouldRenderCue(x, y, orientation)) {
+                if (this.shouldRevertSlot(orientation)) {
                     this.board.setWallBackgroundColor(x, y, orientation, BoardView.WALL_CELL_COLOR);
                     this.lastOrientation = null;
                 }
             }
         }
+
+        /**
+         *
+         * @param orientation Orientation of the wall
+         * @return true if slot should render the placement cue
+         * 
+         * @author Group 9
+         */
+        private boolean shouldRenderSlot(Orientation orientation) {
+            return this.board.getWallBackgroundColor(x, y) == BoardView.WALL_CELL_COLOR
+                && this.board.wallCuePredicate.shouldRenderCue(this.x, this.y, orientation);
+        }
+
+        /**
+         *
+         * @param orientation Orientation of the wall
+         * @return true if slot should revert the placement cue
+         * 
+         * @author Group 9
+         */
+        private boolean shouldRevertSlot(Orientation orientation) {
+            return this.board.getWallBackgroundColor(x, y) == BoardView.PLACEMENT_CUE_COLOR
+                && this.board.wallCuePredicate.shouldRenderCue(this.x, this.y, orientation);
+    }
     }
 
     /**
@@ -706,7 +730,7 @@ public class BoardView extends JPanel {
                 return;
             }
 
-            if (this.board.pawnCuePredicate.shouldRenderCue(x, y)) {
+            if (this.shouldRenderTile()) {
                     this.panel.setBackground(BoardView.PLACEMENT_CUE_COLOR);
             }
         }
@@ -718,9 +742,22 @@ public class BoardView extends JPanel {
          */
         private void revertCorrectedColor() {
             // Correct color back if necessary
-            if (this.board.pawnCuePredicate.shouldRenderCue(x, y)) {
+            if (this.shouldRenderTile()) {
                     this.panel.setBackground(BoardView.PAWN_CELL_COLOR);
             }
+        }
+
+        /**
+         *
+         * @return true if tile should render the placement cue
+         *
+         * @author Group 9
+         */
+        private boolean shouldRenderTile() {
+            final JPanel whiteTile = this.board.whitePawnTile;
+            final JPanel blackTile = this.board.blackPawnTile;
+            return this.panel != whiteTile && this.panel != blackTile
+                && this.board.pawnCuePredicate.shouldRenderCue(this.x, this.y);
         }
     }
 }
