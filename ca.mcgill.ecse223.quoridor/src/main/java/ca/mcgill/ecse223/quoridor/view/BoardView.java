@@ -276,23 +276,8 @@ public class BoardView extends JPanel {
      * @author Group 9
      */
     public void addWhiteWall(int row, int col, Orientation orientation) {
-        switch (orientation) {
-            case VERTICAL: {
-                this.verticalCells[row - 1][col - 1].setBackground(Color.white);
-                this.junctionCells[row - 1][col - 1].setBackground(Color.white);
-                this.verticalCells[row][col - 1].setBackground(Color.white);
-                break;
+        this.setWallBackgroundColor(row, col, orientation, Color.white);
             }
-            case HORIZONTAL: {
-                this.horizontalCells[row - 1][col - 1].setBackground(Color.white);
-                this.junctionCells[row - 1][col - 1].setBackground(Color.white);
-                this.horizontalCells[row - 1][col].setBackground(Color.white);
-                break;
-            }
-            default:
-                throw new AssertionError("Unhandled orientation: " + orientation);
-        }
-    }
 
     /**
      * Adds a wall of the black player on to the board
@@ -304,17 +289,33 @@ public class BoardView extends JPanel {
      * @author Group 9
      */
     public void addBlackWall(int row, int col, Orientation orientation) {
+        this.setWallBackgroundColor(row, col, orientation, Color.black);
+    }
+
+    /**
+     * Sets the background color of the wall
+     *
+     * Note: No overlapping check is performed
+     *
+     * @param row Row in wall coordinates
+     * @param col Column in wall coordinates
+     * @param orientation Orientation of the wall
+     * @param color New background color
+     *
+     * @author Group 9
+     */
+    private void setWallBackgroundColor(int row, int col, Orientation orientation, Color color) {
         switch (orientation) {
             case VERTICAL: {
-                this.verticalCells[row - 1][col - 1].setBackground(Color.black);
-                this.junctionCells[row - 1][col - 1].setBackground(Color.black);
-                this.verticalCells[row][col - 1].setBackground(Color.black);
+                this.verticalCells[row - 1][col - 1].setBackground(color);
+                this.junctionCells[row - 1][col - 1].setBackground(color);
+                this.verticalCells[row][col - 1].setBackground(color);
                 break;
             }
             case HORIZONTAL: {
-                this.horizontalCells[row - 1][col - 1].setBackground(Color.black);
-                this.junctionCells[row - 1][col - 1].setBackground(Color.black);
-                this.horizontalCells[row - 1][col].setBackground(Color.black);
+                this.horizontalCells[row - 1][col - 1].setBackground(color);
+                this.junctionCells[row - 1][col - 1].setBackground(color);
+                this.horizontalCells[row - 1][col].setBackground(color);
                 break;
             }
             default:
