@@ -787,14 +787,14 @@ public class QuoridorController {
 
 		final Game game;
 		if (!quoridor.hasCurrentGame()) {
-			game = new Game(status, move, whitePlayer, blackPlayer, quoridor);
+			game = new Game(status, move, quoridor);
 		} else {
 			game = quoridor.getCurrentGame();
 			game.setGameStatus(status);
 			game.setMoveMode(move);
-			game.setWhitePlayer(whitePlayer);
-			game.setBlackPlayer(blackPlayer);
 		}
+		game.setWhitePlayer(whitePlayer);
+		game.setBlackPlayer(blackPlayer);
 
 		final int id = matchForInt(br, "id");
 		final Tile whitePlayerTile = readTile(br);
