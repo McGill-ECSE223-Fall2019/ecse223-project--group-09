@@ -254,8 +254,14 @@ public class QuoridorController {
 			throw new IllegalStateException("Attempt to switch player when not in game");
 		}
 
-		final GamePosition snapshot = quoridor.getCurrentGame().getCurrentPosition();
-		snapshot.setPlayerToMove(snapshot.getPlayerToMove().getNextPlayer());
+		// Clone the current game position but ith playerToMove swapped
+		final Game game = quoridor.getCurrentGame();
+		final GamePosition snapshot = game.getCurrentPosition();
+		
+		PlayerPosition player1Position = new PlayerPosition(game.getWhitePlayer(), snapshot.getWhitePosition().getTile());
+		PlayerPosition player2Position = new PlayerPosition(game.getBlackPlayer(), snapshot.getBlackPosition().getTile());
+		final GamePosition newState = new GamePosition(snapshot.getId() + 1, player1Position, player2Position, snapshot.getPlayerToMove().getNextPlayer(), game);
+		game.setCurrentPosition(newState);
 	}
 
 	/**
