@@ -11,6 +11,7 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.Color;
+import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
@@ -535,9 +536,12 @@ public class CucumberStepDefinitions {
 	@When("I initiate to load a saved game {string}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
-			this.positionValidFlag = QuoridorController.loadPosition(filename);
+			QuoridorController.loadPosition(filename);
+			this.positionValidFlag = true;
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
+		} catch (InvalidLoadException ex) {
+			this.positionValidFlag = false;
 		}
 	}
 

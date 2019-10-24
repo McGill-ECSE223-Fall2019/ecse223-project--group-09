@@ -790,20 +790,14 @@ public class QuoridorController {
 	 * Loads a previously saved board from a file 
 	 * 
 	 * @param filePath The file being read
-	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails 
+	 * @throws InvalidLoadException If file cannot be processed
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static boolean loadPosition(String filePath) throws IOException {
+	public static void loadPosition(String filePath) throws IOException, InvalidLoadException {
 		try (final Reader reader = new FileReader(filePath)) {
-			return loadPosition(reader);
-		} catch (IllegalArgumentException ex) {
-			// Reading failed due to formatting
-			throw new IOException(ex);
-		} catch (RuntimeException ex) {
-			// Happens if getTile is called with invalid coordinates
-			return false;
+			loadPosition(reader);
 		}
 	}
 	
@@ -814,12 +808,12 @@ public class QuoridorController {
 	 * responsibility to do so.
 	 * 
 	 * @param source The stream we are reading from
-	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If stream cannot be processed
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static boolean loadPosition(Reader source) throws IOException {
+	public static void loadPosition(Reader source) throws IOException, InvalidLoadException {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		
 		final BufferedReader br = new BufferedReader(source);
@@ -843,7 +837,6 @@ public class QuoridorController {
 		game.setWhitePlayer(whitePlayer);
 		game.setBlackPlayer(blackPlayer);
 
-		// Phase 1 of migration:
 		// Create the inital game setup for the replay process to being from
 		// tiles I got from CucumberStepDefinitions
 		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, quoridor.getBoard().getTile(36));
@@ -887,8 +880,6 @@ public class QuoridorController {
 
 		// Do remember to switch the player though...
 		switchCurrentPlayer();
-
-		return true;
 	}
 
 	/**
@@ -897,10 +888,13 @@ public class QuoridorController {
 	 * @param br The stream we are reading from
 	 * @param g The game performing / registering these moves
 	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static void readMoves(BufferedReader br, Game g) throws IOException {
+	private static void readMoves(BufferedReader br, Game g) throws IOException, InvalidLoadException {
+		// TODO: Slim this method down...
+
 		Move lastMove = null; // since move works like a double-linked list
 
 		final int count = matchForInt(br, "cnt");
@@ -918,7 +912,7 @@ public class QuoridorController {
 					currentPlayer = g.getBlackPlayer();
 					break;
 				default:
-					throw new IOException("Unsupported color for player: " + playerColor);
+					throw new InvalidLoadException("Unsupported color for player: " + playerColor);
 			}
 
 			final Tile targetTile = readTile(br);
@@ -957,6 +951,11 @@ public class QuoridorController {
 				case "WallMove": {
 					final Direction dir = matchForEnum(br, "dir", Direction.class);
 					final Wall wall = Wall.getWithId(matchForInt(br, "id"));
+
+					if (wall.getOwner() != currentPlayer) {
+						throw new InvalidLoadException("Player(" + playerColor + ")=" + currentPlayer.getUser().getName() + " tried to grab wall of player " + wall.getOwner().getUser().getName());
+					}
+
 					final WallMove wallMove = new WallMove(moveNumber, roundNumber, currentPlayer, targetTile, g, dir, wall);
 					currentMove = wallMove;
 
@@ -974,12 +973,12 @@ public class QuoridorController {
 					break;
 				}
 				default:
-					throw new IOException("Unsupported move type with simple name: " + simpleClassName);
+					throw new InvalidLoadException("Unsupported move type with simple name: " + simpleClassName);
 			}
 
 			if (!validateGamePosition(newState)) {
 				// If the new game position is invalid, then we crash!
-				throw new IOException("Illegal board configuration after replaying:\n" +
+				throw new InvalidLoadException("Illegal board configuration after replaying:\n" +
 						"  i=" + i + ",\n" +
 						"  moveNumber=" + moveNumber + ",\n" +
 						"  roundNumber=" + roundNumber + ",\n" +
@@ -1000,18 +999,19 @@ public class QuoridorController {
 	 * 
 	 * @param br The stream we are reading from
 	 * @return The tile being read
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static Tile readTile(BufferedReader br) throws IOException {
+	private static Tile readTile(BufferedReader br) throws IOException, InvalidLoadException {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 
 		final int row = matchForInt(br, "row");
 		final int col = matchForInt(br, "col");
 
 		if (!isValidPawnCoordinate(row, col)) {
-			throw new RuntimeException("Illegal coordinate (" + row + "," + col + ")");
+			throw new InvalidLoadException("Illegal coordinate (" + row + "," + col + ")");
 		}
 
 		// based off indexing scheme used in
@@ -1024,11 +1024,12 @@ public class QuoridorController {
 	 * 
 	 * @param br The stream we are reading from
 	 * @return The player being read
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static Player readPlayer(BufferedReader br) throws IOException {
+	private static Player readPlayer(BufferedReader br) throws IOException, InvalidLoadException {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 
 		final Time remainingTime = matchForTime(br, "time");
@@ -1059,16 +1060,23 @@ public class QuoridorController {
 	 * @param br The stream we are reading from
 	 * @param key The key (stuff before colon)
 	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static int matchForInt(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
+	private static int matchForInt(BufferedReader br, String key) throws IOException, InvalidLoadException {
+		final String line = getNextUsefulLine(br);
+		final String errMsg = "Invalid numeric format `" + line + "`";
+
 		if (line == null || !line.matches('^' + key + ":[+-]?\\d+$")) {
-			throw new IllegalArgumentException("Invalid numeric format `" + line + "`");
+			throw new InvalidLoadException(errMsg);
 		}
+		try {
 		return Integer.parseInt(line.substring(key.length() + 1));
+		} catch (NumberFormatException ex) {
+			throw new InvalidLoadException(errMsg, ex);
+	}
 	}
 
 	/**
@@ -1077,20 +1085,28 @@ public class QuoridorController {
 	 * @param br The stream we are reading from
 	 * @param key The key (stuff before colon)
 	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static Time matchForTime(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
+	private static Time matchForTime(BufferedReader br, String key) throws IOException, InvalidLoadException {
+		final String line = getNextUsefulLine(br);
+		final String errMsg = "Invalid time format `" + line + "`";
+
 		if (line == null || !line.matches('^' + key + ":\\d{1,2}:\\d{1,2}:\\d{1,2}$")) {
-			throw new IllegalArgumentException("Invalid time format `" + line + "`");
+			throw new InvalidLoadException(errMsg);
 		}
+
 		final String[] seq = line.substring(key.length() + 1).split(":");
+		try {
 		return new Time(
 				Integer.parseInt(seq[0]),
 				Integer.parseInt(seq[1]),
 				Integer.parseInt(seq[2]));
+		} catch (NumberFormatException ex) {
+			throw new InvalidLoadException(errMsg, ex);
+		}
 	}
 	
 	/**
@@ -1099,14 +1115,17 @@ public class QuoridorController {
 	 * @param br The stream we are reading from
 	 * @param key The key (stuff before colon)
 	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static String matchForString(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
+	private static String matchForString(BufferedReader br, String key) throws IOException, InvalidLoadException {
+		final String line = getNextUsefulLine(br);
+		final String errMsg = "Invalid string format `" + line + "`";
+
 		if (line == null || !line.matches('^' + key + ":.*$")) {
-			throw new IllegalArgumentException("Invalid string format `" + line + "`");
+			throw new IllegalArgumentException(errMsg);
 		}
 		return line.substring(key.length() + 1);
 	}
@@ -1118,12 +1137,18 @@ public class QuoridorController {
 	 * @param key The key (stuff before colon)
 	 * @param type The enum with values (stuff before colon)
 	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static <T extends Enum<T>> T matchForEnum(BufferedReader br, String key, Class<T> type) throws IOException {
+	private static <T extends Enum<T>> T matchForEnum(BufferedReader br, String key, Class<T> type) throws IOException, InvalidLoadException {
+		try {
 		return Enum.valueOf(type, matchForString(br, key).trim());
+		} catch (InvalidLoadException | IllegalArgumentException ex) {
+			// Rethrow with better error message
+			throw new InvalidLoadException("Invalid enum values of type " + type.getSimpleName(), ex);
+		}
 	}
 	
 	/**
