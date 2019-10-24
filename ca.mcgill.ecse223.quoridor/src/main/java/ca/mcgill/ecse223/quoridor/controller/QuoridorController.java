@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,9 +20,12 @@ import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
+import ca.mcgill.ecse223.quoridor.model.JumpMove;
+import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
+import ca.mcgill.ecse223.quoridor.model.StepMove;
 import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
@@ -662,6 +664,19 @@ public class QuoridorController {
 		savePlayer(pw, game.getBlackPlayer());
 		pw.println("#");
 
+		// In the following START-END section is the old way of doing things.
+		// To be perfectly honest, it looks like it works, which is great!
+		// The problem is it does not save the moves (a problem when we start
+		// implementing game replays), which in turns, also does not save any
+		// other game position (other than the current one, which, again,
+		// problematic when we do game replays)
+		//
+		// This was one awfully long and hard to read comment (block?)...
+		// TLDR, everything in START-END section will be scrapped as soon as
+		// move creation methods are implemented! :shipit:
+
+		// ----- START -----
+		pw.println("# ----- START DEPRECATED STUFF -----");
 		final GamePosition gamePosition = game.getCurrentPosition();
 		pw.printf("id:%d\n", gamePosition.getId());
 
@@ -687,6 +702,53 @@ public class QuoridorController {
 		pw.println("# Black Walls On Board");
 		saveWallsOnBoard(pw, gamePosition.getBlackWallsOnBoard());
 		pw.println("#");
+		pw.println("# -----  END DEPRECATED STUFF  -----");
+		// ----- END -----
+
+		// Eventually, this will replace the functionality of the START-END
+		// section... (which is kind of hard to believe since it's like only
+		// three lines long?)
+		pw.println("# List of moves");
+		saveMoves(pw, game.getMoves());
+		pw.println("#");
+	}
+
+	/**
+	 * Writes out a list of moves of the game
+	 *
+	 * @param pw The stream we are writing to
+	 * @param moves The moves associated to a game
+	 * @throws IOException If writing operation fails
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static void saveMoves(PrintWriter pw, List<Move> moves) throws IOException {
+		pw.printf("cnt:%d\n", moves.size());
+		for (final Move move : moves) {
+			pw.printf("moveNumber:%d\n", move.getMoveNumber());
+			pw.printf("roundNumber:%d\n", move.getRoundNumber());
+			if (move.getPlayer().hasGameAsWhite()) {
+				pw.printf("player:%s\n", Color.WHITE.name());
+			} else {
+				pw.printf("player:%s\n", Color.BLACK.name());
+			}
+			saveTile(pw, move.getTargetTile());
+
+			// I will take the liberty to assume that move (abstract) must be one of the following:
+			// - StepMove
+			// - JumpMove
+			// - WallMove
+			//
+			// Out of these three, only WallMove needs more stuff to be written-out
+			pw.printf("type:%s\n", move.getClass().getSimpleName());
+			if (move instanceof WallMove) {
+				final WallMove wallMove = (WallMove) move;
+				pw.println("# WallMove specific fields");
+				pw.printf("dir:%s\n", wallMove.getWallDirection().name());
+				pw.printf("id:%d\n", wallMove.getWallPlaced().getId());
+				pw.println("#");
+			}
+		}
 	}
 
 	/**
@@ -802,6 +864,8 @@ public class QuoridorController {
 		game.setWhitePlayer(whitePlayer);
 		game.setBlackPlayer(blackPlayer);
 
+		// TLDR, same as SavePosition: START-END section is obslete
+		// ----- START -----
 		final int id = matchForInt(br, "id");
 		final Tile whitePlayerTile = readTile(br);
 		final Tile blackPlayerTile = readTile(br);
@@ -835,6 +899,10 @@ public class QuoridorController {
 		// Walls! Yay!
 		readWallsOnBoard(br, whitePlayer, game);
 		readWallsOnBoard(br, blackPlayer, game);
+		// ----- END -----
+
+		// Again, this line alone will replace the entire START-END section
+		readMoves(br, game);
 
 		// And then validate
 		final boolean result;
@@ -843,6 +911,65 @@ public class QuoridorController {
 			game.setCurrentPosition(oldGamePosition);
 		}
 		return result;
+	}
+
+	/**
+	 * Reads in a list of moves to be added to a game
+	 * 
+	 * @param br The stream we are reading from
+	 * @param g The game performing / registering these moves
+	 * @throws IOException If reading operation fails
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static void readMoves(BufferedReader br, Game g) throws IOException {
+		Move lastMove = null; // since move works like a double-linked list
+
+		final int count = matchForInt(br, "cnt");
+		for (int i = 0; i < count; ++i) {
+			final int moveNumber = matchForInt(br, "moveNumber");
+			final int roundNumber = matchForInt(br, "roundNumber");
+
+			final Player currentPlayer;
+			final Color playerColor = matchForEnum(br, "player", Color.class);
+			switch (playerColor) {
+				case WHITE:
+					currentPlayer = g.getWhitePlayer();
+					break;
+				case BLACK:
+					currentPlayer = g.getBlackPlayer();
+					break;
+				default:
+					throw new IOException("Unsupported color for player: " + playerColor);
+			}
+
+			final Tile targetTile = readTile(br);
+
+			// TODO: Actually replay these moves!
+
+			final Move currentMove;
+			final String simpleClassName = matchForString(br, "type");
+			switch (simpleClassName) {
+				case "StepMove":
+					currentMove = new StepMove(moveNumber, roundNumber, currentPlayer, targetTile, g);
+					break;
+				case "JumpMove":
+					currentMove = new JumpMove(moveNumber, roundNumber, currentPlayer, targetTile, g);
+					break;
+				case "WallMove": {
+					final Direction dir = matchForEnum(br, "dir", Direction.class);
+					final Wall wall = Wall.getWithId(matchForInt(br, "id"));
+					currentMove = new WallMove(moveNumber, roundNumber, currentPlayer, targetTile, g, dir, wall);
+					break;
+				}
+				default:
+					throw new IOException("Unsupported move type with simple name: " + simpleClassName);
+			}
+
+			// link the moves together
+			currentMove.setPrevMove(lastMove);
+			lastMove = currentMove;
+		}
 	}
 
 	/**

@@ -66,3 +66,6 @@ dir:Horizontal
 row:2
 col:4
 #
+# List of moves:
+# Right now, there are none since it still uses the old way
+cnt:0
