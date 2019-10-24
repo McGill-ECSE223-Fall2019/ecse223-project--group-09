@@ -880,15 +880,15 @@ public class QuoridorController {
 		// And we set this as the current position of game
 		game.setCurrentPosition(initialPosition);
 
-		// Again, this line alone will replace the entire START-END section
 		readMoves(br, game);
 
-		// And then validate
-		final boolean result;
-		if (!(result = validateCurrentGamePosition())) {
-			throw new UnsupportedOperationException("TODO: Define behaviour for when illegal stuff is loaded in...");
-		}
-		return result;
+		// No need to validate position here since
+		// readMoves does (quite a bit) of that
+
+		// Do remember to switch the player though...
+		switchCurrentPlayer();
+
+		return true;
 	}
 
 	/**
