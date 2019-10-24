@@ -837,38 +837,9 @@ public class QuoridorController {
 		game.setWhitePlayer(whitePlayer);
 		game.setBlackPlayer(blackPlayer);
 
-		// Create the inital game setup for the replay process to being from
-		// tiles I got from CucumberStepDefinitions
-		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, quoridor.getBoard().getTile(36));
-		final PlayerPosition initialBlackPosition = new PlayerPosition(blackPlayer, quoridor.getBoard().getTile(44));
-
 		// White player starts the game:
-		final GamePosition initialPosition;
-		if (GamePosition.hasWithId(0)) {
-			initialPosition = GamePosition.getWithId(0);
-			initialPosition.setWhitePosition(initialWhitePosition);
-			initialPosition.setBlackPosition(initialBlackPosition);
-			initialPosition.setPlayerToMove(whitePlayer);
-		} else {
-			initialPosition = new GamePosition(0, initialWhitePosition, initialBlackPosition, whitePlayer, game);
-		}
-
-		// Also when the game starts, all walls are in stock, none are on board!
-		for (Wall w : whitePlayer.getWalls()) {
-			initialPosition.removeWhiteWallsOnBoard(w);
-			initialPosition.addWhiteWallsInStock(w);
-		}
-		
-		for (Wall w : blackPlayer.getWalls()) {
-			initialPosition.removeBlackWallsOnBoard(w);
-			initialPosition.addBlackWallsInStock(w);
-		}
-
-		// As sanity check, but this configuration *must* be valid...
-		if (!validateGamePosition(initialPosition)) {
-			// so it somehow is not valid... crash :-(
-			throw new AssertionError("Ask Paul to check his initial game position setup cuz it ain't valid...");
-		}
+		// XXX: May want make it so the save file defines who starts
+		final GamePosition initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
 
 		// And we set this as the current position of game
 		game.setCurrentPosition(initialPosition);
@@ -880,6 +851,55 @@ public class QuoridorController {
 
 		// Do remember to switch the player though...
 		switchCurrentPlayer();
+	}
+
+	/**
+	 * Creates or resuses a game position with id=0 that has white/black
+	 * player in their initial position and all walls in stock.
+	 * 
+	 * Note: This does not set the game position as current
+	 *
+	 * @param whitePlayer White player
+	 * @param blackPlayer Black player
+	 * @param startingPlayer Starting player
+	 * @param game Associated game
+	 * @return game position with id=0
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static GamePosition createInitialGamePosition(Player whitePlayer, Player blackPlayer, Player startingPlayer, Game game) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+
+		// Tile numbers are from CucumberStepDefinitions
+		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, quoridor.getBoard().getTile(36));
+		final PlayerPosition initialBlackPosition = new PlayerPosition(blackPlayer, quoridor.getBoard().getTile(44));
+
+		if (GamePosition.hasWithId(0)) {
+			// Deletes the existing game position with id=0
+			GamePosition.getWithId(0).delete();
+		}
+
+		// Create a new game position with id=0
+		final GamePosition initialPosition = new GamePosition(0, initialWhitePosition, initialBlackPosition, startingPlayer, game);
+
+		// Ensure all walls are in stock
+		for (Wall w : whitePlayer.getWalls()) {
+			initialPosition.removeWhiteWallsOnBoard(w);
+			initialPosition.addWhiteWallsInStock(w);
+		}
+		
+		for (Wall w : blackPlayer.getWalls()) {
+			initialPosition.removeBlackWallsOnBoard(w);
+			initialPosition.addBlackWallsInStock(w);
+		}
+
+		// As a sanity check, make sure this position is actually valid...
+		if (!validateGamePosition(initialPosition)) {
+			// so, somehow, it is not valid... crash!
+			throw new AssertionError("PLEASE FIX THIS INITIAL GAME POSITION SETUP CUZ IT AIN'T VALID!!");
+		}
+
+		return initialPosition;
 	}
 
 	/**
