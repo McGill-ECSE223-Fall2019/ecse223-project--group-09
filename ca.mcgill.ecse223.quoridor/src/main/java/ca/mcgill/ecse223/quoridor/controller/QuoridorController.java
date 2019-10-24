@@ -924,7 +924,7 @@ public class QuoridorController {
 			final Tile targetTile = readTile(br);
 
 			// Try to replay the move that was just read!
-			final GamePosition newState = deriveNextPosition(game.getCurrentPosition());
+			final GamePosition newState = deriveNextPosition(g.getCurrentPosition());
 			newState.setPlayerToMove(currentPlayer);
 
 			final Move currentMove;
@@ -987,7 +987,7 @@ public class QuoridorController {
 						"  by(" + playerColor + ")=" + currentPlayer.getUser().getName());
 			}
 
-			game.setCurrentPosition(newState);
+			g.setCurrentPosition(newState);
 
 			// link the moves together
 			currentMove.setPrevMove(lastMove);
