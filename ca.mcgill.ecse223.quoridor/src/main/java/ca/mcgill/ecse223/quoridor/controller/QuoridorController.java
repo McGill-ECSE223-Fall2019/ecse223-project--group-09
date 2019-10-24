@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,10 +20,14 @@ import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
+
+import ca.mcgill.ecse223.quoridor.model.JumpMove;
+
 import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
+import ca.mcgill.ecse223.quoridor.model.StepMove;
 import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
@@ -255,8 +258,56 @@ public class QuoridorController {
 			throw new IllegalStateException("Attempt to switch player when not in game");
 		}
 
-		final GamePosition snapshot = quoridor.getCurrentGame().getCurrentPosition();
-		snapshot.setPlayerToMove(snapshot.getPlayerToMove().getNextPlayer());
+		// Clone the current game position but ith playerToMove swapped
+		final Game game = quoridor.getCurrentGame();
+		
+		final GamePosition newState = deriveNextPosition(game.getCurrentPosition());
+		newState.setPlayerToMove(newState.getPlayerToMove().getNextPlayer());
+		game.setCurrentPosition(newState);
+	}
+
+	/**
+	 * Derives anoother game position with the next id, same player positions.
+	 *
+	 * Think of it as a strange duplicate (except id is changed)
+	 *
+	 * @param pos Original game position
+	 * 
+	 * @return the derived game position
+	 */
+	private static GamePosition deriveNextPosition(GamePosition pos) {
+		final int nextId = pos.getId() + 1;
+		if (GamePosition.hasWithId(nextId)) {
+			// We start anew
+			GamePosition.getWithId(nextId).delete();
+		}
+
+		// Clone the PlayerPosition objects (multiplicities)
+		final PlayerPosition whitePos = pos.getWhitePosition();
+		final PlayerPosition whitePosCopy = new PlayerPosition(whitePos.getPlayer(), whitePos.getTile());
+
+		final PlayerPosition blackPos = pos.getBlackPosition();
+		final PlayerPosition blackPosCopy = new PlayerPosition(blackPos.getPlayer(), blackPos.getTile());
+
+		final GamePosition derived = new GamePosition(nextId, whitePosCopy, blackPosCopy, pos.getPlayerToMove(), pos.getGame());
+
+		for (Wall w : pos.getWhiteWallsInStock()) {
+			derived.addWhiteWallsInStock(w);
+		}
+
+		for (Wall w : pos.getWhiteWallsOnBoard()) {
+			derived.addWhiteWallsOnBoard(w);
+		}
+
+		for (Wall w : pos.getBlackWallsInStock()) {
+			derived.addBlackWallsInStock(w);
+		}
+
+		for (Wall w : pos.getBlackWallsOnBoard()) {
+			derived.addBlackWallsOnBoard(w);
+		}
+
+		return derived;
 	}
 
 	/**
@@ -657,49 +708,46 @@ public class QuoridorController {
 		savePlayer(pw, game.getBlackPlayer());
 		pw.println("#");
 
-		final GamePosition gamePosition = game.getCurrentPosition();
-		pw.printf("id:%d\n", gamePosition.getId());
-
-		pw.println("# White Player Position");
-		saveTile(pw, gamePosition.getWhitePosition().getTile());
-		pw.println("#");
-
-		pw.println("# Black Player Position");
-		saveTile(pw, gamePosition.getBlackPosition().getTile());
-		pw.println("#");
-
-		if (gamePosition.getPlayerToMove() == game.getWhitePlayer()) {
-			pw.printf("start:%s\n", Color.WHITE.name());
-		} else {
-			pw.printf("start:%s\n", Color.BLACK.name());
-		}
-
-		// For walls, we just need to save the ones on board
-		pw.println("# White Walls On Board");
-		saveWallsOnBoard(pw, gamePosition.getWhiteWallsOnBoard());
-		pw.println("#");
-
-		pw.println("# Black Walls On Board");
-		saveWallsOnBoard(pw, gamePosition.getBlackWallsOnBoard());
+		pw.println("# List of moves");
+		saveMoves(pw, game.getMoves());
 		pw.println("#");
 	}
 
 	/**
-	 * Writes out a list of walls on board
-	 * 
+	 * Writes out a list of moves of the game
+	 *
 	 * @param pw The stream we are writing to
-	 * @param walls The walls that are on board
+	 * @param moves The moves associated to a game
 	 * @throws IOException If writing operation fails
-	 * 
+	 *
 	 * @author Paul Teng (260862906)
 	 */
-	private static void saveWallsOnBoard(PrintWriter pw, List<Wall> walls) throws IOException {
-		pw.printf("cnt:%d\n", walls.size());
-		for (final Wall w : walls) {
-			// Since on board, must have WallMove associated with it
-			final WallMove move = w.getMove();
-			pw.printf("dir:%s\n", move.getWallDirection().name());
+	private static void saveMoves(PrintWriter pw, List<Move> moves) throws IOException {
+		pw.printf("cnt:%d\n", moves.size());
+		for (final Move move : moves) {
+			pw.printf("moveNumber:%d\n", move.getMoveNumber());
+			pw.printf("roundNumber:%d\n", move.getRoundNumber());
+			if (move.getPlayer().hasGameAsWhite()) {
+				pw.printf("player:%s\n", Color.WHITE.name());
+			} else {
+				pw.printf("player:%s\n", Color.BLACK.name());
+			}
 			saveTile(pw, move.getTargetTile());
+
+			// I will take the liberty to assume that move (abstract) must be one of the following:
+			// - StepMove
+			// - JumpMove
+			// - WallMove
+			//
+			// Out of these three, only WallMove needs more stuff to be written-out
+			pw.printf("type:%s\n", move.getClass().getSimpleName());
+			if (move instanceof WallMove) {
+				final WallMove wallMove = (WallMove) move;
+				pw.println("# WallMove specific fields");
+				pw.printf("dir:%s\n", wallMove.getWallDirection().name());
+				pw.printf("id:%d\n", wallMove.getWallPlaced().getId());
+				pw.println("#");
+			}
 		}
 	}
 
@@ -744,20 +792,14 @@ public class QuoridorController {
 	 * Loads a previously saved board from a file 
 	 * 
 	 * @param filePath The file being read
-	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails 
+	 * @throws InvalidLoadException If file cannot be processed
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static boolean loadPosition(String filePath) throws IOException {
+	public static void loadPosition(String filePath) throws IOException, InvalidLoadException {
 		try (final Reader reader = new FileReader(filePath)) {
-			return loadPosition(reader);
-		} catch (IllegalArgumentException ex) {
-			// Reading failed due to formatting
-			throw new IOException(ex);
-		} catch (RuntimeException ex) {
-			// Happens if getTile is called with invalid coordinates
-			return false;
+			loadPosition(reader);
 		}
 	}
 	
@@ -768,12 +810,12 @@ public class QuoridorController {
 	 * responsibility to do so.
 	 * 
 	 * @param source The stream we are reading from
-	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If stream cannot be processed
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static boolean loadPosition(Reader source) throws IOException {
+	public static void loadPosition(Reader source) throws IOException, InvalidLoadException {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		
 		final BufferedReader br = new BufferedReader(source);
@@ -797,75 +839,235 @@ public class QuoridorController {
 		game.setWhitePlayer(whitePlayer);
 		game.setBlackPlayer(blackPlayer);
 
-		final int id = matchForInt(br, "id");
-		final Tile whitePlayerTile = readTile(br);
-		final Tile blackPlayerTile = readTile(br);
+		// White player starts the game:
+		// XXX: May want make it so the save file defines who starts
+		final GamePosition initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
 
-		PlayerPosition whitePosition = new PlayerPosition(whitePlayer, whitePlayerTile);
-		PlayerPosition blackPosition = new PlayerPosition(blackPlayer, blackPlayerTile);
-		final Color startingColor = matchForEnum(br, "start", Color.class);
+		// And we set this as the current position of game
+		game.setCurrentPosition(initialPosition);
 
-		GamePosition gp = new GamePosition(
-				id,
-				whitePosition,
-				blackPosition,
-				startingColor == Color.WHITE ? whitePlayer : blackPlayer,
-				game);
+		readMoves(br, game);
 
-		final GamePosition oldGamePosition = game.getCurrentPosition();
+		// No need to validate position here since
+		// readMoves does (quite a bit) of that
 
-		game.setCurrentPosition(gp);
-
-		// Make sure all player's walls are in stock
-		for (Wall w : whitePlayer.getWalls()) {
-			gp.removeWhiteWallsOnBoard(w);
-			gp.addWhiteWallsInStock(w);
-		}
-		
-		for (Wall w : blackPlayer.getWalls()) {
-			gp.removeBlackWallsOnBoard(w);
-			gp.addBlackWallsInStock(w);
-		}
-
-		// Walls! Yay!
-		readWallsOnBoard(br, whitePlayer, game);
-		readWallsOnBoard(br, blackPlayer, game);
-
-		// And then validate
-		final boolean result;
-		if (!(result = validateCurrentGamePosition())) {
-			// If invalid, then switch the game position back to old one
-			game.setCurrentPosition(oldGamePosition);
-		}
-		return result;
+		// Do remember to switch the player though...
+		switchCurrentPlayer();
 	}
 
 	/**
-	 * Reads in a list of walls on board
+	 * Creates or resuses a game position with id=0 that has white/black
+	 * player in their initial position and all walls in stock.
 	 * 
-	 * @param br The stream we are reading from
-	 * @param p The player of these walls
-	 * @param g The game to place these walls
-	 * @throws IOException If reading operation fails
+	 * Note: This does not set the game position as current
+	 *
+	 * @param whitePlayer White player
+	 * @param blackPlayer Black player
+	 * @param startingPlayer Starting player
+	 * @param game Associated game
+	 * @return game position with id=0
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static void readWallsOnBoard(BufferedReader br, Player p, Game g) throws IOException {
+	private static GamePosition createInitialGamePosition(Player whitePlayer, Player blackPlayer, Player startingPlayer, Game game) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+
+		// Tile numbers are from CucumberStepDefinitions
+		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, quoridor.getBoard().getTile(36));
+		final PlayerPosition initialBlackPosition = new PlayerPosition(blackPlayer, quoridor.getBoard().getTile(44));
+
+		if (GamePosition.hasWithId(0)) {
+			// Deletes the existing game position with id=0
+			GamePosition.getWithId(0).delete();
+		}
+
+		// Create a new game position with id=0
+		final GamePosition initialPosition = new GamePosition(0, initialWhitePosition, initialBlackPosition, startingPlayer, game);
+
+		// Ensure all walls are in stock
+		for (Wall w : whitePlayer.getWalls()) {
+			initialPosition.removeWhiteWallsOnBoard(w);
+			initialPosition.addWhiteWallsInStock(w);
+		}
+		
+		for (Wall w : blackPlayer.getWalls()) {
+			initialPosition.removeBlackWallsOnBoard(w);
+			initialPosition.addBlackWallsInStock(w);
+		}
+
+		// As a sanity check, make sure this position is actually valid...
+		if (!validateGamePosition(initialPosition)) {
+			// so, somehow, it is not valid... crash!
+			throw new AssertionError("PLEASE FIX THIS INITIAL GAME POSITION SETUP CUZ IT AIN'T VALID!!");
+		}
+
+		return initialPosition;
+	}
+
+	/**
+	 * Reads in a list of moves to be added to a game
+	 * 
+	 * @param br The stream we are reading from
+	 * @param g The game performing / registering these moves
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static void readMoves(BufferedReader br, Game g) throws IOException, InvalidLoadException {
+		Move lastMove = null; // since move works like a double-linked list
+
 		final int count = matchForInt(br, "cnt");
 		for (int i = 0; i < count; ++i) {
-			final Direction dir = matchForEnum(br, "dir", Direction.class);
-			final Tile tile = readTile(br);
-			final Wall wall = p.getWall(i);
-			new WallMove(0, 1, p, tile, g, dir, wall);
+			final int moveNumber = matchForInt(br, "moveNumber");
+			final int roundNumber = matchForInt(br, "roundNumber");
 
-			if (p.hasGameAsWhite()) {
-				g.getCurrentPosition().removeWhiteWallsInStock(wall);
-				g.getCurrentPosition().addWhiteWallsOnBoard(wall);
-			} else {
-				g.getCurrentPosition().removeBlackWallsInStock(wall);
-				g.getCurrentPosition().addBlackWallsOnBoard(wall);
+			final Player currentPlayer;
+			final Color playerColor = matchForEnum(br, "player", Color.class);
+			switch (playerColor) {
+				case WHITE:
+					currentPlayer = g.getWhitePlayer();
+					break;
+				case BLACK:
+					currentPlayer = g.getBlackPlayer();
+					break;
+				default:
+					throw new InvalidLoadException("Unsupported color for player: " + playerColor);
 			}
+
+			final Tile targetTile = readTile(br);
+
+			// Try to replay the move that was just read!
+			final GamePosition newState = deriveNextPosition(g.getCurrentPosition());
+			newState.setPlayerToMove(currentPlayer);
+
+			final Move currentMove;
+			final String simpleClassName = matchForString(br, "type");
+			switch (simpleClassName) {
+				case "StepMove":
+					currentMove = tryPlayStepMove(moveNumber, roundNumber, currentPlayer, targetTile, newState);
+					break;
+				case "JumpMove":
+					currentMove = tryPlayJumpMove(moveNumber, roundNumber, currentPlayer, targetTile, newState);
+							break;
+				case "WallMove": {
+					final Direction dir = matchForEnum(br, "dir", Direction.class);
+					final Wall wall = Wall.getWithId(matchForInt(br, "id"));
+
+					if (wall.getOwner() != currentPlayer) {
+						throw new InvalidLoadException("Player(" + playerColor + ")=" + currentPlayer.getUser().getName() + " tried to grab wall of player " + wall.getOwner().getUser().getName());
+					}
+
+					currentMove = tryPlayWallMove(moveNumber, roundNumber, wall, dir, targetTile, newState);
+					break;
+				}
+				default:
+					throw new InvalidLoadException("Unsupported move type with simple name: " + simpleClassName);
+			}
+
+			if (currentMove == null) {
+				// That means move was illegal
+				throw new InvalidLoadException("Illegal " + simpleClassName + ":\n" +
+						"  i=" + i + ",\n" +
+						"  moveNumber=" + moveNumber + ",\n" +
+						"  roundNumber=" + roundNumber + ",\n" +
+						"  by(" + playerColor + ")=" + currentPlayer.getUser().getName());
+			}
+
+			// Validate again just in case:
+			// Right now the methods that play these moves do not do any checking, thats why
+			if (!validateGamePosition(newState)) {
+				// If the new game position is invalid, then we crash!
+				throw new InvalidLoadException("Illegal board configuration after replaying:\n" +
+						"  i=" + i + ",\n" +
+						"  moveNumber=" + moveNumber + ",\n" +
+						"  roundNumber=" + roundNumber + ",\n" +
+						"  type=" + simpleClassName + ",\n" +
+						"  by(" + playerColor + ")=" + currentPlayer.getUser().getName());
+			}
+
+			g.setCurrentPosition(newState);
+
+			// link the moves together
+			currentMove.setPrevMove(lastMove);
+			lastMove = currentMove;
 		}
+	}
+
+	/**
+	 * Tries to play a step move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param currentPlayer Player of the move
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A StepMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static StepMove tryPlayStepMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
+		// TODO: Need to check if the move can be completed!
+		if (currentPlayer.hasGameAsWhite()) {
+			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
+		} else {
+			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
+		}
+
+		final StepMove move = new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		return move;
+	}
+
+	/**
+	 * Tries to play a jump move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param currentPlayer Player of the move
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A JumpMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static JumpMove tryPlayJumpMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
+		// TODO: Need to check if the move can be completed!
+		if (currentPlayer.hasGameAsWhite()) {
+			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
+		} else {
+			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
+		}
+
+		final JumpMove move = new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		return move;
+	}
+
+	/**
+	 * Tries to play a wall move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param wall Wall of the move
+	 * @param dir Direction of the wall
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A WallMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static WallMove tryPlayWallMove(int moveNumber, int roundNumber, Wall wall, Direction dir, Tile target, GamePosition gamePos) {
+		// TODO: Need to check if the move can be completed!
+		final Player currentPlayer = wall.getOwner();
+		if (currentPlayer.hasGameAsWhite()) {
+			gamePos.removeWhiteWallsInStock(wall);
+			gamePos.addWhiteWallsOnBoard(wall);
+		} else {
+			gamePos.removeBlackWallsInStock(wall);
+			gamePos.addBlackWallsOnBoard(wall);
+		}
+
+		final WallMove move = new WallMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame(), dir, wall);
+		return move;
 	}
 
 	/**
@@ -873,18 +1075,19 @@ public class QuoridorController {
 	 * 
 	 * @param br The stream we are reading from
 	 * @return The tile being read
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static Tile readTile(BufferedReader br) throws IOException {
+	private static Tile readTile(BufferedReader br) throws IOException, InvalidLoadException {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 
 		final int row = matchForInt(br, "row");
 		final int col = matchForInt(br, "col");
 
 		if (!isValidPawnCoordinate(row, col)) {
-			throw new RuntimeException("Illegal coordinate (" + row + "," + col + ")");
+			throw new InvalidLoadException("Illegal coordinate (" + row + "," + col + ")");
 		}
 
 		// based off indexing scheme used in
@@ -897,11 +1100,12 @@ public class QuoridorController {
 	 * 
 	 * @param br The stream we are reading from
 	 * @return The player being read
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static Player readPlayer(BufferedReader br) throws IOException {
+	private static Player readPlayer(BufferedReader br) throws IOException, InvalidLoadException {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 
 		final Time remainingTime = matchForTime(br, "time");
@@ -932,16 +1136,23 @@ public class QuoridorController {
 	 * @param br The stream we are reading from
 	 * @param key The key (stuff before colon)
 	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static int matchForInt(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
+	private static int matchForInt(BufferedReader br, String key) throws IOException, InvalidLoadException {
+		final String line = getNextUsefulLine(br);
+		final String errMsg = "Invalid numeric format `" + line + "`";
+
 		if (line == null || !line.matches('^' + key + ":[+-]?\\d+$")) {
-			throw new IllegalArgumentException("Invalid numeric format `" + line + "`");
+			throw new InvalidLoadException(errMsg);
 		}
+		try {
 		return Integer.parseInt(line.substring(key.length() + 1));
+		} catch (NumberFormatException ex) {
+			throw new InvalidLoadException(errMsg, ex);
+	}
 	}
 
 	/**
@@ -950,20 +1161,28 @@ public class QuoridorController {
 	 * @param br The stream we are reading from
 	 * @param key The key (stuff before colon)
 	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static Time matchForTime(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
+	private static Time matchForTime(BufferedReader br, String key) throws IOException, InvalidLoadException {
+		final String line = getNextUsefulLine(br);
+		final String errMsg = "Invalid time format `" + line + "`";
+
 		if (line == null || !line.matches('^' + key + ":\\d{1,2}:\\d{1,2}:\\d{1,2}$")) {
-			throw new IllegalArgumentException("Invalid time format `" + line + "`");
+			throw new InvalidLoadException(errMsg);
 		}
+
 		final String[] seq = line.substring(key.length() + 1).split(":");
+		try {
 		return new Time(
 				Integer.parseInt(seq[0]),
 				Integer.parseInt(seq[1]),
 				Integer.parseInt(seq[2]));
+		} catch (NumberFormatException ex) {
+			throw new InvalidLoadException(errMsg, ex);
+		}
 	}
 	
 	/**
@@ -972,14 +1191,17 @@ public class QuoridorController {
 	 * @param br The stream we are reading from
 	 * @param key The key (stuff before colon)
 	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static String matchForString(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
+	private static String matchForString(BufferedReader br, String key) throws IOException, InvalidLoadException {
+		final String line = getNextUsefulLine(br);
+		final String errMsg = "Invalid string format `" + line + "`";
+
 		if (line == null || !line.matches('^' + key + ":.*$")) {
-			throw new IllegalArgumentException("Invalid string format `" + line + "`");
+			throw new IllegalArgumentException(errMsg);
 		}
 		return line.substring(key.length() + 1);
 	}
@@ -991,12 +1213,18 @@ public class QuoridorController {
 	 * @param key The key (stuff before colon)
 	 * @param type The enum with values (stuff before colon)
 	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If format is wrong
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static <T extends Enum<T>> T matchForEnum(BufferedReader br, String key, Class<T> type) throws IOException {
+	private static <T extends Enum<T>> T matchForEnum(BufferedReader br, String key, Class<T> type) throws IOException, InvalidLoadException {
+		try {
 		return Enum.valueOf(type, matchForString(br, key).trim());
+		} catch (InvalidLoadException | IllegalArgumentException ex) {
+			// Rethrow with better error message
+			throw new InvalidLoadException("Invalid enum values of type " + type.getSimpleName(), ex);
+		}
 	}
 	
 	/**

@@ -44,25 +44,14 @@ id:17
 id:18
 id:19
 #
-id:0
-# White Player Position
-row:3
-col:0
-#
-# Black Player Position
-row:9
-col:3
-#
-start:BLACK
-# White Walls On Board
+
+# List of moves:
 cnt:1
-dir:Horizontal
-row:1
-col:1
-#
-# Black Walls On Board
-cnt:1
-dir:Vertical
+
+# Move 1: White from (5,1) to illegal (5,0)
+moveNumber:1
+roundNumber:1
+player:WHITE
 row:5
-col:5
-#
+col:0
+type:StepMove
