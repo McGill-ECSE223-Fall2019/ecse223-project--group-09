@@ -708,25 +708,6 @@ public class QuoridorController {
 	}
 
 	/**
-	 * Writes out a list of walls on board
-	 * 
-	 * @param pw The stream we are writing to
-	 * @param walls The walls that are on board
-	 * @throws IOException If writing operation fails
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static void saveWallsOnBoard(PrintWriter pw, List<Wall> walls) throws IOException {
-		pw.printf("cnt:%d\n", walls.size());
-		for (final Wall w : walls) {
-			// Since on board, must have WallMove associated with it
-			final WallMove move = w.getMove();
-			pw.printf("dir:%s\n", move.getWallDirection().name());
-			saveTile(pw, move.getTargetTile());
-		}
-	}
-
-	/**
 	 * Writes out a tile position
 	 * 
 	 * @param pw The stream we are writing to
@@ -863,8 +844,7 @@ public class QuoridorController {
 		// And then validate
 		final boolean result;
 		if (!(result = validateCurrentGamePosition())) {
-			// If invalid, then switch the game position back to old one
-			game.setCurrentPosition(oldGamePosition);
+			throw new UnsupportedOperationException("TODO: Define behaviour for when illegal stuff is loaded in...");
 		}
 		return result;
 	}
@@ -925,34 +905,6 @@ public class QuoridorController {
 			// link the moves together
 			currentMove.setPrevMove(lastMove);
 			lastMove = currentMove;
-		}
-	}
-
-	/**
-	 * Reads in a list of walls on board
-	 * 
-	 * @param br The stream we are reading from
-	 * @param p The player of these walls
-	 * @param g The game to place these walls
-	 * @throws IOException If reading operation fails
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static void readWallsOnBoard(BufferedReader br, Player p, Game g) throws IOException {
-		final int count = matchForInt(br, "cnt");
-		for (int i = 0; i < count; ++i) {
-			final Direction dir = matchForEnum(br, "dir", Direction.class);
-			final Tile tile = readTile(br);
-			final Wall wall = p.getWall(i);
-			new WallMove(0, 1, p, tile, g, dir, wall);
-
-			if (p.hasGameAsWhite()) {
-				g.getCurrentPosition().removeWhiteWallsInStock(wall);
-				g.getCurrentPosition().addWhiteWallsOnBoard(wall);
-			} else {
-				g.getCurrentPosition().removeBlackWallsInStock(wall);
-				g.getCurrentPosition().addBlackWallsOnBoard(wall);
-			}
 		}
 	}
 
