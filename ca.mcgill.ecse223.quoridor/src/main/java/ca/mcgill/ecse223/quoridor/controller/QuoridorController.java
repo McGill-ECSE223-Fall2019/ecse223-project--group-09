@@ -280,7 +280,14 @@ public class QuoridorController {
 			GamePosition.getWithId(nextId).delete();
 		}
 
-		final GamePosition derived = new GamePosition(nextId, pos.getWhitePosition(), pos.getBlackPosition(), pos.getPlayerToMove(), pos.getGame());
+		// Clone the PlayerPosition objects (multiplicities)
+		final PlayerPosition whitePos = pos.getWhitePosition();
+		final PlayerPosition whitePosCopy = new PlayerPosition(whitePos.getPlayer(), whitePos.getTile());
+
+		final PlayerPosition blackPos = pos.getBlackPosition();
+		final PlayerPosition blackPosCopy = new PlayerPosition(blackPos.getPlayer(), blackPos.getTile());
+
+		final GamePosition derived = new GamePosition(nextId, whitePosCopy, blackPosCopy, pos.getPlayerToMove(), pos.getGame());
 
 		for (Wall w : pos.getWhiteWallsInStock()) {
 			derived.addWhiteWallsInStock(w);
