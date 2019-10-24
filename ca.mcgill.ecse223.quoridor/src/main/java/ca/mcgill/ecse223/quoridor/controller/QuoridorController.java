@@ -447,13 +447,6 @@ public class QuoridorController {
 	 * @author Group 9
 	 */
 	public static boolean validatePawnPlacement(final int row, final int column) {
-		// Position must be on the board for it to be potentially valid
-		if (!isValidPawnCoordinate(row, column)) {
-			return false;
-		}
-
-		// Check all (2 of them) pawns on the board.
-		// If no overlapping, it must be good to place it down
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!quoridor.hasCurrentGame()) {
 			throw new IllegalStateException("Attempt to check for pawn placement when not in game");
@@ -461,12 +454,31 @@ public class QuoridorController {
 		
 		final Game game = quoridor.getCurrentGame();
 		final GamePosition pos = game.getCurrentPosition();
+		return validatePawnPlacement(pos, row, column);
+	}
 
-		final Tile whiteTile = pos.getWhitePosition().getTile();
-		final Tile blackTile = pos.getBlackPosition().getTile();
+	/**
+	 * Validates a placement of a pawn given a particular GamePosition
+	 *
+	 * @param gpos A specific GamePosition
+	 * @param row Row of pawn in pawn coordinates
+	 * @param col Column of pawn in pawn coordinates
+	 * @return true if position is valid, false if not
+	 *
+	 * @author Group 9
+	 */
+	private static boolean validatePawnPlacement(GamePosition gpos, final int row, final int col) {
+		// Position must be on the board for it to be potentially valid
+		if (!isValidPawnCoordinate(row, col)) {
+			return false;
+		}
 
-		return !(whiteTile.getRow() == row && whiteTile.getColumn() == column)
-			&& !(blackTile.getRow() == row && blackTile.getColumn() == column);
+		// Check if either of the two existing pawns overlap with the new position
+		final Tile whiteTile = gpos.getWhitePosition().getTile();
+		final Tile blackTile = gpos.getBlackPosition().getTile();
+
+		return !(whiteTile.getRow() == row && whiteTile.getColumn() == col)
+			&& !(blackTile.getRow() == row && blackTile.getColumn() == col);
 	}
 
 	/**
@@ -1007,8 +1019,56 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static StepMove tryPlayStepMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
-		// TODO: Need to check if the move can be completed!
-		if (currentPlayer.hasGameAsWhite()) {
+		final int row = target.getRow();
+		final int col = target.getColumn();
+		if (!validatePawnPlacement(gamePos, row, col)) {
+			// If the tile is already occupied, then, obviously, the move cannot be completed
+			return null;
+		}
+
+		final boolean playerHasWhitePawn = currentPlayer.hasGameAsWhite();
+		final PlayerPosition playerPos;
+		if (playerHasWhitePawn) {
+			playerPos = gamePos.getWhitePosition();
+		} else {
+			playerPos = gamePos.getBlackPosition();
+		}
+
+		// Valid movement for a step (not jumps) must be one of
+		// (x+1, y), (x-1, y), (x, y+1), (x, y-1) where x = row, y = column
+		final Tile currentPos = playerPos.getTile();
+		final int deltaRow = row - currentPos.getRow();
+		final int deltaCol = col - currentPos.getColumn();
+		if (1 != Math.abs(deltaRow) + Math.abs(deltaCol)) {
+			// sum of the movement distances in rows and columns do not add up to 1
+			// move cannot be completed because player tried moving too much
+			return null;
+		}
+
+		// Finally, player cannot be moving stepping through walls
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			// Cannot have a wall above the target if moving down (y inverted)
+			if (deltaRow < 0 && wallIsAboveTile(w, target))     return null;
+
+			// Cannot have a wall below the target if moving up (y inverted)
+			if (deltaRow > 0 && wallIsBelowTile(w, target))     return null;
+
+			// Cannot have a wall on the right of the target if moving left
+			if (deltaCol < 0 && wallIsRightOfTile(w, target))   return null;
+
+			// Cannot have a wall on the left of the target if moving right
+			if (deltaCol > 0 && wallIsLeftOfTile(w, target))    return null;
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			// see above explaination
+			if (deltaRow < 0 && wallIsAboveTile(w, target))     return null;
+			if (deltaRow > 0 && wallIsBelowTile(w, target))     return null;
+			if (deltaCol < 0 && wallIsRightOfTile(w, target))   return null;
+			if (deltaCol > 0 && wallIsLeftOfTile(w, target))    return null;
+		}
+
+		if (playerHasWhitePawn) {
 			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
 		} else {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
@@ -1016,6 +1076,146 @@ public class QuoridorController {
 
 		final StepMove move = new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
 		return move;
+	}
+
+	/**
+	 * See this simplified board:
+	 *
+	 *   +---+---+   +---+---+
+	 * 2 |   |   | 2 |   |   | Y IS INVERTED
+	 *   +[>====]+   +[>====]+ where @ is the tile, [>====] is the wall
+	 * 1 | @ |   | 1 |   | @ |
+	 *   +---+---+   +---+---+
+	 *     1   2       1   2
+	 *    [fig.1]     [fig.2]
+	 *
+	 * Only these two scenarios will return true
+	 *
+	 * @param wall A wall that is potentially above a tile
+	 * @param tile A tile that potentially has the specific wall above it
+	 * @return true if wall is above tile, false otherwise
+	 *
+	 * @see QuoridorController#wallIsBelowTile(Wall, Tile) wallsIsBelowTile
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsAboveTile(Wall wall, Tile tile) {
+		if (!wall.hasMove()) {
+			// Wall is not on the board, so cannot be above any tile
+			return false;
+		}
+
+		final WallMove move = wall.getMove();
+		if (Direction.Horizontal != move.getWallDirection()) {
+			// Only horizontal walls can be above a tile
+			return false;
+		}
+
+		// See above diagram, the wall's tile is always on the left side
+		// (the '>' side). For the wall to be above, either it has the
+		// same tile location as '@' [fig.1] or as
+		// ('@'.row, '@'.column - 1) [fig.2]
+		final Tile wallTile = move.getTargetTile();
+		return wallTile.getRow() == tile.getRow()
+			&& (wallTile.getColumn() == tile.getColumn() || wallTile.getColumn() == tile.getColumn() - 1);
+	}
+
+	/**
+	 *
+	 * @param wall A wall that is potentially below a tile
+	 * @param tile A tile that potentially has the specific wall below it
+	 * @return true if wall is below tile, false otherwise
+	 *
+	 * @see QuoridorController#wallIsAboveTile(Wall, Tile) wallsIsAboveTile
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsBelowTile(Wall wall, Tile tile) {
+		if (!wall.hasMove()) {
+			// Wall is not on the board, so cannot be below any tile
+			return false;
+		}
+
+		final WallMove move = wall.getMove();
+		if (Direction.Horizontal != move.getWallDirection()) {
+			// Only horizontal walls can be below a tile
+			return false;
+		}
+
+		// Same reasoning as wallIsAboveTile,
+		// but, instead, the wall is one unit higher than the tile
+		final Tile wallTile = move.getTargetTile();
+		return wallTile.getRow() == tile.getRow() - 1
+			&& (wallTile.getColumn() == tile.getColumn() || wallTile.getColumn() == tile.getColumn() - 1);
+	}
+
+	/**
+	 * See this simplified board:
+	 *
+	 *   +---+    +---+
+	 * 2 |   -  2 | @ -
+	 *   +---v    +---v where @ is the tile, | > | is the wall
+	 * 1 | @ -  1 |   -
+	 *   +---+    +---+
+	 *  [fig.1]  [fig.2]
+	 *
+	 * Only these two scenarios will return true
+	 *
+	 * @param wall A wall that is potentially on the right of a tile
+	 * @param tile A tile that potentially has the specific wall on the right of it
+	 * @return true if wall is on the right side of tile, false otherwise
+	 *
+	 * @see QuoridorController#wallIsLeftOfTile(Wall, Tile) wallsIsLeftOfTile
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsRightOfTile(Wall wall, Tile tile) {
+		if (!wall.hasMove()) {
+			// Wall is not on the board, so cannot be on the right any tile
+			return false;
+		}
+
+		final WallMove move = wall.getMove();
+		if (Direction.Vertical != move.getWallDirection()) {
+			// Only vertical walls can be on the right of a tile
+			return false;
+		}
+
+		// See above diagram, the wall's tile is always on the bottom.
+		// For the wall to be on the left, either it has the same tile
+		// location as '@' [fig.1] or as ('@'.row - 1, '@'.column) [fig.2]
+		final Tile wallTile = move.getTargetTile();
+		return wallTile.getColumn() == tile.getColumn()
+			&& (wallTile.getRow() == tile.getRow() || wallTile.getRow() == tile.getRow() - 1);
+	}
+
+	/**
+	 *
+	 * @param wall A wall that is potentially on the left of a tile
+	 * @param tile A tile that potentially has the specific wall on the left of it
+	 * @return true if wall is on the left side of tile, false otherwise
+	 *
+	 * @see QuoridorController#wallIsRightOfTile(Wall, Tile) wallIsRightOfTile
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsLeftOfTile(Wall wall, Tile tile) {
+		if (!wall.hasMove()) {
+			// Wall is not on the board, so cannot be on the left any tile
+			return false;
+		}
+
+		final WallMove move = wall.getMove();
+		if (Direction.Vertical != move.getWallDirection()) {
+			// Only vertical walls can be on the left of a tile
+			return false;
+		}
+
+		// Same reasoning as wallIsRightOfTile,
+		// but, instead, the wall is one unit less than the tile
+		final Tile wallTile = move.getTargetTile();
+		return wallTile.getColumn() == tile.getColumn() - 1
+			&& (wallTile.getRow() == tile.getRow() || wallTile.getRow() == tile.getRow() - 1);
 	}
 
 	/**
