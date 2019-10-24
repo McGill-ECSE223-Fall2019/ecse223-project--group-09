@@ -664,50 +664,6 @@ public class QuoridorController {
 		savePlayer(pw, game.getBlackPlayer());
 		pw.println("#");
 
-		// In the following START-END section is the old way of doing things.
-		// To be perfectly honest, it looks like it works, which is great!
-		// The problem is it does not save the moves (a problem when we start
-		// implementing game replays), which in turns, also does not save any
-		// other game position (other than the current one, which, again,
-		// problematic when we do game replays)
-		//
-		// This was one awfully long and hard to read comment (block?)...
-		// TLDR, everything in START-END section will be scrapped as soon as
-		// move creation methods are implemented! :shipit:
-
-		// ----- START -----
-		pw.println("# ----- START DEPRECATED STUFF -----");
-		final GamePosition gamePosition = game.getCurrentPosition();
-		pw.printf("id:%d\n", gamePosition.getId());
-
-		pw.println("# White Player Position");
-		saveTile(pw, gamePosition.getWhitePosition().getTile());
-		pw.println("#");
-
-		pw.println("# Black Player Position");
-		saveTile(pw, gamePosition.getBlackPosition().getTile());
-		pw.println("#");
-
-		if (gamePosition.getPlayerToMove() == game.getWhitePlayer()) {
-			pw.printf("start:%s\n", Color.WHITE.name());
-		} else {
-			pw.printf("start:%s\n", Color.BLACK.name());
-		}
-
-		// For walls, we just need to save the ones on board
-		pw.println("# White Walls On Board");
-		saveWallsOnBoard(pw, gamePosition.getWhiteWallsOnBoard());
-		pw.println("#");
-
-		pw.println("# Black Walls On Board");
-		saveWallsOnBoard(pw, gamePosition.getBlackWallsOnBoard());
-		pw.println("#");
-		pw.println("# -----  END DEPRECATED STUFF  -----");
-		// ----- END -----
-
-		// Eventually, this will replace the functionality of the START-END
-		// section... (which is kind of hard to believe since it's like only
-		// three lines long?)
 		pw.println("# List of moves");
 		saveMoves(pw, game.getMoves());
 		pw.println("#");
@@ -864,42 +820,42 @@ public class QuoridorController {
 		game.setWhitePlayer(whitePlayer);
 		game.setBlackPlayer(blackPlayer);
 
-		// TLDR, same as SavePosition: START-END section is obslete
-		// ----- START -----
-		final int id = matchForInt(br, "id");
-		final Tile whitePlayerTile = readTile(br);
-		final Tile blackPlayerTile = readTile(br);
+		// Phase 1 of migration:
+		// Create the inital game setup for the replay process to being from
+		// tiles I got from CucumberStepDefinitions
+		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, quoridor.getBoard().getTile(36));
+		final PlayerPosition initialBlackPosition = new PlayerPosition(blackPlayer, quoridor.getBoard().getTile(44));
 
-		PlayerPosition whitePosition = new PlayerPosition(whitePlayer, whitePlayerTile);
-		PlayerPosition blackPosition = new PlayerPosition(blackPlayer, blackPlayerTile);
-		final Color startingColor = matchForEnum(br, "start", Color.class);
+		// White player starts the game:
+		final GamePosition initialPosition;
+		if (GamePosition.hasWithId(0)) {
+			initialPosition = GamePosition.getWithId(0);
+			initialPosition.setWhitePosition(initialWhitePosition);
+			initialPosition.setBlackPosition(initialBlackPosition);
+			initialPosition.setPlayerToMove(whitePlayer);
+		} else {
+			initialPosition = new GamePosition(0, initialWhitePosition, initialBlackPosition, whitePlayer, game);
+		}
 
-		GamePosition gp = new GamePosition(
-				id,
-				whitePosition,
-				blackPosition,
-				startingColor == Color.WHITE ? whitePlayer : blackPlayer,
-				game);
-
-		final GamePosition oldGamePosition = game.getCurrentPosition();
-
-		game.setCurrentPosition(gp);
-
-		// Make sure all player's walls are in stock
+		// Also when the game starts, all walls are in stock, none are on board!
 		for (Wall w : whitePlayer.getWalls()) {
-			gp.removeWhiteWallsOnBoard(w);
-			gp.addWhiteWallsInStock(w);
+			initialPosition.removeWhiteWallsOnBoard(w);
+			initialPosition.addWhiteWallsInStock(w);
 		}
 		
 		for (Wall w : blackPlayer.getWalls()) {
-			gp.removeBlackWallsOnBoard(w);
-			gp.addBlackWallsInStock(w);
+			initialPosition.removeBlackWallsOnBoard(w);
+			initialPosition.addBlackWallsInStock(w);
 		}
 
-		// Walls! Yay!
-		readWallsOnBoard(br, whitePlayer, game);
-		readWallsOnBoard(br, blackPlayer, game);
-		// ----- END -----
+		// As sanity check, but this configuration *must* be valid...
+		if (!validateGamePosition(initialPosition)) {
+			// so it somehow is not valid... crash :-(
+			throw new AssertionError("Ask Paul to check his initial game position setup cuz it ain't valid...");
+		}
+
+		// And we set this as the current position of game
+		game.setCurrentPosition(initialPosition);
 
 		// Again, this line alone will replace the entire START-END section
 		readMoves(br, game);
