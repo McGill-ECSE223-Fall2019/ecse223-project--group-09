@@ -258,12 +258,47 @@ public class QuoridorController {
 
 		// Clone the current game position but ith playerToMove swapped
 		final Game game = quoridor.getCurrentGame();
-		final GamePosition snapshot = game.getCurrentPosition();
 		
-		PlayerPosition player1Position = new PlayerPosition(game.getWhitePlayer(), snapshot.getWhitePosition().getTile());
-		PlayerPosition player2Position = new PlayerPosition(game.getBlackPlayer(), snapshot.getBlackPosition().getTile());
-		final GamePosition newState = new GamePosition(snapshot.getId() + 1, player1Position, player2Position, snapshot.getPlayerToMove().getNextPlayer(), game);
+		final GamePosition newState = deriveNextPosition(game.getCurrentPosition());
+		newState.setPlayerToMove(newState.getPlayerToMove().getNextPlayer());
 		game.setCurrentPosition(newState);
+	}
+
+	/**
+	 * Derives anoother game position with the next id, same player positions.
+	 *
+	 * Think of it as a strange duplicate (except id is changed)
+	 *
+	 * @param pos Original game position
+	 * 
+	 * @return the derived game position
+	 */
+	private static GamePosition deriveNextPosition(GamePosition pos) {
+		final int nextId = pos.getId() + 1;
+		if (GamePosition.hasWithId(nextId)) {
+			// We start anew
+			GamePosition.getWithId(nextId).delete();
+		}
+
+		final GamePosition derived = new GamePosition(nextId, pos.getWhitePosition(), pos.getBlackPosition(), pos.getPlayerToMove(), pos.getGame());
+
+		for (Wall w : pos.getWhiteWallsInStock()) {
+			derived.addWhiteWallsInStock(w);
+		}
+
+		for (Wall w : pos.getWhiteWallsOnBoard()) {
+			derived.addWhiteWallsOnBoard(w);
+		}
+
+		for (Wall w : pos.getBlackWallsInStock()) {
+			derived.addBlackWallsInStock(w);
+		}
+
+		for (Wall w : pos.getBlackWallsOnBoard()) {
+			derived.addBlackWallsOnBoard(w);
+		}
+
+		return derived;
 	}
 
 	/**
@@ -881,26 +916,71 @@ public class QuoridorController {
 
 			final Tile targetTile = readTile(br);
 
-			// TODO: Actually replay these moves!
+			// Try to replay the move that was just read!
+			final GamePosition newState = deriveNextPosition(game.getCurrentPosition());
+			newState.setPlayerToMove(currentPlayer);
 
 			final Move currentMove;
 			final String simpleClassName = matchForString(br, "type");
 			switch (simpleClassName) {
-				case "StepMove":
+				case "StepMove": {
 					currentMove = new StepMove(moveNumber, roundNumber, currentPlayer, targetTile, g);
+					switch (playerColor) {
+						case WHITE:
+							newState.setWhitePosition(new PlayerPosition(currentPlayer, targetTile));
 					break;
-				case "JumpMove":
+						case BLACK:
+							newState.setBlackPosition(new PlayerPosition(currentPlayer, targetTile));
+							break;
+					}
+					break;
+				}
+				case "JumpMove": {
 					currentMove = new JumpMove(moveNumber, roundNumber, currentPlayer, targetTile, g);
+					switch (playerColor) {
+						case WHITE:
+							newState.setWhitePosition(new PlayerPosition(currentPlayer, targetTile));
 					break;
+						case BLACK:
+							newState.setBlackPosition(new PlayerPosition(currentPlayer, targetTile));
+							break;
+					}
+					break;
+				}
 				case "WallMove": {
 					final Direction dir = matchForEnum(br, "dir", Direction.class);
 					final Wall wall = Wall.getWithId(matchForInt(br, "id"));
-					currentMove = new WallMove(moveNumber, roundNumber, currentPlayer, targetTile, g, dir, wall);
+					final WallMove wallMove = new WallMove(moveNumber, roundNumber, currentPlayer, targetTile, g, dir, wall);
+					currentMove = wallMove;
+
+					wall.setMove(wallMove);
+					switch (playerColor) {
+						case WHITE:
+							newState.removeWhiteWallsInStock(wall);
+							newState.addWhiteWallsOnBoard(wall);
+							break;
+						case BLACK:
+							newState.removeBlackWallsInStock(wall);
+							newState.addBlackWallsOnBoard(wall);
+							break;
+					}
 					break;
 				}
 				default:
 					throw new IOException("Unsupported move type with simple name: " + simpleClassName);
 			}
+
+			if (!validateGamePosition(newState)) {
+				// If the new game position is invalid, then we crash!
+				throw new IOException("Illegal board configuration after replaying:\n" +
+						"  i=" + i + ",\n" +
+						"  moveNumber=" + moveNumber + ",\n" +
+						"  roundNumber=" + roundNumber + ",\n" +
+						"  type=" + simpleClassName + ",\n" +
+						"  by(" + playerColor + ")=" + currentPlayer.getUser().getName());
+			}
+
+			game.setCurrentPosition(newState);
 
 			// link the moves together
 			currentMove.setPrevMove(lastMove);
