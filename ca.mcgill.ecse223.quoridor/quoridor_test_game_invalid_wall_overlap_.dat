@@ -44,28 +44,26 @@ id:17
 id:18
 id:19
 #
-id:0
-# White Player Position
-row:7
-col:0
-#
-# Black Player Position
-row:9
-col:3
-#
-start:BLACK
-# White Walls On Board
-cnt:1
-dir:Horizontal
+
+# List of moves:
+cnt:2
+
+# Move 1: White wall Horizontal at (2,3)
+moveNumber:1
+roundNumber:1
+player:WHITE
 row:2
 col:3
-#
-# Black Walls On Board
-cnt:1
+type:WallMove
 dir:Horizontal
+id:0
+
+# Move 2: Black wall Horizontal at overlapping (2,4)
+moveNumber:2
+roundNumber:1
+player:BLACK
 row:2
 col:4
-#
-# List of moves:
-# Right now, there are none since it still uses the old way
-cnt:0
+type:WallMove
+dir:Horizontal
+id:10
