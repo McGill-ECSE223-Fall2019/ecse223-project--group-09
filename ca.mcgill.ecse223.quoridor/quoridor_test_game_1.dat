@@ -41,28 +41,154 @@ id:17
 id:18
 id:19
 #
-id:0
-# White Player Position
-row:7
+
+# List of moves:
+cnt:18
+
+# Move 1: Black from (5,9) to (5,8)
+moveNumber:1
+roundNumber:1
+player:BLACK
+row:5
+col:8
+type:StepMove
+
+# Move 2: White from (5,1) to (5,2)
+moveNumber:2
+roundNumber:1
+player:WHITE
+row:5
+col:2
+type:StepMove
+
+# Move 3: Black from (5,8) to (5,7)
+moveNumber:3
+roundNumber:2
+player:BLACK
+row:5
 col:7
-#
-# Black Player Position
-row:3
+type:StepMove
+
+# Move 4: White from (5,2) to (5,3)
+moveNumber:4
+roundNumber:2
+player:WHITE
+row:5
 col:3
-#
-start:BLACK
-# White Walls On Board
-cnt:1
-dir:Horizontal
-row:1
-col:1
-#
-# Black Walls On Board
-cnt:1
-dir:Vertical
+type:StepMove
+
+# Move 5: Black from (5,7) to (5,6)
+moveNumber:5
+roundNumber:3
+player:BLACK
+row:5
+col:6
+type:StepMove
+
+# Move 6: White from (5,3) to (5,4)
+moveNumber:6
+roundNumber:3
+player:WHITE
+row:5
+col:4
+type:StepMove
+
+# Move 7: Black from (5,6) to (5,5)
+moveNumber:7
+roundNumber:4
+player:BLACK
 row:5
 col:5
-#
-# List of moves:
-# Right now, there are none since it still uses the old way
-cnt:0
+type:StepMove
+
+# Move 8: White from (5,4) to (6,4)
+moveNumber:8
+roundNumber:4
+player:WHITE
+row:6
+col:4
+type:StepMove
+
+# Move 9: Black from (5,5) to (5,4)
+moveNumber:9
+roundNumber:5
+player:BLACK
+row:5
+col:4
+type:StepMove
+
+# Move 10: White from (6,4) to (6,5)
+moveNumber:10
+roundNumber:5
+player:WHITE
+row:6
+col:5
+type:StepMove
+
+# Move 11: Black from (5,4) to (5,3)
+moveNumber:11
+roundNumber:6
+player:BLACK
+row:5
+col:3
+type:StepMove
+
+# Move 12: White from (6,5) to (6,6)
+moveNumber:12
+roundNumber:6
+player:WHITE
+row:6
+col:6
+type:StepMove
+
+# Move 13: Black from (5,3) to (4,3)
+moveNumber:13
+roundNumber:7
+player:BLACK
+row:4
+col:3
+type:StepMove
+
+# Move 14: White from (6,6) to (6,7)
+moveNumber:14
+roundNumber:7
+player:WHITE
+row:6
+col:7
+type:StepMove
+
+# Move 15: Black from (4,3) to (3,3) [end]
+moveNumber:15
+roundNumber:8
+player:BLACK
+row:3
+col:3
+type:StepMove
+
+# Move 16: White from (6,7) to (7,7) [end]
+moveNumber:16
+roundNumber:8
+player:WHITE
+row:7
+col:7
+type:StepMove
+
+# Move 17: Black wall Vertical at (5,5)
+moveNumber:17
+roundNumber:9
+player:BLACK
+row:5
+col:5
+type:WallMove
+dir:Vertical
+id:10
+
+# Move 18: White wall Horizontal at (1,1)
+moveNumber:18
+roundNumber:9
+player:WHITE
+row:1
+col:1
+type:WallMove
+dir:Horizontal
+id:0
