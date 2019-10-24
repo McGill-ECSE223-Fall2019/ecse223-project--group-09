@@ -913,8 +913,6 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static void readMoves(BufferedReader br, Game g) throws IOException, InvalidLoadException {
-		// TODO: Slim this method down...
-
 		Move lastMove = null; // since move works like a double-linked list
 
 		final int count = matchForInt(br, "cnt");
@@ -944,30 +942,12 @@ public class QuoridorController {
 			final Move currentMove;
 			final String simpleClassName = matchForString(br, "type");
 			switch (simpleClassName) {
-				case "StepMove": {
-					currentMove = new StepMove(moveNumber, roundNumber, currentPlayer, targetTile, g);
-					switch (playerColor) {
-						case WHITE:
-							newState.setWhitePosition(new PlayerPosition(currentPlayer, targetTile));
+				case "StepMove":
+					currentMove = tryPlayStepMove(moveNumber, roundNumber, currentPlayer, targetTile, newState);
 					break;
-						case BLACK:
-							newState.setBlackPosition(new PlayerPosition(currentPlayer, targetTile));
+				case "JumpMove":
+					currentMove = tryPlayJumpMove(moveNumber, roundNumber, currentPlayer, targetTile, newState);
 							break;
-					}
-					break;
-				}
-				case "JumpMove": {
-					currentMove = new JumpMove(moveNumber, roundNumber, currentPlayer, targetTile, g);
-					switch (playerColor) {
-						case WHITE:
-							newState.setWhitePosition(new PlayerPosition(currentPlayer, targetTile));
-					break;
-						case BLACK:
-							newState.setBlackPosition(new PlayerPosition(currentPlayer, targetTile));
-							break;
-					}
-					break;
-				}
 				case "WallMove": {
 					final Direction dir = matchForEnum(br, "dir", Direction.class);
 					final Wall wall = Wall.getWithId(matchForInt(br, "id"));
@@ -976,26 +956,24 @@ public class QuoridorController {
 						throw new InvalidLoadException("Player(" + playerColor + ")=" + currentPlayer.getUser().getName() + " tried to grab wall of player " + wall.getOwner().getUser().getName());
 					}
 
-					final WallMove wallMove = new WallMove(moveNumber, roundNumber, currentPlayer, targetTile, g, dir, wall);
-					currentMove = wallMove;
-
-					wall.setMove(wallMove);
-					switch (playerColor) {
-						case WHITE:
-							newState.removeWhiteWallsInStock(wall);
-							newState.addWhiteWallsOnBoard(wall);
-							break;
-						case BLACK:
-							newState.removeBlackWallsInStock(wall);
-							newState.addBlackWallsOnBoard(wall);
-							break;
-					}
+					currentMove = tryPlayWallMove(moveNumber, roundNumber, wall, dir, targetTile, newState);
 					break;
 				}
 				default:
 					throw new InvalidLoadException("Unsupported move type with simple name: " + simpleClassName);
 			}
 
+			if (currentMove == null) {
+				// That means move was illegal
+				throw new InvalidLoadException("Illegal " + simpleClassName + ":\n" +
+						"  i=" + i + ",\n" +
+						"  moveNumber=" + moveNumber + ",\n" +
+						"  roundNumber=" + roundNumber + ",\n" +
+						"  by(" + playerColor + ")=" + currentPlayer.getUser().getName());
+			}
+
+			// Validate again just in case:
+			// Right now the methods that play these moves do not do any checking, thats why
 			if (!validateGamePosition(newState)) {
 				// If the new game position is invalid, then we crash!
 				throw new InvalidLoadException("Illegal board configuration after replaying:\n" +
@@ -1012,6 +990,82 @@ public class QuoridorController {
 			currentMove.setPrevMove(lastMove);
 			lastMove = currentMove;
 		}
+	}
+
+	/**
+	 * Tries to play a step move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param currentPlayer Player of the move
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A StepMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static StepMove tryPlayStepMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
+		// TODO: Need to check if the move can be completed!
+		if (currentPlayer.hasGameAsWhite()) {
+			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
+		} else {
+			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
+		}
+
+		final StepMove move = new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		return move;
+	}
+
+	/**
+	 * Tries to play a jump move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param currentPlayer Player of the move
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A JumpMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static JumpMove tryPlayJumpMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
+		// TODO: Need to check if the move can be completed!
+		if (currentPlayer.hasGameAsWhite()) {
+			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
+		} else {
+			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
+		}
+
+		final JumpMove move = new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		return move;
+	}
+
+	/**
+	 * Tries to play a wall move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param wall Wall of the move
+	 * @param dir Direction of the wall
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A WallMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static WallMove tryPlayWallMove(int moveNumber, int roundNumber, Wall wall, Direction dir, Tile target, GamePosition gamePos) {
+		// TODO: Need to check if the move can be completed!
+		final Player currentPlayer = wall.getOwner();
+		if (currentPlayer.hasGameAsWhite()) {
+			gamePos.removeWhiteWallsInStock(wall);
+			gamePos.addWhiteWallsOnBoard(wall);
+		} else {
+			gamePos.removeBlackWallsInStock(wall);
+			gamePos.addBlackWallsOnBoard(wall);
+		}
+
+		final WallMove move = new WallMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame(), dir, wall);
+		return move;
 	}
 
 	/**
