@@ -999,7 +999,6 @@ public class QuoridorController {
 			}
 
 			// Validate again just in case:
-			// Right now the methods that play these moves do not do any checking, thats why
 			if (!validateGamePosition(newState)) {
 				// If the new game position is invalid, then we crash!
 				throw new InvalidLoadException("Illegal board configuration after replaying:\n" +
