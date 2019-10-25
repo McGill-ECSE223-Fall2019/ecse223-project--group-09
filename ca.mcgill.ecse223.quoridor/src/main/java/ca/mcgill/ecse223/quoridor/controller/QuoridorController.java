@@ -1046,26 +1046,8 @@ public class QuoridorController {
 		}
 
 		// Finally, player cannot be moving stepping through walls
-		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
-			// Cannot have a wall above the target if moving down (y inverted)
-			if (deltaRow < 0 && wallIsAboveTile(w, target))     return null;
-
-			// Cannot have a wall below the target if moving up (y inverted)
-			if (deltaRow > 0 && wallIsBelowTile(w, target))     return null;
-
-			// Cannot have a wall on the right of the target if moving left
-			if (deltaCol < 0 && wallIsRightOfTile(w, target))   return null;
-
-			// Cannot have a wall on the left of the target if moving right
-			if (deltaCol > 0 && wallIsLeftOfTile(w, target))    return null;
-		}
-
-		for (Wall w : gamePos.getBlackWallsOnBoard()) {
-			// see above explaination
-			if (deltaRow < 0 && wallIsAboveTile(w, target))     return null;
-			if (deltaRow > 0 && wallIsBelowTile(w, target))     return null;
-			if (deltaCol < 0 && wallIsRightOfTile(w, target))   return null;
-			if (deltaCol > 0 && wallIsLeftOfTile(w, target))    return null;
+		if (isWallBlockingMovementFromTile(deltaRow, deltaCol, currentPos, gamePos)) {
+			return null;
 		}
 
 		if (playerHasWhitePawn) {
@@ -1242,6 +1224,44 @@ public class QuoridorController {
 		return move;
 	}
 
+	/**
+	 * Checks if movement from a particular tile in a particular direction is
+	 * being blocked by a wall
+	 *
+	 * @param deltaRow Relative movement by row
+	 * @param deltaCol Relative movement by column
+	 * @param src Movement from this tile
+	 * @param gamePos Curreng board setup
+	 * @return true if any wall is blocking movement from a tile,
+	 *         false if not blocking
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean isWallBlockingMovementFromTile(final int deltaRow, final int deltaCol, Tile src, GamePosition gamePos) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			// If moving down, cannot have wall below the current or above the target (y inverted)
+			if (deltaRow < 0 && wallIsBelowTile(w, src)) return true;
+
+			// If moving up, cannot have wall above the current or below the target (y inverted)
+			if (deltaRow > 0 && wallIsAboveTile(w, src)) return true;
+
+			// If moving left, cannot have wall on the left of current or on the right of target
+			if (deltaCol < 0 && wallIsLeftOfTile(w, src)) return true;
+
+			// If moving right, cannot have wall on the right of current or on the left of target
+			if (deltaCol > 0 && wallIsRightOfTile(w, src)) return true;
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			// See above explaination
+			if (deltaRow < 0 && wallIsBelowTile(w, src)) return true;
+			if (deltaRow > 0 && wallIsAboveTile(w, src)) return true;
+			if (deltaCol < 0 && wallIsLeftOfTile(w, src)) return true;
+			if (deltaCol > 0 && wallIsRightOfTile(w, src)) return true;
+		}
+
+		return false;
+	}
 	/**
 	 * Tries to play a wall move onto a game position
 	 *
