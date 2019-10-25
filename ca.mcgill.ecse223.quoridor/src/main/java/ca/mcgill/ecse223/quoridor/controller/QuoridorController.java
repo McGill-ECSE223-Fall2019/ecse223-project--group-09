@@ -1828,23 +1828,14 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static TOPlayer getPlayerByColor(Color color) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (!quoridor.hasCurrentGame()) {
-			// There isn't even a game!
+		final Player player = getModelPlayerByColor(color);
+		if (player == null) {
+			// player does not exist
 			return null;
 		}
 
-		final Game game = quoridor.getCurrentGame();
-
-		switch (color) {
-			case WHITE:
-				return fromPlayer(game.getWhitePlayer());
-			case BLACK:
-				return fromPlayer(game.getBlackPlayer());
-			default:
-				return null;
+		return fromPlayer(player);
 		}
-	}
 
 	/**
 	 * Converts a Player to TOPlayer
@@ -1897,6 +1888,28 @@ public class QuoridorController {
 		// TODO: Figure out how to grab a wall
 
 		return player;
+	}
+
+	/**
+	 *
+	 * @param color The color of the desired player
+	 * @return the player with the color
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static Player getModelPlayerByColor(Color color) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// There isn't even a game!
+			return null;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		switch (color) {
+			case WHITE: return game.getWhitePlayer();
+			case BLACK: return game.getBlackPlayer();
+			default:    return null;
+		}
 	}
 
 	/**
@@ -1985,24 +1998,10 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static List<TOWall> getWallsOwnedByPlayer(Color color) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (!quoridor.hasCurrentGame()) {
-			// There isn't even a game!
+		final Player p = getModelPlayerByColor(color);
+		if (p == null) {
+			// player does not exist
 			return null;
-		}
-
-		final Game game = quoridor.getCurrentGame();
-
-		final Player p;
-		switch (color) {
-			case WHITE:
-				p = game.getWhitePlayer();
-				break;
-			case BLACK:
-				p = game.getBlackPlayer();
-				break;
-			default:
-				return null;
 		}
 
 		return p.getWalls().stream()
