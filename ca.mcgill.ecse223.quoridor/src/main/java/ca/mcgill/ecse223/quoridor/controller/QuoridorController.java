@@ -1082,6 +1082,20 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static boolean wallIsAboveTile(Wall wall, Tile tile) {
+		return wallIsAboveTile(wall, tile.getRow(), tile.getColumn());
+	}
+
+	/**
+	 * Checks to see if there is a wall above the tile
+	 * 
+	 * @param wall A wall that is potentially above the tile
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is immediately above, false otherwise
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsAboveTile(Wall wall, final int row, final int col) {
 		if (!wall.hasMove()) {
 			// Wall is not on the board, so cannot be above any tile
 			return false;
@@ -1098,8 +1112,34 @@ public class QuoridorController {
 		// same tile location as '@' [fig.1] or as
 		// ('@'.row, '@'.column - 1) [fig.2]
 		final Tile wallTile = move.getTargetTile();
-		return wallTile.getRow() == tile.getRow()
-			&& (wallTile.getColumn() == tile.getColumn() || wallTile.getColumn() == tile.getColumn() - 1);
+		return wallTile.getRow() == row
+			&& (wallTile.getColumn() == col || wallTile.getColumn() == col - 1);
+	}
+
+	/**
+	 * Checks if any wall is above a particular tile
+	 *
+	 * @param gamePos current board configuration
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is immediately above, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean anyWallAboveTile(GamePosition gamePos, final int row, final int col) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			if (wallIsAboveTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			if (wallIsAboveTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1113,6 +1153,20 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static boolean wallIsBelowTile(Wall wall, Tile tile) {
+		return wallIsBelowTile(wall, tile.getRow(), tile.getColumn());
+	}
+
+	/**
+	 * Checks to see if there is a wall below the tile
+	 * 
+	 * @param wall A wall that is potentially below the tile
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is immediately below, false otherwise
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsBelowTile(Wall wall, final int row, final int col) {
 		if (!wall.hasMove()) {
 			// Wall is not on the board, so cannot be below any tile
 			return false;
@@ -1127,8 +1181,34 @@ public class QuoridorController {
 		// Same reasoning as wallIsAboveTile,
 		// but, instead, the wall is one unit higher than the tile
 		final Tile wallTile = move.getTargetTile();
-		return wallTile.getRow() == tile.getRow() - 1
-			&& (wallTile.getColumn() == tile.getColumn() || wallTile.getColumn() == tile.getColumn() - 1);
+		return wallTile.getRow() == row - 1
+			&& (wallTile.getColumn() == col || wallTile.getColumn() == col - 1);
+	}
+
+	/**
+	 * Checks if any wall is below a particular tile
+	 *
+	 * @param gamePos current board configuration
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is immediately below, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean anyWallBelowTile(GamePosition gamePos, final int row, final int col) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			if (wallIsBelowTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			if (wallIsBelowTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1152,6 +1232,20 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static boolean wallIsRightOfTile(Wall wall, Tile tile) {
+		return wallIsRightOfTile(wall, tile.getRow(), tile.getColumn());
+	}
+
+	/**
+	 * Checks to see if there is a wall on the right of the tile
+	 *
+	 * @param wall A wall that is potentially on the right of the tile
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is on the immediate right, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsRightOfTile(Wall wall, final int row, final int col) {
 		if (!wall.hasMove()) {
 			// Wall is not on the board, so cannot be on the right any tile
 			return false;
@@ -1167,8 +1261,34 @@ public class QuoridorController {
 		// For the wall to be on the left, either it has the same tile
 		// location as '@' [fig.1] or as ('@'.row - 1, '@'.column) [fig.2]
 		final Tile wallTile = move.getTargetTile();
-		return wallTile.getColumn() == tile.getColumn()
-			&& (wallTile.getRow() == tile.getRow() || wallTile.getRow() == tile.getRow() - 1);
+		return wallTile.getColumn() == col
+			&& (wallTile.getRow() == row || wallTile.getRow() == row - 1);
+	}
+
+	/**
+	 * Checks if any wall is on the right of a particular tile
+	 *
+	 * @param gamePos current board configuration
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is on the immediate right, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean anyWallRightOfTile(GamePosition gamePos, final int row, final int col) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			if (wallIsRightOfTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			if (wallIsRightOfTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -1182,6 +1302,20 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static boolean wallIsLeftOfTile(Wall wall, Tile tile) {
+		return wallIsLeftOfTile(wall, tile.getRow(), tile.getColumn());
+	}
+
+	/**
+	 * Checks to see if there is a wall on the left of the tile
+	 *
+	 * @param wall A wall that is potentially on the left of the tile
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is on the immediate left, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsLeftOfTile(Wall wall, int row, int col) {
 		if (!wall.hasMove()) {
 			// Wall is not on the board, so cannot be on the left any tile
 			return false;
@@ -1196,8 +1330,34 @@ public class QuoridorController {
 		// Same reasoning as wallIsRightOfTile,
 		// but, instead, the wall is one unit less than the tile
 		final Tile wallTile = move.getTargetTile();
-		return wallTile.getColumn() == tile.getColumn() - 1
-			&& (wallTile.getRow() == tile.getRow() || wallTile.getRow() == tile.getRow() - 1);
+		return wallTile.getColumn() == col - 1
+			&& (wallTile.getRow() == row || wallTile.getRow() == row - 1);
+	}
+
+	/**
+	 * Checks if any wall is on the left of a particular tile
+	 *
+	 * @param gamePos current board configuration
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is on the immediate left, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean anyWallLeftOfTile(GamePosition gamePos, final int row, final int col) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			if (wallIsLeftOfTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			if (wallIsLeftOfTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
