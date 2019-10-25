@@ -1373,7 +1373,105 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static JumpMove tryPlayJumpMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
-		// TODO: Need to check if the move can be completed!
+		final int row = target.getRow();
+		final int col = target.getColumn();
+		if (!validatePawnPlacement(gamePos, row, col)) {
+			// If the tile is already occupied, then, obviously, the move cannot be completed
+			return null;
+		}
+
+		final boolean playerHasWhitePawn = currentPlayer.hasGameAsWhite();
+		final PlayerPosition playerPos;
+		if (playerHasWhitePawn) {
+			playerPos = gamePos.getWhitePosition();
+		} else {
+			playerPos = gamePos.getBlackPosition();
+		}
+
+		// Valid movement for a jumps (not steps) must be one of
+		// - far Jumps: (x+2, y), (x-2, y), (x, y+2), (x, y-2)
+		// - Lateral Shifts: (x+1, y+1), (x+1, y+1), (x-1, y+1), (x-1, y-1)
+		final Tile currentPos = playerPos.getTile();
+		final int deltaRow = row - currentPos.getRow();
+		final int deltaCol = col - currentPos.getColumn();
+		if (2 != Math.abs(deltaRow) + Math.abs(deltaCol)) {
+			// In other words, the absolute value of the movements must add up to 2
+			return null;
+		}
+
+		// Walls block all movements, so check that first
+		if (isWallBlockingMovementFromTile(deltaRow, deltaCol, currentPos, gamePos)) {
+			// Pawn cannot move from the current position with
+			// the selected direction since blocked by wall
+			return null;
+		}
+
+		if (Math.abs(deltaRow) == 2 || Math.abs(deltaCol) == 2) {
+			// We are doing a far jump:
+			// +---+---+---+    +---+---+---+
+			// | @ | O |   | => |   | O | @ | '@' is the player jumping
+			// +---+---+---+    +---+---+---+ 'O' is another player
+			//   1   2   3        1   2   3
+
+			final int testRow = currentPos.getRow() + deltaRow / 2;
+			final int testCol = currentPos.getColumn() + deltaCol / 2;
+
+			// Test if 'O' exists, it should
+			if (validatePawnPlacement(gamePos, testRow, testCol)) {
+				// If 'O' exists, it would not be a valid pawn placement
+				// => move is invalid if we the placement is valid
+				return null;
+			}
+
+			// Now make sure no walls are in between rows or columns
+			// (in above example, none should be between columns 1, 2, 3)
+
+			if (isWallBlockingMovementToTile(deltaRow, deltaCol, target, gamePos)) {
+				return null;
+			}
+		} else {
+			// We are doing a lateral jump
+			// +---+---+---+    +---+---+---+
+			// |   | X |   |    |   | X |   | '@' is the player jumping
+			// +[>====]+---+    +[>====]+---+ 'O' and 'X' are another players
+			// |   | O |   |    |   | O | @ | '[>====]' is a wall
+			// +---+---+---+ => +---+---+---+
+			// |   | @ | ? |    |   |   | ? | Note: 'O' and either 'X' or the
+			// +---+---+---+    +---+---+---+ wall enough for lateral jumps
+			//   1   2   3        1   2   3
+
+			// Check if 'O' exists, notice that with a single
+			// tile check it could also be a lateral jump due
+			// a blockage on the '?' side
+
+			final int currentRow = currentPos.getRow();
+			final int currentCol = currentPos.getColumn();
+
+			boolean canPerformJump = false;
+
+			// Check if '?' exists
+			if (!canPerformJump && !validatePawnPlacement(gamePos, currentRow, currentCol + deltaCol / 2)) {
+				// There should be sth, be it a wall or pawn, behind '?'
+				canPerformJump = !validatePawnPlacement(gamePos, currentRow, currentCol + deltaCol)
+						|| (deltaCol < 0 && anyWallRightOfTile(gamePos, currentRow, currentCol + deltaCol))
+						|| (deltaCol > 0 && anyWallLeftOfTile(gamePos, currentRow, currentCol + deltaCol));
+			}
+
+			// Check if 'O' exists
+			if (!canPerformJump && !validatePawnPlacement(gamePos, currentRow + deltaRow / 2, currentCol)) {
+				// There should be sth, be it a wall or pawn, behind 'O'
+				canPerformJump = !validatePawnPlacement(gamePos, currentRow + deltaRow, currentCol)
+						|| (deltaRow < 0 && anyWallAboveTile(gamePos, currentRow + deltaRow, currentCol))
+						|| (deltaRow > 0 && anyWallBelowTile(gamePos, currentRow + deltaRow, currentCol));
+			}
+
+			// If after both searches and the jump
+			// is still illegal, return null
+			if (!canPerformJump) {
+				return null;
+			}
+		}
+
 		if (currentPlayer.hasGameAsWhite()) {
 			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
 		} else {
@@ -1422,6 +1520,24 @@ public class QuoridorController {
 
 		return false;
 	}
+
+	/**
+	 * Checks if movement to a particular tile in a particular direction is
+	 * being blocked by a wall
+	 *
+	 * @param deltaRow Relative movement by row
+	 * @param deltaCol Relative movement by column
+	 * @param dst Movement to this tile
+	 * @param gamePos Curreng board setup
+	 * @return true if any wall is blocking movement to a tile,
+	 *         false if not blocking
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean isWallBlockingMovementToTile(int deltaRow, int deltaCol, Tile dst, GamePosition gamePos) {
+		return isWallBlockingMovementFromTile(-deltaRow, -deltaCol, dst, gamePos);
+	}
+
 	/**
 	 * Tries to play a wall move onto a game position
 	 *
