@@ -14,22 +14,18 @@ import java.util.stream.Collectors;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
-import ca.mcgill.ecse223.quoridor.model.Destination;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
-
 import ca.mcgill.ecse223.quoridor.model.JumpMove;
-
 import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
 import ca.mcgill.ecse223.quoridor.model.StepMove;
 import ca.mcgill.ecse223.quoridor.model.Tile;
-import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 
@@ -718,67 +714,37 @@ public class QuoridorController {
 		final PrintWriter pw = new PrintWriter(destination);
 		final Game game = quoridor.getCurrentGame();
 
-		final List<Move> moves = game.getMoves();
+		final GamePosition position = game.getCurrentPosition();
 
-		if (moves.isEmpty()) {
-			// Generate players without moves
-			// *still need to preserve round ordering*
-			final Player p = game.getCurrentPosition().getPlayerToMove();
-			if (p.hasGameAsWhite()) {
-				pw.println("W:");
-				pw.println("B:");
-			} else {
-				pw.println("B:");
-				pw.println("W:");
-	}
-			return;
-		}
-
-		final boolean whitePlayerStart = moves.get(0).getPlayer().hasGameAsWhite();
+		final boolean whitePlayerStart = position.getPlayerToMove().hasGameAsWhite();
 		final StringBuilder whitePlayerMoves = new StringBuilder("W: ");
 		final StringBuilder blackPlayerMoves = new StringBuilder("B: ");
 
-		// Popuate the moves
-		for (final Move move : moves) {
-			// Select the correct builder to append to
-			final StringBuilder appendTo;
-			if (move.getPlayer().hasGameAsWhite()) {
-				appendTo = whitePlayerMoves;
-			} else {
-				appendTo = blackPlayerMoves;
-			}
+		// Save the player's position
+		whitePlayerMoves.append(toString(position.getWhitePosition().getTile()));
+		blackPlayerMoves.append(toString(position.getBlackPosition().getTile()));
 
-			// Appeend the move!
-			// - column is written as [a-i]
-			// - row is written as [1-9]
-			// - wall is denoted by 'v' or 'h'
-			final Tile target = move.getTargetTile();
-			appendTo.append('a' - 1 + target.getColumn()).append(target.getRow());
-			if (move instanceof WallMove) {
-				final Direction dir = ((WallMove) move).getWallDirection();
-				switch (dir) {
-					case Vertical:
-						appendTo.append('v');
-						break;
-					case Horizontal:
-						appendTo.append('h');
-						break;
+		// Save the walls on board
+		for (Wall w : position.getWhiteWallsOnBoard()) {
+			final WallMove move = w.getMove();
+			whitePlayerMoves.append(", ").append(toString(move.getTargetTile()));
+			switch (move.getWallDirection()) {
+				case Vertical:   whitePlayerMoves.append('v'); break;
+				case Horizontal: whitePlayerMoves.append('h'); break;
 					default:
-						throw new IOException("Unrecognized wall move direction: " + dir.name());
-			}
+					throw new AssertionError("Unhandled wall direction: " + move.getWallDirection());
 		}
-			appendTo.append(", ");
 	}
 
-		// Normalize endings: by now an appended builder
-		// will end in ", " which is super ugly...
-		final int whiteTextLength = whitePlayerMoves.length();
-		if (whiteTextLength > 3) {
-			whitePlayerMoves.delete(whiteTextLength - 2, whiteTextLength);
+		for (Wall w : position.getBlackWallsOnBoard()) {
+			final WallMove move = w.getMove();
+			blackPlayerMoves.append(", ").append(toString(move.getTargetTile()));
+			switch (move.getWallDirection()) {
+				case Vertical:   blackPlayerMoves.append('v'); break;
+				case Horizontal: blackPlayerMoves.append('h'); break;
+				default:
+					throw new AssertionError("Unhandled wall direction: " + move.getWallDirection());
 	}
-		final int blackTextLength = blackPlayerMoves.length();
-		if (blackTextLength > 3) {
-			blackPlayerMoves.delete(blackTextLength - 2, blackTextLength);
 		}
 
 		if (whitePlayerStart) {
@@ -790,6 +756,21 @@ public class QuoridorController {
 		}
 	}
 	
+	/**
+	 * Converts a tile to its equivalent saved form which is column as a-i
+	 * followed by row as 1-9
+	 * 
+	 * @param tile The tile
+	 * @return String form, null if the tile is null
+	 */
+	private static String toString(final Tile tile) {
+		if (tile == null) {
+			return null;
+		}
+
+		return Character.toString(tile.getColumn() + ('a' - 1)) + "" + tile.getRow();
+	}
+
 	/**
 	 * Loads a previously saved board from a file 
 	 * 
