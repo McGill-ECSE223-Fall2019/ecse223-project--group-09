@@ -555,6 +555,28 @@ public class QuoridorController {
 	 * @author Group 9
 	 */
 	public static boolean validateWallPlacement(final int row, final int column, Orientation orientation) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to check for wall placement when not in game");
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		final GamePosition pos = game.getCurrentPosition();
+		return validateWallPlacement(pos, row, column, orientation);
+	}
+
+	/**
+	 * Validates a placement of a wall given a particular GamePosition
+	 *
+	 * @param gpos A specific GamePosition
+	 * @param row Row of wall
+	 * @param column Column of wall
+	 * @param orientation Orientation of wall
+	 * @returns true if position is valid, false otherwise
+	 *
+	 * @author Group 9
+	 */
+	public static boolean validateWallPlacement(GamePosition gpos, final int row, final int column, Orientation orientation) {
 		// If both of the tiles are out of the board, the placement must be invalid
 		if (!isValidWallCoordinate(row, column)) {
 			return false;
@@ -583,24 +605,14 @@ public class QuoridorController {
 			return false;
 		}
 
-		// Check all walls on the board
-		// If no overlapping, it must be good to place it down
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (!quoridor.hasCurrentGame()) {
-			throw new IllegalStateException("Attempt to check for wall placement when not in game");
-		}
-		
-		final Game game = quoridor.getCurrentGame();
-		final GamePosition pos = game.getCurrentPosition();
-
-		for (Wall w : pos.getWhiteWallsOnBoard()) {
+		for (Wall w : gpos.getWhiteWallsOnBoard()) {
 			// Since on board, must have WallMove associated with it
 			if (wallMoveOverlapsWithPlacement(w.getMove(), row, column, t2Row, t2Col)) {
 				return false;
 			}
 		}
 
-		for (Wall w : pos.getBlackWallsOnBoard()) {
+		for (Wall w : gpos.getBlackWallsOnBoard()) {
 			// Since on board, must have WallMove associated with it
 			if (wallMoveOverlapsWithPlacement(w.getMove(), row, column, t2Row, t2Col)) {
 				return false;
@@ -1552,7 +1564,14 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static WallMove tryPlayWallMove(int moveNumber, int roundNumber, Wall wall, Direction dir, Tile target, GamePosition gamePos) {
-		// TODO: Need to check if the move can be completed!
+		if (!validateWallPlacement(gamePos, target.getRow(), target.getColumn(), fromDirection(dir))) {
+			// If the wall is already occupied, then, obviously, the move cannot be completed
+			return null;
+		}
+
+		// XXX: A proper Quoridor game needs to check if paths are
+		// blocked, and this implementation does not do that!
+
 		final Player currentPlayer = wall.getOwner();
 		if (currentPlayer.hasGameAsWhite()) {
 			gamePos.removeWhiteWallsInStock(wall);
@@ -1564,6 +1583,28 @@ public class QuoridorController {
 
 		final WallMove move = new WallMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame(), dir, wall);
 		return move;
+	}
+
+	/**
+	 * Converts a direction enum to an orientation enum
+	 * 
+	 * @param dir Direction
+	 * @return Equivalent as Orientation
+	 * 
+	 * @author Group 9
+	 */
+	private static Orientation fromDirection(final Direction dir) {
+		if (dir == null) {
+			// I suppose a null direction can be well defined?
+			return null;
+		}
+
+		switch (dir) {
+			case Vertical:      return Orientation.VERTICAL;
+			case Horizontal:    return Orientation.HORIZONTAL;
+			default:
+				throw new IllegalArgumentException("Unsupported conversion from direction: " + dir.name());
+		}
 	}
 
 	/**
