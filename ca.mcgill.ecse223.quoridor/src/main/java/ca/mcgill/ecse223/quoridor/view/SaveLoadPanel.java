@@ -3,16 +3,22 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 
 /**
  * A custom component that displays a save and load button
@@ -24,6 +30,8 @@ public class SaveLoadPanel extends JPanel {
     // ***** Additional UI Components *****
     private final JButton btnSave = new JButton("Save");
     private final JButton btnLoad = new JButton("Load");
+
+    private final JFileChooser chooser = new JFileChooser();
 
     /**
      * Initializes a SaveLoadPanel
@@ -57,7 +65,44 @@ public class SaveLoadPanel extends JPanel {
      * @author Paul Teng (260862906)
      */
     public void doSaveAction() {
-        System.out.println("Start save...");
+        File file;
+        while (true) {
+            if (this.chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+                // User did not click on save/approve button in file chooser,
+                // we are done.
+                return;
+            }
+
+            file = this.chooser.getSelectedFile();
+            if (!file.exists()) {
+                // File is doesn't exist, no need to prompt for overwriting
+                break;
+            }
+
+            final int retVal = JOptionPane.showConfirmDialog(this,
+                    "Selected file " + file.getName() + " already exists...\n" +
+                    "\n" +
+                    "Are you sure you want to save here?\n" +
+                    "This will overwrite the contents of the selected file",
+                    "Confirm File Overwrite",
+                    JOptionPane.YES_NO_CANCEL_OPTION);
+
+            // Yes    -> Proceed with overwriting
+            // No     -> Stop this saving process
+            // Cancel -> Prompts user for file again
+            if (retVal == JOptionPane.YES_OPTION) break;
+            if (retVal == JOptionPane.NO_OPTION) return;
+            if (retVal == JOptionPane.CANCEL_OPTION) continue;
+        }
+
+        try {
+            // If file does not exist, overwrite flag is ignored,
+            // If file does exist, reaching here means we want overwriting
+            // (hence true for overwrite-flag parameter)
+            QuoridorController.savePosition(file.getAbsolutePath(), true);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Save operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -66,6 +111,21 @@ public class SaveLoadPanel extends JPanel {
      * @author Paul Teng (260862906)
      */
     public void doLoadAction() {
+        if (this.chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        final File f = this.chooser.getSelectedFile();
+        try {
+            QuoridorController.loadPosition(f.getAbsolutePath());
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Load operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (InvalidLoadException ex) {
+            JOptionPane.showMessageDialog(this, "Loaded file is invalid:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (RuntimeException ex) {
+            displayThrowableTrace(this, ex);
+        }
+    }
 
     /**
      * Causes a dialog box to pop up with the full stack trace of the throwable
