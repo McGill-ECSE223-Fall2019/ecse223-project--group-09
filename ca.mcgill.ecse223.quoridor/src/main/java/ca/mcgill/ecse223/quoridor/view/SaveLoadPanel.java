@@ -60,7 +60,10 @@ public class SaveLoadPanel extends JPanel {
     }
 
     /**
-     * Callback for when the save button is clicked
+     * Prompts the user, potentially multiple times, for a file then proceeds
+     * to save the current game position to it
+     * 
+     * This is also used as the action callback for the save button
      *
      * @author Paul Teng (260862906)
      */
@@ -106,7 +109,9 @@ public class SaveLoadPanel extends JPanel {
     }
 
     /**
-     * Callback for when the save button is clicked
+     * Prompts the user for a file then proceeds to load it in as a position
+     * 
+     * This is also used as the action callback for the load button
      *
      * @author Paul Teng (260862906)
      */
