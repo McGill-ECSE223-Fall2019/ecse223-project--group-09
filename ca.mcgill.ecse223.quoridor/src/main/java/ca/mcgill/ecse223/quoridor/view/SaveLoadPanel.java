@@ -3,6 +3,7 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,10 +13,13 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 
 import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
@@ -26,6 +30,13 @@ import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
  * @author Paul Teng (260862906) [SavePosition.feature;LoadPosition.feature]
  */
 public class SaveLoadPanel extends JPanel {
+
+    private static final boolean IS_MAC;
+
+    static {
+        final String osName = System.getProperty("os.name").toLowerCase();
+        IS_MAC = osName.contains("mac os x") || osName.contains("darwin") || osName.contains("osx");
+    }
 
     // ***** Additional UI Components *****
     private final JButton btnSave = new JButton("Save");
@@ -57,6 +68,28 @@ public class SaveLoadPanel extends JPanel {
 
         this.btnSave.addActionListener(e -> this.doSaveAction());
         this.btnLoad.addActionListener(e -> this.doLoadAction());
+    }
+
+    /**
+     * Adds the equivalent save load functionality to a menu bar (like how most
+     * save / open file buttons are located)
+     *
+     * @param menu Menu we are adding to
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void addMenuEntries(JMenu menu) {
+        final JMenuItem loadFileItem = new JMenuItem("Load...");
+        loadFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, IS_MAC ? KeyEvent.META_DOWN_MASK : KeyEvent.CTRL_DOWN_MASK));
+        loadFileItem.addActionListener(e -> this.doLoadAction());
+
+        final JMenuItem saveFileItem = new JMenuItem("Save...");
+        saveFileItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, IS_MAC ? KeyEvent.META_DOWN_MASK : KeyEvent.CTRL_DOWN_MASK));
+        saveFileItem.addActionListener(e -> this.doSaveAction());
+
+        menu.add(loadFileItem);
+        menu.addSeparator();
+        menu.add(saveFileItem);
     }
 
     /**
@@ -161,8 +194,16 @@ public class SaveLoadPanel extends JPanel {
         // This is just a demo of how it could look
 
         javax.swing.JFrame frame = new javax.swing.JFrame("DEMO");
+
         final SaveLoadPanel panel = new SaveLoadPanel();
         frame.add(panel);
+
+        final javax.swing.JMenuBar bar = new javax.swing.JMenuBar();
+        final JMenu fileMenu = new JMenu("File");
+        bar.add(fileMenu);
+        panel.addMenuEntries(fileMenu);
+        frame.setJMenuBar(bar);
+
         frame.setSize(200, 120);
         frame.setDefaultCloseOperation(3);
         frame.setVisible(true);
