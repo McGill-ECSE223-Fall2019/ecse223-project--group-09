@@ -6,9 +6,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
 
-public class QuoridorView extends JFrame{
+public class OpeningWindow extends JFrame{
 	
-	//FIELDS
+	//UI Elements
 	
 	JButton newGameButton;
 	JButton loadGameButton;
@@ -19,7 +19,7 @@ public class QuoridorView extends JFrame{
 	JLabel quoridorLabel;
 	
 	// new quoridor page
-	public QuoridorView() {
+	public OpeningWindow() {
 		initWelcomePage();
 	}
 	
