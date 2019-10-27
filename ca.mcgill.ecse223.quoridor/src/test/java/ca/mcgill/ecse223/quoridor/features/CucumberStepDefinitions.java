@@ -659,7 +659,7 @@ public class CucumberStepDefinitions {
 	
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
-		QuoridorController.grabWall(this.wallStock);
+		QuoridorController.grabWall();
 		
 	}
 	
@@ -798,7 +798,7 @@ public class CucumberStepDefinitions {
 	public void newWallCandidate(String direction, int row, int col) {
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
-		this.wallCandidate = QuoridorController.createWallCandidateAtPosition(orientation,  row, col);
+		this.wallCandidate = QuoridorController.moveWallCandidateAtPosition(orientation,  row, col);
 	}
 	
 	/**
