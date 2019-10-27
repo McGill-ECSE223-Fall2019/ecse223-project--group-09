@@ -10,9 +10,12 @@ import java.io.Reader;
 import java.io.Writer;
 import java.sql.Time;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
-import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -41,6 +44,30 @@ import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 public class QuoridorController {
 
+	// ***** Timer Related Associations *****
+
+	/**
+	 * This will be how frequently the clock is updated
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static final long TIME_PER_TICK_MS = 500;
+
+	/**
+	 * Creates a timer that will schedule tasks
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static final Timer GLOBAL_CLOCK = new Timer("Global Clock");
+
+	/**
+	 * A new mapping is created when the clock starts,
+	 * the existing mapping is removed when the click stops
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static final HashMap<Player, TimerTask> PLAYER_CLOCK = new HashMap<>();
+
 	/////////////////////////// FIELDS ///////////////////////////
 	
 	private static Quoridor quoridor;
@@ -51,7 +78,6 @@ public class QuoridorController {
 	private static Player player3;
 	private static Player player4;
 	private static Player currentPlayer; // ??? should this be our flag?
-	
 	
 	/**
 	 * 
@@ -181,8 +207,21 @@ public class QuoridorController {
  	* 
  	*/
 	
-	public static void grabWall(List<TOWall> wallStock) {
-		throw new UnsupportedOperationException();
+	public static TOWall grabWall() {
+		Player currentPlayer = getCurrentPlayer();
+		
+		List<Wall> remainingWalls = currentPlayer.getWalls();
+		Wall grabbedWall = remainingWalls.get(remainingWalls.size());
+		
+		remainingWalls.remove(grabbedWall);
+		
+		TOWallCandidate wallCandidate  = fromPlayer(currentPlayer).getWallCandidate();
+		
+		wallCandidate = createWallCandidateAtInitialPosition();
+		
+		TOWall toGrabbedWall = fromWall(grabbedWall);
+		
+		return toGrabbedWall;
 		
 	}
 	
@@ -206,9 +245,28 @@ public class QuoridorController {
 	 */
 	
 	public static void moveWall(String side) {
-		throw new UnsupportedOperationException();
+		
+		TOWallCandidate wallCandidate = getCurrentWallCandidate();
+		
+		if (side == "down") {
+			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow()-1, wallCandidate.getColumn());
+			
+		} else if (side == "up") {
+			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow()+1, wallCandidate.getColumn());
+			
+		} else if (side == "left") {
+			
+			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow(), wallCandidate.getColumn()-1);
+			
+		} else if (side == "right") {
+			
+			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow(), wallCandidate.getColumn()+1);
+			
+		}
 		
 	}
+	
+	
 	
 	/**
 	 * 
@@ -272,12 +330,23 @@ public class QuoridorController {
 			throw new IllegalStateException("Attempt to switch player when not in game");
 		}
 
-		// Clone the current game position but ith playerToMove swapped
 		final Game game = quoridor.getCurrentGame();
 		
-		final GamePosition newState = deriveNextPosition(game.getCurrentPosition());
-		newState.setPlayerToMove(newState.getPlayerToMove().getNextPlayer());
+		// Stop the clock of the current player
+		final GamePosition oldState = game.getCurrentPosition();
+		final Player oldPlayer = oldState.getPlayerToMove();
+		stopClockForPlayer(oldPlayer);
+
+		// Clone the current game position but with playerToMove changed
+		final GamePosition newState = deriveNextPosition(oldState);
+		final Player newPlayer = oldPlayer.getNextPlayer();
+		newState.setPlayerToMove(newPlayer);
+
+		// Make the new state the current state
 		game.setCurrentPosition(newState);
+
+		// Start the clock of this new player
+		runClockForPlayer(newPlayer);
 	}
 
 	/**
@@ -739,13 +808,13 @@ public class QuoridorController {
 		final StringBuilder blackPlayerMoves = new StringBuilder("B: ");
 
 		// Save the player's position
-		whitePlayerMoves.append(toString(position.getWhitePosition().getTile()));
-		blackPlayerMoves.append(toString(position.getBlackPosition().getTile()));
+		whitePlayerMoves.append(tileToStr(position.getWhitePosition().getTile()));
+		blackPlayerMoves.append(tileToStr(position.getBlackPosition().getTile()));
 
 		// Save the walls on board
 		for (Wall w : position.getWhiteWallsOnBoard()) {
 			final WallMove move = w.getMove();
-			whitePlayerMoves.append(", ").append(toString(move.getTargetTile()));
+			whitePlayerMoves.append(", ").append(tileToStr(move.getTargetTile()));
 			switch (move.getWallDirection()) {
 				case Vertical:   whitePlayerMoves.append('v'); break;
 				case Horizontal: whitePlayerMoves.append('h'); break;
@@ -756,7 +825,7 @@ public class QuoridorController {
 
 		for (Wall w : position.getBlackWallsOnBoard()) {
 			final WallMove move = w.getMove();
-			blackPlayerMoves.append(", ").append(toString(move.getTargetTile()));
+			blackPlayerMoves.append(", ").append(tileToStr(move.getTargetTile()));
 			switch (move.getWallDirection()) {
 				case Vertical:   blackPlayerMoves.append('v'); break;
 				case Horizontal: blackPlayerMoves.append('h'); break;
@@ -781,12 +850,12 @@ public class QuoridorController {
 	 * @param tile The tile
 	 * @return String form, null if the tile is null
 	 */
-	private static String toString(final Tile tile) {
+	private static String tileToStr(final Tile tile) {
 		if (tile == null) {
 			return null;
 		}
 
-		return Character.toString(tile.getColumn() + ('a' - 1)) + "" + tile.getRow();
+		return Character.toString((char) (tile.getColumn() + ('a' - 1))) + "" + tile.getRow();
 	}
 
 	/**
@@ -1715,23 +1784,14 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static TOPlayer getPlayerByColor(Color color) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (!quoridor.hasCurrentGame()) {
-			// There isn't even a game!
+		final Player player = getModelPlayerByColor(color);
+		if (player == null) {
+			// player does not exist
 			return null;
 		}
 
-		final Game game = quoridor.getCurrentGame();
-
-		switch (color) {
-			case WHITE:
-				return fromPlayer(game.getWhitePlayer());
-			case BLACK:
-				return fromPlayer(game.getBlackPlayer());
-			default:
-				return null;
+		return fromPlayer(player);
 		}
-	}
 
 	/**
 	 * Converts a Player to TOPlayer
@@ -1788,6 +1848,28 @@ public class QuoridorController {
 
 	/**
 	 *
+	 * @param color The color of the desired player
+	 * @return the player with the color
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static Player getModelPlayerByColor(Color color) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// There isn't even a game!
+			return null;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		switch (color) {
+			case WHITE: return game.getWhitePlayer();
+			case BLACK: return game.getBlackPlayer();
+			default:    return null;
+		}
+	}
+
+	/**
+	 *
 	 * @param name The name of the desired player
 	 * @returns the player associated with the name, null if no such player exists
 	 *
@@ -1819,9 +1901,22 @@ public class QuoridorController {
 	 * @author alixe delabrousse
 	 * 
 	 * @return a new wall candidate (wall move)
+	 * 
 	 */
 	public static TOWallCandidate createWallCandidateAtInitialPosition() {
-		throw new UnsupportedOperationException("Query method create-wall-candidate is not implemented yet");
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		TOPlayer currentPlayer = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
+		
+		TOWallCandidate wallCandidate  = currentPlayer.getWallCandidate();
+		if (wallCandidate != null) {
+			wallCandidate = moveWallCandidateAtPosition(Orientation.VERTICAL,1,1);
+		}
+		else {
+			wallCandidate = new TOWallCandidate(Orientation.VERTICAL,1,1);
+		}
+		
+		return wallCandidate;
+		
 	}
 	
 	/**
@@ -1833,8 +1928,17 @@ public class QuoridorController {
 	 * @return
 	 */
 	
-	public static TOWallCandidate createWallCandidateAtPosition(Orientation direction, int row, int column) {
-		throw new UnsupportedOperationException("Query method create-wall-candidate-at-position is not implemented yet");
+	public static TOWallCandidate moveWallCandidateAtPosition(Orientation direction, int row, int column) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		TOPlayer currentPlayer = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
+		
+		TOWallCandidate wallCandidate  = currentPlayer.getWallCandidate();
+		
+		wallCandidate.setOrientation(direction);
+		wallCandidate.setColumn(column);
+		wallCandidate.setRow(row);
+		
+		return wallCandidate;
 	}
 	
 	/**
@@ -1872,24 +1976,10 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	public static List<TOWall> getWallsOwnedByPlayer(Color color) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (!quoridor.hasCurrentGame()) {
-			// There isn't even a game!
+		final Player p = getModelPlayerByColor(color);
+		if (p == null) {
+			// player does not exist
 			return null;
-		}
-
-		final Game game = quoridor.getCurrentGame();
-
-		final Player p;
-		switch (color) {
-			case WHITE:
-				p = game.getWhitePlayer();
-				break;
-			case BLACK:
-				p = game.getBlackPlayer();
-				break;
-			default:
-				return null;
 		}
 
 		return p.getWalls().stream()
@@ -1957,6 +2047,111 @@ public class QuoridorController {
 	}
 	
 	/**
+	 * Checks to see if the clock for a particular player is running
+	 *
+	 * @param color Color of the player
+	 * @return true if clock is running for player with the specified color,
+	 *         false if clock is not running or if no such player exists
+	 *
+	 * @author Group 9
+	 */
+	public static boolean clockIsRunningForPlayer(Color color) {
+		final Player player = getModelPlayerByColor(color);
+		if (player == null) {
+			// player does not exist
+			return false;
+		}
+
+		return PLAYER_CLOCK.containsKey(player);
+	}
+
+	/**
+	 * Starts a clock for a player. Once started, the player's remaining time
+	 * will decrease as time passes. If the player's clock has already been
+	 * started, this call does nothing
+	 *
+	 * @param color Color of the player
+	 *
+	 * @author Group 9
+	 */
+	public static void runClockForPlayer(Color color) {
+		runClockForPlayer(getModelPlayerByColor(color));
+	}
+
+	/**
+	 * Starts a clock for a player. Once started, the player's remaining time
+	 * will decrease as time passes. If the player's clock has already been
+	 * started, this call does nothing
+	 *
+	 * @param player The player whose clock is starting
+	 *
+	 * @author Group 9
+	 */
+	private static void runClockForPlayer(Player player) {
+		if (player == null) {
+			// wut?
+			return;
+		}
+
+		// Create a task that, on each tick,
+		// decreases remaining time of player
+		final TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+				final Time remTime = player.getRemainingTime();
+				if (remTime.getHours() > 0 || remTime.getMinutes() > 0 || remTime.getSeconds() > 0) {
+					// Subtract time by milliseconds per tick:
+					// getTime() works with milliseconds
+					final Time newTime = new Time(Math.max(0, remTime.getTime() - TIME_PER_TICK_MS));
+
+					// Update the remaining time
+					player.setRemainingTime(newTime);
+				}
+			}
+		};
+
+		if (PLAYER_CLOCK.putIfAbsent(player, task) == null) {
+			// This means a new mapping is created, in other words,
+			// the task should be sent over to the global clock
+			//
+			// This task should start immediately (hence 0)
+			GLOBAL_CLOCK.scheduleAtFixedRate(task, 0, TIME_PER_TICK_MS);
+		}
+	}
+
+	/**
+	 * Stops the clock for the player. If the player's clock is not running,
+	 * then this method does nothing.
+	 *
+	 * @param color Color of the player
+	 *
+	 * @author Group 9
+	 */
+	public static void stopClockForPlayer(Color color) {
+		stopClockForPlayer(getModelPlayerByColor(color));
+	}
+
+	/**
+	 * Stops the clock for the player. If the player's clock is not running,
+	 * then this method does nothing.
+	 *
+	 * @param player The player whose clock is stopping
+	 *
+	 * @author Group 9
+	 */
+	private static void stopClockForPlayer(Player player) {
+		if (player == null) {
+			// player does not exist
+			return;
+		}
+
+		final TimerTask task = PLAYER_CLOCK.remove(player);
+		if (task != null) {
+			task.cancel();
+		}
+	}
+
+	/**
 	 * 
 	 * @returns the current wall grabbed by the player
 	 * 
@@ -1971,11 +2166,13 @@ public class QuoridorController {
 	 * 
 	 * @returns the current wall candidate
 	 * 
-	 * @author Mohamed Mohamed (260855731)
+	 * @author Mohamed Mohamed (260855731) and Alixe Delabrousse
 	 * 
 	 */
 	public static TOWallCandidate getCurrentWallCandidate() {
-		throw new UnsupportedOperationException("Query method get-current-wall-candidate is not implemented yet");
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		TOWallCandidate wallCandidate = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove()).getWallCandidate();
+		return wallCandidate;
 	}
 
 	/**
@@ -1989,6 +2186,18 @@ public class QuoridorController {
 
 	public static TOPlayer getWhitePlayer(){
 		throw new UnsupportedOperationException();
+	}
+	
+	public static Player getCurrentPlayer() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		
+		if(!quoridor.hasCurrentGame()) return null;
+		final Game game = quoridor.getCurrentGame();
+		if (!game.hasCurrentPosition()) return null;
+		
+		final GamePosition pos = game.getCurrentPosition();
+		return pos.getPlayerToMove();
+		
 	}
 
 	/**

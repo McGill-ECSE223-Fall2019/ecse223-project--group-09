@@ -1,0 +1,173 @@
+package ca.mcgill.ecse223.quoridor.view;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.sql.Time;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+
+/**
+ * A custom component that displays information that is relevant to the
+ * current player
+ *
+ * @author Group 9 [SwitchPlayer.feature]
+ */
+public class PlayerInfoPanel extends JPanel {
+
+    // ***** Additional UI Components *****
+    private final JLabel lblName = new JLabel();
+    private final JLabel lblWalls = new JLabel();
+    private final JLabel lblTime = new JLabel();
+
+    /**
+     * Creates a PlayerInfoPanel that tries to fill up space in the x
+     * direction but stays compact in the y direction
+     *
+     * @author Group 9
+     */
+    public PlayerInfoPanel() {
+        // This means we want it to:
+        // - fill up space in x direction
+        // - keep it compact in y direction
+        this(1.0, 0.0);
+    }
+
+    /**
+     * Creates a PlayerInfoPanel with the specified filling weights
+     *
+     * @param weightX Filling weight in x direction
+     * @param weightY Filling weight in y direction
+     *
+     * @author Group 9
+     */
+    public PlayerInfoPanel(final double weightX, final double weightY) {
+        this.setLayout(new GridBagLayout());
+
+        final Insets insetsFull = new Insets(10, 10, 10, 10);
+        final Insets insetsNBot = new Insets(10, 10, 0, 10);
+        final Insets insetsNTop = new Insets(0, 10, 10, 10);
+
+        {
+            final GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 0;
+            c.anchor = GridBagConstraints.FIRST_LINE_START;
+            c.weightx = weightX;
+            c.weighty = weightY;
+            c.insets = insetsFull;
+            this.add(new JLabel("Current player:"), c);
+        }
+        {
+            final GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 1;
+            c.gridy = 0;
+            c.anchor = GridBagConstraints.FIRST_LINE_END;
+            c.weightx = weightX;
+            c.weighty = weightY;
+            c.insets = insetsFull;
+            this.add(lblName, c);
+        }
+
+        {
+            final GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 1;
+            c.anchor = GridBagConstraints.LAST_LINE_START;
+            c.weightx = weightX;
+            c.insets = insetsNBot;
+            this.add(new JLabel("Walls remaining:"), c);
+        }
+        {
+            final GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 1;
+            c.gridy = 1;
+            c.anchor = GridBagConstraints.LAST_LINE_END;
+            c.weightx = weightX;
+            c.insets = insetsNBot;
+            this.add(lblWalls, c);
+        }
+
+        {
+            final GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 2;
+            c.anchor = GridBagConstraints.LAST_LINE_START;
+            c.weightx = weightX;
+            c.insets = insetsNTop;
+            this.add(new JLabel("Time remaining:"), c);
+        }
+        {
+            final GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 1;
+            c.gridy = 2;
+            c.anchor = GridBagConstraints.LAST_LINE_END;
+            c.weightx = weightX;
+            c.insets = insetsNTop;
+            this.add(lblTime, c);
+        }
+    }
+
+    /**
+     * Updates the info displayed
+     *
+     * @param player Player transfer object containing the new info.
+     *               null will cause current displayed info to be cleared
+     * 
+     * @author Group 9
+     */
+    public void updateInfo(TOPlayer player) {
+        if (player == null) {
+            // Clears all info
+            this.lblName.setText("");
+            this.lblWalls.setText("");
+            this.lblTime.setText("");
+            return;
+        }
+
+        this.lblName.setText(player.getName());
+        this.lblWalls.setText(Integer.toString(player.getWallsRemaining()));
+
+        final Time time = player.getTimeRemaining();
+        this.lblTime.setText(String.format("%02d:%02d:%02d", time.getHours(), time.getMinutes(), time.getSeconds()));
+    }
+
+    public static void main(String[] args) {
+        // This is just a demo of how it could look
+
+        javax.swing.JFrame frame = new javax.swing.JFrame("DEMO");
+        final PlayerInfoPanel panel = new PlayerInfoPanel();
+        frame.add(panel);
+        frame.setSize(200, 120);
+        frame.setDefaultCloseOperation(3);
+        frame.setVisible(true);
+
+        final TOPlayer p = new TOPlayer();
+        p.setName("Yohn");
+        p.setWallsRemaining(10);
+        p.setTimeRemaining(new Time(0, 1, 30));
+
+        panel.updateInfo(p);
+
+        try {
+            while (true) {
+                final Time t = p.getTimeRemaining();
+                if (t.getHours() == 0 && t.getMinutes() == 0 && t.getSeconds() == 0) {
+                    break;
+                }
+
+                Thread.sleep(500);
+                t.setTime(t.getTime() - 500);
+
+                // Note: Panel does not auto synchronize the data.
+                // so need to re-call updateInfo
+                panel.updateInfo(p);
+            }
+        } catch (InterruptedException ex) {
+            //
+        }
+    }
+}

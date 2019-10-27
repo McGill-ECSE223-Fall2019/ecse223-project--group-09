@@ -77,7 +77,7 @@ public class OpeningWindow extends JFrame{
 		getContentPane().setLayout(layout);
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
-		layout.setVerticalGroup(layout.createParallelGroup()
+		layout.setVerticalGroup(layout.createSequentialGroup()
 									.addComponent(quoridorLabel)
 									.addComponent(horizontalLineBelowTitle)
 									.addComponent(newGameButton)
@@ -87,8 +87,17 @@ public class OpeningWindow extends JFrame{
 									.addComponent(aboutButton)
 									.addComponent(quitGameButton)
 		);
+		layout.setHorizontalGroup(layout.createParallelGroup()
+											.addComponent(quoridorLabel)
+											.addComponent(horizontalLineBelowTitle)
+											.addComponent(newGameButton)
+											.addComponent(loadGameButton)
+											.addComponent(horizontalLineMiddle)
+											.addComponent(rulesButton)
+											.addComponent(aboutButton)
+											.addComponent(quitGameButton));
 		
-		pack();
+		//pack();
 	}
 	
 	
