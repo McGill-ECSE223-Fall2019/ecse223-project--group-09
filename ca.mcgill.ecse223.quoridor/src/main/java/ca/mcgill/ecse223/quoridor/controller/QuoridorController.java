@@ -9,23 +9,23 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
-import ca.mcgill.ecse223.quoridor.model.Destination;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
+import ca.mcgill.ecse223.quoridor.model.JumpMove;
+import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
+import ca.mcgill.ecse223.quoridor.model.StepMove;
 import ca.mcgill.ecse223.quoridor.model.Tile;
-import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 
@@ -254,8 +254,56 @@ public class QuoridorController {
 			throw new IllegalStateException("Attempt to switch player when not in game");
 		}
 
-		final GamePosition snapshot = quoridor.getCurrentGame().getCurrentPosition();
-		snapshot.setPlayerToMove(snapshot.getPlayerToMove().getNextPlayer());
+		// Clone the current game position but ith playerToMove swapped
+		final Game game = quoridor.getCurrentGame();
+		
+		final GamePosition newState = deriveNextPosition(game.getCurrentPosition());
+		newState.setPlayerToMove(newState.getPlayerToMove().getNextPlayer());
+		game.setCurrentPosition(newState);
+	}
+
+	/**
+	 * Derives anoother game position with the next id, same player positions.
+	 *
+	 * Think of it as a strange duplicate (except id is changed)
+	 *
+	 * @param pos Original game position
+	 * 
+	 * @return the derived game position
+	 */
+	private static GamePosition deriveNextPosition(GamePosition pos) {
+		final int nextId = pos.getId() + 1;
+		if (GamePosition.hasWithId(nextId)) {
+			// We start anew
+			GamePosition.getWithId(nextId).delete();
+		}
+
+		// Clone the PlayerPosition objects (multiplicities)
+		final PlayerPosition whitePos = pos.getWhitePosition();
+		final PlayerPosition whitePosCopy = new PlayerPosition(whitePos.getPlayer(), whitePos.getTile());
+
+		final PlayerPosition blackPos = pos.getBlackPosition();
+		final PlayerPosition blackPosCopy = new PlayerPosition(blackPos.getPlayer(), blackPos.getTile());
+
+		final GamePosition derived = new GamePosition(nextId, whitePosCopy, blackPosCopy, pos.getPlayerToMove(), pos.getGame());
+
+		for (Wall w : pos.getWhiteWallsInStock()) {
+			derived.addWhiteWallsInStock(w);
+		}
+
+		for (Wall w : pos.getWhiteWallsOnBoard()) {
+			derived.addWhiteWallsOnBoard(w);
+		}
+
+		for (Wall w : pos.getBlackWallsInStock()) {
+			derived.addBlackWallsInStock(w);
+		}
+
+		for (Wall w : pos.getBlackWallsOnBoard()) {
+			derived.addBlackWallsOnBoard(w);
+		}
+
+		return derived;
 	}
 
 	/**
@@ -395,13 +443,6 @@ public class QuoridorController {
 	 * @author Group 9
 	 */
 	public static boolean validatePawnPlacement(final int row, final int column) {
-		// Position must be on the board for it to be potentially valid
-		if (!isValidPawnCoordinate(row, column)) {
-			return false;
-		}
-
-		// Check all (2 of them) pawns on the board.
-		// If no overlapping, it must be good to place it down
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!quoridor.hasCurrentGame()) {
 			throw new IllegalStateException("Attempt to check for pawn placement when not in game");
@@ -409,12 +450,31 @@ public class QuoridorController {
 		
 		final Game game = quoridor.getCurrentGame();
 		final GamePosition pos = game.getCurrentPosition();
+		return validatePawnPlacement(pos, row, column);
+	}
 
-		final Tile whiteTile = pos.getWhitePosition().getTile();
-		final Tile blackTile = pos.getBlackPosition().getTile();
+	/**
+	 * Validates a placement of a pawn given a particular GamePosition
+	 *
+	 * @param gpos A specific GamePosition
+	 * @param row Row of pawn in pawn coordinates
+	 * @param col Column of pawn in pawn coordinates
+	 * @return true if position is valid, false if not
+	 *
+	 * @author Group 9
+	 */
+	private static boolean validatePawnPlacement(GamePosition gpos, final int row, final int col) {
+		// Position must be on the board for it to be potentially valid
+		if (!isValidPawnCoordinate(row, col)) {
+			return false;
+		}
 
-		return !(whiteTile.getRow() == row && whiteTile.getColumn() == column)
-			&& !(blackTile.getRow() == row && blackTile.getColumn() == column);
+		// Check if either of the two existing pawns overlap with the new position
+		final Tile whiteTile = gpos.getWhitePosition().getTile();
+		final Tile blackTile = gpos.getBlackPosition().getTile();
+
+		return !(whiteTile.getRow() == row && whiteTile.getColumn() == col)
+			&& !(blackTile.getRow() == row && blackTile.getColumn() == col);
 	}
 
 	/**
@@ -491,6 +551,28 @@ public class QuoridorController {
 	 * @author Group 9
 	 */
 	public static boolean validateWallPlacement(final int row, final int column, Orientation orientation) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to check for wall placement when not in game");
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		final GamePosition pos = game.getCurrentPosition();
+		return validateWallPlacement(pos, row, column, orientation);
+	}
+
+	/**
+	 * Validates a placement of a wall given a particular GamePosition
+	 *
+	 * @param gpos A specific GamePosition
+	 * @param row Row of wall
+	 * @param column Column of wall
+	 * @param orientation Orientation of wall
+	 * @returns true if position is valid, false otherwise
+	 *
+	 * @author Group 9
+	 */
+	public static boolean validateWallPlacement(GamePosition gpos, final int row, final int column, Orientation orientation) {
 		// If both of the tiles are out of the board, the placement must be invalid
 		if (!isValidWallCoordinate(row, column)) {
 			return false;
@@ -519,24 +601,14 @@ public class QuoridorController {
 			return false;
 		}
 
-		// Check all walls on the board
-		// If no overlapping, it must be good to place it down
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (!quoridor.hasCurrentGame()) {
-			throw new IllegalStateException("Attempt to check for wall placement when not in game");
-		}
-		
-		final Game game = quoridor.getCurrentGame();
-		final GamePosition pos = game.getCurrentPosition();
-
-		for (Wall w : pos.getWhiteWallsOnBoard()) {
+		for (Wall w : gpos.getWhiteWallsOnBoard()) {
 			// Since on board, must have WallMove associated with it
 			if (wallMoveOverlapsWithPlacement(w.getMove(), row, column, t2Row, t2Col)) {
 				return false;
 			}
 		}
 
-		for (Wall w : pos.getBlackWallsOnBoard()) {
+		for (Wall w : gpos.getBlackWallsOnBoard()) {
 			// Since on board, must have WallMove associated with it
 			if (wallMoveOverlapsWithPlacement(w.getMove(), row, column, t2Row, t2Col)) {
 				return false;
@@ -642,121 +714,75 @@ public class QuoridorController {
 		final PrintWriter pw = new PrintWriter(destination);
 		final Game game = quoridor.getCurrentGame();
 
-		pw.println("# PLEASE DO NOT EDIT THIS FILE");
-		pw.println("# The content was auto-generated");
+		final GamePosition position = game.getCurrentPosition();
 
-		pw.printf("status:%s\n", game.getGameStatus().name());
-		pw.printf("move:%s\n", game.getMoveMode().name());
+		final boolean whitePlayerStart = position.getPlayerToMove().hasGameAsWhite();
+		final StringBuilder whitePlayerMoves = new StringBuilder("W: ");
+		final StringBuilder blackPlayerMoves = new StringBuilder("B: ");
 
-		pw.println("# White Player Info");
-		savePlayer(pw, game.getWhitePlayer());
-		pw.println("#");
-		
-		pw.println("# Black Player Info");
-		savePlayer(pw, game.getBlackPlayer());
-		pw.println("#");
+		// Save the player's position
+		whitePlayerMoves.append(toString(position.getWhitePosition().getTile()));
+		blackPlayerMoves.append(toString(position.getBlackPosition().getTile()));
 
-		final GamePosition gamePosition = game.getCurrentPosition();
-		pw.printf("id:%d\n", gamePosition.getId());
-
-		pw.println("# White Player Position");
-		saveTile(pw, gamePosition.getWhitePosition().getTile());
-		pw.println("#");
-
-		pw.println("# Black Player Position");
-		saveTile(pw, gamePosition.getBlackPosition().getTile());
-		pw.println("#");
-
-		if (gamePosition.getPlayerToMove() == game.getWhitePlayer()) {
-			pw.printf("start:%s\n", Color.WHITE.name());
-		} else {
-			pw.printf("start:%s\n", Color.BLACK.name());
-		}
-
-		// For walls, we just need to save the ones on board
-		pw.println("# White Walls On Board");
-		saveWallsOnBoard(pw, gamePosition.getWhiteWallsOnBoard());
-		pw.println("#");
-
-		pw.println("# Black Walls On Board");
-		saveWallsOnBoard(pw, gamePosition.getBlackWallsOnBoard());
-		pw.println("#");
-	}
-
-	/**
-	 * Writes out a list of walls on board
-	 * 
-	 * @param pw The stream we are writing to
-	 * @param walls The walls that are on board
-	 * @throws IOException If writing operation fails
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static void saveWallsOnBoard(PrintWriter pw, List<Wall> walls) throws IOException {
-		pw.printf("cnt:%d\n", walls.size());
-		for (final Wall w : walls) {
-			// Since on board, must have WallMove associated with it
+		// Save the walls on board
+		for (Wall w : position.getWhiteWallsOnBoard()) {
 			final WallMove move = w.getMove();
-			pw.printf("dir:%s\n", move.getWallDirection().name());
-			saveTile(pw, move.getTargetTile());
+			whitePlayerMoves.append(", ").append(toString(move.getTargetTile()));
+			switch (move.getWallDirection()) {
+				case Vertical:   whitePlayerMoves.append('v'); break;
+				case Horizontal: whitePlayerMoves.append('h'); break;
+					default:
+					throw new AssertionError("Unhandled wall direction: " + move.getWallDirection());
 		}
 	}
 
-	/**
-	 * Writes out a tile position
-	 * 
-	 * @param pw The stream we are writing to
-	 * @param tile The tile being saved
-	 * @throws IOException If writing operation fails
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static void saveTile(PrintWriter pw, Tile tile) throws IOException {
-		pw.printf("row:%d\n", tile.getRow());
-		pw.printf("col:%d\n", tile.getColumn());
+		for (Wall w : position.getBlackWallsOnBoard()) {
+			final WallMove move = w.getMove();
+			blackPlayerMoves.append(", ").append(toString(move.getTargetTile()));
+			switch (move.getWallDirection()) {
+				case Vertical:   blackPlayerMoves.append('v'); break;
+				case Horizontal: blackPlayerMoves.append('h'); break;
+				default:
+					throw new AssertionError("Unhandled wall direction: " + move.getWallDirection());
 	}
+		}
 
-	/**
-	 * Writes out a player
-	 * 
-	 * @param pw The stream we are writing to
-	 * @param p The player being saved
-	 * @throws IOException If writing operation fails
-	 */
-	private static void savePlayer(PrintWriter pw, Player p) throws IOException {
-		final Time t = p.getRemainingTime();
-		pw.printf("time:%d:%d:%d\n", t.getHours(), t.getMinutes(), t.getSeconds());
-		pw.printf("name:%s\n", p.getUser().getName());
-		
-		final Destination d = p.getDestination();
-		pw.printf("target:%d\n", d.getTargetNumber());
-		pw.printf("dir:%s\n", d.getDirection().name());
-
-		final List<Wall> walls = p.getWalls();
-		pw.printf("walls:%d\n", walls.size());
-		for (Wall w : walls) {
-			pw.printf("id:%d\n", w.getId());
+		if (whitePlayerStart) {
+			pw.println(whitePlayerMoves);
+			pw.println(blackPlayerMoves);
+		} else {
+			pw.println(blackPlayerMoves);
+			pw.println(whitePlayerMoves);
 		}
 	}
 	
 	/**
+	 * Converts a tile to its equivalent saved form which is column as a-i
+	 * followed by row as 1-9
+	 * 
+	 * @param tile The tile
+	 * @return String form, null if the tile is null
+	 */
+	private static String toString(final Tile tile) {
+		if (tile == null) {
+			return null;
+		}
+
+		return Character.toString(tile.getColumn() + ('a' - 1)) + "" + tile.getRow();
+	}
+
+	/**
 	 * Loads a previously saved board from a file 
 	 * 
 	 * @param filePath The file being read
-	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails 
+	 * @throws InvalidLoadException If file cannot be processed
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static boolean loadPosition(String filePath) throws IOException {
+	public static void loadPosition(String filePath) throws IOException, InvalidLoadException {
 		try (final Reader reader = new FileReader(filePath)) {
-			return loadPosition(reader);
-		} catch (IllegalArgumentException ex) {
-			// Reading failed due to formatting
-			throw new IOException(ex);
-		} catch (RuntimeException ex) {
-			// Happens if getTile is called with invalid coordinates
-			return false;
+			loadPosition(reader);
 		}
 	}
 	
@@ -767,255 +793,863 @@ public class QuoridorController {
 	 * responsibility to do so.
 	 * 
 	 * @param source The stream we are reading from
-	 * @returns true if positions are valid, false if positions are not
 	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If stream cannot be processed
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	public static boolean loadPosition(Reader source) throws IOException {
+	public static void loadPosition(Reader source) throws IOException, InvalidLoadException {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		
 		final BufferedReader br = new BufferedReader(source);
 
-		final GameStatus status = matchForEnum(br, "status", GameStatus.class);
-		final MoveMode move = matchForEnum(br, "move", MoveMode.class);
+		// Note: (Slightly counter intuitive)
+		//   The stepDefs does create the players, but there is no way for us
+		//   to retrieve the players. Also player has some very specific
+		//   information such as thinking time, yet it is not saved.
 
-		final Player whitePlayer = readPlayer(br);
-		final Player blackPlayer = readPlayer(br);
+		final Player whitePlayer = new Player(new Time(0, 3, 0), quoridor.getUser(0), 9, Direction.Horizontal);
+		final Player blackPlayer = new Player(new Time(0, 3, 0), quoridor.getUser(1), 1, Direction.Horizontal);
 		whitePlayer.setNextPlayer(blackPlayer);
 		blackPlayer.setNextPlayer(whitePlayer);
 
+		// Give our player some walls, they deserve it!
+		for (int i = 0; i < 10; ++i) {
+			if (Wall.hasWithId(i)) {
+				whitePlayer.addWall(Wall.getWithId(i));
+			} else {
+				whitePlayer.addWall(i);
+			}
+		}
+
+		for (int i = 10; i < 20; ++i) {
+			if (Wall.hasWithId(i)) {
+				blackPlayer.addWall(Wall.getWithId(i));
+			} else {
+				blackPlayer.addWall(i);
+			}
+		}
+
 		final Game game;
 		if (!quoridor.hasCurrentGame()) {
-			game = new Game(status, move, quoridor);
+			game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
 		} else {
 			game = quoridor.getCurrentGame();
-			game.setGameStatus(status);
-			game.setMoveMode(move);
+			game.setGameStatus(GameStatus.Running);
+			game.setMoveMode(MoveMode.PlayerMove);
 		}
 		game.setWhitePlayer(whitePlayer);
 		game.setBlackPlayer(blackPlayer);
 
-		final int id = matchForInt(br, "id");
-		final Tile whitePlayerTile = readTile(br);
-		final Tile blackPlayerTile = readTile(br);
+		final GamePosition initialPosition;
 
-		PlayerPosition whitePosition = new PlayerPosition(whitePlayer, whitePlayerTile);
-		PlayerPosition blackPosition = new PlayerPosition(blackPlayer, blackPlayerTile);
-		final Color startingColor = matchForEnum(br, "start", Color.class);
+		// Meaningfull moves only start at index 1 (which
+		// actually matches up with the corresponding round number)
+		final String[] whitePlayerMoves;
+		final String[] blackPlayerMoves;
 
-		GamePosition gp = new GamePosition(
-				id,
-				whitePosition,
-				blackPosition,
-				startingColor == Color.WHITE ? whitePlayer : blackPlayer,
-				game);
+		{
+			// This is the only reading we actually need to do
+			final String line1 = br.readLine();
+			final String line2 = br.readLine();
+			final boolean whiteStarts;
 
-		final GamePosition oldGamePosition = game.getCurrentPosition();
+			// Check which player goes first
+			switch (line1.charAt(0)) {
+				case 'W':
+					// Sanity check line2 must start with 'B'
+					if (line2.charAt(0) != 'B') {
+						throw new InvalidLoadException("Bad player color specification: W -> " + line2.charAt(0));
+					}
+					whiteStarts = true;
+					initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
+					break;
+				case 'B':
+					// Sanity check line2 must start with 'W'
+					if (line2.charAt(0) != 'W') {
+						throw new InvalidLoadException("Bad player color specification: B -> " + line2.charAt(0));
+					}
+					whiteStarts = false;
+					initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, blackPlayer, game);
+					break;
+				default:
+					throw new InvalidLoadException("Bad player color specification: " + line1.charAt(0));
+			}
 
-		game.setCurrentPosition(gp);
+			// Perform default splitting
+			final String[] seq1 = line1.split("\\s*[:,]\\s*");
+			final String[] seq2 = line2.split("\\s*[:,]\\s*");
 
-		// Make sure all player's walls are in stock
+			if (whiteStarts) {
+				whitePlayerMoves = seq1;
+				blackPlayerMoves = seq2;
+			} else {
+				whitePlayerMoves = seq2;
+				blackPlayerMoves = seq1;
+			}
+		}
+
+		final String whitePosition = whitePlayerMoves[1];
+		if (!whitePosition.matches("^[a-i][1-9]$")) {
+			throw new InvalidLoadException("Invalid player position format for white player: " + whitePosition);
+		}
+		final int whiteRow = whitePosition.charAt(1) - '1' + 1;
+		final int whiteCol = whitePosition.charAt(0) - 'a' + 1;
+		if (!isValidPawnCoordinate(whiteRow, whiteCol)) {
+			throw new InvalidLoadException("Invalid player position for white player: " + whitePosition);
+		}
+
+		final String blackPosition = blackPlayerMoves[1];
+		if (!blackPosition.matches("^[a-i][1-9]$")) {
+			throw new InvalidLoadException("Invalid player position format for black player: " + blackPosition);
+		}
+		final int blackRow = blackPosition.charAt(1) - '1' + 1;
+		final int blackCol = blackPosition.charAt(0) - 'a' + 1;
+		if (!isValidPawnCoordinate(blackRow, blackCol)) {
+			throw new InvalidLoadException("Invalid player position for black player: " + blackPosition);
+		}
+
+		// check if these two pawn positions overlap
+		if (whiteRow == blackRow && whiteCol == blackCol) {
+			throw new InvalidLoadException("Loading pawn positions that overlap!");
+		}
+
+		//  Set the pawn position tile
+		initialPosition.getWhitePosition().setTile(quoridor.getBoard().getTile((whiteRow - 1) * 9 + (whiteCol - 1)));
+		initialPosition.getBlackPosition().setTile(quoridor.getBoard().getTile((blackRow - 1) * 9 + (blackCol - 1)));
+
+		// Walls start at index 2
+		for (int i = 2; i < whitePlayerMoves.length; ++i) {
+			final String move = whitePlayerMoves[i];
+			if (!move.matches("^[a-h][1-8][vh]$")) {
+				throw new InvalidLoadException("Invalid position format for white wall: " + move);
+			}
+
+			final int row = move.charAt(1) - '1' + 1;
+			final int col = move.charAt(0) - 'a' + 1;
+			final Direction dir;
+			switch(move.charAt(2)) {
+				case 'v': dir = Direction.Vertical; break;
+				case 'h': dir = Direction.Horizontal; break;
+				default:  throw new InvalidLoadException("Invalid direction format for white wall: " + move.charAt('2'));
+			}
+
+			if (!initialPosition.hasWhiteWallsInStock()) {
+				throw new InvalidLoadException("White trying to wall move without any walls available");
+			}
+
+			if (!validateWallPlacement(initialPosition, row, col, fromDirection(dir))) {
+				throw new InvalidLoadException("Invalid placement for white wall: " + move);
+			}
+
+			final Wall wall = initialPosition.getWhiteWallsInStock(0);
+			initialPosition.removeWhiteWallsInStock(wall);
+			initialPosition.addWhiteWallsOnBoard(wall);
+
+			final Tile tile = quoridor.getBoard().getTile((row - 1) * 9 + (col - 1));
+			new WallMove(0, 0, whitePlayer, tile, game, dir, wall);
+		}
+
+		// See above logic
+		for (int i = 2; i < blackPlayerMoves.length; ++i) {
+			final String move = blackPlayerMoves[i];
+			if (!move.matches("^[a-h][1-8][vh]$")) {
+				throw new InvalidLoadException("Invalid position format for black wall: " + move);
+			}
+
+			final int row = move.charAt(1) - '1' + 1;
+			final int col = move.charAt(0) - 'a' + 1;
+			final Direction dir;
+			switch(move.charAt(2)) {
+				case 'v': dir = Direction.Vertical; break;
+				case 'h': dir = Direction.Horizontal; break;
+				default:  throw new InvalidLoadException("Invalid direction format for black wall: " + move.charAt('2'));
+			}
+
+			if (!initialPosition.hasBlackWallsInStock()) {
+				throw new InvalidLoadException("black trying to wall move without any walls available");
+			}
+
+			if (!validateWallPlacement(initialPosition, row, col, fromDirection(dir))) {
+				throw new InvalidLoadException("Invalid placement for black wall: " + move);
+			}
+
+			final Wall wall = initialPosition.getBlackWallsInStock(0);
+			initialPosition.removeBlackWallsInStock(wall);
+			initialPosition.addBlackWallsOnBoard(wall);
+
+			final Tile tile = quoridor.getBoard().getTile((row - 1) * 9 + (col - 1));
+			new WallMove(0, 0, blackPlayer, tile, game, dir, wall);
+		}
+
+		// We reach here, meaning position is all good!
+		// final sanity check
+		if (!validateGamePosition(initialPosition)) {
+			throw new InvalidLoadException("Loaded game position is somehow invalid...");
+		}
+
+		game.setCurrentPosition(initialPosition);
+	}
+
+	/**
+	 * Creates or resuses a game position with id=0 that has white/black
+	 * player in their initial position and all walls in stock.
+	 * 
+	 * Note: This does not set the game position as current
+	 *
+	 * @param whitePlayer White player
+	 * @param blackPlayer Black player
+	 * @param startingPlayer Starting player
+	 * @param game Associated game
+	 * @return game position with id=0
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static GamePosition createInitialGamePosition(Player whitePlayer, Player blackPlayer, Player startingPlayer, Game game) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+
+		// Tile numbers are from CucumberStepDefinitions
+		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, quoridor.getBoard().getTile(36));
+		final PlayerPosition initialBlackPosition = new PlayerPosition(blackPlayer, quoridor.getBoard().getTile(44));
+
+		if (GamePosition.hasWithId(0)) {
+			// Deletes the existing game position with id=0
+			GamePosition.getWithId(0).delete();
+		}
+
+		// Create a new game position with id=0
+		final GamePosition initialPosition = new GamePosition(0, initialWhitePosition, initialBlackPosition, startingPlayer, game);
+
+		// Ensure all walls are in stock
 		for (Wall w : whitePlayer.getWalls()) {
-			gp.removeWhiteWallsOnBoard(w);
-			gp.addWhiteWallsInStock(w);
+			initialPosition.removeWhiteWallsOnBoard(w);
+			initialPosition.addWhiteWallsInStock(w);
 		}
 		
 		for (Wall w : blackPlayer.getWalls()) {
-			gp.removeBlackWallsOnBoard(w);
-			gp.addBlackWallsInStock(w);
+			initialPosition.removeBlackWallsOnBoard(w);
+			initialPosition.addBlackWallsInStock(w);
 		}
 
-		// Walls! Yay!
-		readWallsOnBoard(br, whitePlayer, game);
-		readWallsOnBoard(br, blackPlayer, game);
-
-		// And then validate
-		final boolean result;
-		if (!(result = validateCurrentGamePosition())) {
-			// If invalid, then switch the game position back to old one
-			game.setCurrentPosition(oldGamePosition);
+		// As a sanity check, make sure this position is actually valid...
+		if (!validateGamePosition(initialPosition)) {
+			// so, somehow, it is not valid... crash!
+			throw new AssertionError("PLEASE FIX THIS INITIAL GAME POSITION SETUP CUZ IT AIN'T VALID!!");
 		}
-		return result;
+
+		return initialPosition;
 	}
 
 	/**
-	 * Reads in a list of walls on board
+	 * Tries to play a pawn move:
+	 * Tries to play a {@link QuoridorController#tryPlayStepMove(int, int, Player, Tile, GamePosition) step move} first.
+	 * If failed, tries to play a  {@link QuoridorController#tryPlayJumpMove(int, int, Player, Tile, GamePosition) jump move}
 	 * 
-	 * @param br The stream we are reading from
-	 * @param p The player of these walls
-	 * @param g The game to place these walls
-	 * @throws IOException If reading operation fails
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param currentPlayer Player of the move
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A move instance of move is legal, null if move is illegal
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static void readWallsOnBoard(BufferedReader br, Player p, Game g) throws IOException {
-		final int count = matchForInt(br, "cnt");
-		for (int i = 0; i < count; ++i) {
-			final Direction dir = matchForEnum(br, "dir", Direction.class);
-			final Tile tile = readTile(br);
-			final Wall wall = p.getWall(i);
-			new WallMove(0, 1, p, tile, g, dir, wall);
+	private static Move tryPlayPawnMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
+		final Move move = tryPlayStepMove(moveNumber, roundNumber, currentPlayer, target, gamePos);
+		if (move != null) {
+			return move;
+			}
 
-			if (p.hasGameAsWhite()) {
-				g.getCurrentPosition().removeWhiteWallsInStock(wall);
-				g.getCurrentPosition().addWhiteWallsOnBoard(wall);
-			} else {
-				g.getCurrentPosition().removeBlackWallsInStock(wall);
-				g.getCurrentPosition().addBlackWallsOnBoard(wall);
+		return tryPlayJumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos);
+	}
+
+	/**
+	 * Tries to play a step move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param currentPlayer Player of the move
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A StepMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static StepMove tryPlayStepMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
+		final int row = target.getRow();
+		final int col = target.getColumn();
+		if (!validatePawnPlacement(gamePos, row, col)) {
+			// If the tile is already occupied, then, obviously, the move cannot be completed
+			return null;
+		}
+
+		final boolean playerHasWhitePawn = currentPlayer.hasGameAsWhite();
+		final PlayerPosition playerPos;
+		if (playerHasWhitePawn) {
+			playerPos = gamePos.getWhitePosition();
+		} else {
+			playerPos = gamePos.getBlackPosition();
+		}
+
+		// Valid movement for a step (not jumps) must be one of
+		// (x+1, y), (x-1, y), (x, y+1), (x, y-1) where x = row, y = column
+		final Tile currentPos = playerPos.getTile();
+		final int deltaRow = row - currentPos.getRow();
+		final int deltaCol = col - currentPos.getColumn();
+		if (1 != Math.abs(deltaRow) + Math.abs(deltaCol)) {
+			// sum of the movement distances in rows and columns do not add up to 1
+			// move cannot be completed because player tried moving too much
+			return null;
+		}
+
+		// Finally, player cannot be moving stepping through walls
+		if (isWallBlockingMovementFromTile(deltaRow, deltaCol, currentPos, gamePos)) {
+			return null;
+		}
+
+		if (playerHasWhitePawn) {
+			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
+		} else {
+			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
+		}
+
+		final StepMove move = new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		return move;
+	}
+
+	/**
+	 * See this simplified board:
+	 *
+	 *   +---+---+   +---+---+
+	 * 2 |   |   | 2 |   |   | Y IS INVERTED
+	 *   +[>====]+   +[>====]+ where @ is the tile, [>====] is the wall
+	 * 1 | @ |   | 1 |   | @ |
+	 *   +---+---+   +---+---+
+	 *     1   2       1   2
+	 *    [fig.1]     [fig.2]
+	 *
+	 * Only these two scenarios will return true
+	 *
+	 * @param wall A wall that is potentially above a tile
+	 * @param tile A tile that potentially has the specific wall above it
+	 * @return true if wall is above tile, false otherwise
+	 *
+	 * @see QuoridorController#wallIsBelowTile(Wall, Tile) wallsIsBelowTile
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsAboveTile(Wall wall, Tile tile) {
+		return wallIsAboveTile(wall, tile.getRow(), tile.getColumn());
+	}
+
+	/**
+	 * Checks to see if there is a wall above the tile
+	 * 
+	 * @param wall A wall that is potentially above the tile
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is immediately above, false otherwise
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsAboveTile(Wall wall, final int row, final int col) {
+		if (!wall.hasMove()) {
+			// Wall is not on the board, so cannot be above any tile
+			return false;
+		}
+
+		final WallMove move = wall.getMove();
+		if (Direction.Horizontal != move.getWallDirection()) {
+			// Only horizontal walls can be above a tile
+			return false;
+		}
+
+		// See above diagram, the wall's tile is always on the left side
+		// (the '>' side). For the wall to be above, either it has the
+		// same tile location as '@' [fig.1] or as
+		// ('@'.row, '@'.column - 1) [fig.2]
+		final Tile wallTile = move.getTargetTile();
+		return wallTile.getRow() == row
+			&& (wallTile.getColumn() == col || wallTile.getColumn() == col - 1);
+	}
+
+	/**
+	 * Checks if any wall is above a particular tile
+	 *
+	 * @param gamePos current board configuration
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is immediately above, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean anyWallAboveTile(GamePosition gamePos, final int row, final int col) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			if (wallIsAboveTile(w, row, col)) {
+				return true;
 			}
 		}
-	}
 
-	/**
-	 * Reads in a tile position
-	 * 
-	 * @param br The stream we are reading from
-	 * @return The tile being read
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static Tile readTile(BufferedReader br) throws IOException {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-
-		final int row = matchForInt(br, "row");
-		final int col = matchForInt(br, "col");
-
-		if (!isValidPawnCoordinate(row, col)) {
-			throw new RuntimeException("Illegal coordinate (" + row + "," + col + ")");
-		}
-
-		// based off indexing scheme used in
-		// CucumberStepDefintions#theFollowingWallsExist(DataTable)
-		return quoridor.getBoard().getTile((row - 1) * 9 + col - 1);
-	}
-
-	/**
-	 * Reads in a player
-	 * 
-	 * @param br The stream we are reading from
-	 * @return The player being read
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static Player readPlayer(BufferedReader br) throws IOException {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-
-		final Time remainingTime = matchForTime(br, "time");
-		final String name = matchForString(br, "name");
-		final User user = User.hasWithName(name) ? User.getWithName(name) : quoridor.addUser(name);
-		
-		final int targetNumber = matchForInt(br, "target");
-		final Direction direction = matchForEnum(br, "dir", Direction.class);
-		
-		final Player p = new Player(remainingTime, user, targetNumber, direction);
-
-		final int numberOfWalls = matchForInt(br, "walls");
-		for (int i = 0; i < numberOfWalls; ++i) {
-			int wallId = matchForInt(br, "id");
-			if (Wall.hasWithId(wallId)) {
-				p.addWall(Wall.getWithId(wallId));
-			} else {
-				p.addWall(wallId);
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			if (wallIsAboveTile(w, row, col)) {
+				return true;
 			}
 		}
 
-		return p;
-	}
-	
-	/**
-	 * Retrieves a line with format: {@code $key:[+-]?\d+}
-	 * 
-	 * @param br The stream we are reading from
-	 * @param key The key (stuff before colon)
-	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static int matchForInt(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
-		if (line == null || !line.matches('^' + key + ":[+-]?\\d+$")) {
-			throw new IllegalArgumentException("Invalid numeric format `" + line + "`");
-		}
-		return Integer.parseInt(line.substring(key.length() + 1));
+		return false;
 	}
 
 	/**
-	 * Retrieves a line with format: {@code $key:\d{1,2}:\d{1,2}:\d{1,2}}
+	 *
+	 * @param wall A wall that is potentially below a tile
+	 * @param tile A tile that potentially has the specific wall below it
+	 * @return true if wall is below tile, false otherwise
+	 *
+	 * @see QuoridorController#wallIsAboveTile(Wall, Tile) wallsIsAboveTile
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsBelowTile(Wall wall, Tile tile) {
+		return wallIsBelowTile(wall, tile.getRow(), tile.getColumn());
+	}
+
+	/**
+	 * Checks to see if there is a wall below the tile
 	 * 
-	 * @param br The stream we are reading from
-	 * @param key The key (stuff before colon)
-	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
+	 * @param wall A wall that is potentially below the tile
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is immediately below, false otherwise
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static Time matchForTime(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
-		if (line == null || !line.matches('^' + key + ":\\d{1,2}:\\d{1,2}:\\d{1,2}$")) {
-			throw new IllegalArgumentException("Invalid time format `" + line + "`");
+	private static boolean wallIsBelowTile(Wall wall, final int row, final int col) {
+		if (!wall.hasMove()) {
+			// Wall is not on the board, so cannot be below any tile
+			return false;
 		}
-		final String[] seq = line.substring(key.length() + 1).split(":");
-		return new Time(
-				Integer.parseInt(seq[0]),
-				Integer.parseInt(seq[1]),
-				Integer.parseInt(seq[2]));
-	}
-	
-	/**
-	 * Retrieves a line with format: {@code $key:.*}
-	 * 
-	 * @param br The stream we are reading from
-	 * @param key The key (stuff before colon)
-	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static String matchForString(BufferedReader br, String key) throws IOException {
-		String line = getNextUsefulLine(br);
-		if (line == null || !line.matches('^' + key + ":.*$")) {
-			throw new IllegalArgumentException("Invalid string format `" + line + "`");
+
+		final WallMove move = wall.getMove();
+		if (Direction.Horizontal != move.getWallDirection()) {
+			// Only horizontal walls can be below a tile
+			return false;
 		}
-		return line.substring(key.length() + 1);
+
+		// Same reasoning as wallIsAboveTile,
+		// but, instead, the wall is one unit higher than the tile
+		final Tile wallTile = move.getTargetTile();
+		return wallTile.getRow() == row - 1
+			&& (wallTile.getColumn() == col || wallTile.getColumn() == col - 1);
 	}
-	
+
 	/**
-	 * Retrieves a line with format: {@code $key:{enum values}}
-	 * 
-	 * @param br The stream we are reading from
-	 * @param key The key (stuff before colon)
-	 * @param type The enum with values (stuff before colon)
-	 * @return stuff after colon as integer
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
-	 * 
+	 * Checks if any wall is below a particular tile
+	 *
+	 * @param gamePos current board configuration
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is immediately below, false if not
+	 *
 	 * @author Paul Teng (260862906)
 	 */
-	private static <T extends Enum<T>> T matchForEnum(BufferedReader br, String key, Class<T> type) throws IOException {
-		return Enum.valueOf(type, matchForString(br, key).trim());
-	}
-	
-	/**
-	 * Retrieves the next line that is not a comment (starts with '#') nor empty
-	 * 
-	 * @param br The stream we are reading from
-	 * @return next line that is not a comment nor empty; can still return null
-	 * @throws IOException If reading operation fails, this includes if pattern is invalid
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static String getNextUsefulLine(BufferedReader br) throws IOException {
-		String line;
-		while ((line = br.readLine()) != null) {
-			if (!line.isEmpty() && line.charAt(0) != '#') {
-				// Found it!
-				break;
+	private static boolean anyWallBelowTile(GamePosition gamePos, final int row, final int col) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			if (wallIsBelowTile(w, row, col)) {
+				return true;
 			}
 		}
-		return line;
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			if (wallIsBelowTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * See this simplified board:
+	 *
+	 *   +---+    +---+
+	 * 2 |   -  2 | @ -
+	 *   +---v    +---v where @ is the tile, | > | is the wall
+	 * 1 | @ -  1 |   -
+	 *   +---+    +---+
+	 *  [fig.1]  [fig.2]
+	 *
+	 * Only these two scenarios will return true
+	 *
+	 * @param wall A wall that is potentially on the right of a tile
+	 * @param tile A tile that potentially has the specific wall on the right of it
+	 * @return true if wall is on the right side of tile, false otherwise
+	 *
+	 * @see QuoridorController#wallIsLeftOfTile(Wall, Tile) wallsIsLeftOfTile
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsRightOfTile(Wall wall, Tile tile) {
+		return wallIsRightOfTile(wall, tile.getRow(), tile.getColumn());
+	}
+
+	/**
+	 * Checks to see if there is a wall on the right of the tile
+	 *
+	 * @param wall A wall that is potentially on the right of the tile
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is on the immediate right, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsRightOfTile(Wall wall, final int row, final int col) {
+		if (!wall.hasMove()) {
+			// Wall is not on the board, so cannot be on the right any tile
+			return false;
+		}
+
+		final WallMove move = wall.getMove();
+		if (Direction.Vertical != move.getWallDirection()) {
+			// Only vertical walls can be on the right of a tile
+			return false;
+		}
+
+		// See above diagram, the wall's tile is always on the bottom.
+		// For the wall to be on the left, either it has the same tile
+		// location as '@' [fig.1] or as ('@'.row - 1, '@'.column) [fig.2]
+		final Tile wallTile = move.getTargetTile();
+		return wallTile.getColumn() == col
+			&& (wallTile.getRow() == row || wallTile.getRow() == row - 1);
+	}
+
+	/**
+	 * Checks if any wall is on the right of a particular tile
+	 *
+	 * @param gamePos current board configuration
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is on the immediate right, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean anyWallRightOfTile(GamePosition gamePos, final int row, final int col) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			if (wallIsRightOfTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			if (wallIsRightOfTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 *
+	 * @param wall A wall that is potentially on the left of a tile
+	 * @param tile A tile that potentially has the specific wall on the left of it
+	 * @return true if wall is on the left side of tile, false otherwise
+	 *
+	 * @see QuoridorController#wallIsRightOfTile(Wall, Tile) wallIsRightOfTile
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsLeftOfTile(Wall wall, Tile tile) {
+		return wallIsLeftOfTile(wall, tile.getRow(), tile.getColumn());
+	}
+
+	/**
+	 * Checks to see if there is a wall on the left of the tile
+	 *
+	 * @param wall A wall that is potentially on the left of the tile
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is on the immediate left, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean wallIsLeftOfTile(Wall wall, int row, int col) {
+		if (!wall.hasMove()) {
+			// Wall is not on the board, so cannot be on the left any tile
+			return false;
+		}
+
+		final WallMove move = wall.getMove();
+		if (Direction.Vertical != move.getWallDirection()) {
+			// Only vertical walls can be on the left of a tile
+			return false;
+		}
+
+		// Same reasoning as wallIsRightOfTile,
+		// but, instead, the wall is one unit less than the tile
+		final Tile wallTile = move.getTargetTile();
+		return wallTile.getColumn() == col - 1
+			&& (wallTile.getRow() == row || wallTile.getRow() == row - 1);
+	}
+
+	/**
+	 * Checks if any wall is on the left of a particular tile
+	 *
+	 * @param gamePos current board configuration
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 * @return true if wall is on the immediate left, false if not
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean anyWallLeftOfTile(GamePosition gamePos, final int row, final int col) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			if (wallIsLeftOfTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			if (wallIsLeftOfTile(w, row, col)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Tries to play a jump move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param currentPlayer Player of the move
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A JumpMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static JumpMove tryPlayJumpMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
+		final int row = target.getRow();
+		final int col = target.getColumn();
+		if (!validatePawnPlacement(gamePos, row, col)) {
+			// If the tile is already occupied, then, obviously, the move cannot be completed
+			return null;
+		}
+
+		final boolean playerHasWhitePawn = currentPlayer.hasGameAsWhite();
+		final PlayerPosition playerPos;
+		if (playerHasWhitePawn) {
+			playerPos = gamePos.getWhitePosition();
+		} else {
+			playerPos = gamePos.getBlackPosition();
+		}
+
+		// Valid movement for a jumps (not steps) must be one of
+		// - far Jumps: (x+2, y), (x-2, y), (x, y+2), (x, y-2)
+		// - Lateral Shifts: (x+1, y+1), (x+1, y+1), (x-1, y+1), (x-1, y-1)
+		final Tile currentPos = playerPos.getTile();
+		final int deltaRow = row - currentPos.getRow();
+		final int deltaCol = col - currentPos.getColumn();
+		if (2 != Math.abs(deltaRow) + Math.abs(deltaCol)) {
+			// In other words, the absolute value of the movements must add up to 2
+			return null;
+		}
+
+		// Walls block all movements, so check that first
+		if (isWallBlockingMovementFromTile(deltaRow, deltaCol, currentPos, gamePos)) {
+			// Pawn cannot move from the current position with
+			// the selected direction since blocked by wall
+			return null;
+		}
+
+		if (Math.abs(deltaRow) == 2 || Math.abs(deltaCol) == 2) {
+			// We are doing a far jump:
+			// +---+---+---+    +---+---+---+
+			// | @ | O |   | => |   | O | @ | '@' is the player jumping
+			// +---+---+---+    +---+---+---+ 'O' is another player
+			//   1   2   3        1   2   3
+
+			final int testRow = currentPos.getRow() + deltaRow / 2;
+			final int testCol = currentPos.getColumn() + deltaCol / 2;
+
+			// Test if 'O' exists, it should
+			if (validatePawnPlacement(gamePos, testRow, testCol)) {
+				// If 'O' exists, it would not be a valid pawn placement
+				// => move is invalid if we the placement is valid
+				return null;
+			}
+
+			// Now make sure no walls are in between rows or columns
+			// (in above example, none should be between columns 1, 2, 3)
+
+			if (isWallBlockingMovementToTile(deltaRow, deltaCol, target, gamePos)) {
+				return null;
+			}
+		} else {
+			// We are doing a lateral jump
+			// +---+---+---+    +---+---+---+
+			// |   | X |   |    |   | X |   | '@' is the player jumping
+			// +[>====]+---+    +[>====]+---+ 'O' and 'X' are another players
+			// |   | O |   |    |   | O | @ | '[>====]' is a wall
+			// +---+---+---+ => +---+---+---+
+			// |   | @ | ? |    |   |   | ? | Note: 'O' and either 'X' or the
+			// +---+---+---+    +---+---+---+ wall enough for lateral jumps
+			//   1   2   3        1   2   3
+
+			// Check if 'O' exists, notice that with a single
+			// tile check it could also be a lateral jump due
+			// a blockage on the '?' side
+
+			final int currentRow = currentPos.getRow();
+			final int currentCol = currentPos.getColumn();
+
+			boolean canPerformJump = false;
+
+			// Check if '?' exists
+			if (!canPerformJump && !validatePawnPlacement(gamePos, currentRow, currentCol + deltaCol / 2)) {
+				// There should be sth, be it a wall or pawn, behind '?'
+				canPerformJump = !validatePawnPlacement(gamePos, currentRow, currentCol + deltaCol)
+						|| (deltaCol < 0 && anyWallRightOfTile(gamePos, currentRow, currentCol + deltaCol))
+						|| (deltaCol > 0 && anyWallLeftOfTile(gamePos, currentRow, currentCol + deltaCol));
+			}
+
+			// Check if 'O' exists
+			if (!canPerformJump && !validatePawnPlacement(gamePos, currentRow + deltaRow / 2, currentCol)) {
+				// There should be sth, be it a wall or pawn, behind 'O'
+				canPerformJump = !validatePawnPlacement(gamePos, currentRow + deltaRow, currentCol)
+						|| (deltaRow < 0 && anyWallAboveTile(gamePos, currentRow + deltaRow, currentCol))
+						|| (deltaRow > 0 && anyWallBelowTile(gamePos, currentRow + deltaRow, currentCol));
+			}
+
+			// If after both searches and the jump
+			// is still illegal, return null
+			if (!canPerformJump) {
+				return null;
+			}
+		}
+
+		if (currentPlayer.hasGameAsWhite()) {
+			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
+		} else {
+			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
+		}
+
+		final JumpMove move = new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		return move;
+	}
+
+	/**
+	 * Checks if movement from a particular tile in a particular direction is
+	 * being blocked by a wall
+	 *
+	 * @param deltaRow Relative movement by row
+	 * @param deltaCol Relative movement by column
+	 * @param src Movement from this tile
+	 * @param gamePos Curreng board setup
+	 * @return true if any wall is blocking movement from a tile,
+	 *         false if not blocking
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean isWallBlockingMovementFromTile(final int deltaRow, final int deltaCol, Tile src, GamePosition gamePos) {
+		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
+			// If moving down, cannot have wall below the current or above the target (y inverted)
+			if (deltaRow < 0 && wallIsBelowTile(w, src)) return true;
+
+			// If moving up, cannot have wall above the current or below the target (y inverted)
+			if (deltaRow > 0 && wallIsAboveTile(w, src)) return true;
+
+			// If moving left, cannot have wall on the left of current or on the right of target
+			if (deltaCol < 0 && wallIsLeftOfTile(w, src)) return true;
+
+			// If moving right, cannot have wall on the right of current or on the left of target
+			if (deltaCol > 0 && wallIsRightOfTile(w, src)) return true;
+		}
+
+		for (Wall w : gamePos.getBlackWallsOnBoard()) {
+			// See above explaination
+			if (deltaRow < 0 && wallIsBelowTile(w, src)) return true;
+			if (deltaRow > 0 && wallIsAboveTile(w, src)) return true;
+			if (deltaCol < 0 && wallIsLeftOfTile(w, src)) return true;
+			if (deltaCol > 0 && wallIsRightOfTile(w, src)) return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if movement to a particular tile in a particular direction is
+	 * being blocked by a wall
+	 *
+	 * @param deltaRow Relative movement by row
+	 * @param deltaCol Relative movement by column
+	 * @param dst Movement to this tile
+	 * @param gamePos Curreng board setup
+	 * @return true if any wall is blocking movement to a tile,
+	 *         false if not blocking
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static boolean isWallBlockingMovementToTile(int deltaRow, int deltaCol, Tile dst, GamePosition gamePos) {
+		return isWallBlockingMovementFromTile(-deltaRow, -deltaCol, dst, gamePos);
+	}
+
+	/**
+	 * Tries to play a wall move onto a game position
+	 *
+	 * @param moveNumber Move number of the move
+	 * @param roundNumber Round number of the move
+	 * @param wall Wall of the move
+	 * @param dir Direction of the wall
+	 * @param target Tile of the move
+	 * @param gamePos holds pre-state of move, will hold post-state of move
+	 * @return A WallMove instance of move is legal, null if move is illegal
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	private static WallMove tryPlayWallMove(int moveNumber, int roundNumber, Wall wall, Direction dir, Tile target, GamePosition gamePos) {
+		if (!validateWallPlacement(gamePos, target.getRow(), target.getColumn(), fromDirection(dir))) {
+			// If the wall is already occupied, then, obviously, the move cannot be completed
+			return null;
+		}
+
+		// XXX: A proper Quoridor game needs to check if paths are
+		// blocked, and this implementation does not do that!
+
+		final Player currentPlayer = wall.getOwner();
+		if (currentPlayer.hasGameAsWhite()) {
+			gamePos.removeWhiteWallsInStock(wall);
+			gamePos.addWhiteWallsOnBoard(wall);
+		} else {
+			gamePos.removeBlackWallsInStock(wall);
+			gamePos.addBlackWallsOnBoard(wall);
+		}
+
+		final WallMove move = new WallMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame(), dir, wall);
+		return move;
+	}
+
+	/**
+	 * Converts a direction enum to an orientation enum
+	 * 
+	 * @param dir Direction
+	 * @return Equivalent as Orientation
+	 * 
+	 * @author Group 9
+	 */
+	private static Orientation fromDirection(final Direction dir) {
+		if (dir == null) {
+			// I suppose a null direction can be well defined?
+			return null;
+		}
+
+		switch (dir) {
+			case Vertical:      return Orientation.VERTICAL;
+			case Horizontal:    return Orientation.HORIZONTAL;
+			default:
+				throw new IllegalArgumentException("Unsupported conversion from direction: " + dir.name());
+		}
 	}
 
 	/**
