@@ -8,14 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
-import org.junit.validator.ValidateWith;
 
 import ca.mcgill.ecse223.quoridor.QuoridorApplication;
-import ca.mcgill.ecse223.quoridor.controller.TOWall;
-
-import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
-import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+import ca.mcgill.ecse223.quoridor.controller.Color;
+import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
+import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -29,23 +30,13 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
-
-import ca.mcgill.ecse223.quoridor.controller.*;
-import ca.mcgill.ecse223.quoridor.model.*;
-
-import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
-import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
-
-import ca.mcgill.ecse223.quoridor.model.Game.*;
-
-
+import cucumber.api.PendingException;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import cucumber.api.PendingException;
 
 public class CucumberStepDefinitions {
 
@@ -139,7 +130,7 @@ public class CucumberStepDefinitions {
 	public void aNewGameIsInitializing() throws Throwable {
 		initQuoridorAndBoard();
 		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
-		new Game(GameStatus.Initializing, MoveMode.PlayerMove, players.get(0), players.get(1), QuoridorApplication.getQuoridor());
+		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
 	}
 
 	// ***********************************************
@@ -328,8 +319,8 @@ public class CucumberStepDefinitions {
 	*/
 
 	@And("There is existing user {string}")
-	public void existingUser(boolean user) {
-		Assert.assertTrue(user); 
+	public void existingUser(String user) {
+		Assert.assertTrue(QuoridorController.usernameExists(user)); 
 	}
 
 	/**
@@ -358,8 +349,8 @@ public class CucumberStepDefinitions {
 	*@author Ada Andrei
 	*/
 	@And("There is no existing user {string}")
-	public void noExistingUser(boolean user) {
-		Assert.assertFalse(user); 
+	public void noExistingUser(String user) {
+		Assert.assertFalse(QuoridorController.usernameExists(user)); 
 	}
 	
 	/**
@@ -432,7 +423,9 @@ public class CucumberStepDefinitions {
 	@Given("No file {string} exists in the filesystem")
 	public void noFileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
-		Assert.assertFalse(file.exists());
+		if (file.exists()) {
+			file.delete();
+	}
 	}
 
 	/**
@@ -470,7 +463,14 @@ public class CucumberStepDefinitions {
 	@Given("File {string} exists in the filesystem")
 	public void fileExistsInTheFilesystem(String filename) {
 		final File file = new File(filename);
-		Assert.assertTrue(file.exists());
+		if (!file.exists()) {
+			try {
+				// Create a blank file with the same name
+				file.createNewFile();
+			} catch (IOException ex) {
+				Assert.fail("No IOException should happen: " + ex.getMessage());
+	}
+		}
 	}
 
 	/**
@@ -486,7 +486,6 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
-
 	/**
 	 * @param filename Name of file
 	 * @author Paul Teng (260862906)
@@ -537,9 +536,12 @@ public class CucumberStepDefinitions {
 	@When("I initiate to load a saved game {string}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
-			this.positionValidFlag = QuoridorController.loadPosition(filename);
+			QuoridorController.loadPosition(filename);
+			this.positionValidFlag = true;
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
+		} catch (InvalidLoadException ex) {
+			this.positionValidFlag = false;
 		}
 	}
 
@@ -552,47 +554,54 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	 * @param playerName Name of player
+	 * @param playerColor Color of player
 	 * @author Paul Teng (260862906)
 	 */
 	@Then("It shall be {string}'s turn")
-	public void itShallBePlayersTurn(String playerName) {
+	public void itShallBePlayersTurn(String playerColor) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(playerName, player.getName());
+		Assert.assertEquals(Color.valueOf(playerColor.toUpperCase()), player.getColor());
 	}
 
 	/**
-	 * @param playerName Name of player
+	 * @param playerColor Color of player
 	 * @param row Row of player's pawn piece (pawn coordinates)
 	 * @param col Column of player's pawn piece (pawn coordinates)
 	 * @author Paul Teng (260862906)
 	 */
 	@And("{string} shall be at {int}:{int}")
-	public void playerIsAtRowCol(String playerName, int row, int col) {
-		final TOPlayer player = QuoridorController.getPlayerByName(playerName);
+	public void playerIsAtRowCol(String playerColor, int row, int col) {
+		final TOPlayer player = QuoridorController.getPlayerByColor(Color.valueOf(playerColor.toUpperCase()));
 		Assert.assertNotNull(player);
 		Assert.assertEquals(row, player.getRow());
 		Assert.assertEquals(col, player.getColumn());
 	}
 
 	/**
-	 * @param playerName Name of player
+	 * @param playerColor Color of player
 	 * @param orientation Orientation of player's wall piece
 	 * @param row Row of player's wall piece (wall coordinates)
 	 * @param col Column of player's wall piece (wall coordinates)
 	 * @author Paul Teng (260862906)
 	 */
 	@And("{string} shall have a {word} wall at {int}:{int}")
-	public void playerHasOrientedWallAtRowCol(String playerName, String orientation, int row, int col) {
-		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(playerName);
+	public void playerHasOrientedWallAtRowCol(String playerColor, String orientation, int row, int col) {
+		final List<TOWall> walls = QuoridorController.getWallsOwnedByPlayer(Color.valueOf(playerColor.toUpperCase()));
 		Assert.assertNotNull(walls);
 
 		// Count the walls that satisfy the orientation and location
 		// We expect only 1 that matches:
 		int matches = 0;
 		for (final TOWall wall : walls) {
-			if (orientation.equalsIgnoreCase(wall.getOrientation().name())
+			final Orientation wallOrientation = wall.getOrientation();
+			if (wallOrientation == null) {
+				// Wall has no orientation because it is not on board
+				// definitely cannot match
+				continue;
+			}
+
+			if (orientation.equalsIgnoreCase(wallOrientation.name())
 					&& wall.getRow() == row && wall.getColumn() == col) {
 				++matches;
 			}
@@ -975,11 +984,8 @@ public class CucumberStepDefinitions {
 	
 	// ***** ValidatePosition.feature *****
 
-	private int row;
-	private int column;
-	private Orientation orientation;
-
 	private boolean positionValidityFlag;
+	private boolean positionFailedEarly;
 
 	/**
 	 * @param row Row in pawn coordinates
@@ -988,10 +994,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("A game position is supplied with pawn coordinate {int}:{int}")
 	public void gamePositionIsSuppliedWithPawn(int row, int column) {
-		this.row = row;
-		this.column = column;
-		// hack for this#validationOfThePositionIsInitiated to work!
-		this.orientation = null;
+		this.positionFailedEarly = !QuoridorController.validatePawnPlacement(row, column);
 	}
 
 	/**
@@ -999,13 +1002,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("Validation of the position is initiated")
 	public void validationOfThePositionIsInitiated() {
-		if (this.orientation == null) {
-			// This is a pawn position
-			this.positionValidityFlag = QuoridorController.validatePawnPlacement(this.row, this.column);
-		} else {
-			// This is a wall position
-			this.positionValidityFlag = QuoridorController.validateWallPlacement(this.row, this.column, this.orientation);
-		}
+		this.positionValidityFlag = QuoridorController.validateCurrentGamePosition();
 	}
 
 	/**
@@ -1015,15 +1012,18 @@ public class CucumberStepDefinitions {
 	@Then("The position shall be {string}")
 	public void positionShallBe(String result) {
 		switch (result) {
-			case "ok":
-				Assert.assertTrue(this.positionValidityFlag);
-				break;
 			case "error":
-				Assert.assertFalse(this.positionValidityFlag);
+				// Either position failed early or position is invalid
+				Assert.assertTrue(this.positionFailedEarly || !this.positionValidityFlag);
+				break;
+			case "ok":
+				// Opposite of the error case
+				Assert.assertFalse(this.positionFailedEarly || !this.positionValidityFlag);
 				break;
 			default:
 				Assert.fail("Unhandled result: " + result);
 		}
+		this.positionFailedEarly = false;
 	}
 
 	/**
@@ -1034,9 +1034,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("A game position is supplied with wall coordinate {int}:{int}-{string}")
 	public void gamePositionIsSuppliedWithWall(int row, int column, String orientation) {
-		this.row = row;
-		this.column = column;
-		this.orientation = Orientation.valueOf(orientation.toUpperCase());
+		this.positionFailedEarly = !QuoridorController.validateWallPlacement(row, column, Orientation.valueOf(orientation.toUpperCase()));
 	}
 
 	/**
@@ -1058,79 +1056,79 @@ public class CucumberStepDefinitions {
 	// ***** SwitchCurrentPlayer.feature *****
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@Given("The player to move is {string}")
-	public void playerToMoveIs(String playerName) {
+	public void playerToMoveIs(String playerColor) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(playerName, player.getName());
+		Assert.assertEquals(Color.valueOf(playerColor.toUpperCase()), player.getColor());
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The clock of {string} is running")
-	public void clockOfPlayerIsRunning(String playerName) {
+	public void clockOfPlayerIsRunning(String playerColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The clock of {string} is stopped")
-	public void clockOfPlayerIsStopped(String playerName) {
+	public void clockOfPlayerIsStopped(String playerColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@When("Player {string} completes his move")
-	public void playerCompletesHisMove(String playerName) {
+	public void playerCompletesHisMove(String playerColor) {
 		QuoridorController.switchCurrentPlayer();
 	}
 
 	/**
-	 * @param opponentName name of opponent
+	 * @param opponentColor color of opponent
 	 * @author Group-9
 	 */
 	@Then("The user interface shall be showing it is {string} turn")
-	public void userInterfaceShallBeShowingItIsOpponentsTurn(String opponentName) {
+	public void userInterfaceShallBeShowingItIsOpponentsTurn(String opponentColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The clock of {string} shall be running")
-	public void clockOfPlayerShallBeRunning(String playerName) {
+	public void clockOfPlayerShallBeRunning(String playerColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The clock of {string} shall be stopped")
-	public void clockOfPlayerShallBeStopped(String playerName) {
+	public void clockOfPlayerShallBeStopped(String playerColor) {
 		throw new PendingException();
 	}
 
 	/**
-	 * @param playerName name of player
+	 * @param playerColor color of player
 	 * @author Group-9
 	 */
 	@And("The next player to move shall be {string}")
-	public void nextPlayerToMoveShallBe(String playerName) {
+	public void nextPlayerToMoveShallBe(String playerColor) {
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(playerName, player.getName());
+		Assert.assertEquals(Color.valueOf(playerColor.toUpperCase()), player.getColor());
 	}
 	
 	// ***********************************************
@@ -1220,7 +1218,9 @@ public class CucumberStepDefinitions {
 		Tile player1StartPos = quoridor.getBoard().getTile(36);
 		Tile player2StartPos = quoridor.getBoard().getTile(44);
 		
-		Game game = new Game(GameStatus.Running, MoveMode.PlayerMove, players.get(0), players.get(1), quoridor);
+		Game game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
+		game.setWhitePlayer(players.get(0));
+		game.setBlackPlayer(players.get(1));
 
 		PlayerPosition player1Position = new PlayerPosition(quoridor.getCurrentGame().getWhitePlayer(), player1StartPos);
 		PlayerPosition player2Position = new PlayerPosition(quoridor.getCurrentGame().getBlackPlayer(), player2StartPos);
