@@ -163,8 +163,21 @@ public class QuoridorController {
  	* 
  	*/
 	
-	public static void grabWall(List<TOWall> wallStock) {
-		throw new UnsupportedOperationException();
+	public static TOWall grabWall() {
+		Player currentPlayer = getCurrentPlayer();
+		
+		List<Wall> remainingWalls = currentPlayer.getWalls();
+		Wall grabbedWall = remainingWalls.get(remainingWalls.size());
+		
+		remainingWalls.remove(grabbedWall);
+		
+		TOWallCandidate wallCandidate  = fromPlayer(currentPlayer).getWallCandidate();
+		
+		wallCandidate = createWallCandidateAtInitialPosition();
+		
+		TOWall toGrabbedWall = fromWall(grabbedWall);
+		
+		return toGrabbedWall;
 		
 	}
 	
@@ -188,9 +201,28 @@ public class QuoridorController {
 	 */
 	
 	public static void moveWall(String side) {
-		throw new UnsupportedOperationException();
+		
+		TOWallCandidate wallCandidate = getCurrentWallCandidate();
+		
+		if (side == "down") {
+			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow()-1, wallCandidate.getColumn());
+			
+		} else if (side == "up") {
+			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow()+1, wallCandidate.getColumn());
+			
+		} else if (side == "left") {
+			
+			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow(), wallCandidate.getColumn()-1);
+			
+		} else if (side == "right") {
+			
+			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow(), wallCandidate.getColumn()+1);
+			
+		}
 		
 	}
+	
+	
 	
 	/**
 	 * 
@@ -1801,9 +1833,22 @@ public class QuoridorController {
 	 * @author alixe delabrousse
 	 * 
 	 * @return a new wall candidate (wall move)
+	 * 
 	 */
 	public static TOWallCandidate createWallCandidateAtInitialPosition() {
-		throw new UnsupportedOperationException("Query method create-wall-candidate is not implemented yet");
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		TOPlayer currentPlayer = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
+		
+		TOWallCandidate wallCandidate  = currentPlayer.getWallCandidate();
+		if (wallCandidate != null) {
+			wallCandidate = moveWallCandidateAtPosition(Orientation.VERTICAL,1,1);
+		}
+		else {
+			wallCandidate = new TOWallCandidate(Orientation.VERTICAL,1,1);
+		}
+		
+		return wallCandidate;
+		
 	}
 	
 	/**
@@ -1815,8 +1860,17 @@ public class QuoridorController {
 	 * @return
 	 */
 	
-	public static TOWallCandidate createWallCandidateAtPosition(Orientation direction, int row, int column) {
-		throw new UnsupportedOperationException("Query method create-wall-candidate-at-position is not implemented yet");
+	public static TOWallCandidate moveWallCandidateAtPosition(Orientation direction, int row, int column) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		TOPlayer currentPlayer = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
+		
+		TOWallCandidate wallCandidate  = currentPlayer.getWallCandidate();
+		
+		wallCandidate.setOrientation(direction);
+		wallCandidate.setColumn(column);
+		wallCandidate.setRow(row);
+		
+		return wallCandidate;
 	}
 	
 	/**
@@ -1953,11 +2007,13 @@ public class QuoridorController {
 	 * 
 	 * @returns the current wall candidate
 	 * 
-	 * @author Mohamed Mohamed (260855731)
+	 * @author Mohamed Mohamed (260855731) and Alixe Delabrousse
 	 * 
 	 */
 	public static TOWallCandidate getCurrentWallCandidate() {
-		throw new UnsupportedOperationException("Query method get-current-wall-candidate is not implemented yet");
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		TOWallCandidate wallCandidate = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove()).getWallCandidate();
+		return wallCandidate;
 	}
 
 	/**
@@ -1971,6 +2027,18 @@ public class QuoridorController {
 
 	public static TOPlayer getWhitePlayer(){
 		throw new UnsupportedOperationException();
+	}
+	
+	public static Player getCurrentPlayer() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		
+		if(!quoridor.hasCurrentGame()) return null;
+		final Game game = quoridor.getCurrentGame();
+		if (!game.hasCurrentPosition()) return null;
+		
+		final GamePosition pos = game.getCurrentPosition();
+		return pos.getPlayerToMove();
+		
 	}
 
 	/**
