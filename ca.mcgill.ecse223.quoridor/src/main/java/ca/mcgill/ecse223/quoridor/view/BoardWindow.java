@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 /**
  * Creates a window that looks somewhat like GUI3.png
- * 
+ *
  * @author Paul Teng (260862906) [SavePosition.feature;LoadPosition.feature]
  */
 public class BoardWindow extends JFrame {
@@ -19,15 +19,17 @@ public class BoardWindow extends JFrame {
     //***** Additional UI Components *****
     private final SaveLoadPanel saveLoadPanel = new SaveLoadPanel();
     private final PlayerInfoPanel playerInfoPanel = new PlayerInfoPanel();
+    private final GridPanel gridPanel = new GridPanel();
 
 	public BoardWindow() {
         this.setLayout(new BorderLayout());
 
         this.add(generateRightPanel(), BorderLayout.EAST);
+        this.add(gridPanel, BorderLayout.CENTER);
 
         final JMenuBar menuBar = new JMenuBar();
         this.setJMenuBar(menuBar);
-        
+
         menuBar.add(this.createFileMenu());
     }
 
@@ -39,9 +41,9 @@ public class BoardWindow extends JFrame {
 
     /**
      * Generates the panel on the right side
-     * 
+     *
      * @return A panel
-     * 
+     *
      * @author Paul Teng (260862906)
      */
     private JPanel generateRightPanel() {
