@@ -96,7 +96,7 @@ public class QuoridorController {
 	 * @author Ada Andrei
 	 */
 
-	public static boolean usernameExists(boolean user) throws UnsupportedOperationException{
+	public static boolean usernameExists(String user) throws UnsupportedOperationException{
 		throw new UnsupportedOperationException();
 		
 	}
