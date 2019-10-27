@@ -12,7 +12,7 @@ import java.sql.Time;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
