@@ -67,6 +67,10 @@ public class QuoridorController {
 	 * @author Paul Teng (260862906)
 	 */
 	private static final HashMap<Player, TimerTask> PLAYER_CLOCK = new HashMap<>();
+	
+	private static final int INITIAL_ROW = 1;
+	private static final int INITIAL_COLUMN = 1;
+	private static final Direction INITIAL_ORIENTATION = Direction.Vertical;
 
 	/////////////////////////// FIELDS ///////////////////////////
 	
@@ -197,15 +201,23 @@ public class QuoridorController {
 		
 		remainingWalls.remove(grabbedWall);
 		
-		TOWallCandidate wallCandidate  = fromPlayer(currentPlayer).getWallCandidate();
+		Game game = quoridor.getCurrentGame();
+		Board board = quoridor.getBoard();
 		
-		wallCandidate = createWallCandidateAtInitialPosition();
+		Tile initialTile = new Tile(INITIAL_ROW, INITIAL_COLUMN, board);
+		
+		WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+		
+		game.setWallMoveCandidate(wallMove);
+		TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove);
 		
 		TOWall toGrabbedWall = fromWall(grabbedWall);
 		
 		return toGrabbedWall;
 		
 	}
+	
+	
 	
 	
 	/**
@@ -227,26 +239,45 @@ public class QuoridorController {
 	 */
 	
 	public static void moveWall(String side) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game game = quoridor.getCurrentGame();
 		
-		TOWallCandidate wallCandidate = getCurrentWallCandidate();
+		WallMove wallMove = getCurrentWallMove(game);
+		Tile targetTile;
 		
 		if (side == "down") {
-			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow()-1, wallCandidate.getColumn());
+			
+			targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
+			wallMove.setTargetTile(targetTile);
 			
 		} else if (side == "up") {
-			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow()+1, wallCandidate.getColumn());
+			targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
+			wallMove.setTargetTile(targetTile);
 			
 		} else if (side == "left") {
-			
-			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow(), wallCandidate.getColumn()-1);
+			targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
+			wallMove.setTargetTile(targetTile);
 			
 		} else if (side == "right") {
-			
-			wallCandidate = moveWallCandidateAtPosition(wallCandidate.getOrientation(), wallCandidate.getRow(), wallCandidate.getColumn()+1);
-			
+			targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
+			wallMove.setTargetTile(targetTile);
 		}
 		
 	}
+	
+	public static Tile getTileFromRowAndColumn(int row, int column) {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Board board = quoridor.getBoard();
+		
+		int tileIndex = (row - 1)*9 + (column - 1);
+		return board.getTile(tileIndex);
+		
+	}
+	
+	public static WallMove getCurrentWallMove(Game game) {
+		return game.getWallMoveCandidate();
+	}
+	
 	
 	
 	
@@ -1885,11 +1916,15 @@ public class QuoridorController {
 	 * @return a new wall candidate (wall move)
 	 * 
 	 */
+	/*
 	public static TOWallCandidate createWallCandidateAtInitialPosition() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		TOPlayer currentPlayer = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
 		
+		
 		TOWallCandidate wallCandidate  = currentPlayer.getWallCandidate();
+		
+		
 		if (wallCandidate != null) {
 			wallCandidate = moveWallCandidateAtPosition(Orientation.VERTICAL,1,1);
 		}
@@ -1899,6 +1934,23 @@ public class QuoridorController {
 		
 		return wallCandidate;
 		
+	}
+	*/
+	
+	/**
+	 * 
+	 * @author alixe delabrousse 
+	 * 
+	 * 
+	 * @param wallMove
+	 * @return
+	 */
+	public static TOWallCandidate createTOWallCandidateFromWallMove(WallMove wallMove) {
+		
+		Orientation orientation = Orientation.valueOf(wallMove.getWallDirection().toString());
+		
+		TOWallCandidate wallCandidate = new TOWallCandidate(orientation, wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn());
+		return wallCandidate;
 	}
 	
 	/**
@@ -1910,17 +1962,11 @@ public class QuoridorController {
 	 * @return
 	 */
 	
-	public static TOWallCandidate moveWallCandidateAtPosition(Orientation direction, int row, int column) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		TOPlayer currentPlayer = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
+	public static WallMove moveWallCandidateAtPosition(WallMove wallMove, Direction direction, Tile targetTile) {
+		wallMove.setTargetTile(targetTile);
+		wallMove.setWallDirection(direction);
 		
-		TOWallCandidate wallCandidate  = currentPlayer.getWallCandidate();
-		
-		wallCandidate.setOrientation(direction);
-		wallCandidate.setColumn(column);
-		wallCandidate.setRow(row);
-		
-		return wallCandidate;
+		return wallMove;
 	}
 	
 	/**
