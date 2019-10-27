@@ -1061,9 +1061,13 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("The player to move is {string}")
 	public void playerToMoveIs(String playerColor) {
+		final Color color = Color.valueOf(playerColor.toUpperCase());
 		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 		Assert.assertNotNull(player);
-		Assert.assertEquals(Color.valueOf(playerColor.toUpperCase()), player.getColor());
+		Assert.assertEquals(color, player.getColor());
+
+		// Temporary solution:
+		QuoridorController.runClockForPlayer(color);
 	}
 
 	/**
@@ -1072,7 +1076,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The clock of {string} is running")
 	public void clockOfPlayerIsRunning(String playerColor) {
-		throw new PendingException();
+		Assert.assertTrue(QuoridorController.clockIsRunningForPlayer(Color.valueOf(playerColor.toUpperCase())));
 	}
 
 	/**
@@ -1081,7 +1085,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The clock of {string} is stopped")
 	public void clockOfPlayerIsStopped(String playerColor) {
-		throw new PendingException();
+		Assert.assertFalse(QuoridorController.clockIsRunningForPlayer(Color.valueOf(playerColor.toUpperCase())));
 	}
 
 	/**
@@ -1108,7 +1112,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The clock of {string} shall be running")
 	public void clockOfPlayerShallBeRunning(String playerColor) {
-		throw new PendingException();
+		Assert.assertTrue(QuoridorController.clockIsRunningForPlayer(Color.valueOf(playerColor.toUpperCase())));
 	}
 
 	/**
@@ -1117,7 +1121,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The clock of {string} shall be stopped")
 	public void clockOfPlayerShallBeStopped(String playerColor) {
-		throw new PendingException();
+		Assert.assertFalse(QuoridorController.clockIsRunningForPlayer(Color.valueOf(playerColor.toUpperCase())));
 	}
 
 	/**
