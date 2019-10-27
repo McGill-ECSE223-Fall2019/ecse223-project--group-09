@@ -72,6 +72,24 @@ public class QuoridorController {
 	 * 
 	 * @author Barry Chen 
 	 * 
+	 */
+	public Board createNewBoard(){
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Board newBoard = new Board(quoridor);
+		
+		//newBoard.setQuoridor(quoridor);
+		for (int i=0; i<81; i++) {
+			int col = (i%9)+1;
+			int row = (i/9)+1;
+			newBoard.addTile(row, col);
+		}
+		return newBoard;
+	}
+	
+	/**
+	 * 
+	 * @author Barry Chen 
+	 * 
 	 * @param none
 	 * @returns initialized board
 	 * 
