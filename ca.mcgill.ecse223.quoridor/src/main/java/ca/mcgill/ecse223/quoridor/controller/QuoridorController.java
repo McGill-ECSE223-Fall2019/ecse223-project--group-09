@@ -99,17 +99,18 @@ public class QuoridorController {
 	 * @author Barry Chen 
 	 * 
 	 */
-	public Board createNewBoard(){
-		Quoridor quoridor = QuoridorApplication.getQuoridor();
-		Board newBoard = new Board(quoridor);
+	public void createNewBoard(){
+		//Quoridor quoridor = QuoridorApplication.getQuoridor();
+		//Board newBoard = new Board(quoridor);
 		
-		//newBoard.setQuoridor(quoridor);
+		board.setQuoridor(quoridor);
+		
 		for (int i=0; i<81; i++) {
 			int col = (i%9)+1;
 			int row = (i/9)+1;
-			newBoard.addTile(row, col);
+			board.addTile(row, col);
 		}
-		return newBoard;
+		//return newBoard;
 	}
 	
 	/**
@@ -124,8 +125,20 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public Board initiateBoard() {
-		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+	public void initiateBoard() {
+		//throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+		currentPlayer = player1;
+		
+		for (int i=1; i <= 20; i++) {
+			if(i <= 10){
+				//add walls for player 1
+				player1.addWall(i);
+			}
+			else{
+				//add walls for player 2
+				player2.addWall(i);
+			}
+		}
 	}
 	
 
