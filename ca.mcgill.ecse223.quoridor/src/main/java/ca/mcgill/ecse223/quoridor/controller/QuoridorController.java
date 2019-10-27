@@ -721,13 +721,13 @@ public class QuoridorController {
 		final StringBuilder blackPlayerMoves = new StringBuilder("B: ");
 
 		// Save the player's position
-		whitePlayerMoves.append(toString(position.getWhitePosition().getTile()));
-		blackPlayerMoves.append(toString(position.getBlackPosition().getTile()));
+		whitePlayerMoves.append(tileToStr(position.getWhitePosition().getTile()));
+		blackPlayerMoves.append(tileToStr(position.getBlackPosition().getTile()));
 
 		// Save the walls on board
 		for (Wall w : position.getWhiteWallsOnBoard()) {
 			final WallMove move = w.getMove();
-			whitePlayerMoves.append(", ").append(toString(move.getTargetTile()));
+			whitePlayerMoves.append(", ").append(tileToStr(move.getTargetTile()));
 			switch (move.getWallDirection()) {
 				case Vertical:   whitePlayerMoves.append('v'); break;
 				case Horizontal: whitePlayerMoves.append('h'); break;
@@ -738,7 +738,7 @@ public class QuoridorController {
 
 		for (Wall w : position.getBlackWallsOnBoard()) {
 			final WallMove move = w.getMove();
-			blackPlayerMoves.append(", ").append(toString(move.getTargetTile()));
+			blackPlayerMoves.append(", ").append(tileToStr(move.getTargetTile()));
 			switch (move.getWallDirection()) {
 				case Vertical:   blackPlayerMoves.append('v'); break;
 				case Horizontal: blackPlayerMoves.append('h'); break;
@@ -763,12 +763,12 @@ public class QuoridorController {
 	 * @param tile The tile
 	 * @return String form, null if the tile is null
 	 */
-	private static String toString(final Tile tile) {
+	private static String tileToStr(final Tile tile) {
 		if (tile == null) {
 			return null;
 		}
 
-		return Character.toString(tile.getColumn() + ('a' - 1)) + "" + tile.getRow();
+		return Character.toString((char) (tile.getColumn() + ('a' - 1))) + "" + tile.getRow();
 	}
 
 	/**
