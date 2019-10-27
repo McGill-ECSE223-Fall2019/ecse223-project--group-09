@@ -29,6 +29,9 @@ public class GridPanel extends JPanel {
     private static final Color WALL_CELL_COLOR = Color.cyan;
     private static final Color PLACEMENT_CUE_COLOR = Color.red;
 
+    // ***** Additional UI Components *****
+    private final TileMap tileMap = new TileMap();
+
     /**
      * Creates a grid panel
      *
@@ -61,7 +64,57 @@ public class GridPanel extends JPanel {
         c.weightx = 1.0;
         c.weighty = 1.0;
         c.fill = GridBagConstraints.BOTH;
-        this.add(new TileMap(), c);
+        this.add(this.tileMap, c);
+    }
+
+    /**
+     * Set the player with the white pawn, this changes the position being
+     * displayed.
+     *
+     * @param whitePlayer white player
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setWhitePlayer(TOPlayer whitePlayer) {
+        this.tileMap.whitePlayer = whitePlayer;
+        this.repaint();
+    }
+
+    /**
+     * Set the player with the black pawn, this changes the position being
+     * displayed.
+     *
+     * @param blackPlayer black player
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setBlackPlayer(TOPlayer blackPlayer) {
+        this.tileMap.blackPlayer = blackPlayer;
+        this.repaint();
+    }
+
+    /**
+     * Sets the list of walls associated to the white player
+     * 
+     * @param walls walls of the white player
+     * 
+     * @author Paul Teng (260862906)
+     */
+    public void setWhiteWalls(final List<TOWall> walls) {
+        this.tileMap.whiteWalls = walls != null ? walls : Collections.emptyList();
+        this.repaint();
+    }
+
+    /**
+     * Sets the list of walls associated to the black player
+     * 
+     * @param walls walls of the black player
+     * 
+     * @author Paul Teng (260862906)
+     */
+    public void setBlackWalls(final List<TOWall> walls) {
+        this.tileMap.blackWalls = walls != null ? walls : Collections.emptyList();
+        this.repaint();
     }
 
     /**
@@ -76,25 +129,6 @@ public class GridPanel extends JPanel {
 
         private List<TOWall> whiteWalls = Collections.emptyList();
         private List<TOWall> blackWalls = Collections.emptyList();
-
-        /**
-         * Creates a tile map
-         *
-         * @author Paul Teng (260862906)
-         */
-        public TileMap() {
-            TOWall wall1 = new TOWall();
-            wall1.setRow(2);
-            wall1.setColumn(4);
-            wall1.setOrientation(Orientation.HORIZONTAL);
-            whiteWalls = Collections.singletonList(wall1);
-
-            TOWall wall2 = new TOWall();
-            wall2.setRow(3);
-            wall2.setColumn(3);
-            wall2.setOrientation(Orientation.VERTICAL);
-            blackWalls = Collections.singletonList(wall2);
-        }
 
         /**
          * {@inheritDoc}
