@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 
-import ca.mcgill.ecse223.quoridor.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.Color;
 import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
