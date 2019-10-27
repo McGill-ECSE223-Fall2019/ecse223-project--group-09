@@ -319,8 +319,8 @@ public class CucumberStepDefinitions {
 	*/
 
 	@And("There is existing user {string}")
-	public void existingUser(boolean user) {
-		Assert.assertTrue(user); 
+	public void existingUser(String user) {
+		Assert.assertTrue(QuoridorController.usernameExists(user)); 
 	}
 
 	/**
@@ -349,8 +349,8 @@ public class CucumberStepDefinitions {
 	*@author Ada Andrei
 	*/
 	@And("There is no existing user {string}")
-	public void noExistingUser(boolean user) {
-		Assert.assertFalse(user); 
+	public void noExistingUser(String user) {
+		Assert.assertFalse(QuoridorController.usernameExists(user)); 
 	}
 	
 	/**
