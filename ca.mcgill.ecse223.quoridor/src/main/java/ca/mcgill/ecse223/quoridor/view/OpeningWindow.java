@@ -1,15 +1,13 @@
 package ca.mcgill.ecse223.quoridor.view;
 
-import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
 
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 
 public class OpeningWindow extends JFrame{
@@ -35,6 +33,8 @@ public class OpeningWindow extends JFrame{
 		
 		this.quoridorLabel = new JLabel();
 		this.quoridorLabel.setText("Quoridor");
+        this.quoridorLabel.setFont(this.quoridorLabel.getFont().deriveFont(28.0f));
+        this.quoridorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		
 		this.newGameButton = new JButton("New Game");
 		this.loadGameButton = new JButton("Load Game");
