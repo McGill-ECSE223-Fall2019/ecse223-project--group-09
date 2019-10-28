@@ -134,40 +134,4 @@ public class PlayerInfoPanel extends JPanel {
         final Time time = player.getTimeRemaining();
         this.lblTime.setText(String.format("%02d:%02d:%02d", time.getHours(), time.getMinutes(), time.getSeconds()));
     }
-
-    public static void main(String[] args) {
-        // This is just a demo of how it could look
-
-        javax.swing.JFrame frame = new javax.swing.JFrame("DEMO");
-        final PlayerInfoPanel panel = new PlayerInfoPanel();
-        frame.add(panel);
-        frame.setSize(200, 120);
-        frame.setDefaultCloseOperation(3);
-        frame.setVisible(true);
-
-        final TOPlayer p = new TOPlayer();
-        p.setName("Yohn");
-        p.setWallsRemaining(10);
-        p.setTimeRemaining(new Time(0, 1, 30));
-
-        panel.updateInfo(p);
-
-        try {
-            while (true) {
-                final Time t = p.getTimeRemaining();
-                if (t.getHours() == 0 && t.getMinutes() == 0 && t.getSeconds() == 0) {
-                    break;
-                }
-
-                Thread.sleep(500);
-                t.setTime(t.getTime() - 500);
-
-                // Note: Panel does not auto synchronize the data.
-                // so need to re-call updateInfo
-                panel.updateInfo(p);
-            }
-        } catch (InterruptedException ex) {
-            //
-        }
-    }
 }
