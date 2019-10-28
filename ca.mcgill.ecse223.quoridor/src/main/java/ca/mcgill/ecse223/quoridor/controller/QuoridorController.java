@@ -383,7 +383,19 @@ public class QuoridorController {
 
 		// Clone the current game position but with playerToMove changed
 		final GamePosition newState = deriveNextPosition(oldState);
-		final Player newPlayer = oldPlayer.getNextPlayer();
+
+		// Get the next player
+		Player newPlayer = oldPlayer.getNextPlayer();
+		if (newPlayer == null) {
+			// In the case that the next-player attribute is not setup
+			// we can still determine who goes next based on color
+			if (oldPlayer.hasGameAsWhite()) {
+				newPlayer = game.getBlackPlayer();
+			} else {
+				newPlayer = game.getWhitePlayer();
+			}
+		}
+
 		newState.setPlayerToMove(newPlayer);
 
 		// Make the new state the current state
