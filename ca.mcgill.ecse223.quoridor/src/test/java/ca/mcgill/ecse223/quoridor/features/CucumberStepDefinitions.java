@@ -1062,13 +1062,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("The player to move is {string}")
 	public void playerToMoveIs(String playerColor) {
-		final Color color = Color.valueOf(playerColor.toUpperCase());
-		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
-		Assert.assertNotNull(player);
-		Assert.assertEquals(color, player.getColor());
-
-		// Temporary solution:
-		QuoridorController.runClockForPlayer(color);
+		QuoridorController.updatePlayerOfCurrentRound(Color.valueOf(playerColor.toUpperCase()));
 	}
 
 	/**
