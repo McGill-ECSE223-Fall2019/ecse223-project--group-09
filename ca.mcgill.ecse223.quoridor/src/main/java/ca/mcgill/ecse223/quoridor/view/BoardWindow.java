@@ -93,6 +93,9 @@ public class BoardWindow extends JFrame {
 
         panel.add(Box.createVerticalGlue());
 
+        // Hack to give us more horizontal padding
+        // (value should at least be 200)
+        panel.add(Box.createHorizontalStrut(225));
         panel.add(playerInfoPanel);
 
         // TODO: Remember to add the grab-wall button here
