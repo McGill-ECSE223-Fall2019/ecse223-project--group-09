@@ -1,10 +1,16 @@
 package ca.mcgill.ecse223.quoridor.view;
 
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.LayoutManager;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JSeparator;
+
 
 public class OpeningWindow extends JFrame{
 	
@@ -17,6 +23,8 @@ public class OpeningWindow extends JFrame{
 	JButton quitGameButton;
 	
 	JLabel quoridorLabel;
+	
+	JPanel mainPanel;
 	
 	// new quoridor page
 	public OpeningWindow() {
@@ -71,8 +79,20 @@ public class OpeningWindow extends JFrame{
 		
 		
 		
+		mainPanel = new JPanel(new GridLayout(8,1,2,2));
 		
+		mainPanel.add(quoridorLabel);
+		mainPanel.add(horizontalLineBelowTitle);
+		mainPanel.add(newGameButton);
+		mainPanel.add(loadGameButton);
+		mainPanel.add(horizontalLineMiddle);
+		mainPanel.add(rulesButton);
+		mainPanel.add(aboutButton);
+		mainPanel.add(quitGameButton);
 		
+		this.add(mainPanel);
+		
+		/*
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
 		layout.setAutoCreateGaps(true);
@@ -97,7 +117,7 @@ public class OpeningWindow extends JFrame{
 											.addComponent(aboutButton)
 											.addComponent(quitGameButton));
 		
-		//pack();
+		//pack();*/
 	}
 	
 	

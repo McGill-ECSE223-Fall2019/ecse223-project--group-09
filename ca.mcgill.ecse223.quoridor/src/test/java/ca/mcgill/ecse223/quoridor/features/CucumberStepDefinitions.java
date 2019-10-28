@@ -798,7 +798,8 @@ public class CucumberStepDefinitions {
 	public void newWallCandidate(String direction, int row, int col) {
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
-		this.wallCandidate = QuoridorController.moveWallCandidateAtPosition(orientation,  row, col);
+		this.wallCandidate = QuoridorController.moveTOWallCandidateAtPosition(this.wallCandidate,orientation,  row, col);
+	
 	}
 	
 	/**

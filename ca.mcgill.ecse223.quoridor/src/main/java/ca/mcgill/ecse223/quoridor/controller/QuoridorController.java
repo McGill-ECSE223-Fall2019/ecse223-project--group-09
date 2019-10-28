@@ -1944,10 +1944,10 @@ public class QuoridorController {
 	/**
 	 * @author alixe delabrousse
 	 * 
-	 * @return a new wall candidate (wall move)
+	 * @return a new transfer object wall candidate (wall move)
 	 * 
 	 */
-	/*
+	
 	public static TOWallCandidate createWallCandidateAtInitialPosition() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		TOPlayer currentPlayer = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
@@ -1956,17 +1956,13 @@ public class QuoridorController {
 		TOWallCandidate wallCandidate  = currentPlayer.getWallCandidate();
 		
 		
-		if (wallCandidate != null) {
-			wallCandidate = moveWallCandidateAtPosition(Orientation.VERTICAL,1,1);
-		}
-		else {
-			wallCandidate = new TOWallCandidate(Orientation.VERTICAL,1,1);
-		}
+		assert(wallCandidate == null);
+		wallCandidate = new TOWallCandidate(Orientation.VERTICAL,1,1);
 		
 		return wallCandidate;
 		
 	}
-	*/
+	
 	
 	/**
 	 * 
@@ -1981,6 +1977,24 @@ public class QuoridorController {
 		Orientation orientation = Orientation.valueOf(wallMove.getWallDirection().toString());
 		
 		TOWallCandidate wallCandidate = new TOWallCandidate(orientation, wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn());
+		return wallCandidate;
+	}
+	
+	/**
+	 * 
+	 * @author alixe delabrousse
+	 * 
+	 * @param wallCandidate
+	 * @param orientation
+	 * @param row
+	 * @param column
+	 * @return
+	 */
+	public static TOWallCandidate moveTOWallCandidateAtPosition(TOWallCandidate wallCandidate, Orientation orientation, int row, int column) {
+		wallCandidate.setColumn(column);
+		wallCandidate.setRow(row);
+		wallCandidate.setOrientation(orientation);
+		
 		return wallCandidate;
 	}
 	
