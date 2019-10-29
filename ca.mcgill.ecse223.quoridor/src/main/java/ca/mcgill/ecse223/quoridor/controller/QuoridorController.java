@@ -41,17 +41,6 @@ import ca.mcgill.ecse223.quoridor.model.WallMove;
 
 public class QuoridorController {
 
-	/////////////////////////// FIELDS ///////////////////////////
-	
-	private static Quoridor quoridor;
-	private static Board board;
-	private static Game game; 
-	private static Player player1; 
-	private static Player player2;
-	private static Player player3;
-	private static Player player4;
-	private static Player currentPlayer; // ??? should this be our flag?
-	
 	
 	/**
 	 * 
@@ -199,15 +188,31 @@ public class QuoridorController {
 	 * @param wallCandidate
 	 * 
 	 * This method allows you to rotate a wall that is already held and change it's orientation to horizontal or to vertical
-	 * 
+	 * reset the rotation of the transfer object and the wall candidate
 	 * 
 	 */
 	
-	public static void rotateWall(TOWallCandidate wallCandidate) {
+	public static void rotateWall(TOWall wall) {
 		//this method should change the direction of the candidate
-		wallCandidate.rotate(); // change the orientation of the wall
 		
+		//ask alixe alixe are the wall candidates set to have the same orientation.
 		
+		wall.rotate(); //rotated the TO
+		Game game=null;
+		
+		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
+			game=QuoridorApplication.getQuoridor().getCurrentGame();
+		}
+		
+		WallMove currentMove= game.getWallMoveCandidate();
+		Direction currentDirection = currentMove.getWallDirection();
+		Direction newDirection=null;
+		if (currentDirection==Direction.Horizontal) {
+			newDirection=Direction.Vertical;
+		}else {
+			newDirection=Direction.Horizontal;
+		}
+		currentMove.setWallDirection(newDirection);
 	}
 	
 	/**
@@ -215,29 +220,65 @@ public class QuoridorController {
 	 * @author Mohamed Mohamed
 	 * 
 	 * @param wall
-	 * @param destination
 	 * 
-	 * This methods allows you to drop the wall that it is in the users hand.
+	 * This method allows you to drop the wall that is in the users hand.
+	 * Internally what it does is take as a parameter TOobject 
+	 * checks if the move is a valid move given by calling 'validateWallPlacement' if it is valid 
+	 * resets the position of the wallMove AND adds it to the list of wallmoves of the player
+	 * AND adds it to the board AND changes the currentPlayer
 	 * 
 	 * 
 	 */
 	
-	public static void dropWall(TOWall wall) {
+	public static void dropWall(TOWall wall) { //getting the information from the transfer object that has been modified.
 		//this method will drop 
+
 		int row= wall.getRow();
 		int column= wall.getColumn();
 		Orientation orientation= wall.getOrientation();
+		Game game=null;
 		
-		
-		boolean isValid = validWallPlacement(row, column, orientation);
-		if (isValid==true) {
-			//if true create a wallmove
-			Move myMove= createWallMove(row, column, orientation);
-		}else {
-			throw new UnsupportedOperationException();	
+		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
+			game=QuoridorApplication.getQuoridor().getCurrentGame();
 		}
 		
+		Board board=null;
+		if(QuoridorApplication.getQuoridor().getBoard()!=null) { //if the board exists reset the board to the current board
+			board=QuoridorApplication.getQuoridor().getBoard();
+		}
 		
+		GamePosition gamePosition=null;
+		if(game.getCurrentPosition()!=null) { //if the GamePosition exists reset the gamePosition to the current gamePosition
+			gamePosition=game.getCurrentPosition();
+		}
+		
+		boolean isValid = validateWallPlacement(row, column, orientation); // this returns true if it is a valid wallmove.
+		if (isValid==true) {
+			//reset the position of the wallMove 
+			WallMove currentMove= game.getWallMoveCandidate();
+			currentMove.setTargetTile(board.getTile((row-1)*9 +column-1));
+			
+			//currentMove.getPrevMove().setNextMove(currentMove);
+			Move prevMove= game.getMove(game.numberOfMoves()-1); //is the last move
+			prevMove.setNextMove(currentMove); //links the moves
+			
+			//add the wall to the board AND reset the time AND set the next player, but first we need to check who is the current player
+			if(currentMove.getPlayer().hasGameAsBlack()) { // it's a black player
+				gamePosition.addBlackWallsOnBoard(currentMove.getWallPlaced());
+				switchCurrentPlayer();
+			}else { // the player is black
+				gamePosition.addWhiteWallsOnBoard(currentMove.getWallPlaced());
+				switchCurrentPlayer();
+			}
+			
+			//reset the TO to null and the current wall candidate
+			wall.resetWall();
+			game.setWallMoveCandidate(null);
+			
+		}else {
+			//do nothing internally just display an error message
+			throw new UnsupportedOperationException("This wall move is invalid");	
+		}
 		
 	}
 	
@@ -263,7 +304,7 @@ public class QuoridorController {
 	}
 
 	/**
-	 * Derives anoother game position with the next id, same player positions.
+	 * Derives another game position with the next id, same player positions.
 	 *
 	 * Think of it as a strange duplicate (except id is changed)
 	 *
@@ -490,55 +531,6 @@ public class QuoridorController {
 		return !(row < 1 || row > 9 || col < 1 || col > 9);
 	}
 
-	/**
-	 * creates a wall move that will be than given to validate a wall placement
-	 * should call the validwallposition, if true, allowing the
-	 * creation of the wall move.
-	 *
-	 * @param row The row of the wall.
-	 * @param column The column of the wall
-	 * @param orientation Orientation of the wall
-	 * @returns true if the wall move is created, false otherwise
-	 *
-	 * @author Mohamed Mohamed
-	 */
-	public static WallMove createWallMove(int row, int column, Orientation orientation) {
-	
-	//        game has his list of moves
-	//        player has his list of walls	
-		
-	Tile tile = new Tile(row, column, board); 
-	int moveNumber= 0; // ????
-	int roundNumber= 0; // ????
-	int numOfWall= 0; // ????
-	Direction direction=null;
-	
-	
-	if(orientation==orientation.HORIZONTAL) {
-		direction=direction.Horizontal;
-	}else {
-		direction=direction.Vertical;
-	}
-	int index = 0; // ????
-	Wall thisWall= currentPlayer.getWall(index);
-	WallMove wallMove= new WallMove(moveNumber, roundNumber, currentPlayer, tile, game, direction, thisWall);
-	return wallMove;
-	}
-	
-	/**
-	 * indicates if a wall placement is valid (i.e if the wall could possible put at this position
-	 * should tell the user if the wall move is not valid
-	 *
-	 * @param row The row of the wall.
-	 * @param column The column of the wall
-	 * @param orientation Orientation of the wall
-	 * @returns true if the position is valid, false otherwise
-	 *
-	 * @author Mohamed Mohamed
-	 */
-	public static boolean validWallPlacement(int row, int column, Orientation orientation) {
-		throw new UnsupportedOperationException();
-	}
 	
 	/**
 	 * Validates a placement of a wall

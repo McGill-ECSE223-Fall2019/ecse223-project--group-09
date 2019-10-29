@@ -46,8 +46,27 @@ public final class TOWall {
     public int getColumn() {
         return this.column;
     }
-
     
+    public void resetWall() {
+    	this.orientation=null;
+    	this.row=0;
+    	this.column=0;
+    	this.grabbed=false;
+    }
+    
+    /**
+     * @author Mohamed Mohamed
+     */
+    public void rotate() {
+    	if(this.orientation==Orientation.HORIZONTAL) {
+    		
+    		this.setOrientation(Orientation.VERTICAL);
+    	}else { // if the orientation is vertcial
+    		
+    		this.setOrientation(Orientation.HORIZONTAL);
+    	}
+    }
+
     /**
      * @author alixe delabrousse
      * @param grabbed

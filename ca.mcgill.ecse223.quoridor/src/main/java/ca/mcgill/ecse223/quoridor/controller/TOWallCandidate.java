@@ -47,13 +47,16 @@ public class TOWallCandidate {
     	this.orientation = orientation;
     }
     
+    /**
+     * @author Mohamed Mohamed
+     */
     public void rotate() {
-    	if(this.orientation==orientation.HORIZONTAL) {
+    	if(this.orientation==Orientation.HORIZONTAL) {
     		
-    		this.setOrientation(orientation.VERTICAL);
+    		this.setOrientation(Orientation.VERTICAL);
     	}else { // if the orientation is vertcial
     		
-    		this.setOrientation(orientation.HORIZONTAL);
+    		this.setOrientation(Orientation.HORIZONTAL);
     	}
     }
     
