@@ -3,10 +3,12 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
-import java.awt.GridBagConstraints;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,7 +29,6 @@ public class GridPanel extends JPanel {
 
     private static final Color PAWN_CELL_COLOR = Color.lightGray;
     private static final Color WALL_CELL_COLOR = Color.cyan;
-    private static final Color PLACEMENT_CUE_COLOR = Color.red;
 
     // ***** Additional UI Components *****
     private final TileMap tileMap = new TileMap();
@@ -95,9 +96,9 @@ public class GridPanel extends JPanel {
 
     /**
      * Sets the list of walls associated to the white player
-     * 
+     *
      * @param walls walls of the white player
-     * 
+     *
      * @author Paul Teng (260862906)
      */
     public void setWhiteWalls(final List<TOWall> walls) {
@@ -107,9 +108,9 @@ public class GridPanel extends JPanel {
 
     /**
      * Sets the list of walls associated to the black player
-     * 
+     *
      * @param walls walls of the black player
-     * 
+     *
      * @author Paul Teng (260862906)
      */
     public void setBlackWalls(final List<TOWall> walls) {
@@ -129,6 +130,82 @@ public class GridPanel extends JPanel {
 
         private List<TOWall> whiteWalls = Collections.emptyList();
         private List<TOWall> blackWalls = Collections.emptyList();
+
+        private Orientation junctionOrientation = Orientation.HORIZONTAL;
+
+        public TileMap() {
+            this.addMouseWheelListener(e -> this.onMouseWheelRotate(e.getPreciseWheelRotation()));
+            this.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    final Dimension d = TileMap.this.getSize();
+                    final int tileW = d.width / SIDE;
+                    final int tileH = d.height / SIDE;
+
+                    final int padW = tileW / DIV;
+                    final int padH = tileH / DIV;
+
+                    final int mouseX = e.getX();
+                    final int mouseY = e.getY();
+
+                    // Find the correct spot
+                    final int col = Math.min(SIDE, mouseX / tileW + 1);
+                    final int row = Math.min(SIDE, SIDE - mouseY / tileH);
+
+                    // Differentiate between tile and slots
+                    final int baseX = tileW * (col - 1);
+                    final int baseY = tileH * (SIDE - row);
+
+                    final boolean flagLeftX = col > 1 && mouseX < baseX + padW;
+                    final boolean flagRightX = col < 9 && mouseX > baseX + tileW - padW;
+                    final boolean flagTopY = row < 9 && mouseY < baseY + padH;
+                    final boolean flagBottomY = row > 1 && mouseY > baseY + tileH - padH;
+
+                    // Try to figure out if slot junctions
+                    // should be vertical or horizontal
+                    switch (junctionOrientation) {
+                    case VERTICAL:
+                        if (flagLeftX) {
+                            TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
+                            return;
+                        }
+                        if (flagRightX) {
+                            TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
+                            return;
+                        }
+                        if (flagTopY) {
+                            TileMap.this.onSlotClicked(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                            return;
+                        }
+                        if (flagBottomY) {
+                            TileMap.this.onSlotClicked(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                            return;
+                        }
+                        break;
+                    case HORIZONTAL:
+                        if (flagTopY) {
+                            TileMap.this.onSlotClicked(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                            return;
+                        }
+                        if (flagBottomY) {
+                            TileMap.this.onSlotClicked(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                            return;
+                        }
+                        if (flagLeftX) {
+                            TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
+                            return;
+                        }
+                        if (flagRightX) {
+                            TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
+                            return;
+                        }
+                        break;
+                    }
+
+                    TileMap.this.onTileClicked(row, col);
+                }
+            });
+        }
 
         /**
          * {@inheritDoc}
@@ -173,9 +250,8 @@ public class GridPanel extends JPanel {
          * @author Paul Teng (260862906)
          */
         private boolean shouldDrawWhitePlayer() {
-            return this.whitePlayer != null
-                && this.whitePlayer.getRow() >= 1 && this.whitePlayer.getRow() <= 9
-                && this.whitePlayer.getColumn() >= 1 && this.whitePlayer.getColumn() <= 9;
+            return this.whitePlayer != null && this.whitePlayer.getRow() >= 1 && this.whitePlayer.getRow() <= 9
+                    && this.whitePlayer.getColumn() >= 1 && this.whitePlayer.getColumn() <= 9;
         }
 
         /**
@@ -186,17 +262,16 @@ public class GridPanel extends JPanel {
          * @author Paul Teng (260862906)
          */
         private boolean shouldDrawBlackPlayer() {
-            return this.whitePlayer != null
-                && this.blackPlayer.getRow() >= 1 && this.blackPlayer.getRow() <= 9
-                && this.blackPlayer.getColumn() >= 1 && this.blackPlayer.getColumn() <= 9;
+            return this.whitePlayer != null && this.blackPlayer.getRow() >= 1 && this.blackPlayer.getRow() <= 9
+                    && this.blackPlayer.getColumn() >= 1 && this.blackPlayer.getColumn() <= 9;
         }
 
         /**
          * Draws the pawn at a specific spot
          *
-         * @param g Graphics object
-         * @param row Row in pawn coordinates
-         * @param col Column in pawn coordinates
+         * @param g     Graphics object
+         * @param row   Row in pawn coordinates
+         * @param col   Column in pawn coordinates
          * @param color Color
          *
          * @author Paul Teng (260862906)
@@ -246,8 +321,8 @@ public class GridPanel extends JPanel {
         /**
          * Draws the wall at a specific spot
          *
-         * @param g Graphics object
-         * @param wall A wall
+         * @param g     Graphics object
+         * @param wall  A wall
          * @param color Color
          *
          * @author Paul Teng (260862906)
@@ -272,19 +347,52 @@ public class GridPanel extends JPanel {
             final int padY = tileY / DIV;
 
             switch (orientation) {
-                case VERTICAL: {
-                    final int baseX = tileX * col;
-                    final int baseY = tileY * (SIDE - row - 1);
-                    g.fillRect(baseX - padX, baseY + padY, 2 * padX, 2 * (tileY - padY));
-                    break;
-                }
-                case HORIZONTAL: {
-                    final int baseX = tileX * (col - 1);
-                    final int baseY = tileY * (SIDE - row);
-                    g.fillRect(baseX + padX, baseY - padY, 2 * (tileX - padX), 2 * padY);
-                    break;
-                }
+            case VERTICAL: {
+                final int baseX = tileX * col;
+                final int baseY = tileY * (SIDE - row - 1);
+                g.fillRect(baseX - padX, baseY + padY, 2 * padX, 2 * (tileY - padY));
+                break;
             }
+            case HORIZONTAL: {
+                final int baseX = tileX * (col - 1);
+                final int baseY = tileY * (SIDE - row);
+                g.fillRect(baseX + padX, baseY - padY, 2 * (tileX - padX), 2 * padY);
+                break;
+            }
+            }
+        }
+
+        /**
+         * This is called when the mouse wheel rotates
+         *
+         * @param clicks The amount the wheel rotated
+         */
+        private void onMouseWheelRotate(double clicks) {
+            // TODO
+        }
+
+        /**
+         * This is called when any pawn tile is clicked on
+         *
+         * @param row Row in pawn coordinates
+         * @param col Column in pawn coordinates
+         */
+        private void onTileClicked(int row, int col) {
+            // TODO
+            System.out.println("Clicked on tile: " + Character.toString((char) (col - 1 + 'a')) + row);
+        }
+
+        /**
+         * This is called when any wall slot is clicked on
+         *
+         * @param row         Row in wall coordinates
+         * @param col         Column in wall coordinates
+         * @param orientation Orientation
+         */
+        private void onSlotClicked(int row, int col, Orientation orientation) {
+            // TODO
+            System.out.println(Character.toString((char) (col - 1 + 'a')) + row
+                    + (orientation == Orientation.VERTICAL ? "v" : "h"));
         }
     }
 }
