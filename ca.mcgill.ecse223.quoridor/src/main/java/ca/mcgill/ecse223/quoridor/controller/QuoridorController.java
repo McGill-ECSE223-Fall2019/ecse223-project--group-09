@@ -376,6 +376,39 @@ public class QuoridorController {
 	}
 	
 	/**
+	 * Changes the player of the current round to the one of the specified
+	 * color. If that the player of that color is already the player of the
+	 * current round, this method does nothing.
+	 *
+	 * @param color Color of the specified player
+	 *
+	 * @author Group 9
+	 */
+	public static void updatePlayerOfCurrentRound(Color color) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to switch player when not in game");
+		}
+
+		final Game game = quoridor.getCurrentGame();
+
+		final GamePosition oldState = game.getCurrentPosition();
+		final Player oldPlayer = oldState.getPlayerToMove();
+		final Player newPlayer = getModelPlayerByColor(color);
+
+		if (oldPlayer != newPlayer) {
+			// Stop the clock of the current player
+			stopClockForPlayer(oldPlayer);
+
+			// Change the player of the current position
+			oldState.setPlayerToMove(newPlayer);
+		}
+
+		// Make sure the clock for this new player is running
+		runClockForPlayer(newPlayer);
+	}
+
+	/**
 	 * Switches the player-to-move to the next player.
 	 * 
 	 * This method is called when the player finishes his turn.
@@ -397,7 +430,19 @@ public class QuoridorController {
 
 		// Clone the current game position but with playerToMove changed
 		final GamePosition newState = deriveNextPosition(oldState);
-		final Player newPlayer = oldPlayer.getNextPlayer();
+
+		// Get the next player
+		Player newPlayer = oldPlayer.getNextPlayer();
+		if (newPlayer == null) {
+			// In the case that the next-player attribute is not setup
+			// we can still determine who goes next based on color
+			if (oldPlayer.hasGameAsWhite()) {
+				newPlayer = game.getBlackPlayer();
+			} else {
+				newPlayer = game.getWhitePlayer();
+			}
+		}
+
 		newState.setPlayerToMove(newPlayer);
 
 		// Make the new state the current state
