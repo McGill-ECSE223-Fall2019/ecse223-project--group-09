@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.Collections;
 import java.util.List;
 
@@ -134,77 +135,9 @@ public class GridPanel extends JPanel {
         private Orientation junctionOrientation = Orientation.HORIZONTAL;
 
         public TileMap() {
-            this.addMouseWheelListener(e -> this.onMouseWheelRotate(e.getPreciseWheelRotation()));
-            this.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    final Dimension d = TileMap.this.getSize();
-                    final int tileW = d.width / SIDE;
-                    final int tileH = d.height / SIDE;
-
-                    final int padW = tileW / DIV;
-                    final int padH = tileH / DIV;
-
-                    final int mouseX = e.getX();
-                    final int mouseY = e.getY();
-
-                    // Find the correct spot
-                    final int col = Math.min(SIDE, mouseX / tileW + 1);
-                    final int row = Math.min(SIDE, SIDE - mouseY / tileH);
-
-                    // Differentiate between tile and slots
-                    final int baseX = tileW * (col - 1);
-                    final int baseY = tileH * (SIDE - row);
-
-                    final boolean flagLeftX = col > 1 && mouseX < baseX + padW;
-                    final boolean flagRightX = col < 9 && mouseX > baseX + tileW - padW;
-                    final boolean flagTopY = row < 9 && mouseY < baseY + padH;
-                    final boolean flagBottomY = row > 1 && mouseY > baseY + tileH - padH;
-
-                    // Try to figure out if slot junctions
-                    // should be vertical or horizontal
-                    switch (junctionOrientation) {
-                    case VERTICAL:
-                        if (flagLeftX) {
-                            TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
-                            return;
-                        }
-                        if (flagRightX) {
-                            TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
-                            return;
-                        }
-                        if (flagTopY) {
-                            TileMap.this.onSlotClicked(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
-                            return;
-                        }
-                        if (flagBottomY) {
-                            TileMap.this.onSlotClicked(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
-                            return;
-                        }
-                        break;
-                    case HORIZONTAL:
-                        if (flagTopY) {
-                            TileMap.this.onSlotClicked(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
-                            return;
-                        }
-                        if (flagBottomY) {
-                            TileMap.this.onSlotClicked(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
-                            return;
-                        }
-                        if (flagLeftX) {
-                            TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
-                            return;
-                        }
-                        if (flagRightX) {
-                            TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
-                            return;
-                        }
-                        break;
-                    }
-
-                    TileMap.this.onTileClicked(row, col);
-                }
-            });
+            final MouseHandler handler = new MouseHandler();
+            this.addMouseListener(handler);
+            this.addMouseWheelListener(handler);
         }
 
         /**
@@ -393,6 +326,105 @@ public class GridPanel extends JPanel {
             // TODO
             System.out.println(Character.toString((char) (col - 1 + 'a')) + row
                     + (orientation == Orientation.VERTICAL ? "v" : "h"));
+        }
+
+        /**
+         * A class that handles mouse related stuff for the Quoridor grid
+         *
+         * @author Paul Teng (260862906)
+         */
+        private final class MouseHandler extends MouseAdapter {
+
+            /**
+             * {@inheritDoc}
+             *
+             * Note: handling of this event should be done in
+             * {@link TileMap#onMouseWheelRotate(double) onMouseWheelRotate} instead
+             *
+             * @author Paul Teng (260862906)
+             */
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                TileMap.this.onMouseWheelRotate(e.getPreciseWheelRotation());
+            }
+
+            /**
+             * {@inheritDoc}
+             *
+             * Note: handling of this event should be done in either
+             * {@link TileMap#onTileClicked(int, int) onTileClicked} or
+             * {@link TileMap#onSlotClicked(int, int, Orientation) onSlotClicked} instead
+             *
+             * @author Paul Teng (260862906)
+             */
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                final Dimension d = TileMap.this.getSize();
+                final int tileW = d.width / SIDE;
+                final int tileH = d.height / SIDE;
+
+                final int padW = tileW / DIV;
+                final int padH = tileH / DIV;
+
+                final int mouseX = e.getX();
+                final int mouseY = e.getY();
+
+                // Find the correct spot
+                final int col = Math.min(SIDE, mouseX / tileW + 1);
+                final int row = Math.min(SIDE, SIDE - mouseY / tileH);
+
+                // Differentiate between tile and slots
+                final int baseX = tileW * (col - 1);
+                final int baseY = tileH * (SIDE - row);
+
+                final boolean flagLeftX = col > 1 && mouseX < baseX + padW;
+                final boolean flagRightX = col < 9 && mouseX > baseX + tileW - padW;
+                final boolean flagTopY = row < 9 && mouseY < baseY + padH;
+                final boolean flagBottomY = row > 1 && mouseY > baseY + tileH - padH;
+
+                // Try to figure out if slot junctions
+                // should be vertical or horizontal
+                switch (junctionOrientation) {
+                case VERTICAL:
+                    if (flagLeftX) {
+                        TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
+                        return;
+                    }
+                    if (flagRightX) {
+                        TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
+                        return;
+                    }
+                    if (flagTopY) {
+                        TileMap.this.onSlotClicked(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                        return;
+                    }
+                    if (flagBottomY) {
+                        TileMap.this.onSlotClicked(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                        return;
+                    }
+                    break;
+                case HORIZONTAL:
+                    if (flagTopY) {
+                        TileMap.this.onSlotClicked(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                        return;
+                    }
+                    if (flagBottomY) {
+                        TileMap.this.onSlotClicked(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                        return;
+                    }
+                    if (flagLeftX) {
+                        TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
+                        return;
+                    }
+                    if (flagRightX) {
+                        TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
+                        return;
+                    }
+                    break;
+                }
+
+                TileMap.this.onTileClicked(row, col);
+            }
         }
     }
 }
