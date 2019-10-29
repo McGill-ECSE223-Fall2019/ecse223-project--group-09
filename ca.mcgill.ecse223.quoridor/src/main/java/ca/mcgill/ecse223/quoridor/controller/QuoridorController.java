@@ -274,6 +274,7 @@ public class QuoridorController {
 		Game game = quoridor.getCurrentGame();
 		
 		WallMove wallMove = getCurrentWallMove(game);
+		
 		Tile targetTile;
 		
 		if (side == "down") {
@@ -282,19 +283,30 @@ public class QuoridorController {
 			wallMove.setTargetTile(targetTile);
 			
 		} else if (side == "up") {
+			
 			targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 			wallMove.setTargetTile(targetTile);
 			
 		} else if (side == "left") {
+			
 			targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 			wallMove.setTargetTile(targetTile);
 			
 		} else if (side == "right") {
+			
 			targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 			wallMove.setTargetTile(targetTile);
 		}
 		
 	}
+	
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @param row
+	 * @param column
+	 * @return
+	 */
 	
 	public static Tile getTileFromRowAndColumn(int row, int column) {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
@@ -304,6 +316,8 @@ public class QuoridorController {
 		return board.getTile(tileIndex);
 		
 	}
+	
+	
 	
 	public static WallMove getCurrentWallMove(Game game) {
 		return game.getWallMoveCandidate();
