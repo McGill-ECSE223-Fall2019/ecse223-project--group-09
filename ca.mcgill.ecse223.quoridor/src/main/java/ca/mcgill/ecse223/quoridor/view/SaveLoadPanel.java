@@ -330,23 +330,4 @@ public class SaveLoadPanel extends JPanel {
             throw new UnsupportedOperationException("Wait for Phase 2 Load game");
         }
     }
-
-    public static void main(String[] args) {
-        // This is just a demo of how it could look
-
-        javax.swing.JFrame frame = new javax.swing.JFrame("DEMO");
-
-        final SaveLoadPanel panel = new SaveLoadPanel();
-        frame.add(panel);
-
-        final javax.swing.JMenuBar bar = new javax.swing.JMenuBar();
-        final JMenu fileMenu = new JMenu("File");
-        bar.add(fileMenu);
-        panel.addMenuEntries(fileMenu);
-        frame.setJMenuBar(bar);
-
-        frame.setSize(200, 120);
-        frame.setDefaultCloseOperation(3);
-        frame.setVisible(true);
-    }
 }

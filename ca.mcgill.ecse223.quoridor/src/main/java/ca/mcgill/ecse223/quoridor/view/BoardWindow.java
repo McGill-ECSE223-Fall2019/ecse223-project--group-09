@@ -15,6 +15,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -91,6 +93,9 @@ public class BoardWindow extends JFrame {
 
         panel.add(Box.createVerticalGlue());
 
+        // Hack to give us more horizontal padding
+        // (value should at least be 200)
+        panel.add(Box.createHorizontalStrut(225));
         panel.add(playerInfoPanel);
 
         // TODO: Remember to add the grab-wall button here
@@ -130,6 +135,14 @@ public class BoardWindow extends JFrame {
 
     public static void main(String[] args) {
         // This is just a demo of how it could look
+
+        try {
+            // Try to make the frames/windows look *not java like*
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+            // If we cannot do that, then continue, as apps
+            // will use the default java-look...
+        }
 
         final BoardWindow frame = new BoardWindow();
         frame.setTitle("DEMO");
