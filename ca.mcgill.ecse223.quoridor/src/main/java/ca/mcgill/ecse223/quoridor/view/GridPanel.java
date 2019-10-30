@@ -126,6 +126,14 @@ public class GridPanel extends JPanel {
      */
     private static class TileMap extends JPanel {
 
+        private static interface TileDispatcher {
+            public void dispatchTile(int row, int col);
+        }
+        
+        private static interface SlotDispatcher {
+            public void dispatchSlot(int row, int col, Orientation orientation);
+        }
+
         private TOPlayer whitePlayer;
         private TOPlayer blackPlayer;
 
@@ -138,6 +146,7 @@ public class GridPanel extends JPanel {
             final MouseHandler handler = new MouseHandler();
             this.addMouseListener(handler);
             this.addMouseWheelListener(handler);
+            this.addMouseMotionListener(handler);
         }
 
         /**
@@ -302,7 +311,7 @@ public class GridPanel extends JPanel {
          */
         private void onMouseWheelRotate(double clicks) {
             // TODO
-        
+
         }
 
         /**
@@ -326,6 +335,54 @@ public class GridPanel extends JPanel {
         private void onSlotClicked(int row, int col, Orientation orientation) {
             // TODO
             System.out.println(Character.toString((char) (col - 1 + 'a')) + row
+                    + (orientation == Orientation.VERTICAL ? "v" : "h"));
+        }
+
+        /**
+         * This is called when mouse enters any pawn tile
+         *
+         * @param row Row in pawn coordinates
+         * @param col Column in pawn coordinates
+         */
+        private void onTileEntered(int row, int col) {
+            // TODO
+            System.out.println("Entered tile: " + Character.toString((char) (col - 1 + 'a')) + row);
+        }
+
+        /**
+         * This is called when mouse leaves any pawn tile
+         *
+         * @param row Row in pawn coordinates
+         * @param col Column in pawn coordinates
+         */
+        private void onTileExited(int row, int col) {
+            // TODO
+            System.out.println("Exited tile: " + Character.toString((char) (col - 1 + 'a')) + row);
+        }
+
+        /**
+         * This is called when mouse enters any wall slot
+         *
+         * @param row         Row in wall coordinates
+         * @param col         Column in wall coordinates
+         * @param orientation Orientation
+         */
+        private void onSlotEntered(int row, int col, Orientation orientation) {
+            // TODO
+            System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
+                    + (orientation == Orientation.VERTICAL ? "v" : "h"));
+        }
+
+        /**
+         * This is called when mouse leaves any wall slot
+         *
+         * @param row         Row in wall coordinates
+         * @param col         Column in wall coordinates
+         * @param orientation Orientation
+         */
+        private void onSlotExited(int row, int col, Orientation orientation) {
+            // TODO
+            System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row
                     + (orientation == Orientation.VERTICAL ? "v" : "h"));
         }
 
@@ -360,6 +417,10 @@ public class GridPanel extends JPanel {
              */
             @Override
             public void mouseClicked(MouseEvent e) {
+                defaultMouseEventHandler(e, TileMap.this::onTileClicked, TileMap.this::onSlotClicked);
+            }
+
+            private void defaultMouseEventHandler(MouseEvent e, TileDispatcher tileMethod, SlotDispatcher slotMethod) {
                 final Dimension d = TileMap.this.getSize();
                 final int tileW = d.width / SIDE;
                 final int tileH = d.height / SIDE;
@@ -388,43 +449,85 @@ public class GridPanel extends JPanel {
                 switch (junctionOrientation) {
                 case VERTICAL:
                     if (flagLeftX) {
-                        TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
+                        slotMethod.dispatchSlot(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
                         return;
                     }
                     if (flagRightX) {
-                        TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
+                        slotMethod.dispatchSlot(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
                         return;
                     }
                     if (flagTopY) {
-                        TileMap.this.onSlotClicked(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                        slotMethod.dispatchSlot(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
                         return;
                     }
                     if (flagBottomY) {
-                        TileMap.this.onSlotClicked(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                        slotMethod.dispatchSlot(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
                         return;
                     }
                     break;
                 case HORIZONTAL:
                     if (flagTopY) {
-                        TileMap.this.onSlotClicked(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                        slotMethod.dispatchSlot(row, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
                         return;
                     }
                     if (flagBottomY) {
-                        TileMap.this.onSlotClicked(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
+                        slotMethod.dispatchSlot(row - 1, Math.min(SIDE - 1, col), Orientation.HORIZONTAL);
                         return;
                     }
                     if (flagLeftX) {
-                        TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
+                        slotMethod.dispatchSlot(Math.min(SIDE - 1, row), col - 1, Orientation.VERTICAL);
                         return;
                     }
                     if (flagRightX) {
-                        TileMap.this.onSlotClicked(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
+                        slotMethod.dispatchSlot(Math.min(SIDE - 1, row), col, Orientation.VERTICAL);
                         return;
                     }
                     break;
                 }
 
-                TileMap.this.onTileClicked(row, col);
+                tileMethod.dispatchTile(row, col);
+            }
+
+            // ***** DO NOT MODIFY THESE OUTSIDE OF mouseMoved and the dispatch methods *****
+            private int lastX = SIDE + 1;
+            private int lastY = SIDE + 1;
+            private Orientation lastOrientation = null;
+
+            private void dispatchEnterSlot(int row, int col, Orientation orientation) {
+                // If same as previous event, then we never exited, do not generate event
+                if (this.lastX == row && this.lastY == col && this.lastOrientation == orientation) {
+                    return;
+                }
+
+                if (this.lastOrientation != null) {
+                    TileMap.this.onSlotExited(this.lastX, this.lastY, this.lastOrientation);
+                } else if (this.lastX < SIDE + 1) {
+                    TileMap.this.onTileExited(this.lastX, this.lastY);
+                }
+
+                TileMap.this.onSlotEntered((this.lastX = row), (this.lastY = col), (this.lastOrientation = orientation));
+            }
+
+            private void dispatchEnterTile(int row, int col) {
+                // If same as previous event, then we never exited, do not generate event
+                if (this.lastX == row && this.lastY == col && this.lastOrientation == null) {
+                    return;
+                }
+
+                if (this.lastOrientation != null) {
+                    TileMap.this.onSlotExited(this.lastX, this.lastY, this.lastOrientation);
+                } else if (this.lastX < SIDE + 1) {
+                    TileMap.this.onTileExited(this.lastX, this.lastY);
+                }
+
+                // tiles do not have an orientation
+                this.lastOrientation = null;
+                TileMap.this.onTileEntered((this.lastX = row), (this.lastY = col));
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                this.defaultMouseEventHandler(e, this::dispatchEnterTile, this::dispatchEnterSlot);
             }
         }
     }
