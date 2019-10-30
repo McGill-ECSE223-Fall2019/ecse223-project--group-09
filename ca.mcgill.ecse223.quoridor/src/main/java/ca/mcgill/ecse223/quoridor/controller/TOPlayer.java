@@ -73,5 +73,6 @@ public final class TOPlayer {
     public TOWallCandidate getWallCandidate() {
     	return this.currentWallCandidate;
     }
+   
     
 }

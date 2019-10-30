@@ -393,6 +393,39 @@ public class QuoridorController {
 	}
 	
 	/**
+	 * Returns a boolean indicating if the wall move has been made
+	 * or not.
+	 *
+	 * @param row The row of the wall.
+	 * @param column The column of the wall
+	 * @param orientation Orientation of the wall
+	 * @returns true if the wall move is finalized, false otherwise
+	 *
+	 * @author Mohamed Mohamed
+	 */
+	public static boolean checkLastWallMove(int row, int column, Orientation orientation) {
+		
+		Game game=null;
+		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
+			game=QuoridorApplication.getQuoridor().getCurrentGame();
+		}
+		
+		Move currentWallMove=null;
+		if(game.getMove(game.numberOfMoves())!=null) {
+			currentWallMove=game.getMove(game.numberOfMoves());
+		}
+		
+		Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
+		currentWallMove.getTargetTile();
+		if(checkTile==currentWallMove.getTargetTile()) {
+			return true; //the wall has been placed if the current tile has the same 
+			             //coordinates as the wall that is being placed
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * 
 	 * @author mohamed Mohamed
 	 * 
@@ -473,18 +506,20 @@ public class QuoridorController {
 			Move prevMove= game.getMove(game.numberOfMoves()-1); //is the last move
 			prevMove.setNextMove(currentMove); //links the moves
 			
-			//add the wall to the board AND reset the time AND set the next player, but first we need to check who is the current player
+			//add the wall to the board AND set the next player, but first we need to check who is the current player
 			if(currentMove.getPlayer().hasGameAsBlack()) { // it's a black player
-				gamePosition.addBlackWallsOnBoard(currentMove.getWallPlaced());
+				gamePosition.addBlackWallsOnBoard(currentMove.getWallPlaced());//just a list
 				switchCurrentPlayer();
 			}else { // the player is black
 				gamePosition.addWhiteWallsOnBoard(currentMove.getWallPlaced());
 				switchCurrentPlayer();
 			}
-			
 			//reset the TO to null and the current wall candidate
 			wall.resetWall();
+			TOPlayer currentPlayer= getPlayerOfCurrentTurn();
+			currentPlayer.setWallInHand(false);
 			game.setWallMoveCandidate(null);
+			
 			
 		}else {
 			//do nothing internally just display an error message

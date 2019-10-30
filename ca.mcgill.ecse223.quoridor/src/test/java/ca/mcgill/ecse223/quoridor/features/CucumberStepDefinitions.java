@@ -845,7 +845,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("I try to flip the wall")
 	public void tryFlipWall() {
-		QuoridorController.rotateWall(this.wallCandidate);
+		QuoridorController.rotateWall(this.currentWall);
 		//this method will do the rotate wall method on a wall candidate that will do the following -->
 	}
 	
@@ -856,7 +856,7 @@ public class CucumberStepDefinitions {
 	public void rotateWall(String newdir) {
 		//checking if the wall actually got rotated to newdir
 		Orientation newDir=Orientation.valueOf(newdir.toUpperCase());//constructor takes an Orientation enum so the conversion is necessary
-		Assert.assertTrue(this.wallCandidate.getOrientation()==newDir);
+		Assert.assertTrue(this.currentWall.getOrientation()==newDir);
 		
 		
 	}
@@ -880,7 +880,7 @@ public class CucumberStepDefinitions {
 		this.wallCandidate.setRow(row);
 		this.wallCandidate.setColumn(col);
 		//now check if the position is valid
-		boolean isValid= QuoridorController.validWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
+		boolean isValid= QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
 		Assert.assertTrue(isValid);//if valid it will be true
 	}
 	
@@ -905,7 +905,7 @@ public class CucumberStepDefinitions {
 	@Then("A wall move shall be registered with {string} at position \\({int}, {int})")
 	public void aWallIsRegisteredAt(String dir, int row , int col){
 	//	check if a wall exists at the given information //implemented by the drop wall method
-		Assert.assertTrue(QuoridorController.createWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));
+		Assert.assertTrue(QuoridorController.checkLastWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));
 		
 	}
 	
@@ -949,7 +949,7 @@ public class CucumberStepDefinitions {
 		this.wallCandidate.setRow(row);
 		this.wallCandidate.setColumn(col);
 		//now check if the position is valid
-		boolean isValid=QuoridorController.validWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
+		boolean isValid=QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
 		Assert.assertFalse(isValid);//should be false since there is no move available
 		
 	}
@@ -976,7 +976,7 @@ public class CucumberStepDefinitions {
 	 */
     @But("No wall move shall be registered with {string} at position \\({int}, {int})")
     public void unregisteredWallMove(String dir, int row, int col){
-    	Assert.assertFalse(QuoridorController.createWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));  
+    	Assert.assertFalse(QuoridorController.checkLastWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));  
     }
 	
 	
