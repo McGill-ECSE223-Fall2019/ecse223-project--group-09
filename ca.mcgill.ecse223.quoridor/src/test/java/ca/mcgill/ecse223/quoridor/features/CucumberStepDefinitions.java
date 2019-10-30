@@ -922,7 +922,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("My move shall be completed")
 	public void CompleteMove() {
-		this.player=QuoridorController.getPlayerOfCurrentTurn();
+		this.player.setColor(QuoridorController.getPlayerOfCurrentTurn().getColor());
 		//move completed hence switch player
 		QuoridorController.switchCurrentPlayer();//
 	}
@@ -933,7 +933,7 @@ public class CucumberStepDefinitions {
 	@And("It shall not be my turn to move")
 	public void finishMove() {
 		//if it's no longer my move than player is no longer referencing the current player
-		Assert.assertTrue(this.player!=QuoridorController.getPlayerOfCurrentTurn());//condition should be true
+		Assert.assertTrue(this.player.getColor()!=QuoridorController.getPlayerOfCurrentTurn().getColor());//condition should be true
 	}
 
 	/**

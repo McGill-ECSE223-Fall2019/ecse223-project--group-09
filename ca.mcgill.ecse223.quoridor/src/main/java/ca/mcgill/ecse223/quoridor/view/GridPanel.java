@@ -302,6 +302,7 @@ public class GridPanel extends JPanel {
          */
         private void onMouseWheelRotate(double clicks) {
             // TODO
+        
         }
 
         /**
