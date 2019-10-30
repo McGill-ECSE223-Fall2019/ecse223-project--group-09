@@ -1,14 +1,20 @@
 package ca.mcgill.ecse223.quoridor.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.awt.Shape;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -18,6 +24,9 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
+
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 
 /**
  * Creates a window that looks somewhat like GUI3.png
@@ -84,6 +93,11 @@ public class BoardWindow extends JFrame {
         btnResign.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         btnResign.addActionListener(e -> this.onResignButtonClicked());
 
+        final JButton grabWallButton = new JButton("Grab a wall");
+        grabWallButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        grabWallButton.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        grabWallButton.addActionListener(e -> this.onGrabAWallButtonClicked());
+
         /**
          * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
          */
@@ -113,8 +127,7 @@ public class BoardWindow extends JFrame {
         panel.add(Box.createHorizontalStrut(225));
         panel.add(playerInfoPanel);
 
-        // TODO: Remember to add the grab-wall button here
-
+        panel.add(grabWallButton);
         panel.add(dropWall);
         panel.add(rotateWall);
 
@@ -176,6 +189,19 @@ public class BoardWindow extends JFrame {
      */
     private void onResignButtonClicked() {
         JOptionPane.showMessageDialog(this, "Resign is not implemented yet!");
+    }
+
+    /**
+     * 
+     * @param args
+     */
+    
+    private void onGrabAWallButtonClicked() {
+        //QuoridorController.grabWall();
+        //TOWallCandidate wallCandidate = QuoridorController.getPlayerOfCurrentTurn().getWallCandidate();
+        
+        JOptionPane.showMessageDialog(this, "Grab a wall is not implemented yet!");
+        
     }
 
     /**

@@ -70,6 +70,11 @@ public final class TOPlayer {
     public int getWallsRemaining() {
     	return this.wallsRemaining;
     }
+    
+    public void setWallCandidate(TOWallCandidate wallCandidate) {
+    	this.currentWallCandidate = wallCandidate;
+    }
+    
     public TOWallCandidate getWallCandidate() {
     	return this.currentWallCandidate;
     }

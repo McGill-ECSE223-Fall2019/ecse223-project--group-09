@@ -222,7 +222,7 @@ public class QuoridorController {
  	* 
  	*/
 	
-	public static TOWall grabWall() {
+	public static Wall grabWall() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor(); // get quoridor
 		
 		Player currentPlayer = getCurrentPlayer(); // get the player of the turn 
@@ -237,25 +237,28 @@ public class QuoridorController {
 		Tile initialTile = getTileFromRowAndColumn(INITIAL_ROW, INITIAL_COLUMN); // Tile at initial position
 		
 		try {
-			assert(currentPlayer.hasWalls()); // check if there are any walls remaining
+			// check if there are any walls remaining
+			grabbedWall = remainingWalls.get(currentPlayer.numberOfWalls()-1); // the grabbed wall is the last one in the list
+			
 		} catch (Exception e) { // if not:
 			System.out.println("No more remaining walls"); // tell user he does not have any more walls
 			grabbedWall = null; // set grabbed wall to null
 			toCurrentPlayer.setWallInHand(false); // the current player does not have any wall in hand
 		}
-		
-		grabbedWall = remainingWalls.get(currentPlayer.numberOfWalls()-1); // the grabbed wall is the last one in the list
+		toCurrentPlayer.setWallInHand(true);
 		currentPlayer.removeWall(grabbedWall); //remove the grabbed wall from the stock
 		
-		TOWall toGrabbedWall = fromWall(grabbedWall); // create transfer object wall from model Wall
+		// put this inside the try and then catch the null pointer exception
 		
+		TOWall toGrabbedWall = fromWall(grabbedWall); // create transfer object wall from model Wall
 		
 		// create the new Wall Move
 		WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
 		game.setWallMoveCandidate(wallMove); // Set current wall move
 		TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove); // create associated TO
+		toCurrentPlayer.setWallCandidate(wallCandidate);
 		
-		return toGrabbedWall; // return the transfer object of the current grabbed wall
+		return grabbedWall; // return the transfer object of the current grabbed wall
 		
 	}
 	
@@ -2111,7 +2114,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public static TOWallCandidate createWallCandidateAtInitialPosition() {
+	public static TOWallCandidate placeWallCandidateAtInitialPosition() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		TOPlayer currentPlayer = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove());
 		
@@ -2395,7 +2398,10 @@ public class QuoridorController {
 	 * 
 	 */
 	public static TOWall getCurrentGrabbedWall() {
-		throw new UnsupportedOperationException("Query method get-current-grabbed-wall is not implemented yet");
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game game = quoridor.getCurrentGame();
+		return fromWall(game.getWallMoveCandidate().getWallPlaced());
+	
 	}
 	
 	/**
@@ -2407,8 +2413,8 @@ public class QuoridorController {
 	 */
 	public static TOWallCandidate getCurrentWallCandidate() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		TOWallCandidate wallCandidate = fromPlayer(quoridor.getCurrentGame().getCurrentPosition().getPlayerToMove()).getWallCandidate();
-		return wallCandidate;
+		return createTOWallCandidateFromWallMove(quoridor.getCurrentGame().getWallMoveCandidate());
+		
 	}
 
 	/**
@@ -2421,7 +2427,19 @@ public class QuoridorController {
 	 */
 
 	public static TOPlayer getWhitePlayer(){
-		throw new UnsupportedOperationException();
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		return fromPlayer(quoridor.getCurrentGame().getWhitePlayer());
+	}
+	
+	/**
+	 * 
+	 * @author alixe delabrousse
+	 * 
+	 * @return TOPlayer - returns the player associated with the black pawn
+	 */
+	public static TOPlayer getBlackPlayer()	{
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		return fromPlayer(quoridor.getCurrentGame().getBlackPlayer());
 	}
 	
 	public static Player getCurrentPlayer() {
@@ -2436,15 +2454,6 @@ public class QuoridorController {
 		
 	}
 
-	/**
-	 * 
-	 * @author alixe delabrousse
-	 * 
-	 * @return TOPlayer - returns the player associated with the black pawn
-	 */
-	public static TOPlayer getBlackPlayer()	{
-		throw new UnsupportedOperationException();
-	}
 
 }// end QuoridorController
 
