@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 
 /**
  * This is only the tile part
@@ -73,6 +74,8 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
     public List<TOWall> blackWalls = Collections.emptyList();
 
     public Orientation junctionOrientation = Orientation.HORIZONTAL;
+    
+    public TOWallCandidate wallCandidate;
 
     public TileMapPanel() {
         final MouseHandler handler = new MouseHandler();

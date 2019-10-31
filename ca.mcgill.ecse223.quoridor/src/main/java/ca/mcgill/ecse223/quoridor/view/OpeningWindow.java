@@ -109,32 +109,6 @@ public class OpeningWindow extends JFrame {
 		// XXX: Disable features not for this deliverable!
 		this.loadGameButton.setEnabled(false);
 
-		/*
-		GroupLayout layout = new GroupLayout(getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setAutoCreateGaps(true);
-		layout.setAutoCreateContainerGaps(true);
-		layout.setVerticalGroup(layout.createSequentialGroup()
-									.addComponent(quoridorLabel)
-									.addComponent(horizontalLineBelowTitle)
-									.addComponent(newGameButton)
-									.addComponent(loadGameButton)
-									.addComponent(horizontalLineMiddle)
-									.addComponent(rulesButton)
-									.addComponent(aboutButton)
-									.addComponent(quitGameButton)
-		);
-		layout.setHorizontalGroup(layout.createParallelGroup()
-											.addComponent(quoridorLabel)
-											.addComponent(horizontalLineBelowTitle)
-											.addComponent(newGameButton)
-											.addComponent(loadGameButton)
-											.addComponent(horizontalLineMiddle)
-											.addComponent(rulesButton)
-											.addComponent(aboutButton)
-											.addComponent(quitGameButton));
-
-		//pack();*/
 	}
 
 

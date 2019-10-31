@@ -105,4 +105,7 @@ public class GridPanel extends JPanel {
         this.tileMap.blackWalls = walls != null ? walls : Collections.emptyList();
         this.repaint();
     }
+    
+   
+    
 }
