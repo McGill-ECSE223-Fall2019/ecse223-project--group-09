@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 
 /**
  * Creates a panel for the board's grid
@@ -103,6 +104,18 @@ public class GridPanel extends JPanel {
      */
     public void setBlackWalls(final List<TOWall> walls) {
         this.tileMap.blackWalls = walls != null ? walls : Collections.emptyList();
+        this.repaint();
+    }
+
+    /**
+     * Sets a wall candidate
+     *
+     * @param wallCandidate A wall candidate
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setWallCandidate(final TOWallCandidate wallCandidate) {
+        this.tileMap.wallCandidate = wallCandidate;
         this.repaint();
     }
 }

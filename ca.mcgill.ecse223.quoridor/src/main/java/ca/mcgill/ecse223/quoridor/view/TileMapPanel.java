@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 
 /**
  * This is only the tile part
@@ -28,6 +29,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
 
     private static final Color PAWN_CELL_COLOR = Color.lightGray;
     private static final Color WALL_CELL_COLOR = Color.cyan;
+    private static final Color CANDIDATE_COLOR = Color.green;
 
     /**
      * A function interface for tile related methods
@@ -72,6 +74,8 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
     public List<TOWall> whiteWalls = Collections.emptyList();
     public List<TOWall> blackWalls = Collections.emptyList();
 
+    public TOWallCandidate wallCandidate;
+
     public Orientation junctionOrientation = Orientation.HORIZONTAL;
 
     public TileMapPanel() {
@@ -114,6 +118,11 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
         for (final TOWall wall : this.blackWalls) {
             this.drawWall(g, wall, Color.black);
         }
+
+        if (this.shouldDrawWallCandidate()) {
+            this.drawWall(g, this.wallCandidate.getRow(), this.wallCandidate.getColumn(),
+                    this.wallCandidate.getOrientation(), CANDIDATE_COLOR);
+        }
     }
 
     /**
@@ -138,6 +147,17 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
     private boolean shouldDrawBlackPlayer() {
         return this.whitePlayer != null && this.blackPlayer.getRow() >= 1 && this.blackPlayer.getRow() <= 9
                 && this.blackPlayer.getColumn() >= 1 && this.blackPlayer.getColumn() <= 9;
+    }
+
+    /**
+     * Check if we should draw the wall candidate
+     * 
+     * @return true if we should, false otherwise
+     * 
+     * @author Paul Teng (260862906)
+     */
+    private boolean shouldDrawWallCandidate() {
+        return this.wallCandidate != null;
     }
 
     /**
@@ -206,6 +226,21 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
         final int col = wall.getColumn();
         final Orientation orientation = wall.getOrientation();
 
+        this.drawWall(g, row, col, orientation, color);
+    }
+
+    /**
+     * Draws the wall at a specific spot
+     * 
+     * @param g           Graphics object
+     * @param row         Row in wall coordinates
+     * @param col         Column in wall coordaintes
+     * @param orientation Orientation of wall
+     * @param color       Color
+     * 
+     * @author Paul Teng (260862906)
+     */
+    private void drawWall(Graphics g, int row, int col, Orientation orientation, Color color) {
         if (orientation == null) {
             // We are done
             return;
@@ -459,7 +494,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
          * @param row         Row in wall coordinates
          * @param col         Column in wall coordinates
          * @param orientation Orientation
-         * 
+         *
          * @author Paul Teng (260862906)
          */
         private void dispatchEnterSlot(int row, int col, Orientation orientation) {
@@ -484,7 +519,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
          *
          * @param row Row in pawn coordinates
          * @param col Column in pawn coordinates
-         * 
+         *
          * @author Paul Teng (260862906)
          */
         private void dispatchEnterTile(int row, int col) {
