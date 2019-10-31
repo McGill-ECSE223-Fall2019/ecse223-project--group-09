@@ -3,6 +3,7 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -168,14 +169,22 @@ public class OpeningWindow extends JFrame {
 	}
 
 	/**
-	 * This will be called when the aboutButton is clicked
+	 * This will be called when the aboutButton is clicked:
+	 *
+	 * ~~ Group 9 did this project yah ~~
 	 * 
-	 * TODO: Whoever implements these methods needs to add their name
-	 * to the author tag
+	 * @author Paul Teng (260862906)
 	 */
 	public void aboutButtonActionPerformed() {
-		// Proof that it works
-		JOptionPane.showMessageDialog(this, "called method aboutButtonActionPerformed\n\nRemember to change this behaviour!");
+		final JLabel lbl = new JLabel("Quoridor");
+		lbl.setFont(lbl.getFont().deriveFont(28.0f));
+		final JComponent[] list = {
+			lbl,
+			new JSeparator(),
+			new JLabel("Made by ECSE 223 - Group 9:"),
+			new JLabel("Barry Chen, Mohamed Mohamed, Ada Andrei, Paul Teng, and Alixe Delabrousse")
+		};
+		JOptionPane.showMessageDialog(this, list, "", JOptionPane.PLAIN_MESSAGE);
 	}
 
 	/**
