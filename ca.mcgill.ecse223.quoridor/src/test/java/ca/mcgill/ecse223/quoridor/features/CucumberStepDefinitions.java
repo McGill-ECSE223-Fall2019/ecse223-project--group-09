@@ -30,6 +30,7 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
+import ca.mcgill.ecse223.quoridor.view.BoardWindow;
 import cucumber.api.PendingException;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
@@ -922,7 +923,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("My move shall be completed")
 	public void CompleteMove() {
-		this.player=QuoridorController.getPlayerOfCurrentTurn();
+		this.player.setColor(QuoridorController.getPlayerOfCurrentTurn().getColor());
 		//move completed hence switch player
 		QuoridorController.switchCurrentPlayer();//
 	}
@@ -933,7 +934,7 @@ public class CucumberStepDefinitions {
 	@And("It shall not be my turn to move")
 	public void finishMove() {
 		//if it's no longer my move than player is no longer referencing the current player
-		Assert.assertTrue(this.player!=QuoridorController.getPlayerOfCurrentTurn());//condition should be true
+		Assert.assertTrue(this.player.getColor()!=QuoridorController.getPlayerOfCurrentTurn().getColor());//condition should be true
 	}
 
 	/**
@@ -1056,6 +1057,8 @@ public class CucumberStepDefinitions {
 
 	// ***** SwitchCurrentPlayer.feature *****
 
+	private BoardWindow boardWindow = new BoardWindow();
+
 	/**
 	 * @param playerColor color of player
 	 * @author Group-9
@@ -1089,7 +1092,12 @@ public class CucumberStepDefinitions {
 	 */
 	@When("Player {string} completes his move")
 	public void playerCompletesHisMove(String playerColor) {
+		// Issue a switch-current-player call
 		QuoridorController.switchCurrentPlayer();
+
+		// Right now, whatever board window was displaying is now incorrect.
+		// Ask board window to fetch new player information and display it.
+		this.boardWindow.fetchCurrentPlayerInfoFromController();
 	}
 
 	/**
@@ -1098,7 +1106,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The user interface shall be showing it is {string} turn")
 	public void userInterfaceShallBeShowingItIsOpponentsTurn(String opponentColor) {
-		throw new PendingException();
+		Assert.assertTrue(this.boardWindow.getPlayerInfoPanel().getPlayerColorText().equalsIgnoreCase(opponentColor));
 	}
 
 	/**

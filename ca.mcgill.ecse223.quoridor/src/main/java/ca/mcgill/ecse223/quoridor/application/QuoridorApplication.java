@@ -30,6 +30,7 @@ public class QuoridorApplication {
 		
 		openWindow.setSize(400, 550);
 		openWindow.setDefaultCloseOperation(3);
+		openWindow.setLocationRelativeTo(null);
 		openWindow.setVisible(true);
 	}
 }

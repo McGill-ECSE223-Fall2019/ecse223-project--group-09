@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import java.awt.GridLayout;
 import java.awt.Rectangle;
@@ -21,12 +23,17 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+
+
+import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+
 
 /**
  * Creates a window that looks somewhat like GUI3.png
@@ -35,206 +42,254 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
  */
 public class BoardWindow extends JFrame {
 
-	// ***** Rendering State Variables *****
-	private final DefaultListModel<String> replayList = new DefaultListModel<>();
 
-	// ***** Additional UI Components *****
-	private final SaveLoadPanel saveLoadPanel = new SaveLoadPanel();
-	private final PlayerInfoPanel playerInfoPanel = new PlayerInfoPanel();
-	private final GridPanel gridPanel = new GridPanel();
+    private static final int UPDATE_DELAY = 200;
 
-	public BoardWindow() {
-		this.setLayout(new BorderLayout());
+    // ***** Rendering State Variables *****
+    private final DefaultListModel<String> replayList = new DefaultListModel<>();
+    private final Timer PLAYER_INFO_TIMER;
 
-		this.add(generateRightPanel(), BorderLayout.EAST);
-		this.add(gridPanel, BorderLayout.CENTER);
-		//this.add(generateWallPanel(), BorderLayout.SOUTH);
+    // ***** Additional UI Components *****
+    private final SaveLoadPanel saveLoadPanel = new SaveLoadPanel();
+    private final PlayerInfoPanel playerInfoPanel = new PlayerInfoPanel();
+    private final GridPanel gridPanel = new GridPanel();
 
-		final JMenuBar menuBar = new JMenuBar();
-		this.setJMenuBar(menuBar);
+    public BoardWindow() {
+        this.setLayout(new BorderLayout());
 
-		menuBar.add(this.createFileMenu());
-	}
+        this.add(generateRightPanel(), BorderLayout.EAST);
+        this.add(gridPanel, BorderLayout.CENTER);
 
-	private JMenu createFileMenu() {
-		final JMenu fileMenu = new JMenu("File");
-		saveLoadPanel.addMenuEntries(fileMenu);
-		return fileMenu;
-	}
+        final JMenuBar menuBar = new JMenuBar();
+        menuBar.add(this.createFileMenu());
 
-	/*
-	 * // *** walls UI implementation ***
-	 * 
-	 *//**
-		 * Generates the UI related to the remaining walls and wall methods for the
-		 * current player
-		 * 
-		 * @author alixe delabrousse
-		 * 
-		 * @return
-		 *//*
-			 * 
-			 * private JPanel generateWallPanel() { final JPanel wallPanel = new JPanel();
-			 * wallPanel.setLayout(new BoxLayout(wallPanel, BoxLayout.X_AXIS));
-			 * 
-			 * final JButton grabWallButton = new JButton("Grab Wall");
-			 * grabWallButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-			 * grabWallButton.setMaximumSize(new Dimension(125, 125));
-			 * 
-			 * 
-			 * //int wallsRemaining =
-			 * QuoridorController.getPlayerOfCurrentTurn().getWallsRemaining();
-			 * 
-			 * int wallsRemaining = 10; JLabel remainingWalls = new JLabel("You have " +
-			 * wallsRemaining + " walls remaining");
-			 * 
-			 * 
-			 * 
-			 * 
-			 * final JPanel remainingWalls = new JPanel();
-			 * 
-			 * 
-			 * Shape wall1 = new Rectangle(5,10); Shape wall2 = new Rectangle(5,10); Shape
-			 * wall3 = new Rectangle(5,10); Shape wall4 = new Rectangle(5,10); Shape wall5 =
-			 * new Rectangle(5,10); Shape wall6 = new Rectangle(5,10); Shape wall7 = new
-			 * Rectangle(5,10); Shape wall8 = new Rectangle(5,10); Shape wall9 = new
-			 * Rectangle(5,10); Shape wall10 = new Rectangle(5,10);
-			 * 
-			 * 
-			 * remainingWalls.setLayout(new GridLayout(1,10));
-			 * remainingWalls.add((Component) wall1); remainingWalls.add((Component) wall2);
-			 * remainingWalls.add((Component) wall3); remainingWalls.add((Component) wall4);
-			 * remainingWalls.add((Component) wall5); remainingWalls.add((Component) wall6);
-			 * remainingWalls.add((Component) wall7); remainingWalls.add((Component) wall8);
-			 * remainingWalls.add((Component) wall9); remainingWalls.add((Component)
-			 * wall10);
-			 * 
-			 * 
-			 * 
-			 * wallPanel.add(grabWallButton); //wallPanel.add(remainingWalls);
-			 * wallPanel.add(Box.createHorizontalStrut(20));
-			 * 
-			 * wallPanel.add(remainingWalls);
-			 * 
-			 * return wallPanel;
-			 * 
-			 * }
-			 */
+        // Try to put the menu bar to where it belongs (macs especially)
+        try {
+          //  java.awt.Desktop.getDesktop().setDefaultMenuBar(menuBar);
+        } catch (Exception ex) {
+        this.setJMenuBar(menuBar);
+        }
 
-	/**
-	 * Generates the panel on the right side
-	 *
-	 * @return A panel
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	private JPanel generateRightPanel() {
-		final JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                // Try to restore the menu bar
+                try {
+                   // java.awt.Desktop.getDesktop().setDefaultMenuBar(null);
+                } catch (Exception ex) {
+                    // Ignore
+                }
+            }
+        });
 
-		final JScrollPane listMoves = new JScrollPane(new JList<>(replayList), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		final JPanel container = new JPanel();
-		container.add(listMoves);
-		container.setBorder(new EmptyBorder(10, 2, 5, 2));
+        // Setup timer that periodically fetches
+        // the time remaining of the current player:
+        this.PLAYER_INFO_TIMER = new Timer(UPDATE_DELAY, e -> this.fetchCurrentPlayerInfoFromController());
+        this.PLAYER_INFO_TIMER.setInitialDelay(0);
+    }
 
-		final JButton btnEnterReplayMode = new JButton("Enter Replay Mode");
-		btnEnterReplayMode.setAlignmentX(Component.CENTER_ALIGNMENT);
-		btnEnterReplayMode.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-		btnEnterReplayMode.addActionListener(e -> this.onEnterReplayModeButtonClicked());
+    private JMenu createFileMenu() {
+        final JMenu fileMenu = new JMenu("File");
+        saveLoadPanel.addMenuEntries(fileMenu);
+        return fileMenu;
+    }
 
-		final JButton btnQuitGame = new JButton("Quit Game");
-		btnQuitGame.setAlignmentX(Component.CENTER_ALIGNMENT);
-		btnQuitGame.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-		btnQuitGame.addActionListener(e -> this.onQuitGameButtonClicked());
+    /**
+     * Generates the panel on the right side
+     *
+     * @return A panel
+     *
+     * @author Paul Teng (260862906)
+     */
+    private JPanel generateRightPanel() {
+        final JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-		final JButton btnResign = new JButton("Resign");
-		btnResign.setAlignmentX(Component.CENTER_ALIGNMENT);
-		btnResign.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-		btnResign.addActionListener(e -> this.onResignButtonClicked());
+        final JScrollPane listMoves = new JScrollPane(new JList<>(replayList), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        final JPanel container = new JPanel();
+        container.add(listMoves);
+        container.setBorder(new EmptyBorder(10, 2, 5, 2));
 
-		final JButton grabWallButton = new JButton("Grab a wall");
-		grabWallButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		grabWallButton.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-		grabWallButton.addActionListener(e -> this.onGrabAWallButtonClicked());
+        final JButton btnEnterReplayMode = new JButton("Enter Replay Mode");
+        btnEnterReplayMode.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnEnterReplayMode.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        btnEnterReplayMode.addActionListener(e -> this.onEnterReplayModeButtonClicked());
 
-		panel.add(container);
-		panel.add(btnEnterReplayMode);
+        final JButton btnQuitGame = new JButton("Quit Game");
+        btnQuitGame.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnQuitGame.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        btnQuitGame.addActionListener(e -> this.onQuitGameButtonClicked());
 
-		panel.add(saveLoadPanel);
-		panel.add(btnQuitGame);
+        final JButton btnResign = new JButton("Resign");
+        btnResign.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnResign.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        btnResign.addActionListener(e -> this.onResignButtonClicked());
 
-		panel.add(Box.createVerticalGlue());
+        final JButton grabWallButton = new JButton("Grab a wall");
+        grabWallButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        grabWallButton.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        grabWallButton.addActionListener(e -> this.onGrabAWallButtonClicked());
 
-		// Hack to give us more horizontal padding
-		// (value should at least be 200)
-		panel.add(Box.createHorizontalStrut(225));
-		panel.add(playerInfoPanel);
-		panel.add(grabWallButton);
-		// TODO: Remember to add the grab-wall button here
+        /**
+         * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
+         */
 
-		panel.add(btnResign);
+        final JButton dropWall = new JButton("Drop Wall");
+        final JButton rotateWall = new JButton("Rotate Wall");
 
-		// Add breathing room between the resign
-		// button and the bottom of the app
-		panel.add(Box.createVerticalStrut(30));
+        dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        dropWall.addActionListener(e -> this.onDropWallButtonClicked());
 
-		// XXX: Disable features not for this deliverable!
-		btnEnterReplayMode.setEnabled(false);
+        rotateWall.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rotateWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        rotateWall.addActionListener(e -> this.onDropWallButtonClicked());
 
-		return panel;
-	}
+        panel.add(container);
+        panel.add(btnEnterReplayMode);
 
-	/**
-	 * This method is called when the enter-replay-mode button is clicked
-	 */
-	private void onEnterReplayModeButtonClicked() {
-		JOptionPane.showMessageDialog(this, "Enter replay mode is not implemented yet!");
-	}
+        panel.add(saveLoadPanel);
 
-	/**
-	 * This method is called when the quit-game button is clicked
-	 */
-	private void onQuitGameButtonClicked() {
-		JOptionPane.showMessageDialog(this, "Quit game is not implemented yet!");
-	}
+        panel.add(btnQuitGame);
 
-	/**
-	 * This method is called when the resign button is clicked
-	 */
-	private void onResignButtonClicked() {
-		JOptionPane.showMessageDialog(this, "Resign is not implemented yet!");
-	}
-	
-	/**
-	 * 
-	 * @param args
-	 */
-	
-	private void onGrabAWallButtonClicked() {
-		//QuoridorController.grabWall();
-		//TOWallCandidate wallCandidate = QuoridorController.getPlayerOfCurrentTurn().getWallCandidate();
-		
-		JOptionPane.showMessageDialog(this, "Grab a wall is not implemented yet!");
-		
-	}
+        panel.add(Box.createVerticalGlue());
 
-	public static void main(String[] args) {
-		// This is just a demo of how it could look
+        // Hack to give us more horizontal padding
+        // (value should at least be 200)
+        panel.add(Box.createHorizontalStrut(225));
+        panel.add(playerInfoPanel);
 
-		try {
-			// Try to make the frames/windows look *not java like*
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException
-				| IllegalAccessException ex) {
-			// If we cannot do that, then continue, as apps
-			// will use the default java-look...
-		}
+        panel.add(grabWallButton);
+        panel.add(dropWall);
+        panel.add(rotateWall);
 
-		final BoardWindow frame = new BoardWindow();
-		frame.setTitle("DEMO");
-		frame.setDefaultCloseOperation(3);
-		frame.setSize(800, 550);
-		frame.setVisible(true);
-	}
+        // might just delete this depends on my patience
+        /*
+         * panel.setLayout(new GridBagLayout());
+         *
+         *
+         * GridBagConstraints dropCst = new GridBagConstraints(); dropCst.gridx = 0;
+         * dropCst.gridy = 0; dropCst.weightx = 0.5; dropCst.fill =
+         * GridBagConstraints.HORIZONTAL; panel.add(dropWall, dropCst);
+         *
+         * GridBagConstraints rotateCst = new GridBagConstraints(); rotateCst.gridx = 1;
+         * rotateCst.gridy = 0; rotateCst.weightx = 0.5; rotateCst.fill =
+         * GridBagConstraints.HORIZONTAL; panel.add(rotateWall, rotateCst);
+         *
+         * panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+         */
+
+        panel.add(btnResign);
+
+        // Add breathing room between the resign
+        // button and the bottom of the app
+        panel.add(Box.createVerticalStrut(30));
+
+        // XXX: Disable features not for this deliverable!
+        btnEnterReplayMode.setEnabled(false);
+
+        return panel;
+    }
+
+    /**
+     * Returns the player-info panel instance associated with this window
+     *
+     * @return the player-info panel instance, never null
+     *
+     * @author Group 9
+     */
+    public final PlayerInfoPanel getPlayerInfoPanel() {
+        return this.playerInfoPanel;
+    }
+
+    /**
+     * Issues a call to the controller requesting for new player information
+     *
+     * @author Group 9
+     */
+    public final void fetchCurrentPlayerInfoFromController() {
+        final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+        this.playerInfoPanel.updateInfo(player);
+    }
+
+    /**
+     * Starts the background thread that continuously fetches the player's info
+     * 
+     * @author Paul Teng (260862906)
+     */
+    public void startFetchInfoThread() {
+        this.PLAYER_INFO_TIMER.start();
+    }
+
+    /**
+     * Stops the background thread that continuously fetches the player's info
+     * 
+     * @author Paul Teng (260862906)
+     */
+    public void stopFetchInfoThread() {
+        this.PLAYER_INFO_TIMER.stop();
+    }
+
+    /**
+     * This method is called when the enter-replay-mode button is clicked
+     */
+    private void onEnterReplayModeButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Enter replay mode is not implemented yet!");
+    }
+
+    /**
+     * This method is called when the quit-game button is clicked
+     */
+    private void onQuitGameButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Quit game is not implemented yet!");
+    }
+
+    /**
+     * This method is called when the resign button is clicked
+     */
+    private void onResignButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Resign is not implemented yet!");
+    }
+
+    /**
+     * 
+     * @param args
+     */
+    
+    private void onGrabAWallButtonClicked() {
+        //QuoridorController.grabWall();
+        //TOWallCandidate wallCandidate = QuoridorController.getPlayerOfCurrentTurn().getWallCandidate();
+        
+        JOptionPane.showMessageDialog(this, "Grab a wall is not implemented yet!");
+        
+    }
+
+    /**
+     * This method is called when Drop Wall button is clicked
+     */
+    private void onDropWallButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
+
+    }
+
+    public static void main(String[] args) {
+        // This is just a demo of how it could look
+
+        try {
+            // Try to make the frames/windows look *not java like*
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException
+                | IllegalAccessException ex) {
+            // If we cannot do that, then continue, as apps
+            // will use the default java-look...
+        }
+
+        final BoardWindow frame = new BoardWindow();
+        frame.setTitle("DEMO");
+        frame.setDefaultCloseOperation(3);
+        frame.setSize(800, 550);
+        frame.setVisible(true);
+    }
 }
+

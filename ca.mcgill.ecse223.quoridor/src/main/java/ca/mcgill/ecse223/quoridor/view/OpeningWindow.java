@@ -1,8 +1,13 @@
 package ca.mcgill.ecse223.quoridor.view;
 
+import java.awt.Cursor;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URI;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -30,6 +35,13 @@ public class OpeningWindow extends JFrame {
 	// new quoridor page
 	public OpeningWindow() {
 		initWelcomePage();
+
+		// Try to set the system about page
+		try {
+			//java.awt.Desktop.getDesktop().setAboutHandler(e -> this.showAboutPopup());
+		} catch (Exception ex) {
+			// Ignore
+	}
 	}
 
 	public void initWelcomePage() {
@@ -100,6 +112,9 @@ public class OpeningWindow extends JFrame {
 
 		this.add(mainPanel);
 
+		// XXX: Disable features not for this deliverable!
+		this.loadGameButton.setEnabled(false);
+
 		/*
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
@@ -136,12 +151,20 @@ public class OpeningWindow extends JFrame {
 	 * to the author tag
 	 */
 	public void newGameButtonActionPerformed() {
+
 		// Proof that it works
 		//JOptionPane.showMessageDialog(this, "called method newGameButtonActionPerformed\n\nRemember to change this behaviour!");
 		
+
+		// Dispose the current window
+		this.dispose();
+		
+		// Create the next window
 		BoardWindow newBoardWindow = new BoardWindow();
 		newBoardWindow.setSize(1000, 700);
 		newBoardWindow.setDefaultCloseOperation(3);
+		newBoardWindow.setLocationRelativeTo(null);
+
 		newBoardWindow.setVisible(true);
 	}
 
@@ -159,34 +182,90 @@ public class OpeningWindow extends JFrame {
 	/**
 	 * This will be called when the rulesButton is clicked
 	 * 
-	 * TODO: Whoever implements these methods needs to add their name
-	 * to the author tag
+	 * @author Paul Teng (260862906)
 	 */
 	public void rulesButtonActionPerformed() {
-		// Proof that it works
-		JOptionPane.showMessageDialog(this, "called method rulesButtonActionPerformed\n\nRemember to change this behaviour!");
+		// // Proof that it works
+		// JOptionPane.showMessageDialog(this,
+		// 		"called method rulesButtonActionPerformed\n\nRemember to change this behaviour!");
+
+		final JLabel lbl = new JLabel("Rules");
+		lbl.setFont(lbl.getFont().deriveFont(28.0f));
+
+		final JLabel ruleText = new JLabel();
+		ruleText.setText("<html>Please consult <a href=\"https://en.wikipedia.org/wiki/Quoridor\">https://en.wikipedia.org/wiki/Quoridor</a> for rules</html>");
+		ruleText.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					java.awt.Desktop.getDesktop().browse(URI.create("https://en.wikipedia.org/wiki/Quoridor"));
+				} catch (Exception ex) {
+					// Well... nothing we can do
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// Making it obvious that this is clickable
+				ruleText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// Making it obvious that this is clickable
+				ruleText.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+
+		final JComponent[] list = {
+			lbl,
+			new JSeparator(),
+			ruleText
+		};
+		JOptionPane.showMessageDialog(this, list, "", JOptionPane.PLAIN_MESSAGE);
 	}
 
 	/**
 	 * This will be called when the aboutButton is clicked
-	 * 
-	 * TODO: Whoever implements these methods needs to add their name
-	 * to the author tag
+	 *
+	 * @author Paul Teng (260862906)
 	 */
 	public void aboutButtonActionPerformed() {
-		// Proof that it works
-		JOptionPane.showMessageDialog(this, "called method aboutButtonActionPerformed\n\nRemember to change this behaviour!");
+		this.showAboutPopup();
 	}
 
 	/**
-	 * This will be called when the quitGameButton is clicked
+	 * Creates a popup dialog for the about page
+	 *
+	 * ~~ Group 9 did this project yah ~~
 	 * 
-	 * TODO: Whoever implements these methods needs to add their name
-	 * To the author tag
+	 * @author Paul Teng (26086290)
+	 */
+	private void showAboutPopup() {
+		final JLabel lbl = new JLabel("Quoridor");
+		lbl.setFont(lbl.getFont().deriveFont(28.0f));
+		final JComponent[] list = {
+			lbl,
+			new JSeparator(),
+			new JLabel("Made by ECSE 223 - Group 9:"),
+			new JLabel("Barry Chen, Mohamed Mohamed, Ada Andrei, Paul Teng, and Alixe Delabrousse")
+		};
+		JOptionPane.showMessageDialog(null, list, "", JOptionPane.PLAIN_MESSAGE);
+	}
+
+	/**
+	 * This will be called when the quitGameButton is clicked:
+	 * 
+	 * It asks the user again, then quits
+	 * 
+	 * @author Paul Teng (260862906)
 	 */
 	public void quitGameButtonActionPerformed() {
-		// Proof that it works
-		JOptionPane.showMessageDialog(this, "called method quitGameButtonActionPerformed\n\nRemember to change this behaviour!");
+		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Are you sure?", "",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
+			// Dispose will *free* the frame and close it
+			this.dispose();
+		}
 	}
 	
 
