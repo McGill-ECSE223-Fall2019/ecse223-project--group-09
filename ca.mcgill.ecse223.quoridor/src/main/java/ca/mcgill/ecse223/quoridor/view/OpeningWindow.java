@@ -1,6 +1,10 @@
 package ca.mcgill.ecse223.quoridor.view;
 
+import java.awt.Cursor;
 import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URI;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -165,12 +169,47 @@ public class OpeningWindow extends JFrame {
 	/**
 	 * This will be called when the rulesButton is clicked
 	 * 
-	 * TODO: Whoever implements these methods needs to add their name
-	 * to the author tag
+	 * @author Paul Teng (260862906)
 	 */
 	public void rulesButtonActionPerformed() {
-		// Proof that it works
-		JOptionPane.showMessageDialog(this, "called method rulesButtonActionPerformed\n\nRemember to change this behaviour!");
+		// // Proof that it works
+		// JOptionPane.showMessageDialog(this,
+		// 		"called method rulesButtonActionPerformed\n\nRemember to change this behaviour!");
+
+		final JLabel lbl = new JLabel("Rules");
+		lbl.setFont(lbl.getFont().deriveFont(28.0f));
+
+		final JLabel ruleText = new JLabel();
+		ruleText.setText("<html>Please consult <a href=\"https://en.wikipedia.org/wiki/Quoridor\">https://en.wikipedia.org/wiki/Quoridor</a> for rules</html>");
+		ruleText.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					java.awt.Desktop.getDesktop().browse(URI.create("https://en.wikipedia.org/wiki/Quoridor"));
+				} catch (Exception ex) {
+					// Well... nothing we can do
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// Making it obvious that this is clickable
+				ruleText.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// Making it obvious that this is clickable
+				ruleText.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+
+		final JComponent[] list = {
+			lbl,
+			new JSeparator(),
+			ruleText
+		};
+		JOptionPane.showMessageDialog(this, list, "", JOptionPane.PLAIN_MESSAGE);
 	}
 
 	/**
