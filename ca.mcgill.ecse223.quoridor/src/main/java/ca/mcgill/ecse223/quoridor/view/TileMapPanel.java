@@ -9,9 +9,11 @@ import java.awt.event.MouseWheelEvent;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
@@ -77,6 +79,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
     public TOWallCandidate wallCandidate;
 
     public Orientation junctionOrientation = Orientation.HORIZONTAL;
+    
     
     public TileMapPanel() {
         final MouseHandler handler = new MouseHandler();
@@ -298,9 +301,27 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
      * @param row         Row in wall coordinates
      * @param col         Column in wall coordinates
      * @param orientation Orientation
+     * 
+     * @author alixe
      */
     private void onSlotClicked(int row, int col, Orientation orientation) {
         // TODO
+    	try {
+    		this.wallCandidate.setColumn(col);
+    		this.wallCandidate.setRow(row);
+    		this.wallCandidate.setOrientation(orientation);
+    		
+    		String position = Character.toString((char) (col - 1 + 'a')) + row + (orientation == Orientation.VERTICAL ? "v" : "h");
+    		
+    		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Do you want to place your wall here?", "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
+    			QuoridorController.moveWall(position);
+    			JOptionPane.showMessageDialog(this, "Select 'Drop Wall' to confirm move");
+    		}
+    		
+    	} catch (NullPointerException e) {
+    		System.out.println("No wall grabbed");
+    	}
+    	
         System.out.println(
                 Character.toString((char) (col - 1 + 'a')) + row + (orientation == Orientation.VERTICAL ? "v" : "h"));
     }
@@ -333,10 +354,22 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
      * @param row         Row in wall coordinates
      * @param col         Column in wall coordinates
      * @param orientation Orientation
+     * @author alixe
+     * 
      */
     private void onSlotEntered(int row, int col, Orientation orientation) {
-        // TODO
-        System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
+        //TODO
+    	
+    	try {
+    		this.wallCandidate.setRow(row);
+    		this.wallCandidate.setColumn(col);
+    		this.wallCandidate.setOrientation(orientation);
+    		this.repaint();
+    	} catch (NullPointerException e) {
+    		 System.out.println("No wall grabbed");
+    	}
+    		
+    	System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
                 + (orientation == Orientation.VERTICAL ? "v" : "h"));
     }
 

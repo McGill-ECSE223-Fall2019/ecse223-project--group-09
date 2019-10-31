@@ -660,7 +660,7 @@ public class CucumberStepDefinitions {
 	
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
-		QuoridorController.grabWall();
+		this.currentWall = QuoridorController.grabWall();
 		
 	}
 	
@@ -671,8 +671,12 @@ public class CucumberStepDefinitions {
 	
 	@Then("A wall move candidate shall be created at initial position")
 	public void createNewWallMoveCandidate() {
-		this.wallCandidate = QuoridorController.createWallCandidateAtInitialPosition();
-;		this.currentWall = this.wallCandidate.getAssociatedWall();
+		Assert.assertTrue(this.player.hasWallInHand());
+		
+		this.wallCandidate = QuoridorController.getCurrentWallCandidate();
+	
+		Assert.assertTrue(this.wallCandidate != null);
+
 	}
 	
 	/**
@@ -681,8 +685,11 @@ public class CucumberStepDefinitions {
 	
 	@And("I shall have a wall in my hand over the board")
 	public void wallOverBoard() {
-		throw new PendingException();
-		//This is a UI related method
+		
+		this.currentWall = QuoridorController.getCurrentGrabbedWall();
+		Assert.assertTrue(this.currentWall != null);
+		Assert.assertTrue(this.currentWall == this.wallCandidate.getAssociatedWall());
+		
 	}
 
 	/**

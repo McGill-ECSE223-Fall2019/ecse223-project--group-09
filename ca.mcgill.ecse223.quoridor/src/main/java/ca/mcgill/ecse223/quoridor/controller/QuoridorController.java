@@ -222,44 +222,48 @@ public class QuoridorController {
  	* 
  	*/
 	
-	public static Wall grabWall() {
+	public static TOWall grabWall() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor(); // get quoridor
 		
 		Player currentPlayer = getCurrentPlayer(); // get the player of the turn 
-		TOPlayer toCurrentPlayer = fromPlayer(currentPlayer); // create associated transfer object
+		TOPlayer toCurrentPlayer = getPlayerOfCurrentTurn(); // create associated transfer object
 		
 		List<Wall> remainingWalls = currentPlayer.getWalls(); // get remaining walls of current player
 		
 		Game game = quoridor.getCurrentGame(); // get current game from quoridor
 		
 		Wall grabbedWall; // current grabbed wall (null if no more walls left on stock)
-		
+		TOWall toGrabbedWall;
 		Tile initialTile = getTileFromRowAndColumn(INITIAL_ROW, INITIAL_COLUMN); // Tile at initial position
 		
 		try {
 			// check if there are any walls remaining
 			grabbedWall = remainingWalls.get(currentPlayer.numberOfWalls()-1); // the grabbed wall is the last one in the list
+			toCurrentPlayer.setWallInHand(true);
+			currentPlayer.removeWall(grabbedWall); //remove the grabbed wall from the stock
+			
+			
+			
+			// create the new Wall Move
+			WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+			game.setWallMoveCandidate(wallMove); // Set current wall move
+			TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove); // create associated TO
+			toCurrentPlayer.setWallCandidate(wallCandidate);
+			
 			
 		} catch (Exception e) { // if not:
+			
+			
 			System.out.println("No more remaining walls"); // tell user he does not have any more walls
 			grabbedWall = null; // set grabbed wall to null
+			
 			toCurrentPlayer.setWallInHand(false); // the current player does not have any wall in hand
+		
 		}
-		toCurrentPlayer.setWallInHand(true);
-		currentPlayer.removeWall(grabbedWall); //remove the grabbed wall from the stock
+		toGrabbedWall = fromWall(grabbedWall); // create transfer object wall from model Wall
 		
-		// put this inside the try and then catch the null pointer exception
-		
-		TOWall toGrabbedWall = fromWall(grabbedWall); // create transfer object wall from model Wall
-		
-		// create the new Wall Move
-		WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
-		game.setWallMoveCandidate(wallMove); // Set current wall move
-		TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove); // create associated TO
-		toCurrentPlayer.setWallCandidate(wallCandidate);
-		
-		return grabbedWall; // return the transfer object of the current grabbed wall
-		
+		return toGrabbedWall; // return the current grabbed wall
+							// null if no more walls on stock
 	}
 	
 	
@@ -288,9 +292,14 @@ public class QuoridorController {
 		Game game = quoridor.getCurrentGame();
 		
 		WallMove wallMove = game.getWallMoveCandidate();
+		TOWallCandidate wallCandidate = getCurrentWallCandidate();
 		
 		Tile targetTile;
 		
+		targetTile = getTileFromRowAndColumn(wallCandidate.getRow(), wallCandidate.getColumn());
+		wallMove.setTargetTile(targetTile);
+		
+		/*
 		if (wallMove.getTargetTile().getColumn() == 9) {
 			if (side == "down") {
 				
@@ -372,11 +381,14 @@ public class QuoridorController {
 				targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 				wallMove.setTargetTile(targetTile);
 			}
-		}
+		}*/
 		
 		
 		
 	}
+	
+	
+	
 	
 	/**
 	 * @author alixe delabrousse
@@ -2441,6 +2453,13 @@ public class QuoridorController {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		return fromPlayer(quoridor.getCurrentGame().getBlackPlayer());
 	}
+	
+	/**
+	 * 
+	 * @author alixe delabrousse
+	 * 
+	 * @return
+	 */
 	
 	public static Player getCurrentPlayer() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();

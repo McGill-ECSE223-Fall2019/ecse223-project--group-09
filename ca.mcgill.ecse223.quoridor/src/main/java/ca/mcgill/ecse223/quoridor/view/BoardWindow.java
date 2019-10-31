@@ -239,14 +239,18 @@ public class BoardWindow extends JFrame {
 
     /**
      *
-     * @param args
+     *
      */
 
     private void onGrabAWallButtonClicked() {
-        //QuoridorController.grabWall();
-        //TOWallCandidate wallCandidate = QuoridorController.getPlayerOfCurrentTurn().getWallCandidate();
-
-        JOptionPane.showMessageDialog(this, "Grab a wall is not implemented yet!");
+        try{
+        	QuoridorController.grabWall();
+        	TOWallCandidate wallCandidate = QuoridorController.getPlayerOfCurrentTurn().getWallCandidate();
+            gridPanel.setWallCandidate(wallCandidate);
+        } catch (Exception e) {
+        	System.out.println("No game loaded: create new or select game");
+        }
+        
 
     }
 
