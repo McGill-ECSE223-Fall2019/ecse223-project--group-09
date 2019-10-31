@@ -30,6 +30,7 @@ import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
+import ca.mcgill.ecse223.quoridor.view.BoardWindow;
 import cucumber.api.PendingException;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
