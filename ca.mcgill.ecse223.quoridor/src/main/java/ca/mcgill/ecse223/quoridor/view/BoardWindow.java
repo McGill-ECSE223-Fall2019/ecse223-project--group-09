@@ -64,6 +64,7 @@ public class BoardWindow extends JFrame {
         this.PLAYER_INFO_TIMER = new Timer(UPDATE_DELAY,
                 e -> this.fetchCurrentPlayerInfoFromController());
         this.PLAYER_INFO_TIMER.setInitialDelay(0);
+        this.PLAYER_INFO_TIMER.start();
     }
 
     private JMenu createFileMenu() {
