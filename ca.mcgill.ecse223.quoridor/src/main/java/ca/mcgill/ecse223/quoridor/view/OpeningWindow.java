@@ -9,9 +9,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 
-public class OpeningWindow extends JFrame{
+public class OpeningWindow extends JFrame {
 
 	//UI Elements
 
@@ -135,7 +137,12 @@ public class OpeningWindow extends JFrame{
 	 */
 	public void newGameButtonActionPerformed() {
 		// Proof that it works
-		JOptionPane.showMessageDialog(this, "called method newGameButtonActionPerformed\n\nRemember to change this behaviour!");
+		//JOptionPane.showMessageDialog(this, "called method newGameButtonActionPerformed\n\nRemember to change this behaviour!");
+		
+		BoardWindow newBoardWindow = new BoardWindow();
+		newBoardWindow.setSize(1000, 700);
+		newBoardWindow.setDefaultCloseOperation(3);
+		newBoardWindow.setVisible(true);
 	}
 
 	/**
@@ -181,4 +188,6 @@ public class OpeningWindow extends JFrame{
 		// Proof that it works
 		JOptionPane.showMessageDialog(this, "called method quitGameButtonActionPerformed\n\nRemember to change this behaviour!");
 	}
+	
+
 }
