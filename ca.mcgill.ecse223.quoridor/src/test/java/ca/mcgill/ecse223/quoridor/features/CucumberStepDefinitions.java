@@ -1056,6 +1056,8 @@ public class CucumberStepDefinitions {
 
 	// ***** SwitchCurrentPlayer.feature *****
 
+	private BoardWindow boardWindow = new BoardWindow();
+
 	/**
 	 * @param playerColor color of player
 	 * @author Group-9
@@ -1089,7 +1091,12 @@ public class CucumberStepDefinitions {
 	 */
 	@When("Player {string} completes his move")
 	public void playerCompletesHisMove(String playerColor) {
+		// Issue a switch-current-player call
 		QuoridorController.switchCurrentPlayer();
+
+		// Right now, whatever board window was displaying is now incorrect.
+		// Ask board window to fetch new player information and display it.
+		this.boardWindow.fetchCurrentPlayerInfoFromController();
 	}
 
 	/**
@@ -1098,7 +1105,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The user interface shall be showing it is {string} turn")
 	public void userInterfaceShallBeShowingItIsOpponentsTurn(String opponentColor) {
-		throw new PendingException();
+		Assert.assertTrue(this.boardWindow.getPlayerInfoPanel().getPlayerColorText().equalsIgnoreCase(opponentColor));
 	}
 
 	/**
