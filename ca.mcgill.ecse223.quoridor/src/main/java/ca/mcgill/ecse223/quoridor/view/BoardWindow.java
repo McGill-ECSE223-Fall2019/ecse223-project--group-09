@@ -21,12 +21,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 
 /**
  * Creates a window that looks somewhat like GUI3.png
@@ -35,8 +37,11 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
  */
 public class BoardWindow extends JFrame {
 
+    private static final int UPDATE_DELAY = 200;
+
     // ***** Rendering State Variables *****
     private final DefaultListModel<String> replayList = new DefaultListModel<>();
+    private final Timer PLAYER_INFO_TIMER;
 
     // ***** Additional UI Components *****
     private final SaveLoadPanel saveLoadPanel = new SaveLoadPanel();
@@ -53,6 +58,12 @@ public class BoardWindow extends JFrame {
         this.setJMenuBar(menuBar);
 
         menuBar.add(this.createFileMenu());
+
+        // Setup timer that periodically fetches
+        // the time remaining of the current player:
+        this.PLAYER_INFO_TIMER = new Timer(UPDATE_DELAY,
+                e -> this.fetchCurrentPlayerInfoFromController());
+        this.PLAYER_INFO_TIMER.setInitialDelay(0);
     }
 
     private JMenu createFileMenu() {
@@ -163,11 +174,21 @@ public class BoardWindow extends JFrame {
      * Returns the player-info panel instance associated with this window
      *
      * @return the player-info panel instance, never null
-     * 
+     *
      * @author Group 9
      */
     public final PlayerInfoPanel getPlayerInfoPanel() {
         return this.playerInfoPanel;
+    }
+
+    /**
+     * Issues a call to the controller requesting for new player information
+     *
+     * @author Group 9
+     */
+    public final void fetchCurrentPlayerInfoFromController() {
+        final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+        this.playerInfoPanel.updateInfo(player);
     }
 
     /**
