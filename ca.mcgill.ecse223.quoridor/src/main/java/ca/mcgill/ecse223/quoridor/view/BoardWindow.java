@@ -63,24 +63,9 @@ public class BoardWindow extends JFrame {
         final JMenuBar menuBar = new JMenuBar();
         menuBar.add(this.createFileMenu());
 
-        // Try to put the menu bar to where it belongs (macs especially)
-        try {
-          //  java.awt.Desktop.getDesktop().setDefaultMenuBar(menuBar);
-        } catch (Exception ex) {
-        this.setJMenuBar(menuBar);
-        }
 
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                // Try to restore the menu bar
-                try {
-                   // java.awt.Desktop.getDesktop().setDefaultMenuBar(null);
-                } catch (Exception ex) {
-                    // Ignore
-                }
-            }
-        });
+        this.setJMenuBar(menuBar);
+
 
         // Setup timer that periodically fetches
         // the time remaining of the current player:
@@ -215,7 +200,7 @@ public class BoardWindow extends JFrame {
 
     /**
      * Starts the background thread that continuously fetches the player's info
-     * 
+     *
      * @author Paul Teng (260862906)
      */
     public void startFetchInfoThread() {
@@ -224,7 +209,7 @@ public class BoardWindow extends JFrame {
 
     /**
      * Stops the background thread that continuously fetches the player's info
-     * 
+     *
      * @author Paul Teng (260862906)
      */
     public void stopFetchInfoThread() {
@@ -253,16 +238,16 @@ public class BoardWindow extends JFrame {
     }
 
     /**
-     * 
+     *
      * @param args
      */
-    
+
     private void onGrabAWallButtonClicked() {
         //QuoridorController.grabWall();
         //TOWallCandidate wallCandidate = QuoridorController.getPlayerOfCurrentTurn().getWallCandidate();
-        
+
         JOptionPane.showMessageDialog(this, "Grab a wall is not implemented yet!");
-        
+
     }
 
     /**

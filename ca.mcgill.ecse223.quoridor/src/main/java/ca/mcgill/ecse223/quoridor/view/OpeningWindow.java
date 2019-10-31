@@ -36,12 +36,6 @@ public class OpeningWindow extends JFrame {
 	public OpeningWindow() {
 		initWelcomePage();
 
-		// Try to set the system about page
-		try {
-			//java.awt.Desktop.getDesktop().setAboutHandler(e -> this.showAboutPopup());
-		} catch (Exception ex) {
-			// Ignore
-	}
 	}
 
 	public void initWelcomePage() {
