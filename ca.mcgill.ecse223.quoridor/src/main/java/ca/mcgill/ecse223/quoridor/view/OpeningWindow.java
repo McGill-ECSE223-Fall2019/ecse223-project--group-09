@@ -35,6 +35,13 @@ public class OpeningWindow extends JFrame {
 	// new quoridor page
 	public OpeningWindow() {
 		initWelcomePage();
+
+		// Try to set the system about page
+		try {
+			java.awt.Desktop.getDesktop().setAboutHandler(e -> this.showAboutPopup());
+		} catch (Exception ex) {
+			// Ignore
+	}
 	}
 
 	public void initWelcomePage() {
@@ -213,13 +220,22 @@ public class OpeningWindow extends JFrame {
 	}
 
 	/**
-	 * This will be called when the aboutButton is clicked:
+	 * This will be called when the aboutButton is clicked
 	 *
-	 * ~~ Group 9 did this project yah ~~
-	 * 
 	 * @author Paul Teng (260862906)
 	 */
 	public void aboutButtonActionPerformed() {
+		this.showAboutPopup();
+	}
+
+	/**
+	 * Creates a popup dialog for the about page
+	 *
+	 * ~~ Group 9 did this project yah ~~
+	 * 
+	 * @author Paul Teng (26086290)
+	 */
+	private void showAboutPopup() {
 		final JLabel lbl = new JLabel("Quoridor");
 		lbl.setFont(lbl.getFont().deriveFont(28.0f));
 		final JComponent[] list = {
@@ -228,7 +244,7 @@ public class OpeningWindow extends JFrame {
 			new JLabel("Made by ECSE 223 - Group 9:"),
 			new JLabel("Barry Chen, Mohamed Mohamed, Ada Andrei, Paul Teng, and Alixe Delabrousse")
 		};
-		JOptionPane.showMessageDialog(this, list, "", JOptionPane.PLAIN_MESSAGE);
+		JOptionPane.showMessageDialog(null, list, "", JOptionPane.PLAIN_MESSAGE);
 	}
 
 	/**
