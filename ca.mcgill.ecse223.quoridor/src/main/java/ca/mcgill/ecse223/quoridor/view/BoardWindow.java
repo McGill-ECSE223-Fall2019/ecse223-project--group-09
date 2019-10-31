@@ -1,20 +1,16 @@
 package ca.mcgill.ecse223.quoridor.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-
-import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -55,9 +51,26 @@ public class BoardWindow extends JFrame {
         this.add(gridPanel, BorderLayout.CENTER);
 
         final JMenuBar menuBar = new JMenuBar();
-        this.setJMenuBar(menuBar);
-
         menuBar.add(this.createFileMenu());
+
+        // Try to put the menu bar to where it belongs (macs especially)
+        try {
+            java.awt.Desktop.getDesktop().setDefaultMenuBar(menuBar);
+        } catch (Exception ex) {
+        this.setJMenuBar(menuBar);
+        }
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                // Try to restore the menu bar
+                try {
+                    java.awt.Desktop.getDesktop().setDefaultMenuBar(null);
+                } catch (Exception ex) {
+                    // Ignore
+                }
+            }
+        });
 
         // Setup timer that periodically fetches
         // the time remaining of the current player:
