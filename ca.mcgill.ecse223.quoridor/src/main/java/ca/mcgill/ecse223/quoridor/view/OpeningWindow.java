@@ -101,6 +101,9 @@ public class OpeningWindow extends JFrame {
 
 		this.add(mainPanel);
 
+		// XXX: Disable features not for this deliverable!
+		this.loadGameButton.setEnabled(false);
+
 		/*
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
