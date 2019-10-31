@@ -11,8 +11,8 @@ import javax.swing.JPanel;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 
 /**
- * A custom component that displays information that is relevant to the
- * current player
+ * A custom component that displays information that is relevant to the current
+ * player
  *
  * @author Group 9 [SwitchPlayer.feature]
  */
@@ -25,8 +25,8 @@ public class PlayerInfoPanel extends JPanel {
     private final JLabel lblTime = new JLabel();
 
     /**
-     * Creates a PlayerInfoPanel that tries to fill up space in the x
-     * direction but stays compact in the y direction
+     * Creates a PlayerInfoPanel that tries to fill up space in the x direction but
+     * stays compact in the y direction
      *
      * @author Group 9
      */
@@ -135,9 +135,9 @@ public class PlayerInfoPanel extends JPanel {
     /**
      * Updates the info displayed
      *
-     * @param player Player transfer object containing the new info.
-     *               null will cause current displayed info to be cleared
-     * 
+     * @param player Player transfer object containing the new info. null will cause
+     *               current displayed info to be cleared
+     *
      * @author Group 9
      */
     public void updateInfo(TOPlayer player) {
@@ -156,5 +156,16 @@ public class PlayerInfoPanel extends JPanel {
 
         final Time time = player.getTimeRemaining();
         this.lblTime.setText(String.format("%02d:%02d:%02d", time.getHours(), time.getMinutes(), time.getSeconds()));
+    }
+
+    /**
+     * Returns the text displayed by the color label. Exists so we can test the UI.
+     *
+     * @return text, could be empty but never null
+     * 
+     * @author Group 9
+     */
+    public final String getPlayerColorText() {
+        return this.lblColor.getText();
     }
 }

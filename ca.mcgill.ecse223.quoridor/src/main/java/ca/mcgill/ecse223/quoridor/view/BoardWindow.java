@@ -26,18 +26,18 @@ import javax.swing.border.EmptyBorder;
  */
 public class BoardWindow extends JFrame {
 
-    //***** Rendering State Variables *****
+    // ***** Rendering State Variables *****
     private final DefaultListModel<String> replayList = new DefaultListModel<>();
 
-    //***** Additional UI Components *****
+    // ***** Additional UI Components *****
     private final SaveLoadPanel saveLoadPanel = new SaveLoadPanel();
     private final PlayerInfoPanel playerInfoPanel = new PlayerInfoPanel();
     private final GridPanel gridPanel = new GridPanel();
 
-	public BoardWindow() {
+    public BoardWindow() {
         this.setLayout(new BorderLayout());
 
-        this.add(generateRightPanel(), BorderLayout.EAST);  
+        this.add(generateRightPanel(), BorderLayout.EAST);
         this.add(gridPanel, BorderLayout.CENTER);
 
         final JMenuBar menuBar = new JMenuBar();
@@ -60,11 +60,10 @@ public class BoardWindow extends JFrame {
      * @author Paul Teng (260862906)
      */
     private JPanel generateRightPanel() {
-       final JPanel panel = new JPanel();
-       panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        final JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        final JScrollPane listMoves = new JScrollPane(new JList<>(replayList),
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+        final JScrollPane listMoves = new JScrollPane(new JList<>(replayList), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         final JPanel container = new JPanel();
         container.add(listMoves);
@@ -84,12 +83,11 @@ public class BoardWindow extends JFrame {
         btnResign.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnResign.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         btnResign.addActionListener(e -> this.onResignButtonClicked());
-        
+
         /**
-         * @author Mohamed Mohamed
-         * adding the drop wall and rotate wall JButton
+         * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
          */
-        
+
         final JButton dropWall = new JButton("Drop Wall");
         final JButton rotateWall = new JButton("Rotate Wall");
 
@@ -100,13 +98,12 @@ public class BoardWindow extends JFrame {
         rotateWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         rotateWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         rotateWall.addActionListener(e -> this.onDropWallButtonClicked());
-        
+
         panel.add(container);
         panel.add(btnEnterReplayMode);
 
         panel.add(saveLoadPanel);
-       
-        
+
         panel.add(btnQuitGame);
 
         panel.add(Box.createVerticalGlue());
@@ -117,33 +114,26 @@ public class BoardWindow extends JFrame {
         panel.add(playerInfoPanel);
 
         // TODO: Remember to add the grab-wall button here
-       
-        
+
         panel.add(dropWall);
         panel.add(rotateWall);
-       
-        //might just delete this depends on my patience
+
+        // might just delete this depends on my patience
         /*
-        panel.setLayout(new GridBagLayout());
+         * panel.setLayout(new GridBagLayout());
+         *
+         *
+         * GridBagConstraints dropCst = new GridBagConstraints(); dropCst.gridx = 0;
+         * dropCst.gridy = 0; dropCst.weightx = 0.5; dropCst.fill =
+         * GridBagConstraints.HORIZONTAL; panel.add(dropWall, dropCst);
+         *
+         * GridBagConstraints rotateCst = new GridBagConstraints(); rotateCst.gridx = 1;
+         * rotateCst.gridy = 0; rotateCst.weightx = 0.5; rotateCst.fill =
+         * GridBagConstraints.HORIZONTAL; panel.add(rotateWall, rotateCst);
+         *
+         * panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+         */
 
-        
-        GridBagConstraints dropCst = new GridBagConstraints();
-        dropCst.gridx = 0;
-        dropCst.gridy = 0;
-        dropCst.weightx = 0.5;
-        dropCst.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(dropWall, dropCst);
-
-        GridBagConstraints rotateCst = new GridBagConstraints();
-        rotateCst.gridx = 1;
-        rotateCst.gridy = 0;
-        rotateCst.weightx = 0.5;
-        rotateCst.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(rotateWall, rotateCst);
-        
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-       */
-        
         panel.add(btnResign);
 
         // Add breathing room between the resign
@@ -154,6 +144,17 @@ public class BoardWindow extends JFrame {
         btnEnterReplayMode.setEnabled(false);
 
         return panel;
+    }
+
+    /**
+     * Returns the player-info panel instance associated with this window
+     *
+     * @return the player-info panel instance, never null
+     * 
+     * @author Group 9
+     */
+    public final PlayerInfoPanel getPlayerInfoPanel() {
+        return this.playerInfoPanel;
     }
 
     /**
@@ -176,13 +177,13 @@ public class BoardWindow extends JFrame {
     private void onResignButtonClicked() {
         JOptionPane.showMessageDialog(this, "Resign is not implemented yet!");
     }
-    
+
     /**
      * This method is called when Drop Wall button is clicked
      */
     private void onDropWallButtonClicked() {
         JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
-        
+
     }
 
     public static void main(String[] args) {
@@ -191,7 +192,8 @@ public class BoardWindow extends JFrame {
         try {
             // Try to make the frames/windows look *not java like*
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException
+                | IllegalAccessException ex) {
             // If we cannot do that, then continue, as apps
             // will use the default java-look...
         }
