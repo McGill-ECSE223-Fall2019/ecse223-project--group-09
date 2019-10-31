@@ -3,8 +3,6 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -20,8 +18,6 @@ import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
-
-import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 
 /**
  * Creates a window that looks somewhat like GUI3.png
