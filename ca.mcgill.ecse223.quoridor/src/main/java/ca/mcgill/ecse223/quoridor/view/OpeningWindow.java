@@ -179,15 +179,17 @@ public class OpeningWindow extends JFrame {
 	}
 
 	/**
-	 * This will be called when the quitGameButton is clicked
+	 * This will be called when the quitGameButton is clicked:
 	 * 
-	 * TODO: Whoever implements these methods needs to add their name
-	 * To the author tag
+	 * It asks the user again, then quits
+	 * 
+	 * @author Paul Teng (260862906)
 	 */
 	public void quitGameButtonActionPerformed() {
-		// Proof that it works
-		JOptionPane.showMessageDialog(this, "called method quitGameButtonActionPerformed\n\nRemember to change this behaviour!");
+		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Are you sure?", "",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
+			// Dispose will *free* the frame and close it
+			this.dispose();
+		}
 	}
-	
-
 }
