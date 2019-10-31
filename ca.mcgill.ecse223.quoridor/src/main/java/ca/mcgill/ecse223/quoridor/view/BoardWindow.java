@@ -61,10 +61,8 @@ public class BoardWindow extends JFrame {
 
         // Setup timer that periodically fetches
         // the time remaining of the current player:
-        this.PLAYER_INFO_TIMER = new Timer(UPDATE_DELAY,
-                e -> this.fetchCurrentPlayerInfoFromController());
+        this.PLAYER_INFO_TIMER = new Timer(UPDATE_DELAY, e -> this.fetchCurrentPlayerInfoFromController());
         this.PLAYER_INFO_TIMER.setInitialDelay(0);
-        this.PLAYER_INFO_TIMER.start();
     }
 
     private JMenu createFileMenu() {
@@ -190,6 +188,24 @@ public class BoardWindow extends JFrame {
     public final void fetchCurrentPlayerInfoFromController() {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
         this.playerInfoPanel.updateInfo(player);
+    }
+
+    /**
+     * Starts the background thread that continuously fetches the player's info
+     * 
+     * @author Paul Teng (260862906)
+     */
+    public void startFetchInfoThread() {
+        this.PLAYER_INFO_TIMER.start();
+    }
+
+    /**
+     * Stops the background thread that continuously fetches the player's info
+     * 
+     * @author Paul Teng (260862906)
+     */
+    public void stopFetchInfoThread() {
+        this.PLAYER_INFO_TIMER.stop();
     }
 
     /**
