@@ -140,9 +140,10 @@ public class OpeningWindow extends JFrame {
 	 * to the author tag
 	 */
 	public void newGameButtonActionPerformed() {
-		// Proof that it works
-		//JOptionPane.showMessageDialog(this, "called method newGameButtonActionPerformed\n\nRemember to change this behaviour!");
+		// Dispose the current window
+		this.dispose();
 		
+		// Create the next window
 		BoardWindow newBoardWindow = new BoardWindow();
 		newBoardWindow.setSize(1000, 700);
 		newBoardWindow.setDefaultCloseOperation(3);
