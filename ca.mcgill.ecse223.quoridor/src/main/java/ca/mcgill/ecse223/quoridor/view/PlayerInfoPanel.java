@@ -20,6 +20,7 @@ public class PlayerInfoPanel extends JPanel {
 
     // ***** Additional UI Components *****
     private final JLabel lblName = new JLabel();
+    private final JLabel lblColor = new JLabel();
     private final JLabel lblWalls = new JLabel();
     private final JLabel lblTime = new JLabel();
 
@@ -47,7 +48,6 @@ public class PlayerInfoPanel extends JPanel {
     public PlayerInfoPanel(final double weightX, final double weightY) {
         this.setLayout(new GridBagLayout());
 
-        final Insets insetsFull = new Insets(10, 10, 10, 10);
         final Insets insetsNBot = new Insets(10, 10, 0, 10);
         final Insets insetsNTop = new Insets(0, 10, 10, 10);
 
@@ -58,7 +58,7 @@ public class PlayerInfoPanel extends JPanel {
             c.anchor = GridBagConstraints.FIRST_LINE_START;
             c.weightx = weightX;
             c.weighty = weightY;
-            c.insets = insetsFull;
+            c.insets = insetsNBot;
             this.add(new JLabel("Current player:"), c);
         }
         {
@@ -68,7 +68,7 @@ public class PlayerInfoPanel extends JPanel {
             c.anchor = GridBagConstraints.FIRST_LINE_END;
             c.weightx = weightX;
             c.weighty = weightY;
-            c.insets = insetsFull;
+            c.insets = insetsNBot;
             this.add(lblName, c);
         }
 
@@ -76,6 +76,27 @@ public class PlayerInfoPanel extends JPanel {
             final GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
             c.gridy = 1;
+            c.anchor = GridBagConstraints.FIRST_LINE_START;
+            c.weightx = weightX;
+            c.weighty = weightY;
+            c.insets = insetsNTop;
+            this.add(new JLabel("Color:"), c);
+        }
+        {
+            final GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 1;
+            c.gridy = 1;
+            c.anchor = GridBagConstraints.FIRST_LINE_END;
+            c.weightx = weightX;
+            c.weighty = weightY;
+            c.insets = insetsNTop;
+            this.add(lblColor, c);
+        }
+
+        {
+            final GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 2;
             c.anchor = GridBagConstraints.LAST_LINE_START;
             c.weightx = weightX;
             c.insets = insetsNBot;
@@ -84,7 +105,7 @@ public class PlayerInfoPanel extends JPanel {
         {
             final GridBagConstraints c = new GridBagConstraints();
             c.gridx = 1;
-            c.gridy = 1;
+            c.gridy = 2;
             c.anchor = GridBagConstraints.LAST_LINE_END;
             c.weightx = weightX;
             c.insets = insetsNBot;
@@ -94,7 +115,7 @@ public class PlayerInfoPanel extends JPanel {
         {
             final GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
-            c.gridy = 2;
+            c.gridy = 3;
             c.anchor = GridBagConstraints.LAST_LINE_START;
             c.weightx = weightX;
             c.insets = insetsNTop;
@@ -103,7 +124,7 @@ public class PlayerInfoPanel extends JPanel {
         {
             final GridBagConstraints c = new GridBagConstraints();
             c.gridx = 1;
-            c.gridy = 2;
+            c.gridy = 3;
             c.anchor = GridBagConstraints.LAST_LINE_END;
             c.weightx = weightX;
             c.insets = insetsNTop;
@@ -123,12 +144,14 @@ public class PlayerInfoPanel extends JPanel {
         if (player == null) {
             // Clears all info
             this.lblName.setText("");
+            this.lblColor.setText("");
             this.lblWalls.setText("");
             this.lblTime.setText("");
             return;
         }
 
         this.lblName.setText(player.getName());
+        this.lblColor.setText(player.getColor().name().toLowerCase());
         this.lblWalls.setText(Integer.toString(player.getWallsRemaining()));
 
         final Time time = player.getTimeRemaining();
