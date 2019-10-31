@@ -375,6 +375,22 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
         }
 
         /**
+         * {@inheritDoc}
+         *
+         * It forces tiles or slots to be exited when the mouse leaves the panel
+         *
+         * Note: handling of this event should be done in either
+         * {@link TileMapPanel#onTileExited(int, int) onTileExited} or
+         * {@link TileMapPanel#onSlotExited(int, int, Orientation) onSlotExited} instead
+         *
+         * @author Paul Teng (260862906)
+         */
+        @Override
+        public void mouseExited(MouseEvent e) {
+            this.tryDispatchExitCall();
+        }
+
+        /**
          * Based on the mouse event, dispatches either a tile-related method or a
          * slot-related method
          *
@@ -453,13 +469,37 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
         }
 
         /**
+         * Triggers the exit events if necessary:
+         * {@link TileMapPanel#onTileExited(int, int) onTileExit} or
+         * {@link TileMapPanel#onSlotExited(int, int, Orientation) onSlotExited}.
+         *
+         * Note: This call resets the internal state; when called multiple times in
+         * sequence, the exit calls can only be dispatched at most once.
+         *
+         * @author Paul Teng (260862906)
+         */
+        private void tryDispatchExitCall() {
+            // Exit the last tile or slot
+            if (this.lastOrientation != null) {
+                TileMapPanel.this.onSlotExited(this.lastX, this.lastY, this.lastOrientation);
+            } else if (this.lastX < SIDE + 1) {
+                TileMapPanel.this.onTileExited(this.lastX, this.lastY);
+            }
+
+            // Then invalid the saved state
+            this.lastX = SIDE + 1;
+            this.lastY = SIDE + 1;
+            this.lastOrientation = null;
+        }
+
+        /**
          * Triggers the {@link TileMapPanel#onSlotEntered(int, int, Orientation)
          * onSlotEntered} event and the exit events if necessary
          *
          * @param row         Row in wall coordinates
          * @param col         Column in wall coordinates
          * @param orientation Orientation
-         * 
+         *
          * @author Paul Teng (260862906)
          */
         private void dispatchEnterSlot(int row, int col, Orientation orientation) {
@@ -468,12 +508,10 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
                 return;
             }
 
-            if (this.lastOrientation != null) {
-                TileMapPanel.this.onSlotExited(this.lastX, this.lastY, this.lastOrientation);
-            } else if (this.lastX < SIDE + 1) {
-                TileMapPanel.this.onTileExited(this.lastX, this.lastY);
-            }
+            // Dispatch and invalidate saved state
+            this.tryDispatchExitCall();
 
+            // Save new state and dispatch
             TileMapPanel.this.onSlotEntered((this.lastX = row), (this.lastY = col),
                     (this.lastOrientation = orientation));
         }
@@ -484,7 +522,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
          *
          * @param row Row in pawn coordinates
          * @param col Column in pawn coordinates
-         * 
+         *
          * @author Paul Teng (260862906)
          */
         private void dispatchEnterTile(int row, int col) {
@@ -493,14 +531,10 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
                 return;
             }
 
-            if (this.lastOrientation != null) {
-                TileMapPanel.this.onSlotExited(this.lastX, this.lastY, this.lastOrientation);
-            } else if (this.lastX < SIDE + 1) {
-                TileMapPanel.this.onTileExited(this.lastX, this.lastY);
-            }
+            // Dispatch and invalidate saved state
+            this.tryDispatchExitCall();
 
-            // tiles do not have an orientation
-            this.lastOrientation = null;
+            // Save new state and dispatch
             TileMapPanel.this.onTileEntered((this.lastX = row), (this.lastY = col));
         }
     }
