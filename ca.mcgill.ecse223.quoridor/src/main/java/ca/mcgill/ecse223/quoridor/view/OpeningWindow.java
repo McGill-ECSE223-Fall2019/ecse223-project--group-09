@@ -147,6 +147,7 @@ public class OpeningWindow extends JFrame {
 		BoardWindow newBoardWindow = new BoardWindow();
 		newBoardWindow.setSize(1000, 700);
 		newBoardWindow.setDefaultCloseOperation(3);
+		newBoardWindow.setLocationRelativeTo(null);
 		newBoardWindow.setVisible(true);
 	}
 
