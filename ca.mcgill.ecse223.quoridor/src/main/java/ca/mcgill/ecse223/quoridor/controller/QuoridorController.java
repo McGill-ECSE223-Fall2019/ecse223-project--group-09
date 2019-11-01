@@ -2091,8 +2091,7 @@ public class QuoridorController {
 		}
 
 		player.setTimeRemaining(p.getRemainingTime());
-
-		// TODO: Figure out how to grab a wall
+		player.setWallInHand(g.hasWallMoveCandidate());
 
 		return player;
 	}
