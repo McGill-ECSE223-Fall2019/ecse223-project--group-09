@@ -1,22 +1,14 @@
 package ca.mcgill.ecse223.quoridor.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import java.awt.GridLayout;
-import java.awt.Rectangle;
-import java.awt.Shape;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -24,15 +16,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
-import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
-
-
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 
 
 /**
@@ -260,25 +248,6 @@ public class BoardWindow extends JFrame {
     private void onDropWallButtonClicked() {
         JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
 
-    }
-
-    public static void main(String[] args) {
-        // This is just a demo of how it could look
-
-        try {
-            // Try to make the frames/windows look *not java like*
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (UnsupportedLookAndFeelException | ClassNotFoundException | InstantiationException
-                | IllegalAccessException ex) {
-            // If we cannot do that, then continue, as apps
-            // will use the default java-look...
-        }
-
-        final BoardWindow frame = new BoardWindow();
-        frame.setTitle("DEMO");
-        frame.setDefaultCloseOperation(3);
-        frame.setSize(800, 550);
-        frame.setVisible(true);
     }
 }
 
