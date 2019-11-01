@@ -249,5 +249,15 @@ public class BoardWindow extends JFrame {
         JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
 
     }
+
+    public static void launchWindow() {
+        BoardWindow newBoardWindow = new BoardWindow();
+        newBoardWindow.setSize(800, 550);
+        newBoardWindow.setDefaultCloseOperation(3);
+        newBoardWindow.setLocationRelativeTo(null);
+
+        newBoardWindow.setVisible(true);
+        newBoardWindow.startFetchInfoThread();
+    }
 }
 

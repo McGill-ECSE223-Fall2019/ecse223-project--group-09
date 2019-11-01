@@ -26,11 +26,6 @@ public class QuoridorApplication {
 			// will use the default java-look...
 		}
 
-		OpeningWindow openWindow = new OpeningWindow();
-		
-		openWindow.setSize(400, 550);
-		openWindow.setDefaultCloseOperation(3);
-		openWindow.setLocationRelativeTo(null);
-		openWindow.setVisible(true);
+		OpeningWindow.launchWindow();
 	}
 }

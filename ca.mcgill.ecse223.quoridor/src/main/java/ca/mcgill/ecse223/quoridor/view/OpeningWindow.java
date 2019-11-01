@@ -14,8 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 
 public class OpeningWindow extends JFrame {
@@ -114,7 +112,7 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the newGameButton is clicked
-	 * 
+	 *
 	 * TODO: Whoever implements these methods needs to add their name
 	 * to the author tag
 	 */
@@ -122,24 +120,18 @@ public class OpeningWindow extends JFrame {
 
 		// Proof that it works
 		//JOptionPane.showMessageDialog(this, "called method newGameButtonActionPerformed\n\nRemember to change this behaviour!");
-		
+
 
 		// Dispose the current window
 		this.dispose();
-		
+
 		// Create the next window
-		BoardWindow newBoardWindow = new BoardWindow();
-		newBoardWindow.setSize(800, 550);
-		newBoardWindow.setDefaultCloseOperation(3);
-		newBoardWindow.setLocationRelativeTo(null);
-		
-		newBoardWindow.setVisible(true);
-		newBoardWindow.startFetchInfoThread();
+		BoardWindow.launchWindow();
 	}
 
 	/**
 	 * This will be called when the loadGameButton is clicked
-	 * 
+	 *
 	 * TODO: Whoever implements these methods needs to add their name
 	 * to the author tag
 	 */
@@ -150,7 +142,7 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the rulesButton is clicked
-	 * 
+	 *
 	 * @author Paul Teng (260862906)
 	 */
 	public void rulesButtonActionPerformed() {
@@ -207,7 +199,7 @@ public class OpeningWindow extends JFrame {
 	 * Creates a popup dialog for the about page
 	 *
 	 * ~~ Group 9 did this project yah ~~
-	 * 
+	 *
 	 * @author Paul Teng (26086290)
 	 */
 	private void showAboutPopup() {
@@ -224,9 +216,9 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the quitGameButton is clicked:
-	 * 
+	 *
 	 * It asks the user again, then quits
-	 * 
+	 *
 	 * @author Paul Teng (260862906)
 	 */
 	public void quitGameButtonActionPerformed() {
@@ -236,6 +228,13 @@ public class OpeningWindow extends JFrame {
 			this.dispose();
 		}
 	}
-	
 
+	public static void launchWindow() {
+		final OpeningWindow openWindow = new OpeningWindow();
+
+		openWindow.setSize(400, 550);
+		openWindow.setDefaultCloseOperation(3);
+		openWindow.setLocationRelativeTo(null);
+		openWindow.setVisible(true);
+	}
 }
