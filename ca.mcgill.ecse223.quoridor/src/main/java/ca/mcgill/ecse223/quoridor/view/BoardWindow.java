@@ -31,7 +31,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 public class BoardWindow extends JFrame {
 
 
-    private static final int UPDATE_DELAY = 200;
+    private static final int UPDATE_DELAY = 350;
 
     // ***** Rendering State Variables *****
     private final DefaultListModel<String> replayList = new DefaultListModel<>();

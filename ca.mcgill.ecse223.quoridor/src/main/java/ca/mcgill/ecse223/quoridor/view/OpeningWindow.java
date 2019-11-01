@@ -132,8 +132,9 @@ public class OpeningWindow extends JFrame {
 		newBoardWindow.setSize(800, 550);
 		newBoardWindow.setDefaultCloseOperation(3);
 		newBoardWindow.setLocationRelativeTo(null);
-
+		
 		newBoardWindow.setVisible(true);
+		newBoardWindow.startFetchInfoThread();
 	}
 
 	/**
