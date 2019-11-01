@@ -4,6 +4,7 @@ import java.awt.Cursor;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.net.URI;
 
 import javax.swing.JButton;
@@ -14,8 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 
 public class OpeningWindow extends JFrame {
@@ -114,7 +113,7 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the newGameButton is clicked
-	 * 
+	 *
 	 * TODO: Whoever implements these methods needs to add their name
 	 * to the author tag
 	 */
@@ -122,23 +121,18 @@ public class OpeningWindow extends JFrame {
 
 		// Proof that it works
 		//JOptionPane.showMessageDialog(this, "called method newGameButtonActionPerformed\n\nRemember to change this behaviour!");
-		
+
 
 		// Dispose the current window
 		this.dispose();
-		
-		// Create the next window
-		BoardWindow newBoardWindow = new BoardWindow();
-		newBoardWindow.setSize(1000, 700);
-		newBoardWindow.setDefaultCloseOperation(3);
-		newBoardWindow.setLocationRelativeTo(null);
 
-		newBoardWindow.setVisible(true);
+		// Create the next window
+		BoardWindow.launchWindow();
 	}
 
 	/**
 	 * This will be called when the loadGameButton is clicked
-	 * 
+	 *
 	 * TODO: Whoever implements these methods needs to add their name
 	 * to the author tag
 	 */
@@ -149,7 +143,7 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the rulesButton is clicked
-	 * 
+	 *
 	 * @author Paul Teng (260862906)
 	 */
 	public void rulesButtonActionPerformed() {
@@ -206,7 +200,7 @@ public class OpeningWindow extends JFrame {
 	 * Creates a popup dialog for the about page
 	 *
 	 * ~~ Group 9 did this project yah ~~
-	 * 
+	 *
 	 * @author Paul Teng (26086290)
 	 */
 	private void showAboutPopup() {
@@ -223,18 +217,25 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the quitGameButton is clicked:
-	 * 
+	 *
 	 * It asks the user again, then quits
-	 * 
+	 *
 	 * @author Paul Teng (260862906)
 	 */
 	public void quitGameButtonActionPerformed() {
 		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Are you sure?", "",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
-			// Dispose will *free* the frame and close it
-			this.dispose();
+			// Generate a close-window event
+			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 		}
 	}
-	
 
+	public static void launchWindow() {
+		final OpeningWindow openWindow = new OpeningWindow();
+
+		openWindow.setSize(400, 550);
+		openWindow.setDefaultCloseOperation(3);
+		openWindow.setLocationRelativeTo(null);
+		openWindow.setVisible(true);
+	}
 }
