@@ -121,6 +121,9 @@ public class BoardWindow extends JFrame {
          */
 
         final JButton dropWall = new JButton("Drop Wall");
+        
+        //should we implement the drop wall as clicking on the wall candidate?
+        
         final JButton rotateWall = new JButton("Rotate Wall");
 
         dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -245,7 +248,7 @@ public class BoardWindow extends JFrame {
     private void onGrabAWallButtonClicked() {
         try{
         	QuoridorController.grabWall();
-        	TOWallCandidate wallCandidate = QuoridorController.getPlayerOfCurrentTurn().getWallCandidate();
+        	TOWallCandidate wallCandidate = QuoridorController.getCurrentWallCandidate();
             gridPanel.setWallCandidate(wallCandidate);
         } catch (Exception e) {
         	System.out.println("No game loaded: create new or select game");

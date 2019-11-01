@@ -686,9 +686,8 @@ public class CucumberStepDefinitions {
 	@And("I shall have a wall in my hand over the board")
 	public void wallOverBoard() {
 		
-		this.currentWall = QuoridorController.getCurrentGrabbedWall();
 		Assert.assertTrue(this.currentWall != null);
-		Assert.assertTrue(this.currentWall == this.wallCandidate.getAssociatedWall());
+		Assert.assertTrue(this.currentWall == QuoridorController.getCurrentGrabbedWall());
 		
 	}
 
@@ -789,7 +788,8 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The wall shall be moved over the board to position \\({int}, {int})")
 	public void wallMoving(int row, int column) {
-		QuoridorController.updateWallPosition(this.currentWall, row, column);
+		Assert.assertTrue(this.wallCandidate.getRow() == row);
+		Assert.assertTrue(this.wallCandidate.getColumn() == column);
 		
 	}
 	

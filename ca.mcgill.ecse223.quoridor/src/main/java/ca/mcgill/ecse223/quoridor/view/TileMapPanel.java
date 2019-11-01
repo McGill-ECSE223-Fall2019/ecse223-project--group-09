@@ -358,19 +358,37 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
      * 
      */
     private void onSlotEntered(int row, int col, Orientation orientation) {
-        //TODO
-    	
+        
+
     	try {
-    		this.wallCandidate.setRow(row);
-    		this.wallCandidate.setColumn(col);
-    		this.wallCandidate.setOrientation(orientation);
+    		int aRow = this.wallCandidate.getRow();
+    		int aCol = this.wallCandidate.getColumn();
+    		Orientation aOrientation = this.wallCandidate.getOrientation();
+    		String side;
+
+    		if(orientation == aOrientation && row == aRow && col == (aCol+1)) {
+    			side = "right";
+
+    		} else if (orientation == aOrientation && row ==aRow && col == (aCol-1)) {
+    			side = "left";
+    		} else if (orientation == aOrientation && col == aCol && row == (aRow +1)) {
+    			side = "up";
+    		} else if (orientation == aOrientation && col == aCol && row == (aRow-1)) {
+    			side ="down";
+    		} else {
+    			side = "noMove";
+    		}
+
+
+    		this.wallCandidate = QuoridorController.moveWall(side);
     		this.repaint();
     	} catch (NullPointerException e) {
-    		 System.out.println("No wall grabbed");
+    		System.out.println("No wall grabbed");
     	}
-    		
     	System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
-                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+    			+ (orientation == Orientation.VERTICAL ? "v" : "h"));
+
+
     }
 
     /**
