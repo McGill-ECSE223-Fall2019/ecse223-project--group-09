@@ -31,6 +31,7 @@ public class TileMapPanel extends JPanel {
 
     private static final Color PAWN_CELL_COLOR = Color.lightGray;
     private static final Color WALL_CELL_COLOR = Color.cyan;
+    private static final Color COORD_CUE_COLOR = Color.red;
     private static final Color CANDIDATE_COLOR = Color.green;
 
     /**
@@ -70,6 +71,8 @@ public class TileMapPanel extends JPanel {
         public void dispatchSlot(int row, int col, Orientation orientation);
     }
 
+    // ***** Rendering state *****
+
     private TOPlayer whitePlayer;
     private TOPlayer blackPlayer;
 
@@ -80,14 +83,26 @@ public class TileMapPanel extends JPanel {
 
     private Orientation junctionOrientation = Orientation.HORIZONTAL;
 
+    // ***** Event handling state *****
+
     private final List<GameBoardListener> listeners = new ArrayList<>();
 
+    private int lastRow;
+    private int lastCol;
+    private Orientation lastOrientation;
+
     public TileMapPanel() {
+        // Invalidate the event state
+        this.invalidateEventState();
+
+        // Setup mouse handlers
         final MouseHandler handler = new MouseHandler();
         this.addMouseListener(handler);
         this.addMouseWheelListener(handler);
         this.addMouseMotionListener(handler);
     }
+
+    // ***** Rendering state related methods *****
 
     /**
      * Set the player with the white pawn, this changes the position being
@@ -174,6 +189,8 @@ public class TileMapPanel extends JPanel {
         this.repaint();
     }
 
+    // ***** Event related methods *****
+
     /**
      * Installs a new game board listener to the current tile map
      *
@@ -201,6 +218,87 @@ public class TileMapPanel extends JPanel {
     }
 
     /**
+     * Invalidates the event state
+     *
+     * @author Paul Teng (260862906)
+     */
+    private void invalidateEventState() {
+        this.lastRow = SIDE + 1;
+        this.lastCol = SIDE + 1;
+        this.lastOrientation = null;
+    }
+
+    /**
+     * Triggers the exit events if necessary:
+     * {@link TileMapPanel#onTileExited(int, int) onTileExit} or
+     * {@link TileMapPanel#onSlotExited(int, int, Orientation) onSlotExited}.
+     *
+     * Note: This call resets the internal state; when called multiple times in
+     * sequence, the exit calls can only be dispatched at most once.
+     *
+     * @author Paul Teng (260862906)
+     */
+    private void tryDispatchExitCall() {
+        // Exit the last tile or slot
+        if (this.lastOrientation != null) {
+            this.onSlotExited(this.lastRow, this.lastCol, this.lastOrientation);
+        } else if (0 < this.lastRow && this.lastRow < SIDE + 1) {
+            this.onTileExited(this.lastRow, this.lastCol);
+        }
+
+        // Then invalid the saved state
+        this.invalidateEventState();
+        this.repaint();
+    }
+
+    /**
+     * Triggers the {@link TileMapPanel#onSlotEntered(int, int, Orientation)
+     * onSlotEntered} event and the exit events if necessary
+     *
+     * @param row         Row in wall coordinates
+     * @param col         Column in wall coordinates
+     * @param orientation Orientation
+     *
+     * @author Paul Teng (260862906)
+     */
+    private void dispatchEnterSlot(int row, int col, Orientation orientation) {
+        // If same as previous event, then we never exited, do not generate event
+        if (this.lastRow == row && this.lastCol == col && this.lastOrientation == orientation) {
+            return;
+        }
+
+        // Dispatch and invalidate saved state
+        this.tryDispatchExitCall();
+
+        // Save new state and dispatch
+        this.onSlotEntered((this.lastRow = row), (this.lastCol = col), (this.lastOrientation = orientation));
+        this.repaint();
+    }
+
+    /**
+     * Triggers the {@link TileMapPanel#onTileEntered(int, int) onTileEntered} event
+     * and the exit events if necessary
+     *
+     * @param row Row in pawn coordinates
+     * @param col Column in pawn coordinates
+     *
+     * @author Paul Teng (260862906)
+     */
+    private void dispatchEnterTile(int row, int col) {
+        // If same as previous event, then we never exited, do not generate event
+        if (this.lastRow == row && this.lastCol == col && this.lastOrientation == null) {
+            return;
+        }
+
+        // Dispatch and invalidate saved state
+        this.tryDispatchExitCall();
+
+        // Save new state and dispatch
+        this.onTileEntered((this.lastRow = row), (this.lastCol = col));
+        this.repaint();
+    }
+
+    /**
      * {@inheritDoc}
      *
      * We draw here
@@ -218,12 +316,16 @@ public class TileMapPanel extends JPanel {
 
         this.drawDividers(g);
 
+        // This is a debug-level call
+        // Feel free to comment it out
+        this.drawSelectedPlace(g);
+
         if (this.shouldDrawWhitePlayer()) {
-            this.drawPawn(g, this.whitePlayer.getRow(), this.whitePlayer.getColumn(), Color.white);
+            this.drawPawn(g, this.whitePlayer.getRow(), this.whitePlayer.getColumn(), Color.white, true);
         }
 
         if (this.shouldDrawBlackPlayer()) {
-            this.drawPawn(g, this.blackPlayer.getRow(), this.blackPlayer.getColumn(), Color.black);
+            this.drawPawn(g, this.blackPlayer.getRow(), this.blackPlayer.getColumn(), Color.black, true);
         }
 
         for (final TOWall wall : this.whiteWalls) {
@@ -236,7 +338,7 @@ public class TileMapPanel extends JPanel {
 
         if (this.shouldDrawWallCandidate()) {
             this.drawWall(g, this.wallCandidate.getRow(), this.wallCandidate.getColumn(),
-                    this.wallCandidate.getOrientation(), CANDIDATE_COLOR);
+                    this.wallCandidate.getOrientation(), CANDIDATE_COLOR, true);
         }
     }
 
@@ -282,10 +384,11 @@ public class TileMapPanel extends JPanel {
      * @param row   Row in pawn coordinates
      * @param col   Column in pawn coordinates
      * @param color Color
+     * @param fill  If pawn should be filled or not
      *
      * @author Paul Teng (260862906)
      */
-    private void drawPawn(Graphics g, int row, int col, Color color) {
+    private void drawPawn(Graphics g, int row, int col, Color color, boolean fill) {
         g.setColor(color);
 
         final Dimension d = this.getSize();
@@ -297,7 +400,11 @@ public class TileMapPanel extends JPanel {
 
         final int baseX = tileX * (col - 1);
         final int baseY = tileY * (SIDE - row);
-        g.fillOval(baseX + padX, baseY + padY, tileX - 2 * padX, tileY - 2 * padY);
+        if (fill) {
+            g.fillOval(baseX + padX, baseY + padY, tileX - 2 * padX, tileY - 2 * padY);
+        } else {
+            g.drawOval(baseX + padX, baseY + padY, tileX - 2 * padX, tileY - 2 * padY);
+        }
     }
 
     /**
@@ -341,7 +448,7 @@ public class TileMapPanel extends JPanel {
         final int col = wall.getColumn();
         final Orientation orientation = wall.getOrientation();
 
-        this.drawWall(g, row, col, orientation, color);
+        this.drawWall(g, row, col, orientation, color, true);
     }
 
     /**
@@ -352,10 +459,11 @@ public class TileMapPanel extends JPanel {
      * @param col         Column in wall coordaintes
      * @param orientation Orientation of wall
      * @param color       Color
+     * @param fill        If wall should be filled or not
      *
      * @author Paul Teng (260862906)
      */
-    private void drawWall(Graphics g, int row, int col, Orientation orientation, Color color) {
+    private void drawWall(Graphics g, int row, int col, Orientation orientation, Color color, boolean fill) {
         if (orientation == null) {
             // We are done
             return;
@@ -370,19 +478,55 @@ public class TileMapPanel extends JPanel {
         final int padX = tileX / DIV;
         final int padY = tileY / DIV;
 
+        final int x, y, width, height;
         switch (orientation) {
         case VERTICAL: {
             final int baseX = tileX * col;
             final int baseY = tileY * (SIDE - row - 1);
-            g.fillRect(baseX - padX, baseY + padY, 2 * padX, 2 * (tileY - padY));
+            x = baseX - padX;
+            y = baseY + padY;
+            width = 2 * padX;
+            height = 2 * (tileY - padY);
             break;
         }
         case HORIZONTAL: {
             final int baseX = tileX * (col - 1);
             final int baseY = tileY * (SIDE - row);
-            g.fillRect(baseX + padX, baseY - padY, 2 * (tileX - padX), 2 * padY);
+            x = baseX + padX;
+            y = baseY - padY;
+            width = 2 * (tileX - padX);
+            height = 2 * padY;
             break;
         }
+        default:
+            return;
+        }
+
+        if (fill) {
+            g.fillRect(x, y, width, height);
+        } else {
+            g.drawRect(x, y, width, height);
+        }
+    }
+
+    /**
+     * This is a very debug-level method. It highlights the selected place.
+     *
+     * @param g Graphics object
+     *
+     * @author Paul Teng (260862906)
+     */
+    private void drawSelectedPlace(Graphics g) {
+        final int cachedRow = this.lastRow;
+        final int cachedCol = this.lastCol;
+        final Orientation cachedOrientation = this.lastOrientation;
+
+        if (cachedOrientation == null) {
+            // Draw over a tile
+            this.drawPawn(g, cachedRow, cachedCol, COORD_CUE_COLOR, false);
+        } else {
+            // Draw over a slot
+            this.drawWall(g, cachedRow, cachedCol, cachedOrientation, COORD_CUE_COLOR, false);
         }
     }
 
@@ -521,11 +665,6 @@ public class TileMapPanel extends JPanel {
      */
     private final class MouseHandler extends MouseAdapter {
 
-        // ***** State to make magic in tile/slot enter/exit methods *****
-        private int lastX = SIDE + 1;
-        private int lastY = SIDE + 1;
-        private Orientation lastOrientation = null;
-
         /**
          * {@inheritDoc}
          *
@@ -551,7 +690,7 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseClicked(MouseEvent e) {
-            defaultMouseEventHandler(e, TileMapPanel.this::onTileClicked, TileMapPanel.this::onSlotClicked);
+            this.defaultMouseEventHandler(e, TileMapPanel.this::onTileClicked, TileMapPanel.this::onSlotClicked);
         }
 
         /**
@@ -567,7 +706,8 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseMoved(MouseEvent e) {
-            this.defaultMouseEventHandler(e, this::dispatchEnterTile, this::dispatchEnterSlot);
+            this.defaultMouseEventHandler(e, TileMapPanel.this::dispatchEnterTile,
+                    TileMapPanel.this::dispatchEnterSlot);
         }
 
         /**
@@ -583,7 +723,7 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseExited(MouseEvent e) {
-            this.tryDispatchExitCall();
+            TileMapPanel.this.tryDispatchExitCall();
         }
 
         /**
@@ -662,76 +802,6 @@ public class TileMapPanel extends JPanel {
             }
 
             tileMethod.dispatchTile(row, col);
-        }
-
-        /**
-         * Triggers the exit events if necessary:
-         * {@link TileMapPanel#onTileExited(int, int) onTileExit} or
-         * {@link TileMapPanel#onSlotExited(int, int, Orientation) onSlotExited}.
-         *
-         * Note: This call resets the internal state; when called multiple times in
-         * sequence, the exit calls can only be dispatched at most once.
-         *
-         * @author Paul Teng (260862906)
-         */
-        private void tryDispatchExitCall() {
-            // Exit the last tile or slot
-            if (this.lastOrientation != null) {
-                TileMapPanel.this.onSlotExited(this.lastX, this.lastY, this.lastOrientation);
-            } else if (this.lastX < SIDE + 1) {
-                TileMapPanel.this.onTileExited(this.lastX, this.lastY);
-            }
-
-            // Then invalid the saved state
-            this.lastX = SIDE + 1;
-            this.lastY = SIDE + 1;
-            this.lastOrientation = null;
-        }
-
-        /**
-         * Triggers the {@link TileMapPanel#onSlotEntered(int, int, Orientation)
-         * onSlotEntered} event and the exit events if necessary
-         *
-         * @param row         Row in wall coordinates
-         * @param col         Column in wall coordinates
-         * @param orientation Orientation
-         *
-         * @author Paul Teng (260862906)
-         */
-        private void dispatchEnterSlot(int row, int col, Orientation orientation) {
-            // If same as previous event, then we never exited, do not generate event
-            if (this.lastX == row && this.lastY == col && this.lastOrientation == orientation) {
-                return;
-            }
-
-            // Dispatch and invalidate saved state
-            this.tryDispatchExitCall();
-
-            // Save new state and dispatch
-            TileMapPanel.this.onSlotEntered((this.lastX = row), (this.lastY = col),
-                    (this.lastOrientation = orientation));
-        }
-
-        /**
-         * Triggers the {@link TileMapPanel#onTileEntered(int, int) onTileEntered} event
-         * and the exit events if necessary
-         *
-         * @param row Row in pawn coordinates
-         * @param col Column in pawn coordinates
-         *
-         * @author Paul Teng (260862906)
-         */
-        private void dispatchEnterTile(int row, int col) {
-            // If same as previous event, then we never exited, do not generate event
-            if (this.lastX == row && this.lastY == col && this.lastOrientation == null) {
-                return;
-            }
-
-            // Dispatch and invalidate saved state
-            this.tryDispatchExitCall();
-
-            // Save new state and dispatch
-            TileMapPanel.this.onTileEntered((this.lastX = row), (this.lastY = col));
         }
     }
 }
