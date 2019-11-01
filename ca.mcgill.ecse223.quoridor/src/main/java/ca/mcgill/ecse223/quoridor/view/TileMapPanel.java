@@ -238,7 +238,7 @@ public class TileMapPanel extends JPanel {
      *
      * @author Paul Teng (260862906)
      */
-    private void tryDispatchExitCall() {
+    public void dispatchExitEvent() {
         // Exit the last tile or slot
         if (this.lastOrientation != null) {
             this.onSlotExited(this.lastRow, this.lastCol, this.lastOrientation);
@@ -261,14 +261,19 @@ public class TileMapPanel extends JPanel {
      *
      * @author Paul Teng (260862906)
      */
-    private void dispatchEnterSlot(int row, int col, Orientation orientation) {
+    public void dispatchEnterSlotEvent(int row, int col, Orientation orientation) {
         // If same as previous event, then we never exited, do not generate event
         if (this.lastRow == row && this.lastCol == col && this.lastOrientation == orientation) {
             return;
         }
 
         // Dispatch and invalidate saved state
-        this.tryDispatchExitCall();
+        this.dispatchExitEvent();
+
+        // This will validate the parameters before dispatching
+        if (orientation == null || row < 1 || row > SIDE - 1 || col < 1 || col > SIDE - 1) {
+            return;
+        }
 
         // Save new state and dispatch
         this.onSlotEntered((this.lastRow = row), (this.lastCol = col), (this.lastOrientation = orientation));
@@ -284,14 +289,19 @@ public class TileMapPanel extends JPanel {
      *
      * @author Paul Teng (260862906)
      */
-    private void dispatchEnterTile(int row, int col) {
+    public void dispatchEnterTileEvent(final int row, final int col) {
         // If same as previous event, then we never exited, do not generate event
         if (this.lastRow == row && this.lastCol == col && this.lastOrientation == null) {
             return;
         }
 
         // Dispatch and invalidate saved state
-        this.tryDispatchExitCall();
+        this.dispatchExitEvent();
+
+        // This will validate the parameters before dispatching
+        if (row < 1 || row > SIDE || col < 1 || col > SIDE) {
+            return;
+        }
 
         // Save new state and dispatch
         this.onTileEntered((this.lastRow = row), (this.lastCol = col));
@@ -706,8 +716,8 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseMoved(MouseEvent e) {
-            this.defaultMouseEventHandler(e, TileMapPanel.this::dispatchEnterTile,
-                    TileMapPanel.this::dispatchEnterSlot);
+            this.defaultMouseEventHandler(e, TileMapPanel.this::dispatchEnterTileEvent,
+                    TileMapPanel.this::dispatchEnterSlotEvent);
         }
 
         /**
@@ -723,7 +733,7 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseExited(MouseEvent e) {
-            TileMapPanel.this.tryDispatchExitCall();
+            TileMapPanel.this.dispatchExitEvent();
         }
 
         /**
