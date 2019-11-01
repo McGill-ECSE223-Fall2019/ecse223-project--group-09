@@ -2290,6 +2290,10 @@ public class QuoridorController {
 			final Tile tile = move.getTargetTile();
 			toWall.setRow(tile.getRow());
 			toWall.setColumn(tile.getColumn());
+
+			if (move != null && move.getGame() != null) {
+				toWall.SetGrabbed(move.getGame().getWallMoveCandidate() == move);
+			}
 		}
 		return toWall;
 	}
