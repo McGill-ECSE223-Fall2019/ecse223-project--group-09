@@ -213,9 +213,16 @@ public class BoardWindow extends JFrame {
 
     /**
      * This method is called when the quit-game button is clicked
+     *
+     * We don't really System.exit, we just go back to the title screen
+     *
+     * @author Paul Teng (260862906)
      */
     private void onQuitGameButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Quit game is not implemented yet!");
+        this.stopFetchInfoThread();
+        this.dispose();
+
+        OpeningWindow.launchWindow();
     }
 
     /**
@@ -238,7 +245,7 @@ public class BoardWindow extends JFrame {
         } catch (Exception e) {
         	System.out.println("No game loaded: create new or select game");
         }
-        
+
 
     }
 
