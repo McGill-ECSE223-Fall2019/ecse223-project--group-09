@@ -129,7 +129,7 @@ public class OpeningWindow extends JFrame {
 		
 		// Create the next window
 		BoardWindow newBoardWindow = new BoardWindow();
-		newBoardWindow.setSize(1000, 700);
+		newBoardWindow.setSize(800, 550);
 		newBoardWindow.setDefaultCloseOperation(3);
 		newBoardWindow.setLocationRelativeTo(null);
 
