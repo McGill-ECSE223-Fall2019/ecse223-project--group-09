@@ -4,6 +4,7 @@ import java.awt.Cursor;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.net.URI;
 
 import javax.swing.JButton;
@@ -224,8 +225,8 @@ public class OpeningWindow extends JFrame {
 	public void quitGameButtonActionPerformed() {
 		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Are you sure?", "",
 				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
-			// Dispose will *free* the frame and close it
-			this.dispose();
+			// Generate a close-window event
+			this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 		}
 	}
 
