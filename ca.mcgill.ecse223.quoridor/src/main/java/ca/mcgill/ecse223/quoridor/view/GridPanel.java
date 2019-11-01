@@ -2,15 +2,16 @@ package ca.mcgill.ecse223.quoridor.view;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 
 /**
  * Creates a panel for the board's grid
@@ -58,16 +59,30 @@ public class GridPanel extends JPanel {
     }
 
     /**
+     * Returns the tile-map panel instance associated with this grid panel
+     *
+     * @return the tile-map panel instance, never null
+     *
+     * @author Paul Teng (260862906)
+     */
+    public TileMapPanel getTileMapPanel() {
+        return this.tileMap;
+    }
+
+    // ***** Forwarding common methods to tile-map panel instance *****
+
+    /**
      * Set the player with the white pawn, this changes the position being
      * displayed.
      *
      * @param whitePlayer white player
      *
      * @author Paul Teng (260862906)
+     *
+     * @see TileMapPanel#setWhitePlayer(TOPlayer)
      */
-    public void setWhitePlayer(TOPlayer whitePlayer) {
-        this.tileMap.whitePlayer = whitePlayer;
-        this.repaint();
+    public final void setWhitePlayer(TOPlayer whitePlayer) {
+        this.tileMap.setWhitePlayer(whitePlayer);
     }
 
     /**
@@ -77,10 +92,11 @@ public class GridPanel extends JPanel {
      * @param blackPlayer black player
      *
      * @author Paul Teng (260862906)
+     *
+     * @see TileMapPanel#setBlackPlayer(TOPlayer)
      */
-    public void setBlackPlayer(TOPlayer blackPlayer) {
-        this.tileMap.blackPlayer = blackPlayer;
-        this.repaint();
+    public final void setBlackPlayer(TOPlayer blackPlayer) {
+        this.tileMap.setBlackPlayer(blackPlayer);
     }
 
     /**
@@ -89,10 +105,11 @@ public class GridPanel extends JPanel {
      * @param walls walls of the white player
      *
      * @author Paul Teng (260862906)
+     *
+     * @see TileMapPanel#setWhiteWalls(List)
      */
-    public void setWhiteWalls(final List<TOWall> walls) {
-        this.tileMap.whiteWalls = walls != null ? walls : Collections.emptyList();
-        this.repaint();
+    public final void setWhiteWalls(final List<TOWall> walls) {
+        this.tileMap.setWhiteWalls(walls);
     }
 
     /**
@@ -101,10 +118,11 @@ public class GridPanel extends JPanel {
      * @param walls walls of the black player
      *
      * @author Paul Teng (260862906)
+     *
+     * @see TileMapPanel#setBlackWalls(List)
      */
-    public void setBlackWalls(final List<TOWall> walls) {
-        this.tileMap.blackWalls = walls != null ? walls : Collections.emptyList();
-        this.repaint();
+    public final void setBlackWalls(final List<TOWall> walls) {
+        this.tileMap.setBlackWalls(walls);
     }
 
     /**
@@ -113,10 +131,60 @@ public class GridPanel extends JPanel {
      * @param wallCandidate A wall candidate
      *
      * @author Paul Teng (260862906)
+     *
+     * @see TileMapPanel#setWallCandidate(TOWallCandidate)
      */
-    public void setWallCandidate(final TOWallCandidate wallCandidate) {
-        this.tileMap.wallCandidate = wallCandidate;
-        this.repaint();
+    public final void setWallCandidate(final TOWallCandidate wallCandidate) {
+        this.tileMap.setWallCandidate(wallCandidate);
     }
 
+    /**
+     * Returns the current wall candidate
+     *
+     * @return the current wall candidate, null if none were set
+     *
+     * @author Paul Teng (260862906)
+     */
+    public final TOWallCandidate getWallCandidate() {
+        return this.tileMap.getWallCandidate();
+    }
+
+    /**
+     * Sets the wall orientation on slot junctions
+     *
+     * @param junctionOrientation The new orientation for junctions
+     *
+     * @author Paul Teng (260862906)
+     *
+     * @see TileMapPanel#setJunctionOrientation(Orientation)
+     */
+    public final void setJunctionOrientation(final Orientation junctionOrientation) {
+        this.tileMap.setJunctionOrientation(junctionOrientation);
+    }
+
+    /**
+     * Installs a new game board listener to the current tile map
+     *
+     * @param lis The listener being installed, null does nothing
+     *
+     * @author Paul Teng (260862906)
+     *
+     * @see TileMapPanel#addGameBoardListener(GameBoardListener)
+     */
+    public final void addGameBoardListener(final GameBoardListener lis) {
+        this.tileMap.addGameBoardListener(lis);
+    }
+
+    /**
+     * Removes a previously installed game board listener from the current tile map
+     *
+     * @param lis The listener being removed, null or non-installed does nothing
+     *
+     * @author Paul Teng (260862906)
+     *
+     * @see TileMapPanel#removeGameBoardListener(GameBoardListener)
+     */
+    public final void removeGameBoardListener(final GameBoardListener lis) {
+        this.tileMap.removeGameBoardListener(lis);
+    }
 }

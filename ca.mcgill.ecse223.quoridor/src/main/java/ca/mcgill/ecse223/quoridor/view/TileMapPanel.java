@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
@@ -24,7 +23,7 @@ import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
  *
  * @author Paul Teng (260862906)
  */
-/* package */ class TileMapPanel extends JPanel {
+public class TileMapPanel extends JPanel {
 
     public static final int SIDE = 9;
 
@@ -71,14 +70,15 @@ import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
         public void dispatchSlot(int row, int col, Orientation orientation);
     }
 
-    public TOPlayer whitePlayer;
-    public TOPlayer blackPlayer;
+    private TOPlayer whitePlayer;
+    private TOPlayer blackPlayer;
 
-    public List<TOWall> whiteWalls = Collections.emptyList();
-    public List<TOWall> blackWalls = Collections.emptyList();
+    private List<TOWall> whiteWalls = Collections.emptyList();
+    private List<TOWall> blackWalls = Collections.emptyList();
 
-    public TOWallCandidate wallCandidate;
+    private TOWallCandidate wallCandidate;
 
+    private Orientation junctionOrientation = Orientation.HORIZONTAL;
 
     private final List<GameBoardListener> listeners = new ArrayList<>();
 
@@ -89,6 +89,90 @@ import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
         this.addMouseMotionListener(handler);
     }
 
+    /**
+     * Set the player with the white pawn, this changes the position being
+     * displayed.
+     *
+     * @param whitePlayer white player
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setWhitePlayer(TOPlayer whitePlayer) {
+        this.whitePlayer = whitePlayer;
+        this.repaint();
+    }
+
+    /**
+     * Set the player with the black pawn, this changes the position being
+     * displayed.
+     *
+     * @param blackPlayer black player
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setBlackPlayer(TOPlayer blackPlayer) {
+        this.blackPlayer = blackPlayer;
+        this.repaint();
+    }
+
+    /**
+     * Sets the list of walls associated to the white player
+     *
+     * @param walls walls of the white player
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setWhiteWalls(final List<TOWall> walls) {
+        this.whiteWalls = walls != null ? walls : Collections.emptyList();
+        this.repaint();
+    }
+
+    /**
+     * Sets the list of walls associated to the black player
+     *
+     * @param walls walls of the black player
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setBlackWalls(final List<TOWall> walls) {
+        this.blackWalls = walls != null ? walls : Collections.emptyList();
+        this.repaint();
+    }
+
+    /**
+     * Sets a wall candidate
+     *
+     * @param wallCandidate A wall candidate
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setWallCandidate(final TOWallCandidate wallCandidate) {
+        this.wallCandidate = wallCandidate;
+        this.repaint();
+    }
+
+    /**
+     * Returns the current wall candidate
+     *
+     * @return the current wall candidate, null if none were set
+     *
+     * @author Paul Teng (260862906)
+     */
+    public TOWallCandidate getWallCandidate() {
+        return this.wallCandidate;
+    }
+
+    /**
+     * Sets the wall orientation on slot junctions
+     *
+     * @param junctionOrientation The new orientation for junctions
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setJunctionOrientation(final Orientation junctionOrientation) {
+        this.junctionOrientation = junctionOrientation != null ? junctionOrientation : Orientation.HORIZONTAL;
+        this.repaint();
+    }
 
     /**
      * Installs a new game board listener to the current tile map
@@ -182,9 +266,9 @@ import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 
     /**
      * Check if we should draw the wall candidate
-     * 
+     *
      * @return true if we should, false otherwise
-     * 
+     *
      * @author Paul Teng (260862906)
      */
     private boolean shouldDrawWallCandidate() {
@@ -262,13 +346,13 @@ import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 
     /**
      * Draws the wall at a specific spot
-     * 
+     *
      * @param g           Graphics object
      * @param row         Row in wall coordinates
      * @param col         Column in wall coordaintes
      * @param orientation Orientation of wall
      * @param color       Color
-     * 
+     *
      * @author Paul Teng (260862906)
      */
     private void drawWall(Graphics g, int row, int col, Orientation orientation, Color color) {
