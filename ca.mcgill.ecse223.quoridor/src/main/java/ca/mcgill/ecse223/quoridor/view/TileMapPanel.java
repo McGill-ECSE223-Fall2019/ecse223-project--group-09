@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,10 +14,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
-import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 
 /**
  * This is only the tile part
@@ -78,14 +79,41 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 
     public TOWallCandidate wallCandidate;
 
-    public Orientation junctionOrientation = Orientation.HORIZONTAL;
-    
-    
+
+    private final List<GameBoardListener> listeners = new ArrayList<>();
+
     public TileMapPanel() {
         final MouseHandler handler = new MouseHandler();
         this.addMouseListener(handler);
         this.addMouseWheelListener(handler);
         this.addMouseMotionListener(handler);
+    }
+
+
+    /**
+     * Installs a new game board listener to the current tile map
+     *
+     * @param lis The listener being installed, null does nothing
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void addGameBoardListener(final GameBoardListener lis) {
+        if (lis != null) {
+            this.listeners.add(lis);
+        }
+    }
+
+    /**
+     * Removes a previously installed game board listener from the current tile map
+     *
+     * @param lis The listener being removed, null or non-installed does nothing
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void removeGameBoardListener(final GameBoardListener lis) {
+        if (lis != null) {
+            this.listeners.remove(lis);
+        }
     }
 
     /**
@@ -275,133 +303,131 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
     }
 
     /**
-     * This is called when the mouse wheel rotates
+     * This is called when the mouse wheel rotates.
+     *
+     * Please handle the event through
+     * {@link GameBoardListener#onMouseWheelRotated(double)}.
      *
      * @param clicks The amount the wheel rotated
+     *
+     * @author Paul Teng (260862906)
      */
-    private void onMouseWheelRotate(double clicks) {
-        // TODO
-
+    private void onMouseWheelRotate(final double clicks) {
+        // Do not change this to enhanced for loop
+        for (int i = 0; i < listeners.size(); ++i) {
+            listeners.get(i).onMouseWheelRotated(clicks);
+        }
     }
 
     /**
-     * This is called when any pawn tile is clicked on
+     * This is called when any pawn tile is clicked on.
+     *
+     * Please handle the event through
+     * {@link GameBoardListener#onTileClicked(int, int)}.
      *
      * @param row Row in pawn coordinates
      * @param col Column in pawn coordinates
+     *
+     * @author Paul Teng (260862906)
      */
-    private void onTileClicked(int row, int col) {
-        // TODO
-        System.out.println("Clicked on tile: " + Character.toString((char) (col - 1 + 'a')) + row);
+    private void onTileClicked(final int row, final int col) {
+        // Do not change this to enhanced for loop
+        for (int i = 0; i < listeners.size(); ++i) {
+            listeners.get(i).onTileClicked(row, col);
+        }
     }
 
     /**
-     * This is called when any wall slot is clicked on
+     * This is called when any wall slot is clicked on.
+     *
+     * Please handle the event through
+     * {@link GameBoardListener#onSlotClicked(int, int, Orientation)}.
      *
      * @param row         Row in wall coordinates
      * @param col         Column in wall coordinates
      * @param orientation Orientation
-     * 
-     * @author alixe
+     *
+     * @author Paul Teng (260862906)
      */
-    private void onSlotClicked(int row, int col, Orientation orientation) {
-        // TODO
-    	try {
-    		this.wallCandidate.setColumn(col);
-    		this.wallCandidate.setRow(row);
-    		this.wallCandidate.setOrientation(orientation);
-    		
-    		String position = Character.toString((char) (col - 1 + 'a')) + row + (orientation == Orientation.VERTICAL ? "v" : "h");
-    		
-    		if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(this, "Do you want to place your wall here?", "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)) {
-    			QuoridorController.moveWall(position);
-    			JOptionPane.showMessageDialog(this, "Select 'Drop Wall' to confirm move");
-    		}
-    		
-    	} catch (NullPointerException e) {
-    		System.out.println("No wall grabbed");
-    	}
-    	
-        System.out.println(
-                Character.toString((char) (col - 1 + 'a')) + row + (orientation == Orientation.VERTICAL ? "v" : "h"));
+    private void onSlotClicked(final int row, final int col, final Orientation orientation) {
+        // Do not change this to enhanced for loop
+        for (int i = 0; i < listeners.size(); ++i) {
+            listeners.get(i).onSlotClicked(row, col, orientation);
+        }
     }
 
     /**
      * This is called when mouse enters any pawn tile
      *
+     * Please handle the event through
+     * {@link GameBoardListener#onTileEntered(int, int)}.
+     *
      * @param row Row in pawn coordinates
      * @param col Column in pawn coordinates
+     *
+     * @author Paul Teng (260862906)
      */
-    private void onTileEntered(int row, int col) {
-        // TODO
-        System.out.println("Entered tile: " + Character.toString((char) (col - 1 + 'a')) + row);
+    private void onTileEntered(final int row, final int col) {
+        // Do not change this to enhanced for loop
+        for (int i = 0; i < listeners.size(); ++i) {
+            listeners.get(i).onTileEntered(row, col);
+        }
     }
 
     /**
      * This is called when mouse leaves any pawn tile
      *
+     * Please handle the event through
+     * {@link GameBoardListener#onTileExited(int, int)}.
+     *
      * @param row Row in pawn coordinates
      * @param col Column in pawn coordinates
+     *
+     * @author Paul Teng (260862906)
      */
-    private void onTileExited(int row, int col) {
-        // TODO
-        System.out.println("Exited tile: " + Character.toString((char) (col - 1 + 'a')) + row);
+    private void onTileExited(final int row, final int col) {
+        // Do not change this to enhanced for loop
+        for (int i = 0; i < listeners.size(); ++i) {
+            listeners.get(i).onTileExited(row, col);
+        }
     }
 
     /**
-     * This is called when mouse enters any wall slot
+     * This is called when mouse enters any wall slot.
+     *
+     * Please handle the event through
+     * {@link GameBoardListener#onSlotEntered(int, int, Orientation)}.
      *
      * @param row         Row in wall coordinates
      * @param col         Column in wall coordinates
      * @param orientation Orientation
-     * @author alixe
-     * 
+     *
+     * @author Paul Teng (260862906)
      */
-    private void onSlotEntered(int row, int col, Orientation orientation) {
-        
-
-    	try {
-    		int aRow = this.wallCandidate.getRow();
-    		int aCol = this.wallCandidate.getColumn();
-    		Orientation aOrientation = this.wallCandidate.getOrientation();
-    		String side;
-
-    		if(orientation == aOrientation && row == aRow && col == (aCol+1)) {
-    			side = "right";
-
-    		} else if (orientation == aOrientation && row ==aRow && col == (aCol-1)) {
-    			side = "left";
-    		} else if (orientation == aOrientation && col == aCol && row == (aRow +1)) {
-    			side = "up";
-    		} else if (orientation == aOrientation && col == aCol && row == (aRow-1)) {
-    			side ="down";
-    		} else {
-    			side = "noMove";
-    		}
-
-
-    		this.wallCandidate = QuoridorController.moveWall(side);
-    		this.repaint();
-    	} catch (NullPointerException e) {
-    		System.out.println("No wall grabbed");
-    	}
-    	System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
-    			+ (orientation == Orientation.VERTICAL ? "v" : "h"));
-
-
+    private void onSlotEntered(final int row, final int col, final Orientation orientation) {
+        // Do not change this to enhanced for loop
+        for (int i = 0; i < listeners.size(); ++i) {
+            listeners.get(i).onSlotEntered(row, col, orientation);
+        }
     }
 
     /**
-     * This is called when mouse leaves any wall slot
+     * This is called when mouse leaves any wall slot.
+     *
+     * Please handle the event through
+     * {@link GameBoardListener#onSlotExited(int, int, Orientation)}.
      *
      * @param row         Row in wall coordinates
      * @param col         Column in wall coordinates
      * @param orientation Orientation
+     *
+     * @author Paul Teng (260862906)
      */
     private void onSlotExited(int row, int col, Orientation orientation) {
-        // TODO
-        System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row
-                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+        // Do not change this to enhanced for loop
+        for (int i = 0; i < listeners.size(); ++i) {
+            listeners.get(i).onSlotExited(row, col, orientation);
+        }
     }
 
     /**
