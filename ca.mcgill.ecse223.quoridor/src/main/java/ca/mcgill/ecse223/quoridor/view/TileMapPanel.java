@@ -111,7 +111,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
         }
 
         if (this.shouldDrawBlackPlayer()) {
-            this.drawPawn(g, this.blackPlayer.getRow(), this.blackPlayer.getColumn(), Color.white);
+            this.drawPawn(g, this.blackPlayer.getRow(), this.blackPlayer.getColumn(), Color.black);
         }
 
         for (final TOWall wall : this.whiteWalls) {
