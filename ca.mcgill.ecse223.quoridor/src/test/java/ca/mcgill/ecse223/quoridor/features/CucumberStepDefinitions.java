@@ -113,18 +113,19 @@ public class CucumberStepDefinitions {
 
 	@And("I do not have a wall in my hand")
 	public void iDoNotHaveAWallInMyHand() {
-		// GUI-related feature -- TODO for later
-		throw new PendingException();
-
-		// Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
+		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
 	}
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
-		// GUI-related feature -- TODO for later
-		throw new PendingException();
+		if (!QuoridorController.getPlayerOfCurrentTurn().hasWallInHand()) {
+			// Then we get the player to grab a wall
+			QuoridorController.grabWall();
+		}
 
-		// Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
+		// At this point, there should be a wall that is grabbed
+		// we assert it again just to be sure...
+		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
 	}
 	
 	@Given("^A new game is initializing$")
