@@ -120,7 +120,7 @@ public class QuoridorController {
 	 * @author Barry Chen 
 	 * 
 	 * @param none
-	 * @returns initialized board
+	 * @return initialized board
 	 * 
 	 * This method initialize the board which place both players' pawn at its initial position
 	 * 
@@ -443,7 +443,7 @@ public class QuoridorController {
 	 * @param row The row of the wall.
 	 * @param column The column of the wall
 	 * @param orientation Orientation of the wall
-	 * @returns true if the wall move is finalized, false otherwise
+	 * @return true if the wall move is finalized, false otherwise
 	 *
 	 * @author Mohamed Mohamed
 	 */
@@ -825,7 +825,7 @@ public class QuoridorController {
 	 *
 	 * @param row Row of pawn
 	 * @param column Column of pawn
-	 * @returns true if position is valid, false otherwise
+	 * @return true if position is valid, false otherwise
 	 *
 	 * @author Group 9
 	 */
@@ -884,7 +884,7 @@ public class QuoridorController {
 	 * @param row Row of wall
 	 * @param column Column of wall
 	 * @param orientation Orientation of wall
-	 * @returns true if position is valid, false otherwise
+	 * @return true if position is valid, false otherwise
 	 *
 	 * @author Group 9
 	 */
@@ -906,7 +906,7 @@ public class QuoridorController {
 	 * @param row Row of wall
 	 * @param column Column of wall
 	 * @param orientation Orientation of wall
-	 * @returns true if position is valid, false otherwise
+	 * @return true if position is valid, false otherwise
 	 *
 	 * @author Group 9
 	 */
@@ -1011,7 +1011,7 @@ public class QuoridorController {
 	 * 
 	 * @param filePath The file being saved to
 	 * @param overwriteIfExists Existing file will only be overwritten if true
-	 * @returns false if we do not overwrite, true if save operation succeeds
+	 * @return false if we do not overwrite, true if save operation succeeds
 	 * @throws IOException If writing operation fails
 	 * 
 	 * @author Paul Teng (260862906)
@@ -1992,7 +1992,7 @@ public class QuoridorController {
 
 	/**
 	 *
-	 * @returns the player associated with the current turn
+	 * @return the player associated with the current turn
 	 *
 	 * @author Paul Teng (260862906)
 	 */
@@ -2014,7 +2014,7 @@ public class QuoridorController {
 	/**
 	 *
 	 * @param name The name of the desired player
-	 * @returns the player associated with the name, null if no such player exists
+	 * @return the player associated with the name, null if no such player exists
 	 *
 	 * @author Paul Teng (260862906)
 	 */
@@ -2048,7 +2048,7 @@ public class QuoridorController {
 	 * Converts a Player to TOPlayer
 	 *
 	 * @param p the Player
-	 * @returns the corresponding TOPlayer
+	 * @return the corresponding TOPlayer
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
@@ -2121,7 +2121,7 @@ public class QuoridorController {
 	/**
 	 *
 	 * @param name The name of the desired player
-	 * @returns the player associated with the name, null if no such player exists
+	 * @return the player associated with the name, null if no such player exists
 	 *
 	 * @author Paul Teng (260862906)
 	 */
@@ -2232,7 +2232,7 @@ public class QuoridorController {
 	/**
 	 *
 	 * @param name The name of the player who owns the walls
-	 * @returns the walls associated to the player, null if no such player exists
+	 * @return the walls associated to the player, null if no such player exists
 	 *
 	 * @author Paul Teng (260862906)
 	 */
@@ -2250,7 +2250,7 @@ public class QuoridorController {
 	/**
 	 *
 	 * @param color The color of the player who owns the walls
-	 * @returns the walls associated to the player, null if no such player exists
+	 * @return the walls associated to the player, null if no such player exists
 	 *
 	 * @author Paul Teng (260862906)
 	 */
@@ -2270,7 +2270,7 @@ public class QuoridorController {
 	 * Converts a Wall to TOWall
 	 *
 	 * @param wall the Wall
-	 * @returns the corresponding TOWall
+	 * @return the corresponding TOWall
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
@@ -2436,7 +2436,7 @@ public class QuoridorController {
 
 	/**
 	 * 
-	 * @returns the current wall grabbed by the player
+	 * @return the current wall grabbed by the player
 	 * 
 	 * @author Alixe Delabrousse (260868412)
 	 * 
@@ -2450,7 +2450,7 @@ public class QuoridorController {
 	
 	/**
 	 * 
-	 * @returns the current wall candidate
+	 * @return the current wall candidate
 	 * 
 	 * @author Mohamed Mohamed (260855731) and Alixe Delabrousse
 	 * 
