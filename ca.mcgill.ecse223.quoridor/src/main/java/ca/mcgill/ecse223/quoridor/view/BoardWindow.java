@@ -185,7 +185,17 @@ public class BoardWindow extends JFrame {
      */
     public final void fetchCurrentPlayerInfoFromController() {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+
         this.playerInfoPanel.updateInfo(player);
+
+        // Enable/Disable buttons based on what the player can do
+
+        final boolean grabbed = player == null ? false : player.hasWallInHand();
+        this.dropWall.setEnabled(grabbed);
+        this.rotateWall.setEnabled(grabbed);
+
+        final boolean canGrab = player == null ? false : player.canGrabWall();
+        this.grabWallButton.setEnabled(canGrab);
     }
 
     /**

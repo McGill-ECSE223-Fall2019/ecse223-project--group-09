@@ -3,8 +3,8 @@ package ca.mcgill.ecse223.quoridor.controller;
 import java.sql.Time;
 
 /**
- * Transfer object for player information:
- * To ensure only controller interacts with data from model
+ * Transfer object for player information: To ensure only controller interacts
+ * with data from model
  *
  * @author Paul Teng (260862906)
  */
@@ -18,7 +18,7 @@ public final class TOPlayer {
     private boolean wallInHand = false;
     private int wallsRemaining;
     private TOWallCandidate currentWallCandidate;
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -50,34 +50,48 @@ public final class TOPlayer {
     public int getColumn() {
         return this.column;
     }
+
     public Time getTimeRemaining() {
-    	return this.timeRemaining;
+        return this.timeRemaining;
     }
+
     public void setColor(Color color) {
-    	this.color = color;
+        this.color = color;
     }
+
     public Color getColor() {
-    	return this.color;
+        return this.color;
     }
+
     public void setWallInHand(boolean hasWall) {
-    	this.wallInHand = hasWall;//set if a player has a wall in hand or no
+        this.wallInHand = hasWall;// set if a player has a wall in hand or no
     }
-    
+
     public boolean hasWallInHand() {
-    	return this.wallInHand;
+        return this.wallInHand;
     }
-    
+
     public int getWallsRemaining() {
-    	return this.wallsRemaining;
+        return this.wallsRemaining;
     }
-    
+
     public void setWallCandidate(TOWallCandidate wallCandidate) {
-    	this.currentWallCandidate = wallCandidate;
+        this.currentWallCandidate = wallCandidate;
     }
-    
+
     public TOWallCandidate getWallCandidate() {
-    	return this.currentWallCandidate;
+        return this.currentWallCandidate;
     }
-   
-    
+
+    /**
+     * Check if player can grab a wall. Player needs to *not* be grabbing a wall and
+     * have enough walls remaining.
+     *
+     * @return if player can grab a wall
+     *
+     * @author Paul Teng (260862906)
+     */
+    public boolean canGrabWall() {
+        return !this.hasWallInHand() && this.getWallsRemaining() > 0;
+    }
 }
