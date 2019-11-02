@@ -22,14 +22,12 @@ import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 
-
 /**
  * Creates a window that looks somewhat like GUI3.png
  *
  * @author Paul Teng (260862906) [SavePosition.feature;LoadPosition.feature]
  */
 public class BoardWindow extends JFrame {
-
 
     private static final int UPDATE_DELAY = 350;
 
@@ -42,6 +40,20 @@ public class BoardWindow extends JFrame {
     private final PlayerInfoPanel playerInfoPanel = new PlayerInfoPanel();
     private final GridPanel gridPanel = new GridPanel();
 
+    private final JButton btnEnterReplayMode = new JButton("Enter Replay Mode");
+    private final JButton btnQuitGame = new JButton("Quit Game");
+    private final JButton btnResign = new JButton("Resign");
+
+    private final JButton grabWallButton = new JButton("Grab a wall");
+
+    /**
+     * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
+     */
+
+    // should we implement the drop wall as clicking on the wall candidate?
+    private final JButton dropWall = new JButton("Drop Wall");
+    private final JButton rotateWall = new JButton("Rotate Wall");
+
     public BoardWindow() {
         this.setLayout(new BorderLayout());
 
@@ -51,9 +63,7 @@ public class BoardWindow extends JFrame {
         final JMenuBar menuBar = new JMenuBar();
         menuBar.add(this.createFileMenu());
 
-
         this.setJMenuBar(menuBar);
-
 
         // Setup timer that periodically fetches
         // the time remaining of the current player:
@@ -84,22 +94,18 @@ public class BoardWindow extends JFrame {
         container.add(listMoves);
         container.setBorder(new EmptyBorder(10, 2, 5, 2));
 
-        final JButton btnEnterReplayMode = new JButton("Enter Replay Mode");
         btnEnterReplayMode.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnEnterReplayMode.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         btnEnterReplayMode.addActionListener(e -> this.onEnterReplayModeButtonClicked());
 
-        final JButton btnQuitGame = new JButton("Quit Game");
         btnQuitGame.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnQuitGame.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         btnQuitGame.addActionListener(e -> this.onQuitGameButtonClicked());
 
-        final JButton btnResign = new JButton("Resign");
         btnResign.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnResign.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         btnResign.addActionListener(e -> this.onResignButtonClicked());
 
-        final JButton grabWallButton = new JButton("Grab a wall");
         grabWallButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         grabWallButton.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         grabWallButton.addActionListener(e -> this.onGrabAWallButtonClicked());
@@ -107,13 +113,6 @@ public class BoardWindow extends JFrame {
         /**
          * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
          */
-
-        final JButton dropWall = new JButton("Drop Wall");
-        
-        //should we implement the drop wall as clicking on the wall candidate?
-        
-        final JButton rotateWall = new JButton("Rotate Wall");
-
         dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         dropWall.addActionListener(e -> this.onDropWallButtonClicked());
@@ -241,14 +240,13 @@ public class BoardWindow extends JFrame {
      */
 
     private void onGrabAWallButtonClicked() {
-        try{
-        	QuoridorController.grabWall();
-        	TOWallCandidate wallCandidate = QuoridorController.getCurrentWallCandidate();
+        try {
+            QuoridorController.grabWall();
+            TOWallCandidate wallCandidate = QuoridorController.getCurrentWallCandidate();
             gridPanel.setWallCandidate(wallCandidate);
         } catch (Exception e) {
-        	System.out.println("No game loaded: create new or select game");
+            System.out.println("No game loaded: create new or select game");
         }
-
 
     }
 
@@ -270,4 +268,3 @@ public class BoardWindow extends JFrame {
         newBoardWindow.startFetchInfoThread();
     }
 }
-
