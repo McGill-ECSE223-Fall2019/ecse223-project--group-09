@@ -319,12 +319,7 @@ public class TileMapPanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        final Dimension d = this.getSize();
-
-        g.setColor(PAWN_CELL_COLOR);
-        g.fillRect(0, 0, d.width, d.height);
-
-        this.drawDividers(g);
+        this.drawEmptyBoard(g);
 
         // This is a debug-level call
         // Feel free to comment it out
@@ -418,15 +413,13 @@ public class TileMapPanel extends JPanel {
     }
 
     /**
-     * Draws dividers, which are like slots for walls
+     * Draw a board with nothing on it
      *
      * @param g Graphics object
      *
      * @author Paul Teng (260862906)
      */
-    private void drawDividers(Graphics g) {
-        g.setColor(WALL_CELL_COLOR);
-
+    private void drawEmptyBoard(Graphics g) {
         final Dimension d = this.getSize();
         final int tileX = d.width / SIDE;
         final int tileY = d.height / SIDE;
@@ -434,13 +427,23 @@ public class TileMapPanel extends JPanel {
         final int padX = tileX / DIV;
         final int padY = tileY / DIV;
 
+        final int limitX = d.width - 2 * padX;
+        final int limitY = d.height - 2 * padY;
+
+        // Fill the back board
+        g.setColor(PAWN_CELL_COLOR);
+        g.fillRect(padX, padY, limitX, limitY);
+
+        // Draw the wall slots
+        g.setColor(WALL_CELL_COLOR);
+
         // Only 8 wall slots
         for (int i = 1; i < SIDE; ++i) {
             final int baseX = tileX * i;
             final int baseY = tileY * i;
 
-            g.fillRect(baseX - padX, 0, 2 * padX, d.height);
-            g.fillRect(0, baseY - padY, d.width, 2 * padY);
+            g.fillRect(baseX - padX, padY, 2 * padX, limitY);
+            g.fillRect(padX, baseY - padY, limitX, 2 * padY);
         }
     }
 

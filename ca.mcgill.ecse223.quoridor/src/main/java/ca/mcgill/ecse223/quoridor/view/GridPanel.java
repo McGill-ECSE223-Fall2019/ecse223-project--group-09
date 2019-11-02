@@ -2,6 +2,7 @@ package ca.mcgill.ecse223.quoridor.view;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -31,11 +32,15 @@ public class GridPanel extends JPanel {
     public GridPanel() {
         this.setLayout(new GridBagLayout());
 
+        final Insets rowInsets = new Insets(0, 5, 0, 0);
+        final Insets colInsets = new Insets(0, 0, 5, 0);
+
         for (int i = 0; i < TileMapPanel.SIDE; ++i) {
             final GridBagConstraints c = new GridBagConstraints();
             c.gridx = 0;
             c.gridy = TileMapPanel.SIDE - (i + 1);
             c.weighty = 1.0;
+            c.insets = rowInsets;
             this.add(new JLabel(Integer.toString(i + 1)), c);
         }
 
@@ -44,6 +49,7 @@ public class GridPanel extends JPanel {
             c.gridx = i + 1;
             c.gridy = TileMapPanel.SIDE;
             c.weightx = 1.0;
+            c.insets = colInsets;
             this.add(new JLabel(Character.toString((char) (i + 'a'))), c);
         }
 
@@ -55,6 +61,7 @@ public class GridPanel extends JPanel {
         c.weightx = 1.0;
         c.weighty = 1.0;
         c.fill = GridBagConstraints.BOTH;
+        c.insets = rowInsets;
         this.add(this.tileMap, c);
     }
 
