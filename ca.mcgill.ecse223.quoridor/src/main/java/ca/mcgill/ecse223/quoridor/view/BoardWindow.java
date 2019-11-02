@@ -309,13 +309,43 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         // Proof that it works:
         System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
                 + (orientation == Orientation.VERTICAL ? "v" : "h"));
+   
+        TOWallCandidate wallCandidate= gridPanel.getWallCandidate();
+        try {
+        	int aRow = wallCandidate.getRow();
+        	int aCol = wallCandidate.getColumn();
+        	Orientation aOrientation = wallCandidate.getOrientation();
+        	String side;
+        	
+        	if (orientation == aOrientation) {
+        		if (row == aRow && col == (aCol + 1)) {
+        			side = "right";
+        		} else if (row == aRow && col == (aCol - 1)) {
+        			side = "left";
+        		} else if (col == aCol && row == (aRow+1)) {
+        			side = "up";
+        		} else if (col == aCol && row == (aRow - 1)) {
+        			side = "down";
+        		} else {
+        			side = "no new candidate";
+        		}
+        	} else {
+        		side  =  "no new candidate";
+        	}
+        	
+        	wallCandidate = QuoridorController.moveWall(side);
+        	this.repaint();
+        } catch (NullPointerException e) {
+        	System.out.println("No wall grabbed");
+        }
+    
     }
 
     @Override
     public void onSlotExited(int row, int col, Orientation orientation) {
         // Proof that it works:
         System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row
-                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+        	+ (orientation == Orientation.VERTICAL ? "v" : "h"));
     }
 
     public static void launchWindow() {
