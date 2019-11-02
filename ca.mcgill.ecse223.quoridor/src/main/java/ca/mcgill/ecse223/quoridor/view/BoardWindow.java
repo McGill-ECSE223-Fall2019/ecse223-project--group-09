@@ -18,8 +18,10 @@ import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 
 /**
@@ -115,11 +117,15 @@ public class BoardWindow extends JFrame {
          */
         dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        dropWall.setEnabled(true);
         dropWall.addActionListener(e -> this.onDropWallButtonClicked());
+        
 
         rotateWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         rotateWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-        rotateWall.addActionListener(e -> this.onDropWallButtonClicked());
+        rotateWall.setEnabled(true);
+        rotateWall.addActionListener(e -> this.onRotateWallButtonClicked());
+       
 
         panel.add(container);
         panel.add(btnEnterReplayMode);
@@ -190,11 +196,11 @@ public class BoardWindow extends JFrame {
 
         // Enable/Disable buttons based on what the player can do
 
-        final boolean grabbed = player == null ? false : player.hasWallInHand();
+        final boolean grabbed = true; //player == null ? false : player.hasWallInHand();
         this.dropWall.setEnabled(grabbed);
         this.rotateWall.setEnabled(grabbed);
 
-        final boolean canGrab = player == null ? false : player.canGrabWall();
+        final boolean canGrab = true;// player == null ? false : player.canGrabWall();
         this.grabWallButton.setEnabled(canGrab);
     }
 
@@ -267,6 +273,16 @@ public class BoardWindow extends JFrame {
         JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
 
     }
+    
+    /**
+     * This method is called when rotate wall button is clicked
+     */
+    private void onRotateWallButtonClicked() {
+       // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
+    	TOWallCandidate wall = QuoridorController.getCurrentWallCandidate();
+    //    QuoridorController.rotateWall(wall.getAssociatedWall());
+
+    }
 
     public static void launchWindow() {
         BoardWindow newBoardWindow = new BoardWindow();
@@ -276,5 +292,11 @@ public class BoardWindow extends JFrame {
 
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
+        
+        final TOWall wall = new TOWall();
+        wall.setColumn(5);
+        wall.setRow(3);
+        wall.setOrientation(Orientation.HORIZONTAL);
+        newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
     }
 }

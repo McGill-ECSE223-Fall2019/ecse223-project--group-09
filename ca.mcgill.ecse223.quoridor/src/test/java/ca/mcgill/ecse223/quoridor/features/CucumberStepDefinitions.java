@@ -739,7 +739,30 @@ public class CucumberStepDefinitions {
 	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
 	public void wallCandidateExists(String direction, int row, int column) {
 		
+		//fixing the type of the string to be adjusted.
+		if (direction=="horizontal") {
+			direction="Horizontal";
+		}else {
+			direction="Vertical";
+		}
+		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
+		
+		Direction directionn= Direction.valueOf(direction);
+		
+		//we have to create the precondition
+		
+		//changing the information inside the wall move 
+		WallMove wallMove= QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		Tile tile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
+		wallMove.setWallDirection(directionn);
+		wallMove.setTargetTile(tile);		
+		
+		//creating an equivalent wallCandidate
+			//Orientation initialOrientation = QuoridorController.fromDirection(wallMove.getWallDirection());
+		this.wallCandidate= QuoridorController.createTOWallCandidateFromWallMove(wallMove);
+		//this.wallCandidate= new TOWallCandidate(initialOrientation, column, column);
+		
 		
 		Assert.assertTrue(this.wallCandidate != null);
 		Assert.assertTrue(this.wallCandidate.getOrientation() == orientation);
@@ -854,7 +877,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("I try to flip the wall")
 	public void tryFlipWall() {
-		QuoridorController.rotateWall(this.currentWall);
+		QuoridorController.rotateWall(this.wallCandidate);
 		//this method will do the rotate wall method on a wall candidate that will do the following -->
 	}
 	
@@ -865,7 +888,7 @@ public class CucumberStepDefinitions {
 	public void rotateWall(String newdir) {
 		//checking if the wall actually got rotated to newdir
 		Orientation newDir=Orientation.valueOf(newdir.toUpperCase());//constructor takes an Orientation enum so the conversion is necessary
-		Assert.assertTrue(this.currentWall.getOrientation()==newDir);
+		Assert.assertTrue(this.wallCandidate.getOrientation()==newDir);
 		
 		
 	}

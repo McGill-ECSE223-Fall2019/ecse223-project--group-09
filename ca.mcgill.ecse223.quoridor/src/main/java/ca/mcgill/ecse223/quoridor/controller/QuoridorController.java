@@ -480,7 +480,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public static void rotateWall(TOWall wall) {
+	public static void rotateWall(TOWallCandidate wall) {
 		//this method should change the direction of the candidate
 		
 		//ask alixe alixe are the wall candidates set to have the same orientation.
@@ -1976,7 +1976,7 @@ public class QuoridorController {
 	 * 
 	 * @author Group 9
 	 */
-	private static Orientation fromDirection(final Direction dir) {
+	public static Orientation fromDirection(final Direction dir) {
 		if (dir == null) {
 			// I suppose a null direction can be well defined?
 			return null;
