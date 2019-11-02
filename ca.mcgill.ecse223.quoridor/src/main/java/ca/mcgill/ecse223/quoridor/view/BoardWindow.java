@@ -23,13 +23,14 @@ import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 
 /**
  * Creates a window that looks somewhat like GUI3.png
  *
  * @author Paul Teng (260862906) [SavePosition.feature;LoadPosition.feature]
  */
-public class BoardWindow extends JFrame {
+public class BoardWindow extends JFrame implements GameBoardListener {
 
     private static final int UPDATE_DELAY = 350;
 
@@ -66,6 +67,9 @@ public class BoardWindow extends JFrame {
         menuBar.add(this.createFileMenu());
 
         this.setJMenuBar(menuBar);
+
+        // Install the event listener for the game board
+        this.gridPanel.addGameBoardListener(this);
 
         // Setup timer that periodically fetches
         // the time remaining of the current player:
@@ -282,6 +286,81 @@ public class BoardWindow extends JFrame {
     	TOWallCandidate wall = QuoridorController.getCurrentWallCandidate();
     //    QuoridorController.rotateWall(wall.getAssociatedWall());
 
+    }
+
+    @Override
+    public void onMouseWheelRotated(double clicks) {
+        // Proof that it works:
+        System.out.println("Wheel: " + clicks);
+    }
+
+    @Override
+    public void onTileClicked(int row, int col) {
+        // Proof that it works:
+        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row);
+    }
+
+    @Override
+    public void onTileEntered(int row, int col) {
+        // Proof that it works:
+        System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row);
+    }
+
+    @Override
+    public void onTileExited(int row, int col) {
+        // Proof that it works:
+        System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row);
+    }
+
+    @Override
+    public void onSlotClicked(int row, int col, Orientation orientation) {
+        // Proof that it works:
+        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row
+                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+    }
+
+    @Override
+    public void onSlotEntered(int row, int col, Orientation orientation) {
+        // Proof that it works:
+        System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
+                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+   
+        TOWallCandidate wallCandidate= gridPanel.getWallCandidate();
+        try {
+        	int aRow = wallCandidate.getRow();
+        	int aCol = wallCandidate.getColumn();
+        	Orientation aOrientation = wallCandidate.getOrientation();
+        	String side;
+        	
+        	if (orientation == aOrientation) {
+        		if (row == aRow && col == (aCol + 1)) {
+        			side = "right";
+        		} else if (row == aRow && col == (aCol - 1)) {
+        			side = "left";
+        		} else if (col == aCol && row == (aRow+1)) {
+        			side = "up";
+        		} else if (col == aCol && row == (aRow - 1)) {
+        			side = "down";
+        		} else {
+        			side = "no new candidate";
+        		}
+        	} else {
+        		side  =  "no new candidate";
+        	}
+        	
+        	wallCandidate = QuoridorController.moveWall(side);
+        	this.repaint();
+        } catch (NullPointerException e) {
+        	System.out.println("No wall grabbed");
+        }
+    
+    }
+
+    @Override
+    public void onSlotExited(int row, int col, Orientation orientation) {
+        // Proof that it works:
+        System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row
+        	+ (orientation == Orientation.VERTICAL ? "v" : "h"));
     }
 
     public static void launchWindow() {

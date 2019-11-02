@@ -261,6 +261,7 @@ public class QuoridorController {
 			
 			toCurrentPlayer.setWallInHand(false); // the current player does not have any wall in hand
 			toGrabbedWall = null;	
+		
 		}
 		
 		
@@ -298,54 +299,54 @@ public class QuoridorController {
 		
 		Tile targetTile;
 		
-		if (side == "up" || side == "down" || side == "left" || side == "right") {
+		if (side.equals("up") || side.equals("down") || side.equals("left") || side.equals("right")) {
 			if (wallMove.getTargetTile().getColumn() == 9) {
-				if (side == "down") {
+				if (side.equals("down")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "up") {
+				} else if (side.equals("up")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "left") {
+				} else if (side.equals("left")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "right") {
+				} else if (side.equals("right")) {
 					
 					System.out.println("Illegal move, you are already on the edge of the board");
 				
 				}
 			} else if (wallMove.getTargetTile().getColumn() == 1) {
-				if (side == "down") {
+				if (side.equals("down")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "up") {
+				} else if (side.equals("up")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "left") {
+				} else if (side.equals("left")) {
 					
 					System.out.println("Illegal move, you are already on the edge of the board");
 					
-				} else if (side == "right") {
+				} else if (side.equals("right")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 					wallMove.setTargetTile(targetTile);
@@ -354,25 +355,25 @@ public class QuoridorController {
 					
 				}
 			} else if (wallMove.getTargetTile().getRow() == 1) {
-				if (side == "down") {
+				if (side.equals("down")) {
 					
 					System.out.println("Illegal move, you are already on the edge of the board");
 					
-				} else if (side == "up") {
+				} else if (side.equals("up")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "left") {
+				} else if (side.equals("left")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "right") {
+				} else if (side.equals("right")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 					wallMove.setTargetTile(targetTile);
@@ -381,25 +382,25 @@ public class QuoridorController {
 					
 				}
 			} else if (wallMove.getTargetTile().getRow() == 9) {
-				if (side == "down") {
+				if (side.equals("down")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "up") {
+				} else if (side.equals("up")) {
 					
 					System.out.println("Illegal move, you are already at the edge of the board");
 					
-				} else if (side == "left") {
+				} else if (side.equals("left")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 					wallMove.setTargetTile(targetTile);
 					wallCandidate.setColumn(targetTile.getColumn());
 					wallCandidate.setRow(targetTile.getRow());
 					
-				} else if (side == "right") {
+				} else if (side.equals("right")) {
 					
 					targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 					wallMove.setTargetTile(targetTile);
