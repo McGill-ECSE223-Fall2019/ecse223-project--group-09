@@ -17,7 +17,11 @@ public final class TOPlayer {
     private Color color;
     private boolean wallInHand = false;
     private int wallsRemaining;
+
     private TOWallCandidate currentWallCandidate;
+
+    public TOPlayer() {
+    }
 
     public TOPlayer(String aUsername, int aSize) {
         //username = aUsername;
@@ -27,7 +31,7 @@ public final class TOPlayer {
 	public void setUsername(String username) {
         this.username = username;
     }
-  
+
     public String getUsername() {
         return this.username;
     }
