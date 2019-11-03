@@ -57,13 +57,13 @@ public class GameSetupDialog extends JPanel {
         {
             final JComboBox<String> player1Names = new JComboBox<>(this.nameHints);
             this.cboxPlayerNames[0] = player1Names;
-            this.initializePlayerOptions("Player 1", player1Names);
+            this.initializePlayerOptions("Player 1", player1Names, "white");
         }
 
         {
             final JComboBox<String> player2Names = new JComboBox<>(this.nameHints);
             this.cboxPlayerNames[1] = player2Names;
-            this.initializePlayerOptions("Player 2", player2Names);
+            this.initializePlayerOptions("Player 2", player2Names, "black");
         }
     }
 
@@ -109,12 +109,13 @@ public class GameSetupDialog extends JPanel {
      *
      * @param title    The name of the section
      * @param nameList The combo box for the user to pick their name from
+     * @param colorStr The color of the player
      *
      * @author Group 9
      */
-    private synchronized void initializePlayerOptions(String title, JComboBox<String> nameList) {
+    private synchronized void initializePlayerOptions(String title, JComboBox<String> nameList, String colorStr) {
         final Border grayLine = BorderFactory.createLineBorder(Color.gray);
-        final TitledBorder border = BorderFactory.createTitledBorder(grayLine, title);
+        final TitledBorder border = BorderFactory.createTitledBorder(grayLine, title + " (" + colorStr + ')');
 
         final JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
