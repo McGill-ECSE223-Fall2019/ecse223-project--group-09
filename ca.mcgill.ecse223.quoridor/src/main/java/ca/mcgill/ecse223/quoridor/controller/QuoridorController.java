@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.sql.Time;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,6 +31,7 @@ import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
 import ca.mcgill.ecse223.quoridor.model.StepMove;
 import ca.mcgill.ecse223.quoridor.model.Tile;
+import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 
@@ -143,21 +146,28 @@ public class QuoridorController {
 		}
 	}
 	
-
-	
-	
 	/**
-	 * This method checks if the given username already exists.
+	 * 
+	 * @param 
+	 * 
+	 */
+
+	public static void assignColor() {
+		
+
+	}
+
+	/**
+	 * This method allows the user to select an existing username.
 	 * 
 	 * @param String user;  
-	 * @return boolean user; 
+	 * @return void; 
 	 * 
 	 * @author Ada Andrei
 	 */
 
-	public static boolean usernameExists(String user) throws UnsupportedOperationException{
-		throw new UnsupportedOperationException();
-		
+	public static void selectUsername(String user) {
+		user = 
 	}
 
 	/**
@@ -169,25 +179,39 @@ public class QuoridorController {
 	 * @author Ada Andrei
 	 */
 
-	public static void selectUsername(String user) throws UnsupportedOperationException{
-		if (true) {
-			throw new UnsupportedOperationException();
+	public static void createUsername(String user) throws InvalidInputException {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!usernameExists(user))	{
+			try {
+				LinkedList<TOPlayer> players = new LinkedList<TOPlayer>();
+			}
+			catch (RuntimeException e) {
+				throw new InvalidInputException(e.getMessage());
+			}
+		}
+		else {
+			//printf("This username already exists. Enter another username or select an existing username.")
 		}
 	}
 
+
 	/**
-	 * This method allows the user to select it an existing username.
+	 * This method checks if the given username already exists.
 	 * 
-	 * @param int userIndex;  
-	 * @return void; 
+	 * @param String user;  
+	 * @return boolean user; 
 	 * 
 	 * @author Ada Andrei
 	 */
 
-	public static void createUsername(String user) throws UnsupportedOperationException{
-		if (true) {
-			throw new UnsupportedOperationException();
-		}
+	public static boolean usernameExists(String user) {
+		if (QuoridorController.getPlayers().contains(user)) {
+			System.out.println(user + "already exists, please choose a new one");
+			return true; 
+        } else {
+			System.out.println(user + " does not exist. You're good to go!");
+			return false; 
+        }		
 	}
 	
 	/**
@@ -200,10 +224,26 @@ public class QuoridorController {
 	 * @author Ada Andrei
 	 */
 	
-	public static void setTime(int mins, int secs) throws UnsupportedOperationException {
-		if (true) {
-			throw new UnsupportedOperationException();
+	public static void setTime(int mins, int secs) {
+
+	}
+
+	/**
+	 *This is a method that gets all the username from the list of players. 
+	 *
+	 * @author Ada Andrei (260866279)
+	 * @param String name
+	 * @return List <TOPlayer>
+	 *
+	 */
+
+	public static List<TOPlayer> getPlayers() {
+		LinkedList<TOPlayer> players = new LinkedList<TOPlayer>();
+		for (User username : QuoridorApplication.getQuoridor().getUsers()) { // iterate through the list and add
+			TOPlayer toUsername = new TOPlayer(username.getName(), players.size());
+			players.add(toUsername);
 		}
+		return players;
 	}
 	
 	/**

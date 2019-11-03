@@ -10,21 +10,33 @@ import java.sql.Time;
  */
 public final class TOPlayer {
 
-    private String name;
+    private String username;
     private int row;
     private int column;
     private Time timeRemaining;
     private Color color;
     private boolean wallInHand = false;
     private int wallsRemaining;
+<<<<<<< HEAD
+    
+    public TOPlayer(String aUsername, int aSize) {
+        //username = aUsername;
+        //size = aSize;
+	}
+=======
     private TOWallCandidate currentWallCandidate;
 
     public void setName(String name) {
         this.name = name;
     }
+>>>>>>> 51fca5e36896efef411ca25874be1c5626c23c50
 
-    public String getName() {
-        return this.name;
+	public void setUsername(String username) {
+        this.username = username;
+    }
+  
+    public String getUsername() {
+        return this.username;
     }
 
     public void setRow(int row) {
