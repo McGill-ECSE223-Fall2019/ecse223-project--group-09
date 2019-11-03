@@ -189,6 +189,17 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     }
 
     /**
+     * Returns the grid panel instance associated with this window
+     * 
+     * @return the grid panel instance, never null
+     * 
+     * @author 
+     */
+    public final GridPanel getGridPanel() {
+        return this.gridPanel;
+    }
+
+    /**
      * Issues a call to the controller requesting for new player information
      *
      * @author Group 9
@@ -197,6 +208,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 
         this.playerInfoPanel.updateInfo(player);
+        this.gridPanel.setWallCandidate(QuoridorController.getCurrentWallCandidate());
 
         // Enable/Disable buttons based on what the player can do
 

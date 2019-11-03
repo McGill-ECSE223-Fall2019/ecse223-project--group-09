@@ -323,7 +323,7 @@ public class TileMapPanel extends JPanel {
 
         // This is a debug-level call
         // Feel free to comment it out
-        this.drawSelectedPlace(g);
+        // this.drawSelectedPlace(g);
 
         if (this.shouldDrawWhitePlayer()) {
             this.drawPawn(g, this.whitePlayer.getRow(), this.whitePlayer.getColumn(), Color.white, true);
