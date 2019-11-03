@@ -94,8 +94,24 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public Game startNewGame(){
-		throw new UnsupportedOperationException("method startNewGame is not implemented yet");
+	public void startNewGame(Game aGame){
+		/*
+		When A new game is being initialized
+	    And White player chooses a username
+	    And Black player chooses a username
+	    And Total thinking time is set
+	    Then The game shall become ready to start
+		 */
+		if(aGame.getGameStatus() == GameStatus.Initializing) {
+			if((aGame.getWhitePlayer().getUser()!=null)&&(aGame.getBlackPlayer().getUser()!=null)&&(aGame.getWhitePlayer().getRemainingTime()!=null)&&(aGame.getBlackPlayer().getRemainingTime()!=null)){
+				aGame.setGameStatus(GameStatus.ReadyToStart);
+			}
+		}
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game newGame = new Game(null, null, quoridor);
+		
+		
+		//throw new UnsupportedOperationException("method startNewGame is not implemented yet");
 	}
 	
 	
@@ -132,6 +148,19 @@ public class QuoridorController {
 	
 	public void initiateBoard() {
 		//throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+		
+		/*
+		Scenario: Initialize board
+		Given The game is ready to start
+    	When The initialization of the board is initiated 
+    	Then It shall be white player to move
+		And White's pawn shall be in its initial position
+		And Black's pawn shall be in its initial position
+		And All of White's walls shall be in stock
+		And All of Black's walls shall be in stock
+		And White's clock shall be counting down
+		And It shall be shown that this is White's turn
+		 */
 		
 		Board gameBoard = createNewBoard();
 		gameBoard.getQuoridor();
