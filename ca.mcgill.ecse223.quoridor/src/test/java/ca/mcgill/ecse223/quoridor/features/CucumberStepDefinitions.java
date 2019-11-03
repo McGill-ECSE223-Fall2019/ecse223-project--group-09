@@ -798,7 +798,6 @@ public class CucumberStepDefinitions {
 	public void noWallInHand() {
 		
 		Assert.assertFalse(this.wallGrabbedFlag);
-i		
 	}
 	
 
