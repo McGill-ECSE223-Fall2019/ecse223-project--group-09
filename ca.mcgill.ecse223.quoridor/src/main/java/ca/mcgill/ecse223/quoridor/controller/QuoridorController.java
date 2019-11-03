@@ -83,7 +83,7 @@ public class QuoridorController {
 	
 	/**
 	 * 
-	 * @author Barry Chen 
+	 * @author Barry Cheng 
 	 * 
 	 *
 	 * This method sets up a new game
@@ -98,10 +98,10 @@ public class QuoridorController {
 	
 	/**
 	 * 
-	 * @author Barry Chen 
+	 * @author Barry Chan 
 	 * 
 	 */
-	public void createNewBoard(){
+	public Board createNewBoard(){
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Board newBoard = new Board(quoridor);
 		
@@ -112,12 +112,12 @@ public class QuoridorController {
 			int row = (i/9)+1;
 			newBoard.addTile(row, col);
 		}
-		//return newBoard;
+		return newBoard;
 	}
 	
 	/**
 	 * 
-	 * @author Barry Chen 
+	 * @author Barry Chin 
 	 * 
 	 * @param none
 	 * @return initialized board
@@ -129,7 +129,11 @@ public class QuoridorController {
 	
 	public void initiateBoard() {
 		//throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+		
+		Board gameBoard = createNewBoard();
+		gameBoard.getQuoridor();
 		currentPlayer = player1;
+		
 		
 		for (int i=1; i <= 20; i++) {
 			if(i <= 10){
