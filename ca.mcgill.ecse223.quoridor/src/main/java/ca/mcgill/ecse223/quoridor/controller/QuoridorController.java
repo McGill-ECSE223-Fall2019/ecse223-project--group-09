@@ -9,7 +9,6 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -162,6 +161,8 @@ public class QuoridorController {
 			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
 			User user2 = new User(user, quoridor);	
 			Player secondPlayer = new Player(null, user2, 1, Direction.Horizontal);
+			firstPlayer.setNextPlayer(secondPlayer);
+			secondPlayer.setNextPlayer(firstPlayer);	
 			Game aNewGame = new Game(null, null, quoridor);
 			aNewGame.setWhitePlayer(firstPlayer);
 			aNewGame.setBlackPlayer(secondPlayer); 
