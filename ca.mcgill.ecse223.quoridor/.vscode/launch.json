@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - QuoridorApplication",
+            "request": "launch",
+            "mainClass": "ca.mcgill.ecse223.quoridor.application.QuoridorApplication",
+            "projectName": "ca.mcgill.ecse223.quoridor"
+        }
+    ]
+}
