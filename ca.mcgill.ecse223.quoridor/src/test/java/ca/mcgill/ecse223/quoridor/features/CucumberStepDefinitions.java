@@ -12,11 +12,13 @@ import org.junit.Assert;
 import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.Color;
 import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
+import ca.mcgill.ecse223.quoridor.controller.InvalidPositionException;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.controller.WallStockEmptyException;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
@@ -113,19 +115,22 @@ public class CucumberStepDefinitions {
 
 	@And("I do not have a wall in my hand")
 	public void iDoNotHaveAWallInMyHand() {
-		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
+		Assert.assertNull(QuoridorController.getCurrentGrabbedWall());
+	
 	}
+	
+	
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
-		if (!QuoridorController.getPlayerOfCurrentTurn().hasWallInHand()) {
+		//if (!QuoridorController.getPlayerOfCurrentTurn().hasWallInHand()) {
 			// Then we get the player to grab a wall
-			QuoridorController.grabWall();
-		}
+			//QuoridorController.grabWall();
+		//}
 
 		// At this point, there should be a wall that is grabbed
 		// we assert it again just to be sure...
-		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
+		Assert.assertNotNull(QuoridorController.getCurrentGrabbedWall());
 	}
 	
 	@Given("^A new game is initializing$")
@@ -642,6 +647,9 @@ public class CucumberStepDefinitions {
 	private TOWall currentWall;
 	private TOWallCandidate wallCandidate;
 	
+	private boolean noMoreWallsFlag = false;
+	private boolean invalidPositionFlag = false;
+	
 	// ***** GrabWall.feature *****
 	
 		//Start wall placement
@@ -651,8 +659,11 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
-		this.wallStock = QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getName());
+		
+		
+		this.wallStock = QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getColor());
 		Assert.assertNotNull(wallStock);
+	
 	}
 	
 	/**
@@ -661,7 +672,12 @@ public class CucumberStepDefinitions {
 	
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
-		this.currentWall = QuoridorController.grabWall();
+		try{
+			this.noMoreWallsFlag = false;
+			this.currentWall = QuoridorController.grabWall();
+		} catch (WallStockEmptyException e) {
+			this.noMoreWallsFlag = true;
+		}
 		
 	}
 	
@@ -672,11 +688,10 @@ public class CucumberStepDefinitions {
 	
 	@Then("A wall move candidate shall be created at initial position")
 	public void createNewWallMoveCandidate() {
-		Assert.assertTrue(this.player.hasWallInHand());
 		
-		this.wallCandidate = QuoridorController.getCurrentWallCandidate();
+		this.wallCandidate = QuoridorController.getWallCandidate();
 	
-		Assert.assertTrue(this.wallCandidate != null);
+		Assert.assertNotNull(this.wallCandidate);
 
 	}
 	
@@ -687,7 +702,7 @@ public class CucumberStepDefinitions {
 	@And("I shall have a wall in my hand over the board")
 	public void wallOverBoard() {
 		
-		Assert.assertTrue(this.currentWall != null);
+		Assert.assertNotNull(this.currentWall);
 		Assert.assertTrue(this.currentWall == QuoridorController.getCurrentGrabbedWall());
 		
 	}
@@ -707,7 +722,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("I have no more walls on stock")
 	public void noMoreWallsOnStock() {
-		Assert.assertTrue(wallStock.isEmpty());
+		Assert.assertNull(this.wallStock);
 	}
 	
 	/**
@@ -715,8 +730,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("I shall be notified that I have no more walls")
 	public void notifNoMoreWalls() {
-		throw new PendingException();
-		//UI related method
+		Assert.assertTrue(this.noMoreWallsFlag);
 	}
 	
 	/**
@@ -771,7 +785,6 @@ public class CucumberStepDefinitions {
 
 	}
 	
-	
 	/**
 	 * 
 	 * @author Alixe Delabrousse (260868412)
@@ -792,14 +805,18 @@ public class CucumberStepDefinitions {
 	
 	}
 	
-
-	
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 */
 	@When("I try to move the wall {string}")
 	public void attemptToMoveWall(String side) {
-		QuoridorController.moveWall(side);
+	
+		try {
+			this.invalidPositionFlag = false;
+			QuoridorController.moveWall(side);
+		} catch (InvalidPositionException e) {
+			this.invalidPositionFlag = true;
+		}
 		
 	}
 	
@@ -860,8 +877,7 @@ public class CucumberStepDefinitions {
 	
 	@Then("I shall be notified that my move is illegal")
 	public void notifIllegalMove() {
-		throw new PendingException();
-		//UI related method
+		Assert.assertTrue(this.invalidPositionFlag);
 	}
 
 
