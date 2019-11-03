@@ -62,7 +62,7 @@ public class TOWallCandidate {
      * @author Mohamed Mohamed
      */
     public void rotate() {
-    	if(this.orientation==Orientation.HORIZONTAL) {
+    	if(this.orientation.equals(Orientation.HORIZONTAL)) {
     		
     		this.setOrientation(Orientation.VERTICAL);
     		associatedWall.setOrientation(Orientation.VERTICAL);
@@ -77,6 +77,13 @@ public class TOWallCandidate {
     	return this.associatedWall;
     	
     }
+
+	public void resetWall() {
+		
+	    	this.orientation=null;
+	    	this.row=0;
+	    	this.column=0;
+	}
 
 	
     

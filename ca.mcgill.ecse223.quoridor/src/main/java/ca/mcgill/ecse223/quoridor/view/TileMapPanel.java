@@ -592,6 +592,9 @@ public class TileMapPanel extends JPanel {
      */
     private void onSlotClicked(final int row, final int col, final Orientation orientation) {
         // Do not change this to enhanced for loop
+    	//drop wall
+    	
+    	
         for (int i = 0; i < listeners.size(); ++i) {
             listeners.get(i).onSlotClicked(row, col, orientation);
         }

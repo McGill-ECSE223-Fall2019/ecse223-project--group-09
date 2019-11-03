@@ -35,6 +35,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     private static final int UPDATE_DELAY = 350;
 
     // ***** Rendering State Variables *****
+    
+    private static TOWallCandidate wall;
     private final DefaultListModel<String> replayList = new DefaultListModel<>();
     private final Timer PLAYER_INFO_TIMER;
 
@@ -206,6 +208,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 
         this.playerInfoPanel.updateInfo(player);
+        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
+        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
 
         // Get the grid to display correct info
 
@@ -297,16 +301,50 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      * This method is called when rotate wall button is clicked
      */
     private void onRotateWallButtonClicked() {
-        // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
-        TOWallCandidate wall = QuoridorController.getWallCandidate();
-        // QuoridorController.rotateWall(wall.getAssociatedWall());
+    	QuoridorController.rotateWall(wall);
+    	
+    	this.repaint();
+        System.out.println("Rotated: " );
+       // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
+    	TOWallCandidate wall = QuoridorController.getWallCandidate();
+    //    QuoridorController.rotateWall(wall.getAssociatedWall());
 
     }
 
     @Override
     public void onMouseWheelRotated(double clicks) {
         // Proof that it works:
+    	 
+    	//rotateWall
+    	double val = Math.abs(clicks);
+    	if(val > 0.150 && val < 0.25) {
+    		QuoridorController.rotateWall(wall);
+    	}
+    	
+    	this.repaint();
         System.out.println("Wheel: " + clicks);
+    }
+    
+    
+    @Override
+    public void onSlotClicked(int row, int col, Orientation orientation) {
+        // Proof that it works:
+    	
+    	//dropWall
+    	
+    	if(QuoridorController.dropWall(wall.getAssociatedWall())) {//if true drop it
+    		
+    		//newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
+    		
+    	}else {
+    		JOptionPane.showMessageDialog(this, "you cannot drop wall here");
+    	}
+    	
+        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row
+                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+        
+        
+        
     }
 
     @Override
@@ -325,13 +363,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     public void onTileExited(int row, int col) {
         // Proof that it works:
         System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row);
-    }
-
-    @Override
-    public void onSlotClicked(int row, int col, Orientation orientation) {
-        // Proof that it works:
-        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row
-                + (orientation == Orientation.VERTICAL ? "v" : "h"));
     }
 
     @Override
@@ -386,11 +417,24 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
+        
+        wall = new TOWallCandidate(Orientation.VERTICAL, 5, 3);
 
+//        final TOWall wall = new TOWall();
+//        wall.setColumn(5);
+//        wall.setRow(3);
+        
+        newBoardWindow.gridPanel.setWallCandidate(wall);
+
+        // I commented this out because by fixing that NullPointerException that occurs
+        // solely in the UI, it causes the fetchPlayerInfo thing to succeed, therefore
+        // ignoring this setWhiteWalls call
+        /*
         final TOWall wall = new TOWall();
         wall.setColumn(5);
         wall.setRow(3);
         wall.setOrientation(Orientation.HORIZONTAL);
         newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
+        */
     }
 }
