@@ -595,6 +595,8 @@ public class QuoridorController {
 			//currentMove.getPrevMove().setNextMove(currentMove);
 			if(game.numberOfMoves()==1 || game.numberOfMoves()==0) { //this the first move or we do not have moves at all..
 				//do nothing
+				
+				
 			}else {
 				Move prevMove= game.getMove(game.numberOfMoves()-2); //is the last move
 				prevMove.setNextMove(currentMove); //links the moves
