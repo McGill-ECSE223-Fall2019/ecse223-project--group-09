@@ -17,11 +17,19 @@ public class TOWallCandidate {
     
     private TOWall associatedWall;
     
-    TOWallCandidate(Orientation orientation, int row, int column) {
+    public TOWallCandidate(Orientation orientation, int row, int column) {
     	
     	this.orientation = orientation;
     	this.row = row;
     	this.column = column;
+    	
+    	this.associatedWall= new TOWall();
+    	
+    	this.associatedWall.setOrientation(orientation);
+    	this.associatedWall.setRow(row);
+    	this.associatedWall.setColumn(column);
+    	
+    	
     }
     
     public int getRow() {
@@ -30,6 +38,7 @@ public class TOWallCandidate {
     
     public void setRow(int row) {
     	this.row = row;
+    	this.associatedWall.setRow(row);
     }
     
     public int getColumn() {
@@ -38,6 +47,7 @@ public class TOWallCandidate {
     
     public void setColumn(int column) {
     	this.column = column;
+    	this.associatedWall.setColumn(column);
     }
     public Orientation getOrientation() {
     	return this.orientation;
@@ -45,6 +55,7 @@ public class TOWallCandidate {
     
     public void setOrientation(Orientation orientation) {
     	this.orientation = orientation;
+    	this.associatedWall.setOrientation(orientation);
     }
     
     /**
@@ -54,13 +65,15 @@ public class TOWallCandidate {
     	if(this.orientation==Orientation.HORIZONTAL) {
     		
     		this.setOrientation(Orientation.VERTICAL);
+    		associatedWall.setOrientation(Orientation.VERTICAL);
     	}else { // if the orientation is vertcial
     		
     		this.setOrientation(Orientation.HORIZONTAL);
+    		this.associatedWall.setOrientation(Orientation.HORIZONTAL);
     	}
     }
     
-    public TOWall getAssociatedWall(){
+    public TOWall getAssociatedWall(){ //this should be heavily used
     	return this.associatedWall;
     	
     }

@@ -18,16 +18,19 @@ import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
+import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 
 /**
  * Creates a window that looks somewhat like GUI3.png
  *
  * @author Paul Teng (260862906) [SavePosition.feature;LoadPosition.feature]
  */
-public class BoardWindow extends JFrame {
+public class BoardWindow extends JFrame implements GameBoardListener {
 
     private static final int UPDATE_DELAY = 350;
 
@@ -64,6 +67,9 @@ public class BoardWindow extends JFrame {
         menuBar.add(this.createFileMenu());
 
         this.setJMenuBar(menuBar);
+
+        // Install the event listener for the game board
+        this.gridPanel.addGameBoardListener(this);
 
         // Setup timer that periodically fetches
         // the time remaining of the current player:
@@ -115,11 +121,13 @@ public class BoardWindow extends JFrame {
          */
         dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        dropWall.setEnabled(true);
         dropWall.addActionListener(e -> this.onDropWallButtonClicked());
 
         rotateWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         rotateWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-        rotateWall.addActionListener(e -> this.onDropWallButtonClicked());
+        rotateWall.setEnabled(true);
+        rotateWall.addActionListener(e -> this.onRotateWallButtonClicked());
 
         panel.add(container);
         panel.add(btnEnterReplayMode);
@@ -179,6 +187,17 @@ public class BoardWindow extends JFrame {
     }
 
     /**
+     * Returns the grid panel instance associated with this window
+     *
+     * @return the grid panel instance, never null
+     *
+     * @author
+     */
+    public final GridPanel getGridPanel() {
+        return this.gridPanel;
+    }
+
+    /**
      * Issues a call to the controller requesting for new player information
      *
      * @author Group 9
@@ -188,13 +207,19 @@ public class BoardWindow extends JFrame {
 
         this.playerInfoPanel.updateInfo(player);
 
+        // Get the grid to display correct info
+
+        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
+        this.gridPanel.setWhiteWalls(QuoridorController.getWhiteWallsOnBoard());
+        this.gridPanel.setBlackWalls(QuoridorController.getBlackWallsOnBoard());
+
         // Enable/Disable buttons based on what the player can do
 
-        final boolean grabbed = player == null ? false : player.hasWallInHand();
+        final boolean grabbed = true; // player == null ? false : player.hasWallInHand();
         this.dropWall.setEnabled(grabbed);
         this.rotateWall.setEnabled(grabbed);
 
-        final boolean canGrab = player == null ? false : player.canGrabWall();
+        final boolean canGrab = true;// player == null ? false : player.canGrabWall();
         this.grabWallButton.setEnabled(canGrab);
     }
 
@@ -252,7 +277,7 @@ public class BoardWindow extends JFrame {
     private void onGrabAWallButtonClicked() {
         try {
             QuoridorController.grabWall();
-            TOWallCandidate wallCandidate = QuoridorController.getCurrentWallCandidate();
+            TOWallCandidate wallCandidate = QuoridorController.getWallCandidate();
             gridPanel.setWallCandidate(wallCandidate);
         } catch (Exception e) {
             System.out.println("No game loaded: create new or select game");
@@ -268,6 +293,91 @@ public class BoardWindow extends JFrame {
 
     }
 
+    /**
+     * This method is called when rotate wall button is clicked
+     */
+    private void onRotateWallButtonClicked() {
+        // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
+        TOWallCandidate wall = QuoridorController.getWallCandidate();
+        // QuoridorController.rotateWall(wall.getAssociatedWall());
+
+    }
+
+    @Override
+    public void onMouseWheelRotated(double clicks) {
+        // Proof that it works:
+        System.out.println("Wheel: " + clicks);
+    }
+
+    @Override
+    public void onTileClicked(int row, int col) {
+        // Proof that it works:
+        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row);
+    }
+
+    @Override
+    public void onTileEntered(int row, int col) {
+        // Proof that it works:
+        System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row);
+    }
+
+    @Override
+    public void onTileExited(int row, int col) {
+        // Proof that it works:
+        System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row);
+    }
+
+    @Override
+    public void onSlotClicked(int row, int col, Orientation orientation) {
+        // Proof that it works:
+        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row
+                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+    }
+
+    @Override
+    public void onSlotEntered(int row, int col, Orientation orientation) {
+        // Proof that it works:
+        System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
+                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+
+        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
+        try {
+            int aRow = wallCandidate.getRow();
+            int aCol = wallCandidate.getColumn();
+            Orientation aOrientation = wallCandidate.getOrientation();
+            String side;
+
+            if (orientation == aOrientation) {
+                if (row == aRow && col == (aCol + 1)) {
+                    side = "right";
+                } else if (row == aRow && col == (aCol - 1)) {
+                    side = "left";
+                } else if (col == aCol && row == (aRow + 1)) {
+                    side = "up";
+                } else if (col == aCol && row == (aRow - 1)) {
+                    side = "down";
+                } else {
+                    side = "no new candidate";
+                }
+            } else {
+                side = "no new candidate";
+            }
+
+            wallCandidate = QuoridorController.moveWall(side);
+            this.repaint();
+        } catch (NullPointerException e) {
+            System.out.println("No wall grabbed");
+        }
+
+    }
+
+    @Override
+    public void onSlotExited(int row, int col, Orientation orientation) {
+        // Proof that it works:
+        System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row
+                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+    }
+
     public static void launchWindow() {
         BoardWindow newBoardWindow = new BoardWindow();
         newBoardWindow.setSize(800, 550);
@@ -276,5 +386,11 @@ public class BoardWindow extends JFrame {
 
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
+
+        final TOWall wall = new TOWall();
+        wall.setColumn(5);
+        wall.setRow(3);
+        wall.setOrientation(Orientation.HORIZONTAL);
+        newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
     }
 }
