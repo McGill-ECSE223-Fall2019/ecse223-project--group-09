@@ -307,8 +307,6 @@ public class QuoridorController {
 	
 	
 	
-	
-	
 	/**
 	 * 
 	 * @author alixe delabrousse (260868412)
