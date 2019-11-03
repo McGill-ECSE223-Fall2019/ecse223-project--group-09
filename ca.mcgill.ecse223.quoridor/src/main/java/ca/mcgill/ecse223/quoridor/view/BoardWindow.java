@@ -387,10 +387,15 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
 
+        // I commented this out because by fixing that NullPointerException that occurs
+        // solely in the UI, it causes the fetchPlayerInfo thing to succeed, therefore
+        // ignoring this setWhiteWalls call
+        /*
         final TOWall wall = new TOWall();
         wall.setColumn(5);
         wall.setRow(3);
         wall.setOrientation(Orientation.HORIZONTAL);
         newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
+        */
     }
 }
