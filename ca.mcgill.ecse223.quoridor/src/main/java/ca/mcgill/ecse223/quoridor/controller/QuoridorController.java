@@ -294,6 +294,7 @@ public class QuoridorController {
 			// create the new Wall Move
 			WallMove wallMove = new WallMove(game.getMoves().size()+1, game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
 			game.setWallMoveCandidate(wallMove); // Set current wall move
+			game.addMove(wallMove);
 			TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove); // create associated TO
 			
 			toCurrentPlayer.setWallCandidate(wallCandidate);
@@ -2364,8 +2365,8 @@ public class QuoridorController {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game game = quoridor.getCurrentGame();
 		
-		
 			if (p.getColor() == Color.BLACK) {
+				System.out.println(game);
 				return game.getCurrentPosition().getBlackWallsInStock().stream().map(QuoridorController::fromWall)
 						.collect(Collectors.toList());
 			} else {
@@ -2516,8 +2517,6 @@ public class QuoridorController {
 		} catch (Exception e) {
 			throw new NoGrabbedWallException("No wall has been grabbed");
 		}
-		
-	
 	}
 	
 
