@@ -167,7 +167,7 @@ public class QuoridorController {
 	 */
 
 	public static void selectUsername(String user) {
-		user = 
+		// user = 
 	}
 
 	/**
@@ -2101,7 +2101,7 @@ public class QuoridorController {
 	 */
 	private static TOPlayer fromPlayer(Player p) {
 		final TOPlayer player = new TOPlayer();
-		player.setName(p.getUser().getName());
+		player.setUsername(p.getUser().getName());
 
 		final Game g;
 		final Color c;

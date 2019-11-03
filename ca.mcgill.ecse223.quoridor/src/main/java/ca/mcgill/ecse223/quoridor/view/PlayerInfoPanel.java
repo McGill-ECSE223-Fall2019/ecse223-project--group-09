@@ -150,7 +150,7 @@ public class PlayerInfoPanel extends JPanel {
             return;
         }
 
-        this.lblName.setText(player.getName());
+        this.lblName.setText(player.getUsername());
         this.lblColor.setText(player.getColor().name().toLowerCase());
         this.lblWalls.setText(Integer.toString(player.getWallsRemaining()));
 
