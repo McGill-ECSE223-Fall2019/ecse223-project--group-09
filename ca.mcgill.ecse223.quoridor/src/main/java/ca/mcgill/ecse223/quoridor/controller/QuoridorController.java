@@ -70,10 +70,10 @@ public class QuoridorController {
 	 */
 	private static final HashMap<Player, TimerTask> PLAYER_CLOCK = new HashMap<>();
 	
-	private static final int INITIAL_ROW = 1;
-	private static final int INITIAL_COLUMN = 1;
-	private static final Direction INITIAL_ORIENTATION = Direction.Vertical;
-
+	public static final int INITIAL_ROW = 1;
+	public static final int INITIAL_COLUMN = 1;
+	public static final Direction INITIAL_ORIENTATION = Direction.Vertical;
+	public static final Orientation INITIAL_TO_ORIENTATION = fromDirection(INITIAL_ORIENTATION);
 	/////////////////////////// FIELDS ///////////////////////////
 	
 	private static Game game; 
@@ -263,27 +263,17 @@ public class QuoridorController {
 		Game game = quoridor.getCurrentGame();// get current game from quoridor
 		Player currentPlayer = getCurrentPlayer(); // get the player of the turn 
 		TOPlayer toCurrentPlayer = getPlayerOfCurrentTurn(); // create associated transfer object
-		List<Wall> remainingWalls;
-		
-		
-		
+		List<Wall> walls= currentPlayer.getWalls(); //this gets the complete list of 10 walls
 		
 		Wall grabbedWall; // current grabbed wall (null if no more walls left on stock)
 		TOWall toGrabbedWall;
 		Tile initialTile = getTileFromRowAndColumn(INITIAL_ROW, INITIAL_COLUMN); // Tile at initial position
-		
-		try {
-			
-			if(currentPlayer.hasGameAsBlack()) {
-				remainingWalls = game.getCurrentPosition().getBlackWallsInStock(); // get remaining walls of current player
-			} else {
-				remainingWalls = game.getCurrentPosition().getWhiteWallsInStock();
-			}
-			
-			// check if there are any walls remaining
-			grabbedWall = remainingWalls.get(currentPlayer.numberOfWalls()-1); // the grabbed wall is the last one in the list
+		if (toCurrentPlayer.getWallsRemaining() != 0) {
+
+			grabbedWall = walls.get(toCurrentPlayer.getWallsRemaining()-1); // the grabbed wall is the last one in the list
 			toCurrentPlayer.setWallInHand(true);
-			currentPlayer.removeWall(grabbedWall); //remove the grabbed wall from the stock
+			toCurrentPlayer.setWallsRemaining(toCurrentPlayer.getWallsRemaining()-1); //Remove one wall from walls remaining count
+			
 			toGrabbedWall = fromWall(grabbedWall); // create transfer object wall from model Wall
 			
 			
@@ -297,14 +287,16 @@ public class QuoridorController {
 			toCurrentPlayer.setWallCandidate(wallCandidate);
 			toGrabbedWall.SetGrabbed(true);
 			
-		} catch(Exception e) { // if not:
+			return toGrabbedWall; // return the current grabbed wall
+		} else {
 			
-			toCurrentPlayer.setWallInHand(false); // the current player does not have any wall in hand
-			throw new WallStockEmptyException("No more walls on stock");
-		
+				toCurrentPlayer.setWallInHand(false); // the current player does not have any wall in hand
+				toCurrentPlayer.setWallCandidate(null);
+				throw new WallStockEmptyException("No more walls on stock");
+			
+
 		}
-		return toGrabbedWall; // return the current grabbed wall
-							// null if no more walls on stock
+			
 	}
 	
 	
@@ -2365,19 +2357,27 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public static List<TOWall> getRemainingWallsOfPlayer(TOPlayer p) {
+
+	public static List<TOWall> getRemainingWallsOfCurrentPlayer(){
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game game = quoridor.getCurrentGame();
+		Player p = game.getCurrentPosition().getPlayerToMove();
 		
-			if (p.getColor() == Color.BLACK) {
-				System.out.println(game);
-				return game.getCurrentPosition().getBlackWallsInStock().stream().map(QuoridorController::fromWall)
-						.collect(Collectors.toList());
-			} else {
-				return game.getCurrentPosition().getWhiteWallsInStock().stream().map(QuoridorController::fromWall)
-						.collect(Collectors.toList());
-			}
+		return p.getWalls().stream().map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
 		
+	}
+	
+	public static List<TOWall> getRemainingBlackWalls(GamePosition pos){
+		
+		return pos.getBlackWallsInStock().stream().map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
+	}
+	
+	public static List<TOWall> getRemainingWhiteWalls(GamePosition pos){
+		
+		return pos.getWhiteWallsInStock().stream().map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
 	}
 	
 	

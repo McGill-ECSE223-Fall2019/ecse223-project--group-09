@@ -54,10 +54,14 @@ public class CucumberStepDefinitions {
 	private TOWall currentWall;
 	private TOWallCandidate wallCandidate;
 	
+	private Game currentGame;
+	
 	private boolean noMoreWallsFlag = false;
 	private boolean invalidPositionFlag = false;
 	
 	private boolean wallGrabbedFlag  = false;
+	
+	
 	
 	@Given("^The game is not running$")
 	public void theGameIsNotRunning() {
@@ -143,6 +147,13 @@ public class CucumberStepDefinitions {
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
+
+			
+			this.wallCandidate = QuoridorController.getWallCandidate();
+			if (this.wallCandidate == null) {
+				QuoridorController.grabWall();
+				this.wallCandidate = QuoridorController.getWallCandidate();
+			}
 
 		
 		Assert.assertFalse(this.wallGrabbedFlag);
@@ -693,13 +704,13 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
-		
-			this.wallStock = QuoridorController.getRemainingWallsOfPlayer(this.player);
-			Assert.assertNotNull(wallStock);
-		
-	
-		
-		
+			this.currentGame = QuoridorApplication.getQuoridor().getCurrentGame();
+			this.player = QuoridorController.getPlayerOfCurrentTurn();
+			Assert.assertTrue(this.player.getWallsRemaining() != 0);
+			this.wallStock = QuoridorController.getRemainingWallsOfCurrentPlayer();
+			this.currentWall = this.wallStock.get(this.player.getWallsRemaining()-1);
+			this.wallCandidate = new TOWallCandidate(QuoridorController.INITIAL_TO_ORIENTATION, QuoridorController.INITIAL_ROW,QuoridorController.INITIAL_COLUMN);
+			
 	}
 	
 	/**
@@ -709,10 +720,11 @@ public class CucumberStepDefinitions {
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
 		try{
-			this.noMoreWallsFlag = false;
 			this.currentWall = QuoridorController.grabWall();
 		} catch (WallStockEmptyException e) {
 			this.noMoreWallsFlag = true;
+			this.currentWall = null;
+			this.wallCandidate= null;
 		}
 		
 	}
@@ -737,8 +749,8 @@ public class CucumberStepDefinitions {
 	@And("I shall have a wall in my hand over the board")
 	public void wallOverBoard() {
 		
+		Assert.assertFalse(this.noMoreWallsFlag);
 		Assert.assertNotNull(this.currentWall);
-		Assert.assertTrue(this.currentWall == QuoridorController.getCurrentGrabbedWall());
 		
 	}
 
@@ -757,8 +769,13 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("I have no more walls on stock")
 	public void noMoreWallsOnStock() {
-		Assert.assertTrue(noMoreWallsFlag);
+
+		this.currentGame = QuoridorApplication.getQuoridor().getCurrentGame();
+		this.player = QuoridorController.getPlayerOfCurrentTurn();
+		this.player.setWallsRemaining(0);
 		
+		Assert.assertTrue(this.player.getWallsRemaining() == 0);
+		this.noMoreWallsFlag = true;
 	}
 	
 	/**
@@ -775,7 +792,8 @@ public class CucumberStepDefinitions {
 	 */
 	@But("I shall have no walls in my hand")
 	public void noWallInHand() {
-		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
+		
+		Assert.assertFalse(this.wallGrabbedFlag);
 		
 	}
 	
