@@ -17,19 +17,12 @@ public final class TOPlayer {
     private Color color;
     private boolean wallInHand = false;
     private int wallsRemaining;
-<<<<<<< HEAD
-    
+    private TOWallCandidate currentWallCandidate;
+
     public TOPlayer(String aUsername, int aSize) {
         //username = aUsername;
         //size = aSize;
 	}
-=======
-    private TOWallCandidate currentWallCandidate;
-
-    public void setName(String name) {
-        this.name = name;
-    }
->>>>>>> 51fca5e36896efef411ca25874be1c5626c23c50
 
 	public void setUsername(String username) {
         this.username = username;

@@ -11,6 +11,7 @@ import org.junit.Assert;
 
 import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.Color;
+import ca.mcgill.ecse223.quoridor.controller.InvalidInputException;
 import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
@@ -50,7 +51,6 @@ public class CucumberStepDefinitions {
 		initQuoridorAndBoard();
 		createUsersAndPlayers("user1", "user2");
 	}
-	
 
 	@Given("^The game is running$")
 	public void theGameIsRunning() {
@@ -79,7 +79,7 @@ public class CucumberStepDefinitions {
 			Integer wcol = Integer.decode(map.get("wcol"));
 			// Wall to place
 			// Walls are placed on an alternating basis wrt. the owners
-			//Wall wall = Wall.getWithId(playerIdx * 10 + wallIdxForPlayer);
+			// Wall wall = Wall.getWithId(playerIdx * 10 + wallIdxForPlayer);
 			Wall wall = players[playerIdx].getWall(wallIdxForPlayer); // above implementation sets wall to null
 
 			String dir = map.get("wdir");
@@ -95,7 +95,8 @@ public class CucumberStepDefinitions {
 			default:
 				throw new IllegalArgumentException("Unsupported wall direction was provided");
 			}
-			new WallMove(0, 1, players[playerIdx], quoridor.getBoard().getTile((wrow - 1) * 9 + wcol - 1), quoridor.getCurrentGame(), direction, wall);
+			new WallMove(0, 1, players[playerIdx], quoridor.getBoard().getTile((wrow - 1) * 9 + wcol - 1),
+					quoridor.getCurrentGame(), direction, wall);
 			if (playerIdx == 0) {
 				quoridor.getCurrentGame().getCurrentPosition().removeWhiteWallsInStock(wall);
 				quoridor.getCurrentGame().getCurrentPosition().addWhiteWallsOnBoard(wall);
@@ -115,7 +116,7 @@ public class CucumberStepDefinitions {
 	public void iDoNotHaveAWallInMyHand() {
 		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());
 	}
-	
+
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
 		if (!QuoridorController.getPlayerOfCurrentTurn().hasWallInHand()) {
@@ -127,7 +128,7 @@ public class CucumberStepDefinitions {
 		// we assert it again just to be sure...
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
 	}
-	
+
 	@Given("^A new game is initializing$")
 	public void aNewGameIsInitializing() throws Throwable {
 		initQuoridorAndBoard();
@@ -148,74 +149,73 @@ public class CucumberStepDefinitions {
 	 */
 
 	// ***** InitializeBoard.feature *****
-		
+
 	/**
-	* @author Barry Chen
-	*/
+	 * @author Barry Chen
+	 */
 	@When("The initialization of the board is initiated")
 	public void initializationOfTheBoardInitiated() {
 		throw new PendingException();
 	}
-	
+
 	/**
-	* @author Barry Chen
-	*/
+	 * @author Barry Chen
+	 */
 	@Then("It shall be white player to move")
 	public void whitePlayerToMove() {
 		throw new PendingException();
 	}
-	
+
 	/**
-	* @author Barry Chen
-	*/
+	 * @author Barry Chen
+	 */
 	@And("White's pawn shall be in its initial position")
 	public void whitePawnBeAtInitialPosition() {
 		throw new PendingException();
 	}
-	
+
 	/**
-	* @author Barry Chen
-	*/
+	 * @author Barry Chen
+	 */
 	@And("Black's pawn shall be in its initial position")
 	public void blackPawnBeAtInitialPosition() {
 		throw new PendingException();
 	}
-	
+
 	/**
-	* @author Barry Chen
-	*/
+	 * @author Barry Chen
+	 */
 	@And("All of White's walls shall be in stock")
 	public void allWhiteWallsBeInStock() {
 		throw new PendingException();
 	}
-	
+
 	/**
-	* @author Barry Chen
-	*/
+	 * @author Barry Chen
+	 */
 	@And("All of Black's walls shall be in stock")
 	public void allBlackWallsBeInStock() {
 		throw new PendingException();
 	}
-	
+
 	/**
-	* @author Barry Chen
-	*/
+	 * @author Barry Chen
+	 */
 	@And("White's clock shall be counting down")
 	public void whiteClockShallBeCoutingDown() {
 		throw new PendingException();
 	}
-	
+
 	/**
-	* @author Barry Chen
-	*/
+	 * @author Barry Chen
+	 */
 	@And("It shall be shown that this is White's turn")
 	public void ShownThatIsWhiteTurn() {
 		throw new PendingException();
 	}
-	
-	
+
 	// ***** StartNewGame.feature *****
-	
+
 	/**
 	 * @author Barry Chen
 	 */
@@ -223,46 +223,44 @@ public class CucumberStepDefinitions {
 	public void aNewGameIsBeingInitialized() {
 		throw new PendingException();
 	}
-	
+
 	/**
 	 * @author Barry Chen
 	 */
 	@And("White player chooses a username")
-	public void whitePlayerChoosesUsername( ) {
+	public void whitePlayerChoosesUsername() {
 		throw new PendingException();
 	}
-	
+
 	/**
 	 * @author Barry Chen
 	 */
 	@And("Black player chooses a username")
-	public void blackPlayerChoosesUsername( ) {
+	public void blackPlayerChoosesUsername() {
 		throw new PendingException();
 	}
-	
+
 	/**
 	 * @author Barry Chen
 	 */
 	@And("Total thinking time is set")
-	public void totalThinkingTimeSet( ) {
+	public void totalThinkingTimeSet() {
 		throw new PendingException();
 	}
-	
+
 	/**
 	 * @author Barry Chen
 	 */
 	@Then("The game shall become ready to start")
-	public void gameShallBecomeReadyToStart( ) {
+	public void gameShallBecomeReadyToStart() {
 		throw new PendingException();
 	}
-	
+
 	/*
-	Given The game is ready to start
-  	When I start the clock
-  	Then The game shall be running
-  	And The board shall be initialized
+	 * Given The game is ready to start When I start the clock Then The game shall
+	 * be running And The board shall be initialized
 	 */
-	
+
 	/**
 	 * @author Barry Chen
 	 */
@@ -270,7 +268,7 @@ public class CucumberStepDefinitions {
 	public void gameIsReadyToStart() {
 		throw new PendingException();
 	}
-	
+
 	/**
 	 * @author Barry Chen
 	 */
@@ -278,7 +276,7 @@ public class CucumberStepDefinitions {
 	public void startTheClock() {
 		throw new PendingException();
 	}
-	
+
 	/**
 	 * @author Barry Chen
 	 */
@@ -286,7 +284,7 @@ public class CucumberStepDefinitions {
 	public void gameShallBeRunning() {
 		throw new PendingException();
 	}
-	
+
 	/**
 	 * @author Barry Chen
 	 */
@@ -294,20 +292,17 @@ public class CucumberStepDefinitions {
 	public void boardShallBeInitialized() {
 		throw new PendingException();
 	}
-	
-	
-	
+
 	// ***** ProvideOrSelectUserName.feature *****
 
-	
 	private Color color;
-	
+
 	// selecting an existing username
-		
+
 	/**
-	*@param String color;
-	*@author Ada Andrei
-	*/
+	 * @param String color;
+	 * @author Ada Andrei
+	 */
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIsColor(String color) {
@@ -316,29 +311,29 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	*@param boolean user; 
-	*@author Ada Andrei
-	*/
+	 * @param boolean user;
+	 * @author Ada Andrei
+	 */
 
 	@And("There is existing user {string}")
 	public void existingUser(String user) {
-		Assert.assertTrue(QuoridorController.usernameExists(user)); 
+		Assert.assertTrue(QuoridorController.usernameExists(user));
 	}
 
 	/**
-	*@param String user; 
-	*@author Ada Andrei
-	*/
-	@When("The player selects existing {string}") 
+	 * @param String user;
+	 * @author Ada Andrei
+	 */
+	@When("The player selects existing {string}")
 	public void playerSelectsExistingUsername(String user) {
 		QuoridorController.selectUsername(user);
 	}
 
 	/**
-	*@param String color;
-	*@param String user;
-	*@author Ada Andrei
-	*/
+	 * @param String color;
+	 * @param String user;
+	 * @author Ada Andrei
+	 */
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void nameOfPlayerInNewGameShallBeUsername(String color, String user) {
 		throw new PendingException();
@@ -347,20 +342,21 @@ public class CucumberStepDefinitions {
 	// create new user name
 
 	/**
-	*@param boolean user;
-	*@author Ada Andrei
-	*/
+	 * @param boolean user;
+	 * @author Ada Andrei
+	 */
 	@And("There is no existing user {string}")
 	public void noExistingUser(String user) {
-		Assert.assertFalse(QuoridorController.usernameExists(user)); 
+		Assert.assertFalse(QuoridorController.usernameExists(user));
 	}
-	
+
 	/**
-	*@param String user; 
-	*@author Ada Andrei
-	*/
+	 * @param String user;
+	 * @author Ada Andrei
+	 * @throws InvalidInputException
+	 */
 	@When("The player provides new user name: {string}")
-	public void playerProvidesNewUserName(String user) {
+	public void playerProvidesNewUserName(String user) throws InvalidInputException {
 		QuoridorController.createUsername(user);		
 	}
 
