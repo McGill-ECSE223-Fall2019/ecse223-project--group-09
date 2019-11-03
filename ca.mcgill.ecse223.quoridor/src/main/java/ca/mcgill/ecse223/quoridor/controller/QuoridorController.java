@@ -264,19 +264,25 @@ public class QuoridorController {
 	
 	public static TOWall grabWall() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor(); // get quoridor
-		
+		Game game = quoridor.getCurrentGame();// get current game from quoridor
 		Player currentPlayer = getCurrentPlayer(); // get the player of the turn 
 		TOPlayer toCurrentPlayer = getPlayerOfCurrentTurn(); // create associated transfer object
+		List<Wall> remainingWalls;
 		
-		List<Wall> remainingWalls = currentPlayer.getWalls(); // get remaining walls of current player
 		
-		Game game = quoridor.getCurrentGame(); // get current game from quoridor
 		
 		Wall grabbedWall; // current grabbed wall (null if no more walls left on stock)
 		TOWall toGrabbedWall;
 		Tile initialTile = getTileFromRowAndColumn(INITIAL_ROW, INITIAL_COLUMN); // Tile at initial position
 		
 		try {
+			
+			if(currentPlayer.hasGameAsBlack()) {
+				remainingWalls = game.getCurrentPosition().getBlackWallsInStock(); // get remaining walls of current player
+			} else {
+				remainingWalls = game.getCurrentPosition().getWhiteWallsInStock();
+			}
+			
 			// check if there are any walls remaining
 			grabbedWall = remainingWalls.get(currentPlayer.numberOfWalls()-1); // the grabbed wall is the last one in the list
 			toCurrentPlayer.setWallInHand(true);
@@ -290,8 +296,7 @@ public class QuoridorController {
 			TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove); // create associated TO
 			
 			toCurrentPlayer.setWallCandidate(wallCandidate);
-			
-			
+			toGrabbedWall.SetGrabbed(true);
 			
 		} catch(Exception e) { // if not:
 			
@@ -299,8 +304,6 @@ public class QuoridorController {
 			throw new WallStockEmptyException("No more walls on stock");
 		
 		}
-		
-		
 		return toGrabbedWall; // return the current grabbed wall
 							// null if no more walls on stock
 	}
@@ -330,7 +333,7 @@ public class QuoridorController {
 		Game game = quoridor.getCurrentGame();
 		
 		WallMove wallMove = game.getWallMoveCandidate();
-		TOWallCandidate wallCandidate = getCurrentWallCandidate();
+		TOWallCandidate wallCandidate = getWallCandidate();
 		
 		Tile targetTile;
 		try {
@@ -455,9 +458,6 @@ public class QuoridorController {
 			throw new InvalidPositionException("Illegal move");
 			
 		}
-		
-		
-		
 		return wallCandidate;
 		
 	}
@@ -2207,8 +2207,7 @@ public class QuoridorController {
 		TOWallCandidate wallCandidate  = currentPlayer.getWallCandidate();
 		
 		
-		assert(wallCandidate == null);
-		wallCandidate = new TOWallCandidate(Orientation.VERTICAL,1,1);
+		if (wallCandidate == null) wallCandidate = new TOWallCandidate(Orientation.VERTICAL,1,1);
 		
 		return wallCandidate;
 		
@@ -2266,7 +2265,7 @@ public class QuoridorController {
 	}
 	
 	/**
-	 * @author alixe delabrousse
+	 * @author alixe delabrousse (260868412)
 	 * 
 	 * @return the current wall candidate, the current wall move
 	 */
@@ -2348,17 +2347,31 @@ public class QuoridorController {
 	}
 	
 	/**
-	 * @author alixe delabrousse
 	 * 
-	 * @param nrow
-	 * @param ncolumn
-	 * @param TOWall
+	 * @param p - player
+	 * @return
+	 * 
+	 * @author alixe delabrousse (260868412)
+	 * 
 	 */
 	
-	public static void updateWallPosition(TOWall wall, int nrow, int ncolumn) {
-		throw new UnsupportedOperationException("Query method update-wall-position is not implemented yet");
+	public static List<TOWall> getRemainingWallsOfPlayer(TOPlayer p) {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game game = quoridor.getCurrentGame();
+		
+		
+			if (p.getColor() == Color.BLACK) {
+				return game.getCurrentPosition().getBlackWallsInStock().stream().map(QuoridorController::fromWall)
+						.collect(Collectors.toList());
+			} else {
+				return game.getCurrentPosition().getWhiteWallsInStock().stream().map(QuoridorController::fromWall)
+						.collect(Collectors.toList());
+			}
+		
 	}
-
+	
+	
+	
 	/**
 	 * 
 	 * @param color - prompts the color of the Pawn of which you want the number of walls
@@ -2493,22 +2506,15 @@ public class QuoridorController {
 	public static TOWall getCurrentGrabbedWall() {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game game = quoridor.getCurrentGame();
-		return fromWall(game.getWallMoveCandidate().getWallPlaced());
-	
-	}
-	
-	/**
-	 * 
-	 * @return the current wall candidate
-	 * 
-	 * @author Mohamed Mohamed (260855731) and Alixe Delabrousse
-	 * 
-	 */
-	public static TOWallCandidate getCurrentWallCandidate() {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		return createTOWallCandidateFromWallMove(quoridor.getCurrentGame().getWallMoveCandidate());
+		try {
+			return fromWall(game.getWallMoveCandidate().getWallPlaced());
+		} catch (Exception e) {
+			throw new NoGrabbedWallException("No wall has been grabbed");
+		}
 		
+	
 	}
+	
 
 	/**
 	 * 
@@ -2553,6 +2559,8 @@ public class QuoridorController {
 		return pos.getPlayerToMove();
 		
 	}
+	
+
 
 
 }// end QuoridorController

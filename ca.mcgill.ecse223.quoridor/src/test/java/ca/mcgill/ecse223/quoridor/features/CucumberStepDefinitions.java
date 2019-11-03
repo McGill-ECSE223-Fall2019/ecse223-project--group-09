@@ -6,6 +6,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 
@@ -13,6 +14,7 @@ import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.Color;
 import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 import ca.mcgill.ecse223.quoridor.controller.InvalidPositionException;
+import ca.mcgill.ecse223.quoridor.controller.NoGrabbedWallException;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
@@ -46,7 +48,16 @@ public class CucumberStepDefinitions {
 	// ***********************************************
 	// Background step definitions
 	// ***********************************************
-
+	
+	private List<TOWall> wallStock;
+	private TOWall currentWall;
+	private TOWallCandidate wallCandidate;
+	
+	private boolean noMoreWallsFlag = false;
+	private boolean invalidPositionFlag = false;
+	
+	private boolean wallGrabbedFlag  = false;
+	
 	@Given("^The game is not running$")
 	public void theGameIsNotRunning() {
 		initQuoridorAndBoard();
@@ -112,25 +123,28 @@ public class CucumberStepDefinitions {
 		System.out.println();
 
 	}
+	
+
+	
 
 	@And("I do not have a wall in my hand")
 	public void iDoNotHaveAWallInMyHand() {
-		Assert.assertNull(QuoridorController.getCurrentGrabbedWall());
-	
+		try {
+			this.currentWall = QuoridorController.getCurrentGrabbedWall();
+			this.wallGrabbedFlag = true;
+		} catch (NoGrabbedWallException e) {
+			this.wallGrabbedFlag = false;
+		}
+		
 	}
 	
 	
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
-		//if (!QuoridorController.getPlayerOfCurrentTurn().hasWallInHand()) {
-			// Then we get the player to grab a wall
-			//QuoridorController.grabWall();
-		//}
-
-		// At this point, there should be a wall that is grabbed
-		// we assert it again just to be sure...
-		Assert.assertNotNull(QuoridorController.getCurrentGrabbedWall());
+		
+		Assert.assertFalse(this.wallGrabbedFlag);
+		
 	}
 	
 	@Given("^A new game is initializing$")
@@ -643,12 +657,7 @@ public class CucumberStepDefinitions {
 	}
 	
 	
-	private List<TOWall> wallStock;
-	private TOWall currentWall;
-	private TOWallCandidate wallCandidate;
 	
-	private boolean noMoreWallsFlag = false;
-	private boolean invalidPositionFlag = false;
 	
 	// ***** GrabWall.feature *****
 	
@@ -660,10 +669,12 @@ public class CucumberStepDefinitions {
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
 		
+			this.wallStock = QuoridorController.getRemainingWallsOfPlayer(this.player);
+			Assert.assertNotNull(wallStock);
 		
-		this.wallStock = QuoridorController.getWallsOwnedByPlayer(QuoridorController.getPlayerOfCurrentTurn().getColor());
-		Assert.assertNotNull(wallStock);
 	
+		
+		
 	}
 	
 	/**
@@ -690,7 +701,6 @@ public class CucumberStepDefinitions {
 	public void createNewWallMoveCandidate() {
 		
 		this.wallCandidate = QuoridorController.getWallCandidate();
-	
 		Assert.assertNotNull(this.wallCandidate);
 
 	}
@@ -722,7 +732,8 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("I have no more walls on stock")
 	public void noMoreWallsOnStock() {
-		Assert.assertNull(this.wallStock);
+		Assert.assertTrue(noMoreWallsFlag);
+		
 	}
 	
 	/**
@@ -762,14 +773,14 @@ public class CucumberStepDefinitions {
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
 		
-		Direction directionn= Direction.valueOf(direction);
+		Direction dir = Direction.valueOf(direction);
 		
 		//we have to create the precondition
 		
 		//changing the information inside the wall move 
 		WallMove wallMove= QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
 		Tile tile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
-		wallMove.setWallDirection(directionn);
+		wallMove.setWallDirection(dir);
 		wallMove.setTargetTile(tile);		
 		
 		//creating an equivalent wallCandidate
@@ -822,7 +833,7 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author Alixe Delabrouse (260868412)
+	 * @author Alixe Delabrousse (260868412)
 	 * 
 	 * @param row
 	 * @param column

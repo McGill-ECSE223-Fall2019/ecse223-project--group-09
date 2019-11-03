@@ -208,7 +208,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 
         this.playerInfoPanel.updateInfo(player);
-        this.gridPanel.setWallCandidate(QuoridorController.getCurrentWallCandidate());
+        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
 
         // Enable/Disable buttons based on what the player can do
 
@@ -274,7 +274,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     private void onGrabAWallButtonClicked() {
         try {
             QuoridorController.grabWall();
-            TOWallCandidate wallCandidate = QuoridorController.getCurrentWallCandidate();
+            TOWallCandidate wallCandidate = QuoridorController.getWallCandidate();
             gridPanel.setWallCandidate(wallCandidate);
         } catch (Exception e) {
             System.out.println("No game loaded: create new or select game");
@@ -295,7 +295,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      */
     private void onRotateWallButtonClicked() {
        // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
-    	TOWallCandidate wall = QuoridorController.getCurrentWallCandidate();
+    	TOWallCandidate wall = QuoridorController.getWallCandidate();
     //    QuoridorController.rotateWall(wall.getAssociatedWall());
 
     }
