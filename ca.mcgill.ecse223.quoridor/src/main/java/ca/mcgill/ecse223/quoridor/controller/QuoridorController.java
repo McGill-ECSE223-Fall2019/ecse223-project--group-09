@@ -263,6 +263,7 @@ public class QuoridorController {
  	*/
 	
 	public static TOWall grabWall() {
+		
 		final Quoridor quoridor = QuoridorApplication.getQuoridor(); // get quoridor
 		Game game = quoridor.getCurrentGame();// get current game from quoridor
 		Player currentPlayer = getCurrentPlayer(); // get the player of the turn 
@@ -291,7 +292,7 @@ public class QuoridorController {
 			
 			
 			// create the new Wall Move
-			WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+			WallMove wallMove = new WallMove(game.getMoves().size()+1, game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
 			game.setWallMoveCandidate(wallMove); // Set current wall move
 			TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove); // create associated TO
 			
@@ -552,7 +553,7 @@ public class QuoridorController {
 	 * 
 	 * @author Mohamed Mohamed
 	 * 
-	 * @param wall
+	 * @param toWall
 	 * 
 	 * This method allows you to drop the wall that is in the users hand.
 	 * Internally what it does is take as a parameter TOobject 
@@ -563,12 +564,12 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public static void dropWall(TOWall wall) { //getting the information from the transfer object that has been modified.
+	public static void dropWall(TOWall toWall) { //getting the information from the transfer object that has been modified.
 		//this method will drop 
 
-		int row= wall.getRow();
-		int column= wall.getColumn();
-		Orientation orientation= wall.getOrientation();
+		int row= toWall.getRow();
+		int column= toWall.getColumn();
+		Orientation orientation= toWall.getOrientation();
 		Game game=null;
 		
 		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
@@ -590,6 +591,8 @@ public class QuoridorController {
 			//reset the position of the wallMove 
 			WallMove currentMove= game.getWallMoveCandidate();
 			currentMove.setTargetTile(board.getTile((row-1)*9 +column-1));
+			//throw new RuntimeException("Current move/ "+currentMove.getGame()+" ! "+game);
+			 
 			
 			//currentMove.getPrevMove().setNextMove(currentMove);
 			Move prevMove= game.getMove(game.numberOfMoves()-1); //is the last move
@@ -604,11 +607,10 @@ public class QuoridorController {
 				switchCurrentPlayer();
 			}
 			//reset the TO to null and the current wall candidate
-			wall.resetWall();
+			toWall.resetWall();
 			TOPlayer currentPlayer= getPlayerOfCurrentTurn();
 			currentPlayer.setWallInHand(false);
 			game.setWallMoveCandidate(null);
-			
 			
 		}else {
 			//do nothing internally just display an error message
@@ -2562,6 +2564,46 @@ public class QuoridorController {
 	
 
 
+	/**
+	 * Returns a list of white walls on board
+	 * 
+	 * @return a list of white walls on board, null if no game
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<TOWall> getWhiteWallsOnBoard() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return null;
+		}
+		final Game game = quoridor.getCurrentGame();
+		if (!game.hasCurrentPosition()) {
+			return null;
+		}
+
+		return game.getCurrentPosition().getWhiteWallsOnBoard().stream().map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns a list of black walls on board
+	 * 
+	 * @return a list of black walls on board, null if no game
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<TOWall> getBlackWallsOnBoard() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return null;
+		}
+		final Game game = quoridor.getCurrentGame();
+		if (!game.hasCurrentPosition()) {
+			return null;
+		}
+
+		return game.getCurrentPosition().getBlackWallsOnBoard().stream().map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
+	}
 
 }// end QuoridorController
-

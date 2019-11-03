@@ -118,16 +118,15 @@ public class OpeningWindow extends JFrame {
 	 * to the author tag
 	 */
 	public void newGameButtonActionPerformed() {
+		if (new GameSetupDialog().showSetupDialog(this) == GameSetupDialog.START_GAME_OPTION) {
+			// TODO: Setup game and stuff
 
-		// Proof that it works
-		//JOptionPane.showMessageDialog(this, "called method newGameButtonActionPerformed\n\nRemember to change this behaviour!");
+			// Dispose the current window
+			this.dispose();
 
-
-		// Dispose the current window
-		this.dispose();
-
-		// Create the next window
-		BoardWindow.launchWindow();
+			// Create the next window
+			BoardWindow.launchWindow();
+		}
 	}
 
 	/**
