@@ -211,6 +211,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         this.playerInfoPanel.updateInfo(player);
         this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
+        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
+
+        // Get the grid to display correct info
+
+        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
+        this.gridPanel.setWhiteWalls(QuoridorController.getWhiteWallsOnBoard());
+        this.gridPanel.setBlackWalls(QuoridorController.getBlackWallsOnBoard());
 
         // Enable/Disable buttons based on what the player can do
 
@@ -300,6 +307,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	
     	this.repaint();
         System.out.println("Rotated: " );
+       // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
+    	TOWallCandidate wall = QuoridorController.getWallCandidate();
+    //    QuoridorController.rotateWall(wall.getAssociatedWall());
+
     }
 
     @Override
