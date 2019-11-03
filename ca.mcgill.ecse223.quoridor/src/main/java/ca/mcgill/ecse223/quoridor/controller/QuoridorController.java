@@ -333,7 +333,7 @@ public class QuoridorController {
 		Game game = quoridor.getCurrentGame();
 		
 		WallMove wallMove = game.getWallMoveCandidate();
-		TOWallCandidate wallCandidate = getCurrentWallCandidate();
+		TOWallCandidate wallCandidate = getWallCandidate();
 		
 		Tile targetTile;
 		try {
@@ -540,15 +540,15 @@ public class QuoridorController {
 			game=QuoridorApplication.getQuoridor().getCurrentGame();
 		}
 		
-		WallMove currentMove= game.getWallMoveCandidate();
+	/*	WallMove currentMove= game.getWallMoveCandidate();
 		Direction currentDirection = currentMove.getWallDirection();
 		Direction newDirection=null;
-		if (currentDirection==Direction.Horizontal) {
+		if (currentDirection.equals(Direction.Horizontal)) {
 			newDirection=Direction.Vertical;
 		}else {
 			newDirection=Direction.Horizontal;
 		}
-		currentMove.setWallDirection(newDirection);
+		currentMove.setWallDirection(newDirection);*/
 	}
 	
 	/**
@@ -562,11 +562,12 @@ public class QuoridorController {
 	 * checks if the move is a valid move given by calling 'validateWallPlacement' if it is valid 
 	 * resets the position of the wallMove AND adds it to the list of wallmoves of the player
 	 * AND adds it to the board AND changes the currentPlayer
+	 * @return 
 	 * 
 	 * 
 	 */
 	
-	public static void dropWall(TOWall toWall) { //getting the information from the transfer object that has been modified.
+	public static boolean dropWall(TOWall toWall) { //getting the information from the transfer object that has been modified.
 		//this method will drop 
 
 		int row= toWall.getRow();
@@ -613,10 +614,11 @@ public class QuoridorController {
 			TOPlayer currentPlayer= getPlayerOfCurrentTurn();
 			currentPlayer.setWallInHand(false);
 			game.setWallMoveCandidate(null);
+			return true;
 			
 		}else {
 			//do nothing internally just display an error message
-			throw new UnsupportedOperationException("This wall move is invalid");	
+			return false;	
 		}
 		
 	}
@@ -2501,18 +2503,7 @@ public class QuoridorController {
 	
 	}
 	
-	/**
-	 * 
-	 * @return the current wall candidate
-	 * 
-	 * @author Mohamed Mohamed (260855731) and Alixe Delabrousse
-	 * 
-	 */
-	public static TOWallCandidate getCurrentWallCandidate() {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		return createTOWallCandidateFromWallMove(quoridor.getCurrentGame().getWallMoveCandidate());
-		
-	}
+	
 
 	/**
 	 * 

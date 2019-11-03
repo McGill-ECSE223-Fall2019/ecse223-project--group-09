@@ -35,6 +35,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     private static final int UPDATE_DELAY = 350;
 
     // ***** Rendering State Variables *****
+    
+    private static TOWallCandidate wall;
     private final DefaultListModel<String> replayList = new DefaultListModel<>();
     private final Timer PLAYER_INFO_TIMER;
 
@@ -208,7 +210,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 
         this.playerInfoPanel.updateInfo(player);
-        this.gridPanel.setWallCandidate(QuoridorController.getCurrentWallCandidate());
+        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
 
         // Enable/Disable buttons based on what the player can do
 
@@ -274,7 +276,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     private void onGrabAWallButtonClicked() {
         try {
             QuoridorController.grabWall();
-            TOWallCandidate wallCandidate = QuoridorController.getCurrentWallCandidate();
+            TOWallCandidate wallCandidate = QuoridorController.getWallCandidate();
             gridPanel.setWallCandidate(wallCandidate);
         } catch (Exception e) {
             System.out.println("No game loaded: create new or select game");
@@ -294,16 +296,46 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      * This method is called when rotate wall button is clicked
      */
     private void onRotateWallButtonClicked() {
-       // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
-    	TOWallCandidate wall = QuoridorController.getCurrentWallCandidate();
-    //    QuoridorController.rotateWall(wall.getAssociatedWall());
-
+    	QuoridorController.rotateWall(wall);
+    	
+    	this.repaint();
+        System.out.println("Rotated: " );
     }
 
     @Override
     public void onMouseWheelRotated(double clicks) {
         // Proof that it works:
+    	 
+    	//rotateWall
+    	double val = Math.abs(clicks);
+    	if(val > 0.150 && val < 0.25) {
+    		QuoridorController.rotateWall(wall);
+    	}
+    	
+    	this.repaint();
         System.out.println("Wheel: " + clicks);
+    }
+    
+    
+    @Override
+    public void onSlotClicked(int row, int col, Orientation orientation) {
+        // Proof that it works:
+    	
+    	//dropWall
+    	
+    	if(QuoridorController.dropWall(wall.getAssociatedWall())) {//if true drop it
+    		
+    		//newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
+    		
+    	}else {
+    		JOptionPane.showMessageDialog(this, "you cannot drop wall here");
+    	}
+    	
+        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row
+                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+        
+        
+        
     }
 
     @Override
@@ -322,13 +354,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     public void onTileExited(int row, int col) {
         // Proof that it works:
         System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row);
-    }
-
-    @Override
-    public void onSlotClicked(int row, int col, Orientation orientation) {
-        // Proof that it works:
-        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row
-                + (orientation == Orientation.VERTICAL ? "v" : "h"));
     }
 
     @Override
@@ -384,10 +409,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
         
-        final TOWall wall = new TOWall();
+        wall = new TOWallCandidate(Orientation.VERTICAL, 5, 3);
         wall.setColumn(5);
         wall.setRow(3);
-        wall.setOrientation(Orientation.HORIZONTAL);
-        newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
+        
+        newBoardWindow.gridPanel.setWallCandidate(wall);
     }
 }
