@@ -348,12 +348,12 @@ public class CucumberStepDefinitions {
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIsColor(String color) {
-		this.color = Color.valueOf(color.toUpperCase());
-		if (color == "WHITE") {		
-			Assert.assertTrue(aNewGame.setWhitePlayer()); 
+		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame(); 
+		if (color == "WHITE" || color == "white") {		
+			Assert.assertTrue(aNewGame.setWhitePlayer(aNewGame.getWhitePlayer())); 
 		}
-		else if (color == "BLACK") {
-			Assert.assertTrue(aNewGame.setBlackPlayer());
+		else if (color == "BLACK" || color == "black") {
+			Assert.assertTrue(aNewGame.setBlackPlayer(aNewGame.getBlackPlayer()));
 		}
 	}
 
@@ -383,11 +383,14 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void nameOfPlayerInNewGameShallBeUsername(String color, String user) {
-		if (color == "WHITE") {
-			Assert.assertTrue(aNewGame.setWhitePlayer(firstPlayer));
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		User anUser = new User(user, quoridor);
+		Player aPlayer = new Player(null, anUser, 0, null);
+		if (color == "WHITE" || color == "white") {
+			Assert.assertEquals(aPlayer.getUser().getName(), user); 
 		}
-		else if (color == "BLACK") {
-			Assert.assertTrue(aNewGame.setBlackPlayer(firstPlayer));
+		else if (color == "BLACK" || color == "black") {
+			Assert.assertEquals(aPlayer.getUser().getName(), user);
 		}
 	}
 
@@ -429,12 +432,13 @@ public class CucumberStepDefinitions {
 	*/
 	@And("Next player to set user name shall be {string}")
 	public void nextPlayerToSetUserNameShallBe(String color) {
-		if (color == "WHITE") {
-			Assert.assertTrue(aNewGame.setWhitePlayer(firstPlayer));
+		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame(); 
+		if (color == "WHITE") {		
+			Assert.assertTrue(aNewGame.setWhitePlayer(aNewGame.getWhitePlayer())); 
 		}
 		else if (color == "BLACK") {
-			Assert.assertTrue(aNewGame.setBlackPlayer(firstPlayer));
-		}	
+			Assert.assertTrue(aNewGame.setBlackPlayer(aNewGame.getBlackPlayer()));
+		}
 	}
 	
 	// ***** SetTotalThinkingTime.feature *****
@@ -794,7 +798,7 @@ public class CucumberStepDefinitions {
 	public void noWallInHand() {
 		
 		Assert.assertFalse(this.wallGrabbedFlag);
-		
+i		
 	}
 	
 

@@ -113,25 +113,28 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the newGameButton is clicked.
-	 * 
-	 * @throws InvalidInputException
-	 *
+	 * 	 
 	 * @Ada Andrei
 	 */
-	public void newGameButtonActionPerformed() throws InvalidInputException {
-		GameSetupDialog gameSetupDialog = new GameSetupDialog();
-		gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
-		if (new GameSetupDialog().showSetupDialog(this) == GameSetupDialog.START_GAME_OPTION) {
-			QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
-			QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
-			Time time = gameSetupDialog.getThinkingTime();
-			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
+	public void newGameButtonActionPerformed() {
+		try {
+			GameSetupDialog gameSetupDialog = new GameSetupDialog();
+			gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
+			if (new GameSetupDialog().showSetupDialog(this) == GameSetupDialog.START_GAME_OPTION) {
+				QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
+				QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
+				Time time = gameSetupDialog.getThinkingTime();
+				QuoridorController.setTime(time.getMinutes(), time.getSeconds());
 
-			// Dispose the current window
-			this.dispose();
+				// Dispose the current window
+				this.dispose();
 
-			// Create the next window
-			BoardWindow.launchWindow();
+				// Create the next window
+				BoardWindow.launchWindow();
+			}
+		}
+		catch (InvalidInputException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE); 
 		}
 	}
 
