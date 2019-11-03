@@ -208,7 +208,12 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 
         this.playerInfoPanel.updateInfo(player);
+
+        // Get the grid to display correct info
+
         this.gridPanel.setWallCandidate(QuoridorController.getCurrentWallCandidate());
+        this.gridPanel.setWhiteWalls(QuoridorController.getWhiteWallsOnBoard());
+        this.gridPanel.setBlackWalls(QuoridorController.getBlackWallsOnBoard());
 
         // Enable/Disable buttons based on what the player can do
 

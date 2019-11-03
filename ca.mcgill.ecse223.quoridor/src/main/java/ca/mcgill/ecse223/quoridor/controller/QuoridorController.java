@@ -2558,6 +2558,46 @@ public class QuoridorController {
 		
 	}
 
+	/**
+	 * Returns a list of white walls on board
+	 * 
+	 * @return a list of white walls on board, null if no game
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<TOWall> getWhiteWallsOnBoard() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return null;
+		}
+		final Game game = quoridor.getCurrentGame();
+		if (!game.hasCurrentPosition()) {
+			return null;
+		}
+
+		return game.getCurrentPosition().getWhiteWallsOnBoard().stream().map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Returns a list of black walls on board
+	 * 
+	 * @return a list of black walls on board, null if no game
+	 * 
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<TOWall> getBlackWallsOnBoard() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return null;
+		}
+		final Game game = quoridor.getCurrentGame();
+		if (!game.hasCurrentPosition()) {
+			return null;
+		}
+
+		return game.getCurrentPosition().getBlackWallsOnBoard().stream().map(QuoridorController::fromWall)
+				.collect(Collectors.toList());
+	}
 
 }// end QuoridorController
-
