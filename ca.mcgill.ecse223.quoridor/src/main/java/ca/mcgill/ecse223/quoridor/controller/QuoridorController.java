@@ -2225,7 +2225,10 @@ public class QuoridorController {
 	 * @return
 	 */
 	public static TOWallCandidate createTOWallCandidateFromWallMove(WallMove wallMove) {
-		
+		if (wallMove == null) {
+			return null;
+		}
+
 		Orientation orientation = fromDirection(wallMove.getWallDirection());
 		
 		TOWallCandidate wallCandidate = new TOWallCandidate(orientation, wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn());
