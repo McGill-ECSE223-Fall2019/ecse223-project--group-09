@@ -791,6 +791,12 @@ public class CucumberStepDefinitions {
 		
 		//we have to create the precondition
 		
+		this.currentWall = QuoridorController.getCurrentGrabbedWall();
+		this.currentWall.setOrientation(orientation);
+		this.currentWall.setColumn(column);
+		this.currentWall.setRow(row);
+		
+		this.wallCandidate = QuoridorController.getWallCandidate();
 		this.wallCandidate.setColumn(column);
 		this.wallCandidate.setRow(row);
 		this.wallCandidate.setOrientation(orientation);
@@ -822,10 +828,11 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The wall candidate is not at the {string} edge of the board")
 	public void wallCandidateNotOnEdge(String side) {
+		
 		if (side.equals("up")) {
-			Assert.assertTrue(this.wallCandidate.getRow() != 1);
-		} else if (side.equals("down")) {
 			Assert.assertTrue(this.wallCandidate.getRow() != 9);
+		} else if (side.equals("down")) {
+			Assert.assertTrue(this.wallCandidate.getRow() != 1);
 		} else if (side.equals("left")) {
 			Assert.assertTrue(this.wallCandidate.getColumn() != 1);
 		} else if (side.equals("right")) {
@@ -841,7 +848,6 @@ public class CucumberStepDefinitions {
 	public void attemptToMoveWall(String side) {
 	
 		try {
-			this.invalidPositionFlag = false;
 			QuoridorController.moveWall(side);
 		} catch (InvalidPositionException e) {
 			this.invalidPositionFlag = true;
@@ -858,9 +864,12 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The wall shall be moved over the board to position \\({int}, {int})")
 	public void wallMoving(int row, int column) {
-		this.wallCandidate.setRow(row);
-		this.wallCandidate.setColumn(column);
+		this.currentWall.setRow(row);
+		this.currentWall.setColumn(column);
 		
+//		Assert.assertTrue(this.currentWall.getRow() == row);
+//		Assert.assertTrue(this.currentWall.getColumn() == column);
+//	
 	}
 	
 	/**
@@ -876,8 +885,13 @@ public class CucumberStepDefinitions {
 	public void newWallCandidate(String direction, int row, int col) {
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
-		this.wallCandidate = QuoridorController.moveTOWallCandidateAtPosition(this.wallCandidate,orientation,  row, col);
-	
+//		Assert.assertTrue(this.wallCandidate.getOrientation() == orientation);
+//		Assert.assertTrue(this.wallCandidate.getRow() == row);
+//		Assert.assertTrue(this.wallCandidate.getColumn() == col);
+		
+		this.wallCandidate.setOrientation(orientation);
+		this.wallCandidate.setRow(row);
+		this.wallCandidate.setColumn(col);
 	}
 	
 	/**
@@ -889,13 +903,13 @@ public class CucumberStepDefinitions {
 	@And("The wall candidate is at the {string} edge of the board")
 	public void wallCandidateAtEdge(String side) {
 		if (side.equals("up")) {
-			Assert.assertTrue(this.wallCandidate.getRow() == 1);
+			this.wallCandidate.setRow(9);
 		} else if (side.equals("down")) {
-			Assert.assertTrue(this.wallCandidate.getRow() == 9);
+			this.wallCandidate.setRow(1);
 		} else if (side.equals("left")) {
-			Assert.assertTrue(this.wallCandidate.getColumn() == 1);
+			this.wallCandidate.setColumn(1);
 		} else if (side.contentEquals("right")) {
-			Assert.assertTrue(this.wallCandidate.getColumn() == 9);
+			this.wallCandidate.setColumn(9);
 		}
 		
 	}
