@@ -147,17 +147,6 @@ public class QuoridorController {
 	}
 	
 	/**
-	 * 
-	 * @param 
-	 * 
-	 */
-
-	public static void assignColor() {
-		
-
-	}
-
-	/**
 	 * This method allows the user to select an existing username.
 	 * 
 	 * @param String user;  
@@ -167,7 +156,16 @@ public class QuoridorController {
 	 */
 
 	public static void selectUsername(String user) {
-		// user = 
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (usernameExists(user)) {
+			User user1 = new User(user, quoridor);
+			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
+			User user2 = new User(user, quoridor);	
+			Player secondPlayer = new Player(null, user2, 1, Direction.Horizontal);
+			Game aNewGame = new Game(null, null, quoridor);
+			aNewGame.setWhitePlayer(firstPlayer);
+			aNewGame.setBlackPlayer(secondPlayer); 
+		}
 	}
 
 	/**
@@ -180,17 +178,12 @@ public class QuoridorController {
 	 */
 
 	public static void createUsername(String user) throws InvalidInputException {
-		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!usernameExists(user))	{
-			try {
-				LinkedList<TOPlayer> players = new LinkedList<TOPlayer>();
-			}
-			catch (RuntimeException e) {
-				throw new InvalidInputException(e.getMessage());
-			}
+			quoridor.addUser(user);
 		}
 		else {
-			//printf("This username already exists. Enter another username or select an existing username.")
+			throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
 		}
 	}
 
@@ -205,11 +198,9 @@ public class QuoridorController {
 	 */
 
 	public static boolean usernameExists(String user) {
-		if (QuoridorController.getPlayers().contains(user)) {
-			System.out.println(user + "already exists, please choose a new one");
+		if (QuoridorController.getUsernames().contains(user)) {
 			return true; 
         } else {
-			System.out.println(user + " does not exist. You're good to go!");
 			return false; 
         }		
 	}
@@ -225,7 +216,11 @@ public class QuoridorController {
 	 */
 	
 	public static void setTime(int mins, int secs) {
-
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Time time1 = new Time(0, mins, secs);
+		Time time2 = new Time(0, mins, secs);
+		quoridor.getCurrentGame().getWhitePlayer().setRemainingTime(time1);
+		quoridor.getCurrentGame().getBlackPlayer().setRemainingTime(time2); 
 	}
 
 	/**
@@ -237,13 +232,12 @@ public class QuoridorController {
 	 *
 	 */
 
-	public static List<TOPlayer> getPlayers() {
-		LinkedList<TOPlayer> players = new LinkedList<TOPlayer>();
+	public static List<String> getUsernames() {
+		LinkedList<String> usernames = new LinkedList<>();
 		for (User username : QuoridorApplication.getQuoridor().getUsers()) { // iterate through the list and add
-			TOPlayer toUsername = new TOPlayer(username.getName(), players.size());
-			players.add(toUsername);
+			usernames.add(username.getName());
 		}
-		return players;
+		return usernames;
 	}
 	
 	/**
@@ -296,6 +290,7 @@ public class QuoridorController {
 			WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
 			game.addMove(wallMove);
 			game.setWallMoveCandidate(wallMove); // Set current wall move
+			game.addMove(wallMove);
 			TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove); // create associated TO
 			
 			toCurrentPlayer.setWallCandidate(wallCandidate);
@@ -2371,8 +2366,8 @@ public class QuoridorController {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game game = quoridor.getCurrentGame();
 		
-		
 			if (p.getColor() == Color.BLACK) {
+				System.out.println(game);
 				return game.getCurrentPosition().getBlackWallsInStock().stream().map(QuoridorController::fromWall)
 						.collect(Collectors.toList());
 			} else {
@@ -2523,8 +2518,6 @@ public class QuoridorController {
 		} catch (Exception e) {
 			throw new NoGrabbedWallException("No wall has been grabbed");
 		}
-		
-	
 	}
 	
 
