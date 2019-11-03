@@ -159,12 +159,12 @@ public class QuoridorController {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (usernameExists(user)) {
 			User user1 = new User(user, quoridor);
-			Player player1 = new Player(null, user1, 9, Direction.Horizontal);
+			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
 			User user2 = new User(user, quoridor);	
-			Player player2 = new Player(null, user2, 1, Direction.Horizontal);
+			Player secondPlayer = new Player(null, user2, 1, Direction.Horizontal);
 			Game aNewGame = new Game(null, null, quoridor);
-			aNewGame.setWhitePlayer(player1);
-			aNewGame.setBlackPlayer(player2); 
+			aNewGame.setWhitePlayer(firstPlayer);
+			aNewGame.setBlackPlayer(secondPlayer); 
 		}
 	}
 
@@ -216,10 +216,11 @@ public class QuoridorController {
 	 */
 	
 	public static void setTime(int mins, int secs) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Time time1 = new Time(0, mins, secs);
 		Time time2 = new Time(0, mins, secs);
-		player1.setRemainingTime(time1);
-		player2.setRemainingTime(time2); 
+		quoridor.getCurrentGame().getWhitePlayer().setRemainingTime(time1);
+		quoridor.getCurrentGame().getBlackPlayer().setRemainingTime(time2); 
 	}
 
 	/**
