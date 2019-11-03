@@ -123,7 +123,8 @@ public class CucumberStepDefinitions {
 			QuoridorController.grabWall();
 		}
 
-		// At this point, there should be a wall that is grabbed
+	//throw new RuntimeException(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() + "");
+		//At this point, there should be a wall that is grabbed
 		// we assert it again just to be sure...
 		Assert.assertTrue(QuoridorController.getCurrentGrabbedWall().grabbed);
 	}
@@ -740,7 +741,7 @@ public class CucumberStepDefinitions {
 	public void wallCandidateExists(String direction, int row, int column) {
 		
 		//fixing the type of the string to be adjusted.
-		if (direction=="horizontal") {
+		if (direction.equals("horizontal")) {
 			direction="Horizontal";
 		}else {
 			direction="Vertical";
@@ -907,10 +908,9 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("The wall move candidate with {string} at position \\({int}, {int}) is valid")
 	public void wallMoveCandidateIsValid(String direction, int row, int col) {
-			
-		this.wallCandidate.setOrientation(Orientation.valueOf(direction.toUpperCase()));
-		this.wallCandidate.setRow(row);
-		this.wallCandidate.setColumn(col);
+		
+		this.wallCandidate=new TOWallCandidate(Orientation.valueOf(direction.toUpperCase()), row, col);
+		
 		//now check if the position is valid
 		boolean isValid= QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
 		Assert.assertTrue(isValid);//if valid it will be true
@@ -921,11 +921,14 @@ public class CucumberStepDefinitions {
 	 */	
 	@When("I release the wall in my hand")
 	public void realeaseWall() {
-		this.currentWall.setOrientation(this.wallCandidate.getOrientation());
+		
+		/*this.currentWall.setOrientation(this.wallCandidate.getOrientation());
 		this.currentWall.setRow(this.wallCandidate.getRow());
-		this.currentWall.setColumn(this.wallCandidate.getColumn());
+		this.currentWall.setColumn(this.wallCandidate.getColumn());*/
+
+		
 		//calling the method drop wall that should drop the wall by removing the wall form hand and registering the position
-		QuoridorController.dropWall(this.currentWall);//method drop wall will take as constructor a transfer object of wall
+		QuoridorController.dropWall(this.wallCandidate.getAssociatedWall());//method drop wall will take as constructor a transfer object of wall
 	}
 		
 	/**
@@ -977,9 +980,9 @@ public class CucumberStepDefinitions {
 	@Given("The wall move candidate with {string} at position \\({int}, {int}) is invalid")
 	public void wallMoveCandidateIsInvalid(String direction, int row, int col) {
 		
-		this.wallCandidate.setOrientation(Orientation.valueOf(direction.toUpperCase()));
-		this.wallCandidate.setRow(row);
-		this.wallCandidate.setColumn(col);
+		
+		this.wallCandidate=new TOWallCandidate(Orientation.valueOf(direction.toUpperCase()), row, col);
+		
 		//now check if the position is valid
 		boolean isValid=QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
 		Assert.assertFalse(isValid);//should be false since there is no move available
