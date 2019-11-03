@@ -123,13 +123,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         dropWall.setEnabled(true);
         dropWall.addActionListener(e -> this.onDropWallButtonClicked());
-        
 
         rotateWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         rotateWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         rotateWall.setEnabled(true);
         rotateWall.addActionListener(e -> this.onRotateWallButtonClicked());
-       
 
         panel.add(container);
         panel.add(btnEnterReplayMode);
@@ -190,10 +188,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
     /**
      * Returns the grid panel instance associated with this window
-     * 
+     *
      * @return the grid panel instance, never null
-     * 
-     * @author 
+     *
+     * @author
      */
     public final GridPanel getGridPanel() {
         return this.gridPanel;
@@ -208,20 +206,16 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 
         this.playerInfoPanel.updateInfo(player);
-<<<<<<< HEAD
-        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
-=======
 
         // Get the grid to display correct info
 
-        this.gridPanel.setWallCandidate(QuoridorController.getCurrentWallCandidate());
+        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
         this.gridPanel.setWhiteWalls(QuoridorController.getWhiteWallsOnBoard());
         this.gridPanel.setBlackWalls(QuoridorController.getBlackWallsOnBoard());
->>>>>>> 20e75d78e044e09f588852390c73f8a843b7189a
 
         // Enable/Disable buttons based on what the player can do
 
-        final boolean grabbed = true; //player == null ? false : player.hasWallInHand();
+        final boolean grabbed = true; // player == null ? false : player.hasWallInHand();
         this.dropWall.setEnabled(grabbed);
         this.rotateWall.setEnabled(grabbed);
 
@@ -298,14 +292,14 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
 
     }
-    
+
     /**
      * This method is called when rotate wall button is clicked
      */
     private void onRotateWallButtonClicked() {
-       // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
-    	TOWallCandidate wall = QuoridorController.getWallCandidate();
-    //    QuoridorController.rotateWall(wall.getAssociatedWall());
+        // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
+        TOWallCandidate wall = QuoridorController.getWallCandidate();
+        // QuoridorController.rotateWall(wall.getAssociatedWall());
 
     }
 
@@ -345,43 +339,43 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         // Proof that it works:
         System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
                 + (orientation == Orientation.VERTICAL ? "v" : "h"));
-   
-        TOWallCandidate wallCandidate= gridPanel.getWallCandidate();
+
+        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
         try {
-        	int aRow = wallCandidate.getRow();
-        	int aCol = wallCandidate.getColumn();
-        	Orientation aOrientation = wallCandidate.getOrientation();
-        	String side;
-        	
-        	if (orientation == aOrientation) {
-        		if (row == aRow && col == (aCol + 1)) {
-        			side = "right";
-        		} else if (row == aRow && col == (aCol - 1)) {
-        			side = "left";
-        		} else if (col == aCol && row == (aRow+1)) {
-        			side = "up";
-        		} else if (col == aCol && row == (aRow - 1)) {
-        			side = "down";
-        		} else {
-        			side = "no new candidate";
-        		}
-        	} else {
-        		side  =  "no new candidate";
-        	}
-        	
-        	wallCandidate = QuoridorController.moveWall(side);
-        	this.repaint();
+            int aRow = wallCandidate.getRow();
+            int aCol = wallCandidate.getColumn();
+            Orientation aOrientation = wallCandidate.getOrientation();
+            String side;
+
+            if (orientation == aOrientation) {
+                if (row == aRow && col == (aCol + 1)) {
+                    side = "right";
+                } else if (row == aRow && col == (aCol - 1)) {
+                    side = "left";
+                } else if (col == aCol && row == (aRow + 1)) {
+                    side = "up";
+                } else if (col == aCol && row == (aRow - 1)) {
+                    side = "down";
+                } else {
+                    side = "no new candidate";
+                }
+            } else {
+                side = "no new candidate";
+            }
+
+            wallCandidate = QuoridorController.moveWall(side);
+            this.repaint();
         } catch (NullPointerException e) {
-        	System.out.println("No wall grabbed");
+            System.out.println("No wall grabbed");
         }
-    
+
     }
 
     @Override
     public void onSlotExited(int row, int col, Orientation orientation) {
         // Proof that it works:
         System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row
-        	+ (orientation == Orientation.VERTICAL ? "v" : "h"));
+                + (orientation == Orientation.VERTICAL ? "v" : "h"));
     }
 
     public static void launchWindow() {
@@ -392,7 +386,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
-        
+
         final TOWall wall = new TOWall();
         wall.setColumn(5);
         wall.setRow(3);
