@@ -272,6 +272,7 @@ public class QuoridorController {
 		
 		
 		
+		
 		Wall grabbedWall; // current grabbed wall (null if no more walls left on stock)
 		TOWall toGrabbedWall;
 		Tile initialTile = getTileFromRowAndColumn(INITIAL_ROW, INITIAL_COLUMN); // Tile at initial position
@@ -292,7 +293,8 @@ public class QuoridorController {
 			
 			
 			// create the new Wall Move
-			WallMove wallMove = new WallMove(game.getMoves().size()+1, game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+			WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+			game.addMove(wallMove);
 			game.setWallMoveCandidate(wallMove); // Set current wall move
 			TOWallCandidate wallCandidate = createTOWallCandidateFromWallMove(wallMove); // create associated TO
 			
@@ -596,9 +598,12 @@ public class QuoridorController {
 			 
 			
 			//currentMove.getPrevMove().setNextMove(currentMove);
-			Move prevMove= game.getMove(game.numberOfMoves()-1); //is the last move
-			prevMove.setNextMove(currentMove); //links the moves
-			
+			if(game.numberOfMoves()==1 || game.numberOfMoves()==0) { //this the first move or we do not have moves at all..
+				//do nothing
+			}else {
+				Move prevMove= game.getMove(game.numberOfMoves()-2); //is the last move
+				prevMove.setNextMove(currentMove); //links the moves
+			}
 			//add the wall to the board AND set the next player, but first we need to check who is the current player
 			if(currentMove.getPlayer().hasGameAsBlack()) { // it's a black player
 				gamePosition.addBlackWallsOnBoard(currentMove.getWallPlaced());//just a list
