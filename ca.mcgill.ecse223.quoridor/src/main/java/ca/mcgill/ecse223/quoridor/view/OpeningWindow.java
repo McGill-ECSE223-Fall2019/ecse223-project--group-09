@@ -117,7 +117,7 @@ public class OpeningWindow extends JFrame {
 	 * @Ada Andrei
 	 */
 	public void newGameButtonActionPerformed() {
-		try {
+		//try {
 			GameSetupDialog gameSetupDialog = new GameSetupDialog();
 			gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
 
@@ -151,13 +151,13 @@ public class OpeningWindow extends JFrame {
 
 			// Create the next window
 			BoardWindow.launchWindow();
-		}
-		catch (InvalidInputException e) {
+		//}
+		//catch (InvalidInputException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE); 
-		}
-		catch (RuntimeException ex) {
+		//}
+		//catch (RuntimeException ex) {
 			SaveLoadPanel.displayThrowableTrace(this, ex);
-		}
+		//}
 	}
 
 	/**
