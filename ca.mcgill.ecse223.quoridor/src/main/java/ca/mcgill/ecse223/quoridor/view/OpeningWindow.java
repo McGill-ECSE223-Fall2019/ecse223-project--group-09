@@ -124,6 +124,7 @@ public class OpeningWindow extends JFrame {
 			BoardWindow.launchWindow();
 			final String namePlayer1;
 			final String namePlayer2;
+
 			while (true) {
 				if (gameSetupDialog.showSetupDialog(this) != GameSetupDialog.START_GAME_OPTION) {
 					// We are done, player hit cancel or sth like that

@@ -380,14 +380,14 @@ public class CucumberStepDefinitions {
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void nameOfPlayerInNewGameShallBeUsername(String color, String user) {
 		//don't create new instances
-		//final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		//User anUser = new User(user, quoridor);
-		//Player aPlayer = new Player(null, anUser, 0, null);
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		User anUser = new User(user, quoridor);
+		Player aPlayer = new Player(null, anUser, 0, null);
 		if (color == "WHITE" || color == "white") {
-			Assert.assertEquals(getCurrentPlayer().getUser().getName(), user); 
+			Assert.assertEquals(aPlayer.getUser().getName(), user); 
 		}
 		else if (color == "BLACK" || color == "black") {
-			Assert.assertEquals(currentPlayer.getUser().getName(), user);
+			Assert.assertEquals(aPlayer.getUser().getName(), user);
 		}
 	}
 
@@ -818,27 +818,16 @@ public class CucumberStepDefinitions {
 	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
 	public void wallCandidateExists(String direction, int row, int column) {
 		
-		//fixing the type of the string to be adjusted.
-		if (direction.equals("horizontal")) {
-			direction="Horizontal";
-		}else {
-			direction="Vertical";
-		}
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
 		
-		Direction dir = Direction.valueOf(direction);
 		
-		int aRow;// we invert the row because in the controller, the rows
+		
+		int aRow = (9 - row);// we invert the row because in the controller, the rows
 								// were numbered from bottom to top, unlike the Gherkin scenarios
-		if (orientation == Orientation.VERTICAL) {
-			aRow = (9 - row);
-		} else {
-			aRow = (10-row);
-		}
+		
 		
 		//we have to create the precondition
-		
 		
 		this.currentWall = QuoridorController.getCurrentGrabbedWall();
 		this.currentWall.setOrientation(orientation);
@@ -880,7 +869,6 @@ public class CucumberStepDefinitions {
 	public void attemptToMoveWall(String side) {
 	
 		try {
-			this.invalidPositionFlag = false;
 			this.wallCandidate = QuoridorController.moveWall(side);
 		} catch (InvalidPositionException e) {
 			this.invalidPositionFlag = true;
@@ -898,13 +886,7 @@ public class CucumberStepDefinitions {
 	@Then("The wall shall be moved over the board to position \\({int}, {int})")
 	public void wallMoving(int row, int column) {
 		
-		int aRow;
-		
-		if (this.currentWall.getOrientation() == Orientation.VERTICAL) {
-			aRow = (9 - row);
-		} else {
-			aRow = (10-row);
-		}
+		int aRow= (9 - row);
 		
 		
 		this.currentWall.setRow(aRow);
@@ -927,12 +909,7 @@ public class CucumberStepDefinitions {
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
 		
-		int aRow;
-		if (orientation == Orientation.VERTICAL) {
-			aRow = (9 - row);
-		} else {
-			aRow = (10-row);
-		}
+		int aRow = (9 - row);
 		
 		
 		this.wallCandidate.setOrientation(orientation);
@@ -956,11 +933,11 @@ public class CucumberStepDefinitions {
 			} else if (side.equals("left")) {
 				this.wallCandidate.setColumn(1);
 			} else if (side.contentEquals("right")) {
-				this.wallCandidate.setColumn(9);
+				this.wallCandidate.setColumn(8);
 			}
 		} else {
 			if (side.equals("up")) {
-				this.wallCandidate.setRow(9);
+				this.wallCandidate.setRow(8);
 			} else if (side.equals("down")) {
 				this.wallCandidate.setRow(1);
 			} else if (side.equals("left")) {
@@ -979,6 +956,7 @@ public class CucumberStepDefinitions {
 	
 	@Then("I shall be notified that my move is illegal")
 	public void notifIllegalMove() {
+		
 		Assert.assertTrue(this.invalidPositionFlag);
 	}
 
