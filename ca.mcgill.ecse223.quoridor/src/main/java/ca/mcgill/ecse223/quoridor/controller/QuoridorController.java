@@ -90,7 +90,9 @@ public class QuoridorController {
 	 * This method create a new empty game  
 	 */	
 	public Game createGame() {
-		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game newGame = new Game(GameStatus.Initializing, null, quoridor);
+		return newGame;
 	}
 	
 	/**
@@ -102,6 +104,8 @@ public class QuoridorController {
 	 * 
 	 */	
 	public Player createPlayer() {
+		//Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Player player = 
 		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
 	}
 	
@@ -127,6 +131,14 @@ public class QuoridorController {
 			}
 		}
 	}
+	
+	/*
+	 	Scenario: Start clock 
+	  	Given The game is ready to start
+	  	When I start the clock
+	  	Then The game shall be running
+	  	And The board shall be initialized
+	 */
 	
 	
 	/**
