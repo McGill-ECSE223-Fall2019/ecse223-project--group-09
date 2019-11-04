@@ -2419,7 +2419,7 @@ public class QuoridorController {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game game = quoridor.getCurrentGame();
 		
-		return createTOWallCandidateFromWallMove(game.getWallMoveCandidate());
+		return game == null ? null : createTOWallCandidateFromWallMove(game.getWallMoveCandidate());
 	}
 
 	/**
