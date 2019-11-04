@@ -130,7 +130,9 @@ public class CucumberStepDefinitions {
 	}
 	
 
-	
+	/**
+	 * @author Alixe Delabrousse (260868412) and Mohamed Mohamed 
+	 */
 
 	@And("I do not have a wall in my hand")
 	public void iDoNotHaveAWallInMyHand() {
@@ -143,7 +145,11 @@ public class CucumberStepDefinitions {
 		
 	}
 	
-	
+	/**
+	 * @author Alixe Delabrousse (260868412) and Mohamed Mohamed
+	 * 
+	 * @throws Throwable
+	 */
 	
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
@@ -157,16 +163,6 @@ public class CucumberStepDefinitions {
 
 		
 		Assert.assertFalse(this.wallGrabbedFlag);
-		
-
-		//if (!QuoridorController.getPlayerOfCurrentTurn().hasWallInHand()) {
-			// Then we get the player to grab a wall
-			//QuoridorController.grabWall();
-		//}
-
-	//throw new RuntimeException(QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate() + "");
-		//At this point, there should be a wall that is grabbed
-		// we assert it again just to be sure...
 		Assert.assertNotNull(QuoridorController.getCurrentGrabbedWall());
 
 	}
@@ -821,17 +817,20 @@ public class CucumberStepDefinitions {
 		
 		Direction dir = Direction.valueOf(direction);
 		
+		int aRow = (10 - row); // we invert the row because in the controller, the rows
+								// were numbered from bottom to top, unlike the Gherkin scenarios
+		
 		//we have to create the precondition
 		
-
+		
 		this.currentWall = QuoridorController.getCurrentGrabbedWall();
 		this.currentWall.setOrientation(orientation);
 		this.currentWall.setColumn(column);
-		this.currentWall.setRow(row);
+		this.currentWall.setRow(aRow);
 		
 		this.wallCandidate = QuoridorController.getWallCandidate();
 		this.wallCandidate.setColumn(column);
-		this.wallCandidate.setRow(row);
+		this.wallCandidate.setRow(aRow);
 		this.wallCandidate.setOrientation(orientation);
 	
 	}
@@ -864,7 +863,7 @@ public class CucumberStepDefinitions {
 	public void attemptToMoveWall(String side) {
 	
 		try {
-			QuoridorController.moveWall(side);
+			this.wallCandidate = QuoridorController.moveWall(side);
 		} catch (InvalidPositionException e) {
 			this.invalidPositionFlag = true;
 		}
@@ -880,13 +879,13 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The wall shall be moved over the board to position \\({int}, {int})")
 	public void wallMoving(int row, int column) {
-
-		this.currentWall.setRow(row);
+		
+		int aRow = (10 - row);
+		
+		this.currentWall.setRow(aRow);
 		this.currentWall.setColumn(column);
 		
-//		Assert.assertTrue(this.currentWall.getRow() == row);
-//		Assert.assertTrue(this.currentWall.getColumn() == column);
-//	
+	
 	}
 	
 	/**
@@ -902,12 +901,10 @@ public class CucumberStepDefinitions {
 	public void newWallCandidate(String direction, int row, int col) {
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
-//		Assert.assertTrue(this.wallCandidate.getOrientation() == orientation);
-//		Assert.assertTrue(this.wallCandidate.getRow() == row);
-//		Assert.assertTrue(this.wallCandidate.getColumn() == col);
+		int aRow = (10- row);
 		
 		this.wallCandidate.setOrientation(orientation);
-		this.wallCandidate.setRow(row);
+		this.wallCandidate.setRow(aRow);
 		this.wallCandidate.setColumn(col);
 	}
 	
@@ -919,15 +916,28 @@ public class CucumberStepDefinitions {
 	
 	@And("The wall candidate is at the {string} edge of the board")
 	public void wallCandidateAtEdge(String side) {
-		if (side.equals("up")) {
-			this.wallCandidate.setRow(9);
-		} else if (side.equals("down")) {
-			this.wallCandidate.setRow(1);
-		} else if (side.equals("left")) {
-			this.wallCandidate.setColumn(1);
-		} else if (side.contentEquals("right")) {
-			this.wallCandidate.setColumn(9);
+		if (this.wallCandidate.getOrientation() == Orientation.VERTICAL) {
+			if (side.equals("up")) {
+				this.wallCandidate.setRow(8);
+			} else if (side.equals("down")) {
+				this.wallCandidate.setRow(1);
+			} else if (side.equals("left")) {
+				this.wallCandidate.setColumn(1);
+			} else if (side.contentEquals("right")) {
+				this.wallCandidate.setColumn(9);
+			}
+		} else {
+			if (side.equals("up")) {
+				this.wallCandidate.setRow(9);
+			} else if (side.equals("down")) {
+				this.wallCandidate.setRow(1);
+			} else if (side.equals("left")) {
+				this.wallCandidate.setColumn(1);
+			} else if (side.contentEquals("right")) {
+				this.wallCandidate.setColumn(8);
+			}
 		}
+		
 		
 	}
 	

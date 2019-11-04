@@ -363,209 +363,263 @@ public class QuoridorController {
 		
 		if (side.equals("up") || side.equals("down") || side.equals("left") || side.equals("right")) {			
 			if (wallCandidate.getOrientation() == Orientation.VERTICAL) {
-				if (wallMove.getTargetTile().getRow() < 8 && wallMove.getTargetTile().getRow() > 1 && wallMove.getTargetTile().getColumn() < 9 && wallMove.getTargetTile().getColumn() > 1) {
-					if (side.equalsIgnoreCase("up")) {
+				if (wallMove.getTargetTile().getRow() < 8 && wallMove.getTargetTile().getRow() > 1) {
+					if (wallMove.getTargetTile().getColumn() < 9 && wallMove.getTargetTile().getColumn() > 1) {
+						if (side.equals("up")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("down")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("left")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("right")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						}
+					} else if (wallMove.getTargetTile().getColumn() == 1) {
+						if (side.equals("up")) {
+							
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+							
+						} else if (side.equals("down")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("left")) {
+							throw new InvalidPositionException("Invalid move");
+						} else if (side.equals("right")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						}
+					} else if(wallMove.getTargetTile().getColumn() == 9) {
+						if (side.equals("up")) {
+							
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+							
+						} else if (side.equals("down")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("left")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("right")) {
+							throw new InvalidPositionException("Invalid move");
+						}
 						
-						targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
-						wallMove.setTargetTile(targetTile);
-						wallCandidate.setColumn(targetTile.getColumn());
-						wallCandidate.setRow(targetTile.getRow());
-						
-					} else if (side.equalsIgnoreCase("down")) {
-						targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
-						wallMove.setTargetTile(targetTile);
-						wallCandidate.setColumn(targetTile.getColumn());
-						wallCandidate.setRow(targetTile.getRow());
-					} else if (side.equalsIgnoreCase("left")) {
-						targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
-						wallMove.setTargetTile(targetTile);
-						wallCandidate.setColumn(targetTile.getColumn());
-						wallCandidate.setRow(targetTile.getRow());
-					} else if (side.equalsIgnoreCase("right")) {
-						targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
-						wallMove.setTargetTile(targetTile);
-						wallCandidate.setColumn(targetTile.getColumn());
-						wallCandidate.setRow(targetTile.getRow());
+					} else {
+						throw new InvalidPositionException("Invalid position");
 					}
+					
+					
 				} else if (wallMove.getTargetTile().getRow() == 8) {
 					if (wallMove.getTargetTile().getColumn() > 1 && wallMove.getTargetTile().getColumn() < 9) {
-						if (side.equalsIgnoreCase("up")) {
+						if (side.equals("up")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("down")) {
+						} else if (side.equals("down")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					} else if (wallMove.getTargetTile().getColumn() == 1) {
-						if (side.equalsIgnoreCase("up")) {
+						if (side.equals("up")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("down")) {
+						} else if (side.equals("down")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					} else if (wallMove.getTargetTile().getColumn() == 9) {
-						if (side.equalsIgnoreCase("up")) {
+						if (side.equals("up")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("down")) {
+						} else if (side.equals("down")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
+					} else {
+						throw new InvalidPositionException("Invalid position");
 					}
 				} else if (wallMove.getTargetTile().getRow() == 1) {
 					if (wallMove.getTargetTile().getColumn() > 1 && wallMove.getTargetTile().getColumn() < 9) {
-						if (side.equalsIgnoreCase("down")) {
+						if (side.equals("down")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("up")) {
+						} else if (side.equals("up")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					} else if (wallMove.getTargetTile().getColumn() == 1) {
-						if (side.equalsIgnoreCase("down")) {
+						if (side.equals("down")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("up")) {
+						} else if (side.equals("up")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					} else if (wallMove.getTargetTile().getColumn() == 9) {
-						if (side.equalsIgnoreCase("down")) {
+						if (side.equals("down")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("up")) {
+						} else if (side.equals("up")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
+					} else {
+						throw new InvalidPositionException("Invalid position");
 					}
+				} else {
+					throw new InvalidPositionException("Invalid position");
 				}
 			} else {
-				if (wallMove.getTargetTile().getRow() < 9 && wallMove.getTargetTile().getRow() > 1 && wallMove.getTargetTile().getColumn() < 8 && wallMove.getTargetTile().getColumn() > 1) {
-					if (side.equalsIgnoreCase("up")) {
-						
-						targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
-						wallMove.setTargetTile(targetTile);
-						wallCandidate.setColumn(targetTile.getColumn());
-						wallCandidate.setRow(targetTile.getRow());
-						
-					} else if (side.equalsIgnoreCase("down")) {
-						targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
-						wallMove.setTargetTile(targetTile);
-						wallCandidate.setColumn(targetTile.getColumn());
-						wallCandidate.setRow(targetTile.getRow());
-					} else if (side.equalsIgnoreCase("left")) {
-						targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
-						wallMove.setTargetTile(targetTile);
-						wallCandidate.setColumn(targetTile.getColumn());
-						wallCandidate.setRow(targetTile.getRow());
-					} else if (side.equalsIgnoreCase("right")) {
-						targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
-						wallMove.setTargetTile(targetTile);
-						wallCandidate.setColumn(targetTile.getColumn());
-						wallCandidate.setRow(targetTile.getRow());
-					}
-				} else if (wallMove.getTargetTile().getRow() == 9) {
-					if (wallMove.getTargetTile().getColumn() > 1 && wallMove.getTargetTile().getColumn() < 8) {
-						if (side.equalsIgnoreCase("up")) {
-							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("left")) {
-							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
+				if (wallMove.getTargetTile().getRow() < 9 && wallMove.getTargetTile().getRow() > 1 ) {
+					if (wallMove.getTargetTile().getColumn() < 8 && wallMove.getTargetTile().getColumn() > 1) {
+						if (side.equals("up")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("down")) {
+						} else if (side.equals("down")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("left")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("right")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						}
+					}
+					
+				} else if (wallMove.getTargetTile().getRow() == 9) {
+					if (wallMove.getTargetTile().getColumn() > 1 && wallMove.getTargetTile().getColumn() < 8) {
+						if (side.equals("up")) {
+							throw new InvalidPositionException("Illegal move");
+						} else if (side.equals("left")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("down")) {
+							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
+							wallMove.setTargetTile(targetTile);
+							wallCandidate.setColumn(targetTile.getColumn());
+							wallCandidate.setRow(targetTile.getRow());
+						} else if (side.equals("right")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					} else if (wallMove.getTargetTile().getColumn() == 1) {
-						if (side.equalsIgnoreCase("up")) {
+						if (side.equals("up")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("down")) {
+						} else if (side.equals("down")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					} else if (wallMove.getTargetTile().getColumn() == 8) {
-						if (side.equalsIgnoreCase("up")) {
+						if (side.equals("up")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("down")) {
+						} else if (side.equals("down")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
@@ -574,60 +628,61 @@ public class QuoridorController {
 					}
 				} else if (wallMove.getTargetTile().getRow() == 1) {
 					if (wallMove.getTargetTile().getColumn() > 1 && wallMove.getTargetTile().getColumn() < 8) {
-						if (side.equalsIgnoreCase("down")) {
+						if (side.equals("down")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("up")) {
+						} else if (side.equals("up")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					} else if (wallMove.getTargetTile().getColumn() == 1) {
-						if (side.equalsIgnoreCase("down")) {
+						if (side.equals("down")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("up")) {
+						} else if (side.equals("up")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					} else if (wallMove.getTargetTile().getColumn() == 8) {
-						if (side.equalsIgnoreCase("down")) {
+						if (side.equals("down")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("right")) {
+						} else if (side.equals("right")) {
 							throw new InvalidPositionException("Illegal move");
-						} else if (side.equalsIgnoreCase("up")) {
+						} else if (side.equals("up")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
-						} else if (side.equalsIgnoreCase("left")) {
+						} else if (side.equals("left")) {
 							targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
 							wallMove.setTargetTile(targetTile);
 							wallCandidate.setColumn(targetTile.getColumn());
 							wallCandidate.setRow(targetTile.getRow());
 						}
 					}
+				} else {
+					throw new InvalidPositionException("Invalid position");
 				}
 			}
-			
 			return wallCandidate;
 		} else {
 			throw new InvalidPositionException("Illegal Move");
