@@ -113,7 +113,8 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the newGameButton is clicked.
-	 * 	 
+	 * 
+	 * 
 	 * @Ada Andrei
 	 */
 	public void newGameButtonActionPerformed() {
@@ -136,10 +137,6 @@ public class OpeningWindow extends JFrame {
 					break;
 				}
 			}
-
-			// TODO:
-			// - Player 1's name should be set to namePlayer1
-			// - Player 2's name should be set to namePlayer2
 
 			QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
 			QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
