@@ -210,47 +210,75 @@ public class QuoridorController {
 		}
 	}
 	
-	/**
-	 * This method allows the user to select an existing username.
-	 * 
-	 * @param String user;  
-	 * @return void; 
-	 * 
-	 * @author Ada Andrei
-	 */
-
-	public static void selectUsername(String user) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (usernameExists(user)) {
-			User.getWithName(user);
-		}
-	}
 
 	/**
 	 * This method allows the user to create a new username.
 	 * 
 	 * @param String user;  
-	 * @return void; 
 	 * 
 	 * @author Ada Andrei
 	 */
 
-	public static void createUsername(String user) throws InvalidInputException {
+	public static void createOrSelectUsername(String user, Color COLOR) {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (!usernameExists(user))	{
-			quoridor.addUser(user);
-			User user1 = new User(user, quoridor);
-			quoridor.getCurrentGame().getWhitePlayer().setUser(user1); // get players from barry 
-			User user2 = new User(user, quoridor);	
-			quoridor.getCurrentGame().getWhitePlayer().setUser(user2); // get players from barry 
-			//firstPlayer.setNextPlayer(secondPlayer); //gui related
-			//secondPlayer.setNextPlayer(firstPlayer); //gui related
+		Game game = quoridor.getCurrentGame(); 
+		if (COLOR == Color.WHITE) {
+			if (!usernameExists(user))	{
+			User anUser = quoridor.addUser(user);
+			Player player = new Player(null, anUser, 9, Direction.Horizontal);
+			game.setWhitePlayer(player); 
+			}
+			else {
+				User.getWithName(user);
+				Player aPlayer = new Player(null,User.getWithName(user), 9, Direction.Horizontal); 
+				game.setWhitePlayer(aPlayer);
+			}
 		}
-		else {
-			throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
+		else if (COLOR == Color.BLACK) {
+			if (!usernameExists(user))	{
+				User anUser = quoridor.addUser(user);
+				Player player = new Player(null, anUser, 1, Direction.Vertical);
+				game.setBlackPlayer(player); 
+				}
+			else {
+				User.getWithName(user);
+				Player aPlayer = new Player(null,User.getWithName(user), 1, Direction.Vertical); 
+				game.setBlackPlayer(aPlayer);
+			}
 		}
 	}
 
+	/**
+	 * This is the same method that throws an exception, when user tries to use an existing username. 
+	 * @param String user, Color COLOR
+	 * @throws InvalidInputException
+	 * @author Ada Andrei
+	 */
+
+	public static void createNewUsername (String user, Color COLOR) throws InvalidInputException {
+			final Quoridor quoridor = QuoridorApplication.getQuoridor();
+			Game game = quoridor.getCurrentGame(); 
+			if (COLOR == Color.WHITE) {
+				if (!usernameExists(user))	{
+				User anUser = quoridor.addUser(user);
+				Player player = new Player(null, anUser, 9, Direction.Horizontal);
+				game.setWhitePlayer(player); 
+				}
+				else {
+					throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
+				}
+			}
+			else if (COLOR == Color.BLACK) {
+				if (!usernameExists(user))	{
+					User anUser = quoridor.addUser(user);
+					Player player = new Player(null, anUser, 1, Direction.Vertical);
+					game.setBlackPlayer(player); 
+					}
+				else {
+					throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
+				}
+			}
+		}
 
 	/**
 	 * This method checks if the given username already exists.
@@ -262,8 +290,7 @@ public class QuoridorController {
 	 */
 
 	public static boolean usernameExists(String user) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (User.hasWithName(user) || QuoridorController.getUsernames().contains(user)) {
+		if (User.hasWithName(user)) {
 			return true; 
 		} 
 		else {

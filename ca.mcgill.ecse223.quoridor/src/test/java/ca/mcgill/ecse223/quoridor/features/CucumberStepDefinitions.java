@@ -263,7 +263,7 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	 * @author Barry Chen
+	 * @author Barry Chen & Ada Andrei
 	 */
 	@And("White player chooses a username")
 	public void whitePlayerChoosesUsername() {
@@ -271,7 +271,7 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	 * @author Barry Chen
+	 * @author Barry Chen & Ada Andrei
 	 */
 	@And("Black player chooses a username")
 	public void blackPlayerChoosesUsername() {
@@ -279,7 +279,7 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	 * @author Barry Chen
+	 * @author Barry Chen & Ada Andrei
 	 */
 	@And("Total thinking time is set")
 	public void totalThinkingTimeSet() {
@@ -344,13 +344,7 @@ public class CucumberStepDefinitions {
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIsColor(String color) {
-		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame(); 
-		if (color == "WHITE" || color == "white") {		
-			Assert.assertTrue(aNewGame.setWhitePlayer(aNewGame.getWhitePlayer())); 
-		}
-		else if (color == "BLACK" || color == "black") {
-			Assert.assertTrue(aNewGame.setBlackPlayer(aNewGame.getBlackPlayer()));
-		}
+		this.color = Color.valueOf(color.toUpperCase()); 
 	}
 
 	/**
@@ -360,6 +354,8 @@ public class CucumberStepDefinitions {
 
 	@And("There is existing user {string}")
 	public void existingUser(String user) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		quoridor.addUser(user); //check user is there 
 		Assert.assertTrue(QuoridorController.usernameExists(user));
 	}
 
@@ -369,7 +365,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("The player selects existing {string}")
 	public void playerSelectsExistingUsername(String user) {
-		QuoridorController.selectUsername(user);
+		QuoridorController.createOrSelectUsername(user, this.color);
 	}
 
 	/**
@@ -379,16 +375,9 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void nameOfPlayerInNewGameShallBeUsername(String color, String user) {
-		//don't create new instances
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		User anUser = new User(user, quoridor);
-		Player aPlayer = new Player(null, anUser, 0, null);
-		if (color == "WHITE" || color == "white") {
-			Assert.assertEquals(aPlayer.getUser().getName(), user); 
-		}
-		else if (color == "BLACK" || color == "black") {
-			Assert.assertEquals(aPlayer.getUser().getName(), user);
-		}
+		TOPlayer aPlayer = QuoridorController.getPlayerByColor(Color.valueOf(color.toUpperCase()));		
+		Assert.assertEquals(aPlayer.getUsername(), user); 
+
 	}
 
 	// create new user name
@@ -402,18 +391,21 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(QuoridorController.usernameExists(user));
 	}
 
+	boolean ExceptionThrown = false; 
+
 	/**
 	 * @param String user;
 	 * @author Ada Andrei
 	 * @throws InvalidInputException
 	 */
 	@When("The player provides new user name: {string}")
-	public void playerProvidesNewUserName(String user) { //throws InvalidInputException {
+	public void playerProvidesNewUserName(String user) { 
 		try {
-			QuoridorController.createUsername(user);
+			this.ExceptionThrown = false; 
+			QuoridorController.createNewUsername(user, this.color);
 		}
-		catch (Exception e){
-			
+		catch (Exception e) {
+			this.ExceptionThrown = true; 
 		}		
 	}
 
@@ -427,12 +419,7 @@ public class CucumberStepDefinitions {
 	
 	@Then("The player shall be warned that {string} already exists") 
 	public void playerShallBeWarnedThatUsernameAlreadyExists(String user) {//throws InvalidInputException {
-		try {
-			QuoridorController.createUsername(user);
-		}
-		catch (Exception e){
-			
-		}
+		Assert.assertTrue(this.ExceptionThrown); 
 	}
 	
 	/**
@@ -441,11 +428,11 @@ public class CucumberStepDefinitions {
 	@And("Next player to set user name shall be {string}")
 	public void nextPlayerToSetUserNameShallBe(String color) {
 		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame(); 
-		if (color == "WHITE") {		
-			Assert.assertTrue(aNewGame.setWhitePlayer(aNewGame.getWhitePlayer())); 
+		if (color.equalsIgnoreCase("WHITE")) {		
+			Assert.assertFalse(aNewGame.hasWhitePlayer()); 
 		}
-		else if (color == "BLACK") {
-			Assert.assertTrue(aNewGame.setBlackPlayer(aNewGame.getBlackPlayer()));
+		else if (color.equalsIgnoreCase("BLACK")) {
+			Assert.assertFalse(aNewGame.hasBlackPlayer());
 		}
 	}
 	
