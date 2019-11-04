@@ -744,9 +744,9 @@ public class QuoridorController {
 			currentWallMove=game.getMove(game.numberOfMoves()-1);
 		}
 		
-		System.err.print("\n"+game.getMove(game.numberOfMoves()-1).getTargetTile().getRow()+" is THE row . \n");
-		System.err.print("\n"+game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn()+" is THE Col . \n");
-		System.err.print("\n"+ ((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection()+" is THE Orien . \n");
+		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getRow()+" is THE row . \n");
+		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn()+" is THE Col . \n");
+		System.err.print( ((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection()+" is THE Orien . \n");
 		
 	//	Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
 //		currentWallMove.getTargetTile();
@@ -857,7 +857,6 @@ public class QuoridorController {
 		
 		//case where we do not know if the wall is valid or not and depends on previous circumstances.
 		boolean isValid = validateWallPlacement(row, column, orientation); // this returns true if it is a valid wallmove.
-		System.err.print("\n"+ isValid +" is the validity");
 		if (isValid==true) {
 			//reset the position of the wallMove 
 			WallMove currentMove= game.getWallMoveCandidate();
