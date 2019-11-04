@@ -188,17 +188,10 @@ public class QuoridorController {
 	 */
 
 	public static void selectUsername(String user) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		//final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (usernameExists(user)) {
-			User user1 = new User(user, quoridor);
-			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
-			User user2 = new User(user, quoridor);	
-			Player secondPlayer = new Player(null, user2, 1, Direction.Horizontal);
-			firstPlayer.setNextPlayer(secondPlayer);
-			secondPlayer.setNextPlayer(firstPlayer);	
-			Game aNewGame = new Game(null, null, quoridor);
-			aNewGame.setWhitePlayer(firstPlayer);
-			aNewGame.setBlackPlayer(secondPlayer); 
+			User.getWithName(user);
+			
 		}
 	}
 
@@ -215,6 +208,15 @@ public class QuoridorController {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!usernameExists(user))	{
 			quoridor.addUser(user);
+			User user1 = new User(user, quoridor);
+			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
+			User user2 = new User(user, quoridor);	
+			Player secondPlayer = new Player(null, user2, 1, Direction.Horizontal);
+			firstPlayer.setNextPlayer(secondPlayer);
+			secondPlayer.setNextPlayer(firstPlayer);	
+			Game aNewGame = new Game(null, null, quoridor);
+			aNewGame.setWhitePlayer(firstPlayer);
+			aNewGame.setBlackPlayer(secondPlayer); 
 			//return true; 
 		}
 		else {
@@ -729,18 +731,47 @@ public class QuoridorController {
 		}
 		
 		Move currentWallMove=null;
-		if(game.getMove(game.numberOfMoves())!=null) {
-			currentWallMove=game.getMove(game.numberOfMoves());
+		
+		//there will be a case where a user tries to place a wall but there will
+		//no wall placed so he is not allowed
+		System.err.print(game.numberOfMoves()+" is the number of moves in this game..");
+		//bc the move is only added to the list if it is a valid move.
+		if(game.numberOfMoves()==0) {
+			return false;
 		}
 		
-		Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
-		currentWallMove.getTargetTile();
-		if(checkTile==currentWallMove.getTargetTile()) {
+		if(game.getMove(game.numberOfMoves()-1)!=null) {
+			currentWallMove=game.getMove(game.numberOfMoves()-1);
+		}
+		
+		System.err.print("\n"+game.getMove(game.numberOfMoves()-1).getTargetTile().getRow()+" is THE row . \n");
+		System.err.print("\n"+game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn()+" is THE Col . \n");
+		System.err.print("\n"+ ((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection()+" is THE Orien . \n");
+		
+	//	Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
+//		currentWallMove.getTargetTile();
+		
+		Direction direction=null;
+		if (orientation.equals(orientation.HORIZONTAL)) {
+			direction= direction.Horizontal;
+		}else {
+			direction= direction.Vertical;
+		}
+		
+		int curRow=game.getMove(game.numberOfMoves()-1).getTargetTile().getRow();
+		int curCol=game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn();
+		Direction curDirection=((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection();
+		
+		
+		if(curRow==row&& curCol==column && curDirection.equals(direction)  ) {
 			return true; //the wall has been placed if the current tile has the same 
 			             //coordinates as the wall that is being placed
+		}else {
+			
+			return false;
 		}
 		
-		return false;
+	
 	}
 	
 	/**
@@ -801,6 +832,8 @@ public class QuoridorController {
 		Orientation orientation= toWall.getOrientation();
 		Game game=null;
 		
+		
+		//there is no running game but should be given the game is running
 		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
 			game=QuoridorApplication.getQuoridor().getCurrentGame();
 		}
@@ -815,18 +848,47 @@ public class QuoridorController {
 			gamePosition=game.getCurrentPosition();
 		}
 		
+		//if the wall is invalid do not throw drop it
+		
+		if(toWall.getValidity()==false) {
+			
+			return false; //so do not drop the wall
+		}
+		
+		//case where we do not know if the wall is valid or not and depends on previous circumstances.
 		boolean isValid = validateWallPlacement(row, column, orientation); // this returns true if it is a valid wallmove.
+		System.err.print("\n"+ isValid +" is the validity");
 		if (isValid==true) {
 			//reset the position of the wallMove 
 			WallMove currentMove= game.getWallMoveCandidate();
 			currentMove.setTargetTile(board.getTile((row-1)*9 +column-1));
+			if (orientation.equals(orientation.HORIZONTAL)) {
+				currentMove.setWallDirection(Direction.Horizontal);
+			}else {
+				currentMove.setWallDirection(Direction.Vertical);
+			}
+			
 			//throw new RuntimeException("Current move/ "+currentMove.getGame()+" ! "+game);
 			 
 			
 			//currentMove.getPrevMove().setNextMove(currentMove);
 			if(game.numberOfMoves()==1 || game.numberOfMoves()==0) { //this the first move or we do not have moves at all..
-				//do nothing
 				
+				//case where the number of moves is zero:
+				//only when the test runners this will happen because the grab wall feature
+				//adds to the number of moves but in this case if it is zero we'll just add the only move ourselves
+				if (game.numberOfMoves()==0) {
+				game.addMove(currentMove);
+				currentMove.setGame(game);
+					
+					
+				
+				}else {
+				//case where the number of moves is 1
+				//if the number of moves is one than it is the case where the wall grabbed is the first wall to be ever placed 
+				//as the first move in that case we do not want to add to the list of moves nor set the previous bc there is none.	
+					
+				}
 				
 			}else {
 				Move prevMove= game.getMove(game.numberOfMoves()-2); //is the last move
@@ -2334,6 +2396,7 @@ public class QuoridorController {
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
+	
 	private static TOPlayer fromPlayer(Player p) {
 		final TOPlayer player = new TOPlayer();
 		player.setUsername(p.getUser().getName());
@@ -2378,6 +2441,7 @@ public class QuoridorController {
 		return player;
 	}
 
+	
 	/**
 	 *
 	 * @param color The color of the desired player
