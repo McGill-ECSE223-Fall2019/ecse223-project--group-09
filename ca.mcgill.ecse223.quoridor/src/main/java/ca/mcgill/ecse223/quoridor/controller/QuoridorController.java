@@ -1331,11 +1331,11 @@ public class QuoridorController {
 		final int t2Row;
 		final int t2Col;
 		switch (orientation) {
-			case HORIZONTAL:
+			case VERTICAL:
 				t2Row = row + 1;
 				t2Col = column;
 				break;
-			case VERTICAL:
+			case HORIZONTAL:
 				t2Row = row;
 				t2Col = column + 1;
 				break;
