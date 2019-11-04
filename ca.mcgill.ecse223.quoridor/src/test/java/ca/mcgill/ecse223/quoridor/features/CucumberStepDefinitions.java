@@ -354,7 +354,7 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	 * @param boolean user;
+	 * @param String user;
 	 * @author Ada Andrei
 	 */
 
@@ -393,7 +393,7 @@ public class CucumberStepDefinitions {
 	// create new user name
 
 	/**
-	 * @param boolean user;
+	 * @param String user;
 	 * @author Ada Andrei
 	 */
 	@And("There is no existing user {string}")
@@ -407,7 +407,7 @@ public class CucumberStepDefinitions {
 	 * @throws InvalidInputException
 	 */
 	@When("The player provides new user name: {string}")
-	public void playerProvidesNewUserName(String user) throws InvalidInputException {
+	public void playerProvidesNewUserName(String user) { //throws InvalidInputException {
 		QuoridorController.createUsername(user);		
 	}
 
@@ -415,11 +415,12 @@ public class CucumberStepDefinitions {
 
 	/**
 	 * @param String user; 
-	 * 
+	 * @author Ada Andrei
+	 * @throws InvalidInputException
 	 */
 	
 	@Then("The player shall be warned that {string} already exists") 
-	public void playerShallBeWarnedThatUsernameAlreadyExists(String user) throws InvalidInputException {
+	public void playerShallBeWarnedThatUsernameAlreadyExists(String user) {//throws InvalidInputException {
 		QuoridorController.createUsername(user);
 	}
 	

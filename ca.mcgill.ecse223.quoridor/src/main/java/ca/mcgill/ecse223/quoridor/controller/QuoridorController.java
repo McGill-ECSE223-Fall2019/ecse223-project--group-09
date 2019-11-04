@@ -215,8 +215,10 @@ public class QuoridorController {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!usernameExists(user))	{
 			quoridor.addUser(user);
+			//return true; 
 		}
 		else {
+			//return false; 
 			throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
 		}
 	}
