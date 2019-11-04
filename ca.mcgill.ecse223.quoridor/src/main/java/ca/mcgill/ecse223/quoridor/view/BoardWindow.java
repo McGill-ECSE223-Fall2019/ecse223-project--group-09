@@ -209,7 +209,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         this.playerInfoPanel.updateInfo(player);
         this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
-        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
 
         // Get the grid to display correct info
 

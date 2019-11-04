@@ -144,6 +144,22 @@ public class GameSetupDialog extends JPanel {
     }
 
     /**
+     * Checks to see if all players have a name selected
+     * 
+     * @return true if all players have a name selected, false otherwise
+     * 
+     * @author Group 9
+     */
+    public boolean allPlayersHaveName() {
+        for (final JComboBox<?> cb : this.cboxPlayerNames) {
+            if (cb.getSelectedItem() == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Checks if list of player name hints is empty
      *
      * @return true if empty, false otherwise

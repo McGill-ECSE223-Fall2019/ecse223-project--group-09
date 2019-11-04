@@ -120,21 +120,43 @@ public class OpeningWindow extends JFrame {
 		try {
 			GameSetupDialog gameSetupDialog = new GameSetupDialog();
 			gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
-			if (gameSetupDialog.showSetupDialog(this) == GameSetupDialog.START_GAME_OPTION) {
-				QuoridorController.selectUsername(gameSetupDialog.getSelectedPlayerName(0)); //add the username to the list of users 
-				QuoridorController.selectUsername(gameSetupDialog.getSelectedPlayerName(1)); //select the username for the players
-				Time time = gameSetupDialog.getThinkingTime();
-				QuoridorController.setTime(time.getMinutes(), time.getSeconds());
 
-				// Dispose the current window
-				this.dispose();
+			final String namePlayer1;
+			final String namePlayer2;
+			while (true) {
+				if (gameSetupDialog.showSetupDialog(this) != GameSetupDialog.START_GAME_OPTION) {
+					// We are done, player hit cancel or sth like that
+					return;
+				}
 
-				// Create the next window
-				BoardWindow.launchWindow();
+				// Only continue if all players have name selected
+				if (gameSetupDialog.allPlayersHaveName()) {
+					namePlayer1 = gameSetupDialog.getSelectedPlayerName(0);
+					namePlayer2 = gameSetupDialog.getSelectedPlayerName(1);
+					break;
+				}
 			}
+
+			// TODO:
+			// - Player 1's name should be set to namePlayer1
+			// - Player 2's name should be set to namePlayer2
+
+			QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
+			QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
+			Time time = gameSetupDialog.getThinkingTime();
+			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
+
+			// Dispose the current window
+			this.dispose();
+
+			// Create the next window
+			BoardWindow.launchWindow();
 		}
 		catch (InvalidInputException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE); 
+		}
+		catch (RuntimeException ex) {
+			SaveLoadPanel.displayThrowableTrace(this, ex);
 		}
 	}
 
