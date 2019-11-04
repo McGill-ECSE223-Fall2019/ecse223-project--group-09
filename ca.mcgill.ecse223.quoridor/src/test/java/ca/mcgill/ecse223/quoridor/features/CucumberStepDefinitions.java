@@ -902,7 +902,7 @@ public class CucumberStepDefinitions {
 	public void newWallCandidate(String direction, int row, int col) {
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
-		int aRow = (10- row);
+		int aRow = (10 - row);
 		
 		this.wallCandidate.setOrientation(orientation);
 		this.wallCandidate.setRow(aRow);
@@ -919,9 +919,9 @@ public class CucumberStepDefinitions {
 	public void wallCandidateAtEdge(String side) {
 		if (this.wallCandidate.getOrientation() == Orientation.VERTICAL) {
 			if (side.equals("up")) {
-				this.wallCandidate.setRow(8);
-			} else if (side.equals("down")) {
 				this.wallCandidate.setRow(1);
+			} else if (side.equals("down")) {
+				this.wallCandidate.setRow(9);
 			} else if (side.equals("left")) {
 				this.wallCandidate.setColumn(1);
 			} else if (side.contentEquals("right")) {
@@ -929,9 +929,9 @@ public class CucumberStepDefinitions {
 			}
 		} else {
 			if (side.equals("up")) {
-				this.wallCandidate.setRow(9);
-			} else if (side.equals("down")) {
 				this.wallCandidate.setRow(1);
+			} else if (side.equals("down")) {
+				this.wallCandidate.setRow(9);
 			} else if (side.equals("left")) {
 				this.wallCandidate.setColumn(1);
 			} else if (side.contentEquals("right")) {
