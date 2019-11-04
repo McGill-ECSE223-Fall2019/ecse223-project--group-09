@@ -6,6 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.net.URI;
+import java.sql.Time;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -16,10 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
+import ca.mcgill.ecse223.quoridor.controller.InvalidInputException;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 
 public class OpeningWindow extends JFrame {
 
-	//UI Elements
+	// UI Elements
 
 	JButton newGameButton;
 	JButton loadGameButton;
@@ -41,8 +44,8 @@ public class OpeningWindow extends JFrame {
 
 		this.quoridorLabel = new JLabel();
 		this.quoridorLabel.setText("Quoridor");
-        this.quoridorLabel.setFont(this.quoridorLabel.getFont().deriveFont(28.0f));
-        this.quoridorLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		this.quoridorLabel.setFont(this.quoridorLabel.getFont().deriveFont(28.0f));
+		this.quoridorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		this.newGameButton = new JButton("New Game");
 		this.loadGameButton = new JButton("Load Game");
@@ -53,7 +56,7 @@ public class OpeningWindow extends JFrame {
 		JSeparator horizontalLineMiddle = new JSeparator();
 		JSeparator horizontalLineBelowTitle = new JSeparator();
 
-		//listeners
+		// listeners
 
 		newGameButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -90,9 +93,7 @@ public class OpeningWindow extends JFrame {
 			}
 		});
 
-
-
-		mainPanel = new JPanel(new GridLayout(8,1,2,2));
+		mainPanel = new JPanel(new GridLayout(8, 1, 2, 2));
 
 		mainPanel.add(quoridorLabel);
 		mainPanel.add(horizontalLineBelowTitle);
@@ -110,23 +111,53 @@ public class OpeningWindow extends JFrame {
 
 	}
 
-
 	/**
-	 * This will be called when the newGameButton is clicked
-	 *
-	 * TODO: Whoever implements these methods needs to add their name
-	 * to the author tag
+	 * This will be called when the newGameButton is clicked.
+	 * 	 
+	 * @Ada Andrei
 	 */
 	public void newGameButtonActionPerformed() {
-		if (new GameSetupDialog().showSetupDialog(this) == GameSetupDialog.START_GAME_OPTION) {
-			// TODO: Setup game and stuff
+		//try {
+			GameSetupDialog gameSetupDialog = new GameSetupDialog();
+			gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
+
+			final String namePlayer1;
+			final String namePlayer2;
+			while (true) {
+				if (gameSetupDialog.showSetupDialog(this) != GameSetupDialog.START_GAME_OPTION) {
+					// We are done, player hit cancel or sth like that
+					return;
+				}
+
+				// Only continue if all players have name selected
+				if (gameSetupDialog.allPlayersHaveName()) {
+					namePlayer1 = gameSetupDialog.getSelectedPlayerName(0);
+					namePlayer2 = gameSetupDialog.getSelectedPlayerName(1);
+					break;
+				}
+			}
+
+			// TODO:
+			// - Player 1's name should be set to namePlayer1
+			// - Player 2's name should be set to namePlayer2
+
+			QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
+			QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
+			Time time = gameSetupDialog.getThinkingTime();
+			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
 
 			// Dispose the current window
 			this.dispose();
 
 			// Create the next window
 			BoardWindow.launchWindow();
-		}
+		//}
+		//catch (InvalidInputException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE); 
+		//}
+		//catch (RuntimeException ex) {
+			SaveLoadPanel.displayThrowableTrace(this, ex);
+		//}
 	}
 
 	/**
