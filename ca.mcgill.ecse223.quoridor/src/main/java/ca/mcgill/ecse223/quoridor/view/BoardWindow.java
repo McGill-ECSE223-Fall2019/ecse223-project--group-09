@@ -36,7 +36,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
     // ***** Rendering State Variables *****
     
-    private static TOWallCandidate wall;
+    public static TOWallCandidate wall;
     private final DefaultListModel<String> replayList = new DefaultListModel<>();
     private final Timer PLAYER_INFO_TIMER;
 
@@ -121,10 +121,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         /**
          * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
          */
-      //  dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
-      //  dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-      //  dropWall.setEnabled(true);
-      //  dropWall.addActionListener(e -> this.onDropWallButtonClicked());
+      	dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        dropWall.setEnabled(true);
+        dropWall.addActionListener(e -> this.onDropWallButtonClicked());
 
         rotateWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         rotateWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
@@ -291,8 +291,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     /**
      * This method is called when Drop Wall button is clicked
      */
-    private void onDropWallButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
+   private void onDropWallButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Click on Wall to drop it!");
 
     }
 
@@ -305,7 +305,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	this.repaint();
         System.out.println("Rotated: " );
        // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
-    	TOWallCandidate wall = QuoridorController.getWallCandidate();
+    //	TOWallCandidate wall = QuoridorController.getWallCandidate();
     //    QuoridorController.rotateWall(wall.getAssociatedWall());
 
     }
@@ -331,7 +331,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	
     	//dropWall
     	
-    	if(QuoridorController.dropWall(wall.getAssociatedWall())) {//if true drop it
+    	if(QuoridorController.dropWall(QuoridorController.grabWall())) {//if true drop it
     		
     		//newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
     		
@@ -417,7 +417,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
         
-        wall = new TOWallCandidate(Orientation.VERTICAL, 5, 3);
+        wall = new TOWallCandidate(Orientation.HORIZONTAL, 3, 5);
 
         newBoardWindow.gridPanel.setWallCandidate(wall);
 

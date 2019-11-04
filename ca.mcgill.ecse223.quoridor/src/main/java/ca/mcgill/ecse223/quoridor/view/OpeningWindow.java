@@ -121,7 +121,7 @@ public class OpeningWindow extends JFrame {
 		try {
 			GameSetupDialog gameSetupDialog = new GameSetupDialog();
 			gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
-
+			BoardWindow.launchWindow();
 			final String namePlayer1;
 			final String namePlayer2;
 			while (true) {

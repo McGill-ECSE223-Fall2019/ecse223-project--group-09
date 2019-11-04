@@ -694,7 +694,7 @@ public class QuoridorController {
 	 *
 	 * @author Mohamed Mohamed
 	 */
-public static boolean checkLastWallMove(int row, int column, Orientation orientation) {
+	public static boolean checkLastWallMove(int row, int column, Orientation orientation) {
 		
 		Game game=null;
 		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
@@ -737,7 +737,7 @@ public static boolean checkLastWallMove(int row, int column, Orientation orienta
 			
 			return false;
 		}
-		
+	
 	
 	}
 	
@@ -764,7 +764,7 @@ public static boolean checkLastWallMove(int row, int column, Orientation orienta
 			game=QuoridorApplication.getQuoridor().getCurrentGame();
 		}
 		
-	/*	WallMove currentMove= game.getWallMoveCandidate();
+		/*WallMove currentMove= game.getWallMoveCandidate();
 		Direction currentDirection = currentMove.getWallDirection();
 		Direction newDirection=null;
 		if (currentDirection.equals(Direction.Horizontal)) {
