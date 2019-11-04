@@ -379,14 +379,15 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void nameOfPlayerInNewGameShallBeUsername(String color, String user) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		User anUser = new User(user, quoridor);
-		Player aPlayer = new Player(null, anUser, 0, null);
+		//don't create new instances
+		//final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		//User anUser = new User(user, quoridor);
+		//Player aPlayer = new Player(null, anUser, 0, null);
 		if (color == "WHITE" || color == "white") {
-			Assert.assertEquals(aPlayer.getUser().getName(), user); 
+			Assert.assertEquals(getCurrentPlayer().getUser().getName(), user); 
 		}
 		else if (color == "BLACK" || color == "black") {
-			Assert.assertEquals(aPlayer.getUser().getName(), user);
+			Assert.assertEquals(currentPlayer.getUser().getName(), user);
 		}
 	}
 
@@ -1103,9 +1104,8 @@ public class CucumberStepDefinitions {
 		this.wallCandidate.setValidity(false);
 		this.currentWall=wallCandidate.getAssociatedWall();
 		//now check if the position is valid
-		
-		//boolean isValid=QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
-		Assert.assertFalse(this.wallCandidate.getValidity());//should be false since there is no move available
+		boolean isValid=QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
+		Assert.assertFalse(isValid);//should be false since there is no move available
 		player=QuoridorController.getPlayerOfCurrentTurn();
 		
 	}
@@ -1119,7 +1119,7 @@ public class CucumberStepDefinitions {
         //if it's an invalid move than the boolean should return a false to indicate to the
     	//ui that i have to give a message to the user.
     	
-    	Assert.assertFalse(tester);
+    	Assert.assertFalse(tester); //tester must be false bc drop wont allow it
     	//Assert.assertFalse(QuoridorController.dropWall(this.wallCandidate.getAssociatedWall()));;
         
     }

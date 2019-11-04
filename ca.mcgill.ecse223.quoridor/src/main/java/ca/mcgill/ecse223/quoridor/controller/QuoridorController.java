@@ -219,15 +219,7 @@ public class QuoridorController {
 	public static void selectUsername(String user) {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (usernameExists(user)) {
-			User user1 = new User(user, quoridor);
-			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
-			User user2 = new User(user, quoridor);	
-			Player secondPlayer = new Player(null, user2, 1, Direction.Horizontal);
-			firstPlayer.setNextPlayer(secondPlayer);
-			secondPlayer.setNextPlayer(firstPlayer);	
-			Game aNewGame = new Game(null, null, quoridor);
-			aNewGame.setWhitePlayer(firstPlayer);
-			aNewGame.setBlackPlayer(secondPlayer); 
+			User.getWithName(user);
 		}
 	}
 
@@ -244,6 +236,15 @@ public class QuoridorController {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!usernameExists(user))	{
 			quoridor.addUser(user);
+			User user1 = new User(user, quoridor);
+			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
+			User user2 = new User(user, quoridor);	
+			Player secondPlayer = new Player(null, user2, 1, Direction.Horizontal);
+			firstPlayer.setNextPlayer(secondPlayer);
+			secondPlayer.setNextPlayer(firstPlayer);	
+			Game aNewGame = new Game(null, null, quoridor);
+			aNewGame.setWhitePlayer(firstPlayer);
+			aNewGame.setBlackPlayer(secondPlayer); 
 		}
 		else {
 			throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
@@ -693,7 +694,7 @@ public class QuoridorController {
 	 *
 	 * @author Mohamed Mohamed
 	 */
-	public static boolean checkLastWallMove(int row, int column, Orientation orientation) {
+public static boolean checkLastWallMove(int row, int column, Orientation orientation) {
 		
 		Game game=null;
 		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
@@ -701,18 +702,47 @@ public class QuoridorController {
 		}
 		
 		Move currentWallMove=null;
-		if(game.getMove(game.numberOfMoves())!=null) {
-			currentWallMove=game.getMove(game.numberOfMoves());
+		
+		//there will be a case where a user tries to place a wall but there will
+		//no wall placed so he is not allowed
+		System.err.print(game.numberOfMoves()+" is the number of moves in this game..");
+		//bc the move is only added to the list if it is a valid move.
+		if(game.numberOfMoves()==0) {
+			return false;
 		}
 		
-		Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
-		currentWallMove.getTargetTile();
-		if(checkTile==currentWallMove.getTargetTile()) {
+		if(game.getMove(game.numberOfMoves()-1)!=null) {
+			currentWallMove=game.getMove(game.numberOfMoves()-1);
+		}
+		
+		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getRow()+" is THE row . \n");
+		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn()+" is THE Col . \n");
+		System.err.print( ((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection()+" is THE Orien . \n");
+		
+	//	Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
+//		currentWallMove.getTargetTile();
+		
+		Direction direction=null;
+		if (orientation.equals(orientation.HORIZONTAL)) {
+			direction= direction.Horizontal;
+		}else {
+			direction= direction.Vertical;
+		}
+		
+		int curRow=game.getMove(game.numberOfMoves()-1).getTargetTile().getRow();
+		int curCol=game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn();
+		Direction curDirection=((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection();
+		
+		
+		if(curRow==row&& curCol==column && curDirection.equals(direction)  ) {
 			return true; //the wall has been placed if the current tile has the same 
 			             //coordinates as the wall that is being placed
+		}else {
+			
+			return false;
 		}
 		
-		return false;
+	
 	}
 	
 	/**
