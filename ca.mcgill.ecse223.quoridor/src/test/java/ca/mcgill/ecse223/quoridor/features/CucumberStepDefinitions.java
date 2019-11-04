@@ -833,25 +833,7 @@ public class CucumberStepDefinitions {
 		this.wallCandidate.setColumn(column);
 		this.wallCandidate.setRow(row);
 		this.wallCandidate.setOrientation(orientation);
-		
-
-//		//changing the information inside the wall move 
-//		WallMove wallMove= QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
-//		Tile tile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
-//		wallMove.setWallDirection(dir);
-//		wallMove.setTargetTile(tile);		
-//		
-//		//creating an equivalent wallCandidate
-//			//Orientation initialOrientation = QuoridorController.fromDirection(wallMove.getWallDirection());
-//		this.wallCandidate= QuoridorController.createTOWallCandidateFromWallMove(wallMove);
-//		//this.wallCandidate= new TOWallCandidate(initialOrientation, column, column);
-//		
-//		
-//		Assert.assertTrue(this.wallCandidate != null);
-//		Assert.assertTrue(this.wallCandidate.getOrientation() == orientation);
-//		Assert.assertTrue(this.wallCandidate.getColumn() == column);
-//		Assert.assertTrue(this.wallCandidate.getRow() == row);
-
+	
 	}
 	
 	/**
