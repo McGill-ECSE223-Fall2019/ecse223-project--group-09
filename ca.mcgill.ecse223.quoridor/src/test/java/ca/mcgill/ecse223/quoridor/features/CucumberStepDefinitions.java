@@ -829,8 +829,13 @@ public class CucumberStepDefinitions {
 		
 		Direction dir = Direction.valueOf(direction);
 		
-		int aRow = (10 - row); // we invert the row because in the controller, the rows
+		int aRow;// we invert the row because in the controller, the rows
 								// were numbered from bottom to top, unlike the Gherkin scenarios
+		if (orientation == Orientation.VERTICAL) {
+			aRow = (9 - row);
+		} else {
+			aRow = (10-row);
+		}
 		
 		//we have to create the precondition
 		
@@ -875,6 +880,7 @@ public class CucumberStepDefinitions {
 	public void attemptToMoveWall(String side) {
 	
 		try {
+			this.invalidPositionFlag = false;
 			this.wallCandidate = QuoridorController.moveWall(side);
 		} catch (InvalidPositionException e) {
 			this.invalidPositionFlag = true;
@@ -892,7 +898,14 @@ public class CucumberStepDefinitions {
 	@Then("The wall shall be moved over the board to position \\({int}, {int})")
 	public void wallMoving(int row, int column) {
 		
-		int aRow = (10 - row);
+		int aRow;
+		
+		if (this.currentWall.getOrientation() == Orientation.VERTICAL) {
+			aRow = (9 - row);
+		} else {
+			aRow = (10-row);
+		}
+		
 		
 		this.currentWall.setRow(aRow);
 		this.currentWall.setColumn(column);
@@ -913,7 +926,14 @@ public class CucumberStepDefinitions {
 	public void newWallCandidate(String direction, int row, int col) {
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
-		int aRow = (10- row);
+		
+		int aRow;
+		if (orientation == Orientation.VERTICAL) {
+			aRow = (9 - row);
+		} else {
+			aRow = (10-row);
+		}
+		
 		
 		this.wallCandidate.setOrientation(orientation);
 		this.wallCandidate.setRow(aRow);
