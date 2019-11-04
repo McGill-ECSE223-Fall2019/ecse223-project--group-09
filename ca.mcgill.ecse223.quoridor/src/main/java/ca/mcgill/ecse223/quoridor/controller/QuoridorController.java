@@ -156,7 +156,7 @@ public class QuoridorController {
 
 	public static void selectUsername(String user) {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (usernameExists(user)) {
+		if (createUsername(user)) {
 			User user1 = new User(user, quoridor);
 			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
 			User user2 = new User(user, quoridor);	
@@ -178,13 +178,15 @@ public class QuoridorController {
 	 * @author Ada Andrei
 	 */
 
-	public static void createUsername(String user) throws InvalidInputException {
+	public static boolean createUsername(String user) { //throws InvalidInputException {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!usernameExists(user))	{
 			quoridor.addUser(user);
+			return true; 
 		}
 		else {
-			throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
+			return false; 
+			//throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
 		}
 	}
 
