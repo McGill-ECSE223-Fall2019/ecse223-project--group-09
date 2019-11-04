@@ -54,7 +54,7 @@ public class CucumberStepDefinitions {
 	private TOWall currentWall;
 	private TOWallCandidate wallCandidate;
 	
-	private Game currentGame;
+	private WallMove currentMove;
 	
 	private boolean noMoreWallsFlag = false;
 	private boolean invalidPositionFlag = false;
@@ -716,7 +716,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
-			this.currentGame = QuoridorApplication.getQuoridor().getCurrentGame();
+		
 			this.player = QuoridorController.getPlayerOfCurrentTurn();
 			Assert.assertTrue(this.player.getWallsRemaining() != 0);
 			this.wallStock = QuoridorController.getRemainingWallsOfCurrentPlayer();
@@ -782,7 +782,6 @@ public class CucumberStepDefinitions {
 	@Given("I have no more walls on stock")
 	public void noMoreWallsOnStock() {
 
-		this.currentGame = QuoridorApplication.getQuoridor().getCurrentGame();
 		this.player = QuoridorController.getPlayerOfCurrentTurn();
 		this.player.setWallsRemaining(0);
 		
@@ -817,16 +816,20 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
 	public void wallCandidateExists(String direction, int row, int column) {
-		
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
 		
-		
+		this.currentMove = quoridor.getCurrentGame().getWallMoveCandidate();
 		
 		int aRow = (9 - row);// we invert the row because in the controller, the rows
 								// were numbered from bottom to top, unlike the Gherkin scenarios
 		
+		Tile targetTile = QuoridorController.getTileFromRowAndColumn(aRow, column);
 		
+		this.currentMove.setTargetTile(targetTile);
+		this.wallCandidate = QuoridorController.createTOWallCandidateFromWallMove(this.currentMove);
+				
 		//we have to create the precondition
 		
 		this.currentWall = QuoridorController.getCurrentGrabbedWall();
@@ -834,11 +837,6 @@ public class CucumberStepDefinitions {
 		this.currentWall.setColumn(column);
 		this.currentWall.setRow(aRow);
 		
-		this.wallCandidate = QuoridorController.getWallCandidate();
-		this.wallCandidate.setColumn(column);
-		this.wallCandidate.setRow(aRow);
-		this.wallCandidate.setOrientation(orientation);
-	
 	}
 	
 	/**
@@ -867,7 +865,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("I try to move the wall {string}")
 	public void attemptToMoveWall(String side) {
-	
+		
 		try {
 			this.wallCandidate = QuoridorController.moveWall(side);
 		} catch (InvalidPositionException e) {
@@ -925,7 +923,7 @@ public class CucumberStepDefinitions {
 	
 	@And("The wall candidate is at the {string} edge of the board")
 	public void wallCandidateAtEdge(String side) {
-		if (this.wallCandidate.getOrientation() == Orientation.VERTICAL) {
+	
 			if (side.equals("up")) {
 				this.wallCandidate.setRow(8);
 			} else if (side.equals("down")) {
@@ -935,19 +933,6 @@ public class CucumberStepDefinitions {
 			} else if (side.contentEquals("right")) {
 				this.wallCandidate.setColumn(8);
 			}
-		} else {
-			if (side.equals("up")) {
-				this.wallCandidate.setRow(8);
-			} else if (side.equals("down")) {
-				this.wallCandidate.setRow(1);
-			} else if (side.equals("left")) {
-				this.wallCandidate.setColumn(1);
-			} else if (side.contentEquals("right")) {
-				this.wallCandidate.setColumn(8);
-			}
-		}
-		
-		
 	}
 	
 	/**
@@ -958,6 +943,7 @@ public class CucumberStepDefinitions {
 	public void notifIllegalMove() {
 		
 		Assert.assertTrue(this.invalidPositionFlag);
+	
 	}
 
 
