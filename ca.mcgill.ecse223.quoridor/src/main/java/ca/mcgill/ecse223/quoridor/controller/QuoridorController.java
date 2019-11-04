@@ -75,14 +75,7 @@ public class QuoridorController {
 	public static final Direction INITIAL_ORIENTATION = Direction.Vertical;
 	public static final Orientation INITIAL_TO_ORIENTATION = fromDirection(INITIAL_ORIENTATION);
 	/////////////////////////// FIELDS ///////////////////////////
-	
-	private static Game game; 
-	private static Player player1; 
-	private static Player player2;
-	private static Player player3;
-	private static Player player4;
-	private static Player currentPlayer; // ??? should this be our flag?
-	
+
 	/**
 	 * 
 	 * @author Barry Chen  
