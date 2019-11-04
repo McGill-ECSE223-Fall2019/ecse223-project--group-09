@@ -89,7 +89,7 @@ public class QuoridorController {
 	 *
 	 * This method create a new empty game  
 	 */	
-	public Game createGame() {
+	public static Game createGame() {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game newGame = new Game(GameStatus.Initializing, null, quoridor);
 		return newGame;
@@ -103,7 +103,7 @@ public class QuoridorController {
 	 * This method creates a player
 	 * 
 	 */	
-	public void createPlayer() {
+	public static void createPlayer() {
 
 		Game inGame = createGame();
 		Player playerUn = new Player(null,null,null);
@@ -120,7 +120,7 @@ public class QuoridorController {
 	 * This method sets up a new game 
 	 * 
 	 */	
-	public void startNewGame(Game aGame){
+	public static void startNewGame(Game aGame){
 		/*
 		When A new game is being initialized
 	    And White player chooses a username
@@ -129,7 +129,7 @@ public class QuoridorController {
 	    Then The game shall become ready to start
 		 */
 		if(aGame.getGameStatus() == GameStatus.Initializing) {
-			if((aGame.getWhitePlayer().getUser()!=null)&&(aGame.getBlackPlayer().getUser()!=null)){
+			if((aGame.hasWhitePlayer())&&(aGame.hasBlackPlayer())){
 				if((aGame.getWhitePlayer().getRemainingTime()!=null)&&(aGame.getBlackPlayer().getRemainingTime()!=null)) {
 					aGame.setGameStatus(GameStatus.ReadyToStart);
 				}
@@ -144,6 +144,25 @@ public class QuoridorController {
 	  	Then The game shall be running
 	  	And The board shall be initialized
 	 */
+	/**
+	 * 
+	 * @author Barry Chung 
+	 * 
+	 */
+	public static void StartClock(Game aGame) {
+		
+		//checkout for game position 
+		
+		//Given The game is ready to start
+		if(aGame.getGameStatus() == GameStatus.ReadyToStart){
+			//When I start the clock
+			runClockForPlayer(aGame.getWhitePlayer());
+			//Then The game shall be running
+			aGame.setGameStatus(GameStatus.Running);
+			//And The board shall be initialized
+			
+		}
+	}
 	
 	
 	/**
@@ -151,7 +170,7 @@ public class QuoridorController {
 	 * @author Barry Chen 
 	 * 
 	 */
-	public Board createNewBoard(){
+	public static Board createNewBoard(){
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Board newBoard = new Board(quoridor);
 		
@@ -177,7 +196,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public void initiateBoard() {
+	public static void initiateBoard() {
 		//throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
 		
 		/*
