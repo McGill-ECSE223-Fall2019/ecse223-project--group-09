@@ -85,14 +85,34 @@ public class QuoridorController {
 	
 	/**
 	 * 
-	 * @author Barry Chen 
+	 * @author Barry Chen  
+	 *
+	 * This method create a new empty game  
+	 */	
+	public Game createGame() {
+		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+	}
+	
+	/**
+	 * 
+	 * @author Barry Chan 
 	 * 
 	 *
-	 * This method sets up a new game
+	 * This method creates a player
 	 * 
-	 * 
-	 */
+	 */	
+	public Player createPlayer() {
+		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+	}
 	
+	/**
+	 * 
+	 * @author Barry Cheng 
+	 * 
+	 *
+	 * This method sets up a new game 
+	 * 
+	 */	
 	public void startNewGame(Game aGame){
 		/*
 		When A new game is being initialized
@@ -106,11 +126,6 @@ public class QuoridorController {
 				aGame.setGameStatus(GameStatus.ReadyToStart);
 			}
 		}
-		Quoridor quoridor = QuoridorApplication.getQuoridor();
-		Game newGame = new Game(null, null, quoridor);
-		
-		
-		//throw new UnsupportedOperationException("method startNewGame is not implemented yet");
 	}
 	
 	
