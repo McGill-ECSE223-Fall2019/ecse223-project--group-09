@@ -761,7 +761,6 @@ public class CucumberStepDefinitions {
 	public void wallOverBoard() {
 		
 		Assert.assertFalse(this.noMoreWallsFlag);
-		System.err.print(currentWall+" Current wall AFTER");
 		Assert.assertNotNull(this.currentWall);
 		
 	}
@@ -1011,7 +1010,6 @@ public class CucumberStepDefinitions {
 		this.wallCandidate.setValidity(true);
 		this.currentWall=wallCandidate.getAssociatedWall(); //for testing that i still have it
 		
-		System.err.print(currentWall+" Current wall AFTER");
 		//now check if the position is valid
 		boolean isValid= QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
 		Assert.assertTrue(isValid);//if valid it will be true
@@ -1026,7 +1024,6 @@ public class CucumberStepDefinitions {
 	@When("I release the wall in my hand")
 	public void realeaseWall() {
 		//calling the method drop wall that should drop the wall by removing the wall form hand and registering the position
-		System.err.print(this.wallCandidate.getAssociatedWall().getRow()+" row"+this.wallCandidate.getAssociatedWall().getColumn()+" col"+this.wallCandidate.getAssociatedWall().getOrientation()+" orientation"  );
 		//the right parameters are being passed
 		tester=QuoridorController.dropWall(this.wallCandidate.getAssociatedWall());//method drop wall will take as constructor a transfer object of wall
 		this.currentWall=wallCandidate.getAssociatedWall();
@@ -1091,8 +1088,6 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(this.wallCandidate.getValidity());//should be false since there is no move available
 		player=QuoridorController.getPlayerOfCurrentTurn();
 		
-		System.err.print(player+" Is toObject \n");
-		System.err.print(QuoridorController.getPlayerOfCurrentTurn().getColor()+" BEFORE getplayerofcurr");
 	}
     
 	/**
@@ -1115,8 +1110,6 @@ public class CucumberStepDefinitions {
     @And("It shall be my turn to move")
     public void continueMove() {
     	
-    	System.err.print(player+" Is toObject \n");
-    	System.err.print(QuoridorController.getPlayerOfCurrentTurn().getColor()+" AFTER getplayerofcurr");
     	Assert.assertTrue(this.player.getColor().equals(QuoridorController.getPlayerOfCurrentTurn().getColor()) );//condition should be true
     }
 
