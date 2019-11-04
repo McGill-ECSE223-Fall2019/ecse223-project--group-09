@@ -113,11 +113,12 @@ public class OpeningWindow extends JFrame {
 
 	/**
 	 * This will be called when the newGameButton is clicked.
-	 * 	 
+	 * 
+	 * 
 	 * @Ada Andrei
 	 */
 	public void newGameButtonActionPerformed() {
-		//try {
+		try {
 			GameSetupDialog gameSetupDialog = new GameSetupDialog();
 			gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
 
@@ -137,10 +138,6 @@ public class OpeningWindow extends JFrame {
 				}
 			}
 
-			// TODO:
-			// - Player 1's name should be set to namePlayer1
-			// - Player 2's name should be set to namePlayer2
-
 			QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
 			QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
 			Time time = gameSetupDialog.getThinkingTime();
@@ -151,13 +148,13 @@ public class OpeningWindow extends JFrame {
 
 			// Create the next window
 			BoardWindow.launchWindow();
-		//}
-		//catch (InvalidInputException e) {
+		}
+		catch (InvalidInputException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE); 
-		//}
-		//catch (RuntimeException ex) {
+		}
+		catch (RuntimeException ex) {
 			SaveLoadPanel.displayThrowableTrace(this, ex);
-		//}
+		}
 	}
 
 	/**

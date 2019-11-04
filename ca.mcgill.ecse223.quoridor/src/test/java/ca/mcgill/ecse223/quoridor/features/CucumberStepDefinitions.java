@@ -412,7 +412,12 @@ public class CucumberStepDefinitions {
 	 */
 	@When("The player provides new user name: {string}")
 	public void playerProvidesNewUserName(String user) { //throws InvalidInputException {
-		QuoridorController.createUsername(user);		
+		try {
+			QuoridorController.createUsername(user);
+		}
+		catch (Exception e){
+			
+		}		
 	}
 
 	// user name already exists
@@ -425,7 +430,12 @@ public class CucumberStepDefinitions {
 	
 	@Then("The player shall be warned that {string} already exists") 
 	public void playerShallBeWarnedThatUsernameAlreadyExists(String user) {//throws InvalidInputException {
-		QuoridorController.createUsername(user);
+		try {
+			QuoridorController.createUsername(user);
+		}
+		catch (Exception e){
+			
+		}
 	}
 	
 	/**
