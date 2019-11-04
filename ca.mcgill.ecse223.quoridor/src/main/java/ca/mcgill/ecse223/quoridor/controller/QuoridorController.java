@@ -694,15 +694,15 @@ public class QuoridorController {
 	 *
 	 * @author Mohamed Mohamed
 	 */
-public static boolean checkLastWallMove(int row, int column, Orientation orientation) {
-		
-		Game game=null;
-		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
-			game=QuoridorApplication.getQuoridor().getCurrentGame();
-		}
-		
+	public static boolean checkLastWallMove(int row, int column, Orientation orientation) {
+
+		Game game;
+		//if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
+		game=QuoridorApplication.getQuoridor().getCurrentGame();
+		//}
+
 		Move currentWallMove=null;
-		
+
 		//there will be a case where a user tries to place a wall but there will
 		//no wall placed so he is not allowed
 		System.err.print(game.numberOfMoves()+" is the number of moves in this game..");
@@ -710,38 +710,38 @@ public static boolean checkLastWallMove(int row, int column, Orientation orienta
 		if(game.numberOfMoves()==0) {
 			return false;
 		}
-		
+
 		if(game.getMove(game.numberOfMoves()-1)!=null) {
 			currentWallMove=game.getMove(game.numberOfMoves()-1);
 		}
-		
+
 		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getRow()+" is THE row . \n");
 		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn()+" is THE Col . \n");
 		System.err.print( ((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection()+" is THE Orien . \n");
-		
-	//	Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
-//		currentWallMove.getTargetTile();
-		
+
+		//	Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
+		//		currentWallMove.getTargetTile();
+
 		Direction direction=null;
 		if (orientation.equals(orientation.HORIZONTAL)) {
 			direction= direction.Horizontal;
 		}else {
 			direction= direction.Vertical;
 		}
-		
+
 		int curRow=game.getMove(game.numberOfMoves()-1).getTargetTile().getRow();
 		int curCol=game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn();
 		Direction curDirection=((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection();
-		
-		
+
+
 		if(curRow==row&& curCol==column && curDirection.equals(direction)  ) {
 			return true; //the wall has been placed if the current tile has the same 
-			             //coordinates as the wall that is being placed
-		}else {
-			
+			//coordinates as the wall that is being placed
+		} else {
+
 			return false;
 		}
-		
+
 	
 	}
 	
