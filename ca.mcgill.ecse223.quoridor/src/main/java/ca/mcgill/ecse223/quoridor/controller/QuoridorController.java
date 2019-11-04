@@ -104,11 +104,12 @@ public class QuoridorController {
 	 * 
 	 */	
 	public void createPlayer() {
-		//Quoridor quoridor = QuoridorApplication.getQuoridor();
+
 		Game inGame = createGame();
 		Player playerUn = new Player(null,null,null);
 		Player playerDeux = new Player(null,null,null);
-		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+		inGame.setWhitePlayer(playerUn);
+		inGame.setBlackPlayer(playerDeux);
 	}
 	
 	/**
@@ -128,8 +129,10 @@ public class QuoridorController {
 	    Then The game shall become ready to start
 		 */
 		if(aGame.getGameStatus() == GameStatus.Initializing) {
-			if((aGame.getWhitePlayer().getUser()!=null)&&(aGame.getBlackPlayer().getUser()!=null)&&(aGame.getWhitePlayer().getRemainingTime()!=null)&&(aGame.getBlackPlayer().getRemainingTime()!=null)){
-				aGame.setGameStatus(GameStatus.ReadyToStart);
+			if((aGame.getWhitePlayer().getUser()!=null)&&(aGame.getBlackPlayer().getUser()!=null)){
+				if((aGame.getWhitePlayer().getRemainingTime()!=null)&&(aGame.getBlackPlayer().getRemainingTime()!=null)) {
+					aGame.setGameStatus(GameStatus.ReadyToStart);
+				}
 			}
 		}
 	}
@@ -236,6 +239,7 @@ public class QuoridorController {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!usernameExists(user))	{
 			quoridor.addUser(user);
+			//usernames.add(user); 
 			User user1 = new User(user, quoridor);
 			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
 			User user2 = new User(user, quoridor);	
@@ -262,9 +266,12 @@ public class QuoridorController {
 	 */
 
 	public static boolean usernameExists(String user) {
-		if (QuoridorController.getUsernames().contains(user)) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (User.hasWithName(user)) {
+		//if (QuoridorController.getUsernames().contains(user)) {
 			return true; 
-        } else {
+		} 
+		else {
 			return false; 
         }		
 	}
