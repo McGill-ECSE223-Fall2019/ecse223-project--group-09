@@ -189,16 +189,16 @@ public class QuoridorController {
 		Board gameBoard = createNewBoard();
 		gameBoard.getQuoridor();
 
-		currentPlayer = player1;
+		//currentPlayer = player1;
 		
 		for (int i=1; i <= 20; i++) {
 			if(i <= 10){
 				//add walls for player 1
-				player1.addWall(i);
+				//player1.addWall(i);
 			}
 			else{
 				//add walls for player 2
-				player2.addWall(i);
+				//player2.addWall(i);
 			}
 		}
 	}
