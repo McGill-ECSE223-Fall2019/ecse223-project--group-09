@@ -705,7 +705,6 @@ public static boolean checkLastWallMove(int row, int column, Orientation orienta
 		
 		//there will be a case where a user tries to place a wall but there will
 		//no wall placed so he is not allowed
-		System.err.print(game.numberOfMoves()+" is the number of moves in this game..");
 		//bc the move is only added to the list if it is a valid move.
 		if(game.numberOfMoves()==0) {
 			return false;
@@ -715,9 +714,6 @@ public static boolean checkLastWallMove(int row, int column, Orientation orienta
 			currentWallMove=game.getMove(game.numberOfMoves()-1);
 		}
 		
-		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getRow()+" is THE row . \n");
-		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn()+" is THE Col . \n");
-		System.err.print( ((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection()+" is THE Orien . \n");
 		
 	//	Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
 //		currentWallMove.getTargetTile();
@@ -803,6 +799,8 @@ public static boolean checkLastWallMove(int row, int column, Orientation orienta
 		Orientation orientation= toWall.getOrientation();
 		Game game=null;
 		
+		
+		//there is no running game but should be given the game is running
 		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
 			game=QuoridorApplication.getQuoridor().getCurrentGame();
 		}
@@ -817,18 +815,46 @@ public static boolean checkLastWallMove(int row, int column, Orientation orienta
 			gamePosition=game.getCurrentPosition();
 		}
 		
+		//if the wall is invalid do not throw drop it
+		
+		if(toWall.getValidity()==false) {
+			
+			return false; //so do not drop the wall
+		}
+		
+		//case where we do not know if the wall is valid or not and depends on previous circumstances.
 		boolean isValid = validateWallPlacement(row, column, orientation); // this returns true if it is a valid wallmove.
 		if (isValid==true) {
 			//reset the position of the wallMove 
 			WallMove currentMove= game.getWallMoveCandidate();
 			currentMove.setTargetTile(board.getTile((row-1)*9 +column-1));
+			if (orientation.equals(orientation.HORIZONTAL)) {
+				currentMove.setWallDirection(Direction.Horizontal);
+			}else {
+				currentMove.setWallDirection(Direction.Vertical);
+			}
+			
 			//throw new RuntimeException("Current move/ "+currentMove.getGame()+" ! "+game);
 			 
 			
 			//currentMove.getPrevMove().setNextMove(currentMove);
 			if(game.numberOfMoves()==1 || game.numberOfMoves()==0) { //this the first move or we do not have moves at all..
-				//do nothing
 				
+				//case where the number of moves is zero:
+				//only when the test runners this will happen because the grab wall feature
+				//adds to the number of moves but in this case if it is zero we'll just add the only move ourselves
+				if (game.numberOfMoves()==0) {
+				game.addMove(currentMove);
+				currentMove.setGame(game);
+					
+					
+				
+				}else {
+				//case where the number of moves is 1
+				//if the number of moves is one than it is the case where the wall grabbed is the first wall to be ever placed 
+				//as the first move in that case we do not want to add to the list of moves nor set the previous bc there is none.	
+					
+				}
 				
 			}else {
 				Move prevMove= game.getMove(game.numberOfMoves()-2); //is the last move
