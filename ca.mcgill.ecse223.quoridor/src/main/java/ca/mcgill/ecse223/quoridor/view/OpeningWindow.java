@@ -124,6 +124,7 @@ public class OpeningWindow extends JFrame {
 
 			final String namePlayer1;
 			final String namePlayer2;
+
 			while (true) {
 				if (gameSetupDialog.showSetupDialog(this) != GameSetupDialog.START_GAME_OPTION) {
 					// We are done, player hit cancel or sth like that
@@ -139,7 +140,7 @@ public class OpeningWindow extends JFrame {
 			}
 
 			QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
-			QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
+			//QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
 			Time time = gameSetupDialog.getThinkingTime();
 			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
 
