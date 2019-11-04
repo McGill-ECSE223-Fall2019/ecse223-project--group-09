@@ -140,7 +140,7 @@ public class OpeningWindow extends JFrame {
 			}
 
 			QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
-			//QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
+			QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
 			Time time = gameSetupDialog.getThinkingTime();
 			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
 

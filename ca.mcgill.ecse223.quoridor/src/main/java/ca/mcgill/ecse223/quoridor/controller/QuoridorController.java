@@ -236,7 +236,6 @@ public class QuoridorController {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!usernameExists(user))	{
 			quoridor.addUser(user);
-			//usernames.add(user); 
 			User user1 = new User(user, quoridor);
 			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
 			User user2 = new User(user, quoridor);	
@@ -264,8 +263,7 @@ public class QuoridorController {
 
 	public static boolean usernameExists(String user) {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		if (User.hasWithName(user)) {
-		//if (QuoridorController.getUsernames().contains(user)) {
+		if (User.hasWithName(user) || QuoridorController.getUsernames().contains(user)) {
 			return true; 
 		} 
 		else {

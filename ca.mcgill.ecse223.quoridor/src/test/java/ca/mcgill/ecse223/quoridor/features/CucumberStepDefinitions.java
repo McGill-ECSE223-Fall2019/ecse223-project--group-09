@@ -380,14 +380,14 @@ public class CucumberStepDefinitions {
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void nameOfPlayerInNewGameShallBeUsername(String color, String user) {
 		//don't create new instances
-		//final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		//User anUser = new User(user, quoridor);
-		//Player aPlayer = new Player(null, anUser, 0, null);
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		User anUser = new User(user, quoridor);
+		Player aPlayer = new Player(null, anUser, 0, null);
 		if (color == "WHITE" || color == "white") {
-			Assert.assertEquals(getCurrentPlayer().getUser().getName(), user); 
+			Assert.assertEquals(aPlayer.getUser().getName(), user); 
 		}
 		else if (color == "BLACK" || color == "black") {
-			Assert.assertEquals(currentPlayer.getUser().getName(), user);
+			Assert.assertEquals(aPlayer.getUser().getName(), user);
 		}
 	}
 
