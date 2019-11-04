@@ -191,7 +191,6 @@ public class QuoridorController {
 		//final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (usernameExists(user)) {
 			User.getWithName(user);
-			
 		}
 	}
 
@@ -217,10 +216,8 @@ public class QuoridorController {
 			Game aNewGame = new Game(null, null, quoridor);
 			aNewGame.setWhitePlayer(firstPlayer);
 			aNewGame.setBlackPlayer(secondPlayer); 
-			//return true; 
 		}
 		else {
-			//return false; 
 			throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
 		}
 	}
