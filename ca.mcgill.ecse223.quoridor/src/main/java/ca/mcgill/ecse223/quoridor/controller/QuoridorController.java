@@ -1737,6 +1737,7 @@ public class QuoridorController {
 			throw new InvalidLoadException("Loaded game position is somehow invalid...");
 		}
 
+		game.setWallMoveCandidate(null);
 		game.setCurrentPosition(initialPosition);
 	}
 
