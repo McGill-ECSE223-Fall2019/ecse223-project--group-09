@@ -240,14 +240,11 @@ public class QuoridorController {
 		if (!usernameExists(user))	{
 			quoridor.addUser(user);
 			User user1 = new User(user, quoridor);
-			Player firstPlayer = new Player(null, user1, 9, Direction.Horizontal);
+			quoridor.getCurrentGame().getWhitePlayer().setUser(user1); // get players from barry 
 			User user2 = new User(user, quoridor);	
-			Player secondPlayer = new Player(null, user2, 1, Direction.Horizontal);
-			firstPlayer.setNextPlayer(secondPlayer);
-			secondPlayer.setNextPlayer(firstPlayer);	
-			Game aNewGame = new Game(null, null, quoridor);
-			aNewGame.setWhitePlayer(firstPlayer);
-			aNewGame.setBlackPlayer(secondPlayer); 
+			quoridor.getCurrentGame().getWhitePlayer().setUser(user2); // get players from barry 
+			//firstPlayer.setNextPlayer(secondPlayer); //gui related
+			//secondPlayer.setNextPlayer(firstPlayer); //gui related
 		}
 		else {
 			throw new InvalidInputException("This username already exists, please enter a new one or select the existing username.");
