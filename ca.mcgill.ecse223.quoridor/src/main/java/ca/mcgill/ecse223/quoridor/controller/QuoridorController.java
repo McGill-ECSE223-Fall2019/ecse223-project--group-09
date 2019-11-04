@@ -104,11 +104,12 @@ public class QuoridorController {
 	 * 
 	 */	
 	public void createPlayer() {
-		//Quoridor quoridor = QuoridorApplication.getQuoridor();
+
 		Game inGame = createGame();
 		Player playerUn = new Player(null,null,null);
 		Player playerDeux = new Player(null,null,null);
-		throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+		inGame.setWhitePlayer(playerUn);
+		inGame.setBlackPlayer(playerDeux);
 	}
 	
 	/**
@@ -128,8 +129,10 @@ public class QuoridorController {
 	    Then The game shall become ready to start
 		 */
 		if(aGame.getGameStatus() == GameStatus.Initializing) {
-			if((aGame.getWhitePlayer().getUser()!=null)&&(aGame.getBlackPlayer().getUser()!=null)&&(aGame.getWhitePlayer().getRemainingTime()!=null)&&(aGame.getBlackPlayer().getRemainingTime()!=null)){
-				aGame.setGameStatus(GameStatus.ReadyToStart);
+			if((aGame.getWhitePlayer().getUser()!=null)&&(aGame.getBlackPlayer().getUser()!=null)){
+				if((aGame.getWhitePlayer().getRemainingTime()!=null)&&(aGame.getBlackPlayer().getRemainingTime()!=null)) {
+					aGame.setGameStatus(GameStatus.ReadyToStart);
+				}
 			}
 		}
 	}
