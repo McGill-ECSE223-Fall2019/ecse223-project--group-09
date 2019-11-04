@@ -212,6 +212,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         // Get the grid to display correct info
 
+        this.gridPanel.setWhitePlayer(QuoridorController.getWhitePlayer());
+        this.gridPanel.setBlackPlayer(QuoridorController.getBlackPlayer());
         this.gridPanel.setWhiteWalls(QuoridorController.getWhiteWallsOnBoard());
         this.gridPanel.setBlackWalls(QuoridorController.getBlackWallsOnBoard());
 
