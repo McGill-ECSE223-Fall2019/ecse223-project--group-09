@@ -823,13 +823,17 @@ public class CucumberStepDefinitions {
 		this.currentMove = quoridor.getCurrentGame().getWallMoveCandidate();
 		
 		int aRow = (9 - row);// we invert the row because in the controller, the rows
-								// were numbered from bottom to top, unlike the Gherkin scenarios
+							// were numbered from bottom to top, unlike the Gherkin scenarios
 		
 		Tile targetTile = QuoridorController.getTileFromRowAndColumn(aRow, column);
 		
 		this.currentMove.setTargetTile(targetTile);
-		this.wallCandidate = QuoridorController.createTOWallCandidateFromWallMove(this.currentMove);
-				
+		
+		this.wallCandidate = QuoridorController.getWallCandidate();
+		this.wallCandidate.setOrientation(orientation);			//
+		this.wallCandidate.setColumn(column);					// this is of the rotate wall test to pass
+		this.wallCandidate.setRow(aRow);						//
+		
 		//we have to create the precondition
 		
 		this.currentWall = QuoridorController.getCurrentGrabbedWall();
