@@ -1083,9 +1083,8 @@ public class CucumberStepDefinitions {
 		this.wallCandidate.setValidity(false);
 		this.currentWall=wallCandidate.getAssociatedWall();
 		//now check if the position is valid
-		
-		//boolean isValid=QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
-		Assert.assertFalse(this.wallCandidate.getValidity());//should be false since there is no move available
+		boolean isValid=QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
+		Assert.assertFalse(isValid);//should be false since there is no move available
 		player=QuoridorController.getPlayerOfCurrentTurn();
 		
 	}
@@ -1099,7 +1098,7 @@ public class CucumberStepDefinitions {
         //if it's an invalid move than the boolean should return a false to indicate to the
     	//ui that i have to give a message to the user.
     	
-    	Assert.assertFalse(tester);
+    	Assert.assertFalse(tester); //tester must be false bc drop wont allow it
     	//Assert.assertFalse(QuoridorController.dropWall(this.wallCandidate.getAssociatedWall()));;
         
     }

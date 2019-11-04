@@ -734,7 +734,6 @@ public class QuoridorController {
 		
 		//there will be a case where a user tries to place a wall but there will
 		//no wall placed so he is not allowed
-		System.err.print(game.numberOfMoves()+" is the number of moves in this game..");
 		//bc the move is only added to the list if it is a valid move.
 		if(game.numberOfMoves()==0) {
 			return false;
@@ -743,10 +742,6 @@ public class QuoridorController {
 		if(game.getMove(game.numberOfMoves()-1)!=null) {
 			currentWallMove=game.getMove(game.numberOfMoves()-1);
 		}
-		
-		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getRow()+" is THE row . \n");
-		System.err.print(game.getMove(game.numberOfMoves()-1).getTargetTile().getColumn()+" is THE Col . \n");
-		System.err.print( ((WallMove) game.getMove(game.numberOfMoves()-1)).getWallDirection()+" is THE Orien . \n");
 		
 	//	Tile checkTile=new Tile(row, column, QuoridorApplication.getQuoridor().getBoard());
 //		currentWallMove.getTargetTile();
