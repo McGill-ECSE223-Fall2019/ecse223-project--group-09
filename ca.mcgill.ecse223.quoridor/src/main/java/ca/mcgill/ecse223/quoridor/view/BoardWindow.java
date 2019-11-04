@@ -121,10 +121,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         /**
          * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
          */
-        dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
-        dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-        dropWall.setEnabled(true);
-        dropWall.addActionListener(e -> this.onDropWallButtonClicked());
+      //  dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
+      //  dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+      //  dropWall.setEnabled(true);
+      //  dropWall.addActionListener(e -> this.onDropWallButtonClicked());
 
         rotateWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         rotateWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
@@ -419,21 +419,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         
         wall = new TOWallCandidate(Orientation.VERTICAL, 5, 3);
 
-//        final TOWall wall = new TOWall();
-//        wall.setColumn(5);
-//        wall.setRow(3);
-        
         newBoardWindow.gridPanel.setWallCandidate(wall);
 
-        // I commented this out because by fixing that NullPointerException that occurs
-        // solely in the UI, it causes the fetchPlayerInfo thing to succeed, therefore
-        // ignoring this setWhiteWalls call
-        /*
-        final TOWall wall = new TOWall();
-        wall.setColumn(5);
-        wall.setRow(3);
-        wall.setOrientation(Orientation.HORIZONTAL);
-        newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
-        */
     }
 }
