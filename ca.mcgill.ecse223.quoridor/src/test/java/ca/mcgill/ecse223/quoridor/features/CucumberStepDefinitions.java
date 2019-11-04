@@ -750,7 +750,8 @@ public class CucumberStepDefinitions {
 	@And("I shall have a wall in my hand over the board")
 	public void wallOverBoard() {
 		
-		Assert.assertFalse(noMoreWallsFlag);
+		Assert.assertFalse(this.noMoreWallsFlag);
+		System.err.print(currentWall+" Current wall AFTER");
 		Assert.assertNotNull(this.currentWall);
 		
 	}
@@ -998,6 +999,9 @@ public class CucumberStepDefinitions {
 		
 		this.wallCandidate=new TOWallCandidate(Orientation.valueOf(direction.toUpperCase()), row, col);
 		this.wallCandidate.setValidity(true);
+		this.currentWall=wallCandidate.getAssociatedWall(); //for testing that i still have it
+		
+		System.err.print(currentWall+" Current wall AFTER");
 		//now check if the position is valid
 		boolean isValid= QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
 		Assert.assertTrue(isValid);//if valid it will be true
@@ -1015,6 +1019,8 @@ public class CucumberStepDefinitions {
 		System.err.print(this.wallCandidate.getAssociatedWall().getRow()+" row"+this.wallCandidate.getAssociatedWall().getColumn()+" col"+this.wallCandidate.getAssociatedWall().getOrientation()+" orientation"  );
 		//the right parameters are being passed
 		tester=QuoridorController.dropWall(this.wallCandidate.getAssociatedWall());//method drop wall will take as constructor a transfer object of wall
+		this.currentWall=wallCandidate.getAssociatedWall();
+
 	}
 		
 	/**
@@ -1068,6 +1074,7 @@ public class CucumberStepDefinitions {
 		
 		this.wallCandidate=new TOWallCandidate(Orientation.valueOf(direction.toUpperCase()), row, col);
 		this.wallCandidate.setValidity(false);
+		this.currentWall=wallCandidate.getAssociatedWall();
 		//now check if the position is valid
 		
 		//boolean isValid=QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
