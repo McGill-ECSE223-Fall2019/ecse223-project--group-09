@@ -986,7 +986,6 @@ public class CucumberStepDefinitions {
 		Orientation newDir=Orientation.valueOf(newdir.toUpperCase());//constructor takes an Orientation enum so the conversion is necessary
 		Assert.assertTrue(this.wallCandidate.getOrientation()==newDir);
 		
-		
 	}
 		
 	
