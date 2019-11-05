@@ -1020,7 +1020,6 @@ public class QuoridorController {
 		//if the wall is invalid do not throw drop it
 		
 		if(toWall.getValidity()==false) {
-			
 			return false; //so do not drop the wall
 		}
 		

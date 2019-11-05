@@ -23,11 +23,12 @@ public class TOWallCandidate {
     	this.row = row;
     	this.column = column;
     	this.validity=true;
-    	
+    	 
     	this.associatedWall= new TOWall();
     	this.associatedWall.setOrientation(orientation);
     	this.associatedWall.setRow(row);
     	this.associatedWall.setColumn(column);
+    	this.associatedWall.setValidity(true);
     	
     	
     }

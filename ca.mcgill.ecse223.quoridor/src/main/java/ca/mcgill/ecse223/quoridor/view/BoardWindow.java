@@ -352,8 +352,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	
     	//dropWall
        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
-
-    	if(QuoridorController.dropWall(wallCandidate.getAssociatedWall())) {//if true drop it
+     	if(QuoridorController.dropWall(wallCandidate.getAssociatedWall())) {//if true drop it
     		
     		this.repaint();//the wall has been drawn and now you to 
     		gridPanel.setWallCandidate(null); //set the candidate to null once the wall is dropped 
