@@ -173,6 +173,9 @@ public class QuoridorController {
 	 */
 	public static Board createNewBoard(){
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if(quoridor.hasBoard()) {
+			quoridor.getBoard().delete();
+		}
 		Board newBoard = new Board(quoridor);
 		
 		newBoard.setQuoridor(quoridor);
