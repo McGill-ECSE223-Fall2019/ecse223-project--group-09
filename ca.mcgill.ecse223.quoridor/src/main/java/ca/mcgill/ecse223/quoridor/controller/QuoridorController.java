@@ -1461,9 +1461,9 @@ public static TOWall grabWall() {
 
 		// Check for extension case
 		if (dir == Orientation.VERTICAL) {
-			return col - t1Col == 0 && Math.abs(row - t1Row) == 1;
+			return col == t1Col && Math.abs(row - t1Row) == 1;
 		} else {
-			return row - t1Row == 0 && Math.abs(col - t1Col) == 1;
+			return row == t1Row && Math.abs(col - t1Col) == 1;
 		}
 	}
 
