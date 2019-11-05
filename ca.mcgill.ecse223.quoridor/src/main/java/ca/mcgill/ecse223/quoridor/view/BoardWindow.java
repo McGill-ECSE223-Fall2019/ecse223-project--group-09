@@ -55,7 +55,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
      */
 
-    // should we implement the drop wall as clicking on the wall candidate?
     private final JButton dropWall = new JButton("Drop Wall");
     private final JButton rotateWall = new JButton("Rotate Wall");
 
@@ -301,10 +300,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      * This method is called when rotate wall button is clicked
      */
     private void onRotateWallButtonClicked() {
-    	QuoridorController.rotateWall(wall);
+        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
+    	QuoridorController.rotateWall(wallCandidate);
     	
     	this.repaint();
-        System.out.println("Rotated: " );
+        System.out.println("Rotated the wall candidate " );
        // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
     //	TOWallCandidate wall = QuoridorController.getWallCandidate();
     //    QuoridorController.rotateWall(wall.getAssociatedWall());
@@ -314,15 +314,18 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     @Override
     public void onMouseWheelRotated(double clicks) {
         // Proof that it works:
-    	 
-    	//rotateWall
+        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
+ 
+        //rotateWall
     	double val = Math.abs(clicks);
     	if(val > 0.150 && val < 0.25) {
-    		QuoridorController.rotateWall(wall);
+  			QuoridorController.rotateWall(wallCandidate);
+  			System.out.println("Rotated the wall candidate " );
+  			this.repaint();
+  			
+    	}else{
+    		System.out.println("To rotate must be bigger than 0.15 and smaller than 0.25: " + clicks);	
     	}
-    	
-    	this.repaint();
-        System.out.println("Wheel: " + clicks);
     }
     
     
@@ -331,13 +334,15 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         // Proof that it works:
     	
     	//dropWall
-    	
-    	if(QuoridorController.dropWall(QuoridorController.grabWall())) {//if true drop it
+       TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
+
+    	if(QuoridorController.dropWall(wallCandidate.getAssociatedWall())) {//if true drop it
     		
-    		//newBoardWindow.gridPanel.setWhiteWalls(java.util.Collections.singletonList(wall));
-    		
+    		this.repaint();//the wall has been drawn and now you to 
+    		gridPanel.setWallCandidate(null); //set the candidate to null once the wall is dropped 
+    			
     	}else {
-    		JOptionPane.showMessageDialog(this, "you cannot drop wall here");
+    		JOptionPane.showMessageDialog(this, "You cannot drop a wall here.");
     	}
     	
         System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row

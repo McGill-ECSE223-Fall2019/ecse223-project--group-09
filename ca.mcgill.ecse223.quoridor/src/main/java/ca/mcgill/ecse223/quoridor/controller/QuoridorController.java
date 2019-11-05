@@ -957,8 +957,7 @@ public class QuoridorController {
 	
 	public static void rotateWall(TOWallCandidate wall) {
 		//this method should change the direction of the candidate
-		
-		//ask alixe alixe are the wall candidates set to have the same orientation.
+	
 		
 		wall.rotate(); //rotated the TO
 		Game game=null;
@@ -967,7 +966,7 @@ public class QuoridorController {
 			game=QuoridorApplication.getQuoridor().getCurrentGame();
 		}
 		
-		/*WallMove currentMove= game.getWallMoveCandidate();
+		WallMove currentMove= game.getWallMoveCandidate();
 		Direction currentDirection = currentMove.getWallDirection();
 		Direction newDirection=null;
 		if (currentDirection.equals(Direction.Horizontal)) {
@@ -975,7 +974,7 @@ public class QuoridorController {
 		}else {
 			newDirection=Direction.Horizontal;
 		}
-		currentMove.setWallDirection(newDirection);*/
+		currentMove.setWallDirection(newDirection);
 	}
 	
 	/**
