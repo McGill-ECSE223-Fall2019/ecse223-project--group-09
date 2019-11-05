@@ -84,6 +84,9 @@ public class QuoridorController {
 	 */	
 	public static Game createGame() {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if(quoridor.hasCurrentGame()) {
+			quoridor.getCurrentGame().delete();
+		}
 		Game newGame = new Game(GameStatus.Initializing, null, quoridor);
 		return newGame;
 	}
@@ -113,7 +116,7 @@ public class QuoridorController {
 	 * This method sets up a new game 
 	 * 
 	 */	
-	public static void startNewGame(Game aGame){
+	public static void startNewGame(){
 		/*
 		When A new game is being initialized
 	    And White player chooses a username
@@ -121,6 +124,9 @@ public class QuoridorController {
 	    And Total thinking time is set
 	    Then The game shall become ready to start
 		 */
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game aGame = quoridor.getCurrentGame();
+		
 		if(aGame.getGameStatus() == GameStatus.Initializing) {
 			if((aGame.hasWhitePlayer())&&(aGame.hasBlackPlayer())){
 				if((aGame.getWhitePlayer().getRemainingTime()!=null)&&(aGame.getBlackPlayer().getRemainingTime()!=null)) {
@@ -142,8 +148,10 @@ public class QuoridorController {
 	 * @author Barry Chung 
 	 * 
 	 */
-	public static void StartClock(Game aGame) {
+	public static void StartClock() {
 		
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game aGame = quoridor.getCurrentGame();
 		//checkout for game position 
 		
 		//Given The game is ready to start
@@ -189,8 +197,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public static void initiateBoard(Game aGame) {
-		//throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
+	public static void initiateBoard() {
 		
 		/*
 		Scenario: Initialize board
@@ -204,6 +211,9 @@ public class QuoridorController {
 		And White's clock shall be counting down
 		And It shall be shown that this is White's turn
 		 */
+		
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game aGame = quoridor.getCurrentGame();
 		
 		//Given The game is ready to start
 		if(aGame.getGameStatus() == GameStatus.ReadyToStart){

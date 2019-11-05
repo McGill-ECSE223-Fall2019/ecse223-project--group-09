@@ -140,11 +140,16 @@ public class OpeningWindow extends JFrame {
 			}
 
 			//TODO: Call the new game 
+			QuoridorController.createGame();// make a game
 			QuoridorController.createOrSelectUsername(namePlayer1, Color.WHITE); 
-			QuoridorController.createOrSelectUsername(namePlayer2, Color.BLACK); 
+			QuoridorController.createOrSelectUsername(namePlayer2, Color.BLACK);
+			QuoridorController.startNewGame();
+			QuoridorController.initiateBoard();
 
 			Time time = gameSetupDialog.getThinkingTime();
 			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
+			
+			
 
 			//TODO: more stuff about board, etc.
 			// Dispose the current window
