@@ -18,11 +18,15 @@ import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.controller.WallStockEmptyException;
+import ca.mcgill.ecse223.quoridor.model.Quoridor;
+import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 
 /**
@@ -35,8 +39,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     private static final int UPDATE_DELAY = 350;
 
     // ***** Rendering State Variables *****
-    
-    public static TOWallCandidate wall;
+
     private final DefaultListModel<String> replayList = new DefaultListModel<>();
     private final Timer PLAYER_INFO_TIMER;
 
@@ -218,11 +221,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         // Enable/Disable buttons based on what the player can do
 
-        final boolean grabbed = true; // player == null ? false : player.hasWallInHand();
+        final boolean grabbed = player == null ? false : player.hasWallInHand();
         this.dropWall.setEnabled(grabbed);
         this.rotateWall.setEnabled(grabbed);
 
-        final boolean canGrab = true;// player == null ? false : player.canGrabWall();
+        final boolean canGrab = player == null ? false : player.canGrabWall();
         this.grabWallButton.setEnabled(canGrab);
     }
 
@@ -278,14 +281,29 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      */
 
     private void onGrabAWallButtonClicked() {
-        try {
-            QuoridorController.grabWall();
-            TOWallCandidate wallCandidate = QuoridorController.getWallCandidate();
-            gridPanel.setWallCandidate(wallCandidate);
-        } catch (Exception e) {
-            System.out.println("No game loaded: create new or select game");
+       
+        	Quoridor quoridor = QuoridorApplication.getQuoridor();
+        	
+        if (quoridor.getCurrentGame() != null) {
+        	
+        	try {
+        	TOWall currentWall = QuoridorController.grabWall();
+        	   WallMove wallMove = quoridor.getCurrentGame().getWallMoveCandidate();
+               TOPlayer p = QuoridorController.getPlayerOfCurrentTurn();
+               TOWallCandidate wallCandidate = QuoridorController.createTOWallCandidateFromWallMove(wallMove);
+               gridPanel.setWallCandidate(wallCandidate);
+               
+               this.playerInfoPanel.updateInfo(QuoridorController.getPlayerOfCurrentTurn());
+               
+        	} catch (WallStockEmptyException e) {
+        		 JOptionPane.showMessageDialog(this, "You have no more walls!");
+        	}
+ 
+        } else {
+        	System.out.println("no game");
         }
-
+            
+       
     }
 
     /**
@@ -368,6 +386,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         // Proof that it works:
         System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row);
     }
+    
+    /**
+     * @author alixe delabrousse (260868412)
+     * 
+     * this methods move the wall on the board along the mouse
+     * you can only see the positions of the same orientation as the current one
+     */
 
     @Override
     public void onSlotEntered(int row, int col, Orientation orientation) {
@@ -421,12 +446,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
-        
-        wall = new TOWallCandidate(Orientation.HORIZONTAL, 3, 5);
 
-        newBoardWindow.gridPanel.setWallCandidate(wall);
-        
         JOptionPane.showMessageDialog(newBoardWindow, "Game has started");
-
+        QuoridorController.StartClock();
     }
 }
