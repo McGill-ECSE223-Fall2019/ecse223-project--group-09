@@ -385,20 +385,35 @@ public class QuoridorController {
  	* 
  	*/
 	
-	public static TOWall grabWall() {
+public static TOWall grabWall() {
 		
 		final Quoridor quoridor = QuoridorApplication.getQuoridor(); // get quoridor
 		Game game = quoridor.getCurrentGame();// get current game from quoridor
 		Player currentPlayer = getCurrentPlayer(); // get the player of the turn 
+		GamePosition gpos = game.getCurrentPosition();
 		TOPlayer toCurrentPlayer = getPlayerOfCurrentTurn(); // create associated transfer object
 		List<Wall> walls= currentPlayer.getWalls(); //this gets the complete list of 10 walls
 		
-		Wall grabbedWall; // current grabbed wall (null if no more walls left on stock)
+		Wall grabbedWall = null; // current grabbed wall (null if no more walls left on stock)
 		TOWall toGrabbedWall;
 		Tile initialTile = getTileFromRowAndColumn(INITIAL_ROW, INITIAL_COLUMN); // Tile at initial position
 		if (toCurrentPlayer.getWallsRemaining() != 0) {
 
-			grabbedWall = walls.get(toCurrentPlayer.getWallsRemaining()-1); // the grabbed wall is the last one in the list
+			// Grab the first wall of the stock, also need a hack for the test scenarios
+			for (int i = 0; grabbedWall == null && i < toCurrentPlayer.getWallsRemaining(); ++i) {
+				if (currentPlayer.hasGameAsWhite()) {
+					grabbedWall = gpos.getWhiteWallsInStock(i);
+					gpos.removeWhiteWallsInStock(grabbedWall);
+				} else {
+					grabbedWall = gpos.getBlackWallsInStock(i);
+					gpos.removeBlackWallsInStock(grabbedWall);
+				}
+			}
+
+			if (grabbedWall == null) {
+				throw new IllegalStateException("Inconsistent model!!! WTF!!?");
+			}
+
 			toCurrentPlayer.setWallInHand(true);
 			toCurrentPlayer.setWallsRemaining(toCurrentPlayer.getWallsRemaining()-1); //Remove one wall from walls remaining count
 			
