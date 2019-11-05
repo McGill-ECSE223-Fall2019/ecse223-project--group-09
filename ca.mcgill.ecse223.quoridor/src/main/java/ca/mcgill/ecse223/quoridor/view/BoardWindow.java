@@ -454,6 +454,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         newBoardWindow.gridPanel.setWallCandidate(wall);
         
         JOptionPane.showMessageDialog(newBoardWindow, "Game has started");
-
+        QuoridorController.StartClock();
     }
 }
