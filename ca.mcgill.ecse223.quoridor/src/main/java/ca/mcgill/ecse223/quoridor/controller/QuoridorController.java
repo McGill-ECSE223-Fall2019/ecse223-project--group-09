@@ -1445,22 +1445,6 @@ public static TOWall grabWall() {
 			return false;
 		}
 
-		// Calculate the location of the 2nd tile occupied by wall
-		final int t2Row;
-		final int t2Col;
-		switch (orientation) {
-			case VERTICAL:
-				t2Row = row + 1;
-				t2Col = column;
-				break;
-			case HORIZONTAL:
-				t2Row = row;
-				t2Col = column + 1;
-				break;
-			default:
-				throw new AssertionError("Unrecognized wall orientation: " + orientation);
-		}
-
 		for (Wall w : gpos.getWhiteWallsOnBoard()) {
 			// Since on board, must have WallMove associated with it
 			if (wallMoveOverlapsWithPlacement(w.getMove(), row, column, orientation)) {
@@ -1480,11 +1464,11 @@ public static TOWall grabWall() {
 
 	/**
 	 * Checks if position is a valid wall coordinate (if it is still on board)
-	 * 
+	 *
 	 * @param row Row in wall coordinates
 	 * @param col Column in wall coordinates
 	 * @return true if position is on board, false if not
-	 * 
+	 *
 	 * @author Group 9
 	 */
 	private static boolean isValidWallCoordinate(int row, int col) {
@@ -1493,59 +1477,34 @@ public static TOWall grabWall() {
 
 	/**
 	 * Checks if wall move overlaps with a wall placement
-	 * 
+	 *
 	 * @param move Wall move being tested
 	 * @param t1Row Row of wall
 	 * @param t1Col Column of wall
 	 * @param orientation Orientation of wall
 	 * @return true if overlaps, false if no overlap
-	 * 
+	 *
 	 * @author Group 9
 	 */
 	private static boolean wallMoveOverlapsWithPlacement(WallMove move, final int t1Row, final int t1Col, Orientation orientation) {
-		final Direction dir = move.getWallDirection();
+		final Orientation dir = fromDirection(move.getWallDirection());
 		final Tile tile = move.getTargetTile();
 
 		// Compute first tile
 		int row = tile.getRow();
 		int col = tile.getColumn();
 
-		// Calculate the location of the 2nd tile occupied by wall
-		final int t2Row;
-		final int t2Col;
-		switch (orientation) {
-			case VERTICAL:
-				t2Row = t1Row + 1;
-				t2Col = t1Col;
-				break;
-			case HORIZONTAL:
-				t2Row = t1Row;
-				t2Col = t1Col + 1;
-				break;
-			default:
-				throw new AssertionError("Unrecognized wall orientation: " + orientation);
+		if (dir == orientation) {
+			// Check for extension case
+			if (dir == Orientation.VERTICAL) {
+				return col - t1Col == 0 && Math.abs(row - t1Row) == 1;
+			} else {
+				return row - t1Row == 0 && Math.abs(col - t1Col) == 1;
+			}
+		} else {
+			// Check for cris-crossing case
+			return row == t1Row && col == t1Col;
 		}
-
-		if ((row == t1Row && col == t1Col) || (row == t2Row && col == t2Col)) {
-			// Overlapping with one of the tiles happened
-			return true;
-		}
-
-		if (orientation != fromDirection(dir)) {
-			// Done
-			return false;
-		}
-
-		// Compute second tile
-		switch (dir) {
-			case Vertical:      ++row; break;
-			case Horizontal:    ++col; break;
-			default:
-			throw new AssertionError("Unrecognized wall direction: " + dir);
-		}
-		
-		return (row == t1Row && col == t1Col)
-			|| (row == t2Row && col == t2Col);
 	}
 
 	/**
