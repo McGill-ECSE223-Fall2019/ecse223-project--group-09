@@ -19,6 +19,7 @@ public final class TOWall {
     private int row;
     private int column;
     public boolean grabbed;
+    public boolean validity;
 
 
     
@@ -46,8 +47,39 @@ public final class TOWall {
     public int getColumn() {
         return this.column;
     }
-
     
+    public void resetWall() {
+    	this.orientation=null;
+    	this.row=0;
+    	this.column=0;
+    	this.grabbed=false;
+    }
+    
+    /**
+     * @author Mohamed Mohamed
+     * @param isValid indicates if the wall is valid or not.
+     */
+    public void setValidity(boolean isValid) {
+    	this.validity=isValid;
+    }
+    
+    public boolean getValidity() {
+    	return validity;
+    }
+    
+    /**
+     * @author Mohamed Mohamed
+     */
+    public void rotate() {
+    	if(this.orientation==Orientation.HORIZONTAL) {
+    		
+    		this.setOrientation(Orientation.VERTICAL);
+    	}else { // if the orientation is vertcial
+    		
+    		this.setOrientation(Orientation.HORIZONTAL);
+    	}
+    }
+
     /**
      * @author alixe delabrousse
      * @param grabbed
