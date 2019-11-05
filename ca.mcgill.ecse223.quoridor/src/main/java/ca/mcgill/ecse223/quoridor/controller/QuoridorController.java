@@ -189,7 +189,7 @@ public class QuoridorController {
 	 * 
 	 */
 	
-	public static void initiateBoard() {
+	public static void initiateBoard(Game aGame) {
 		//throw new UnsupportedOperationException("method initiateBoard is not implemented yet");
 		
 		/*
@@ -205,21 +205,32 @@ public class QuoridorController {
 		And It shall be shown that this is White's turn
 		 */
 		
-		Board gameBoard = createNewBoard();
-		gameBoard.getQuoridor();
-
-		currentPlayer = player1;
-		
-		for (int i=1; i <= 20; i++) {
-			if(i <= 10){
-				//add walls for player 1
-				player1.addWall(i);
+		//Given The game is ready to start
+		if(aGame.getGameStatus() == GameStatus.ReadyToStart){
+			
+			Board gameBoard = createNewBoard();
+			aGame.getQuoridor().setBoard(gameBoard);
+			
+			PlayerPosition blancPlayerInitialPosition = new PlayerPosition(aGame.getWhitePlayer(),new Tile(1,5,gameBoard));
+			PlayerPosition noirPlayerInitialPosition = new PlayerPosition(aGame.getBlackPlayer(),new Tile(9,5,gameBoard)); 
+			GamePosition newCurrentPosition = new GamePosition(1,blancPlayerInitialPosition,noirPlayerInitialPosition,aGame.getWhitePlayer(),aGame);
+			
+			//Then It shall be white player to move
+			aGame.setCurrentPosition(newCurrentPosition);
+			for(int i=1; i<=20; i++) {
+				if(i <= 10){
+					//And All of White's walls shall be in stock
+					aGame.getCurrentPosition().addWhiteWallsInStock(new Wall(i,aGame.getWhitePlayer()));
+				}
+				else{
+					//And All of Black's walls shall be in stock
+					aGame.getCurrentPosition().addBlackWallsInStock(new Wall(i,aGame.getBlackPlayer()));
+				}
 			}
-			else{
-				//add walls for player 2
-				player2.addWall(i);
-			}
+			
 		}
+		
+	
 	}
 	
 

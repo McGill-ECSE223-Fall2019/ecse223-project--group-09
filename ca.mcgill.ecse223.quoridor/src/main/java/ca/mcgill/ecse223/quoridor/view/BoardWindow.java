@@ -421,6 +421,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         wall = new TOWallCandidate(Orientation.HORIZONTAL, 3, 5);
 
         newBoardWindow.gridPanel.setWallCandidate(wall);
+        
+        JOptionPane.showMessageDialog(newBoardWindow, "Game has started");
 
     }
 }
