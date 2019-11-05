@@ -80,7 +80,7 @@ public class QuoridorController {
 	 * 
 	 * @author Barry Chen  
 	 *
-	 * This method create a new empty game  
+	 * This method create a new empty game associated to the quoridor 
 	 */	
 	public static Game createGame() {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
@@ -113,7 +113,7 @@ public class QuoridorController {
 	 * @author Barry Cheng 
 	 * 
 	 *
-	 * This method sets up a new game 
+	 * This method starts a new game by the changing the game status from Initializing to ReadyToStart
 	 * 
 	 */	
 	public static void startNewGame(){
@@ -168,7 +168,9 @@ public class QuoridorController {
 	
 	/**
 	 * 
-	 * @author Barry Chen 
+	 * @author Barry Chin
+	 * 
+	 * This method creates an empty 9 * 9 board
 	 * 
 	 */
 	public static Board createNewBoard(){
@@ -190,13 +192,13 @@ public class QuoridorController {
 	
 	/**
 	 * 
-	 * @author Barry Chen 
+	 * @author Berry Chen 
 	 * 
 	 * @param none
 	 * @return initialized board
 	 * 
-	 * This method initialize the board which place both players' pawn at its initial position
-	 * 
+	 * This method initialize the board which place both players' pawn at its initial position and setting both 
+	 * player's wall stock
 	 * 
 	 */
 	
