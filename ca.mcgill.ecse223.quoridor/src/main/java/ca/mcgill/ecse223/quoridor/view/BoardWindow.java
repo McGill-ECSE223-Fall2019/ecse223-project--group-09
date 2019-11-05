@@ -18,11 +18,15 @@ import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
+import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
+import ca.mcgill.ecse223.quoridor.controller.WallStockEmptyException;
+import ca.mcgill.ecse223.quoridor.model.Quoridor;
+import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 
 /**
@@ -278,14 +282,29 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      */
 
     private void onGrabAWallButtonClicked() {
-        try {
-            QuoridorController.grabWall();
-            TOWallCandidate wallCandidate = QuoridorController.getWallCandidate();
-            gridPanel.setWallCandidate(wallCandidate);
-        } catch (Exception e) {
-            System.out.println("No game loaded: create new or select game");
+       
+        	Quoridor quoridor = QuoridorApplication.getQuoridor();
+        	
+        if (quoridor.getCurrentGame() != null) {
+        	
+        	try {
+        	TOWall currentWall = QuoridorController.grabWall();
+        	   WallMove wallMove = quoridor.getCurrentGame().getWallMoveCandidate();
+               TOPlayer p = QuoridorController.getPlayerOfCurrentTurn();
+               TOWallCandidate wallCandidate = QuoridorController.createTOWallCandidateFromWallMove(wallMove);
+               gridPanel.setWallCandidate(wallCandidate);
+               
+               this.playerInfoPanel.updateInfo(QuoridorController.getPlayerOfCurrentTurn());
+               
+        	} catch (WallStockEmptyException e) {
+        		 JOptionPane.showMessageDialog(this, "You have no more walls!");
+        	}
+ 
+        } else {
+        	System.out.println("no game");
         }
-
+            
+       
     }
 
     /**
@@ -369,6 +388,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         // Proof that it works:
         System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row);
     }
+    
+    /**
+     * @author alixe delabrousse (260868412)
+     * 
+     * this methods move the wall on the board along the mouse
+     * you can only see the positions of the same orientation as the current one
+     */
 
     @Override
     public void onSlotEntered(int row, int col, Orientation orientation) {
