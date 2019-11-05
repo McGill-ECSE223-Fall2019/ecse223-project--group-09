@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -1288,66 +1289,19 @@ public static TOWall grabWall() {
 	 * @author Group 9
 	 */
 	private static boolean validateWallsOnBoard(GamePosition pos) {
-		// Board is 9-by-9
-		final boolean[][] tileMap = new boolean[9][9];
+		final List<Wall> walls = new ArrayList<>();
+		walls.addAll(pos.getWhiteWallsOnBoard());
+		walls.addAll(pos.getBlackWallsOnBoard());
 
-		for (Wall w : pos.getWhiteWallsOnBoard()) {
-			// Since on board, must have WallMove associated with it
-			if (!checkWallMoveAgainstTileMap(w.getMove(), tileMap)) {
+		for (int i = 0; i < walls.size() - 1; ++i) {
+			final Wall w1 = walls.get(i);
+			final Wall w2 = walls.get(i + 1);
+			final WallMove move = w2.getMove();
+			final Tile target = move.getTargetTile();
+			if (wallMoveOverlapsWithPlacement(w1.getMove(), target.getRow(), target.getColumn(), fromDirection(move.getWallDirection()))) {
 				return false;
 			}
 		}
-
-		for (Wall w : pos.getBlackWallsOnBoard()) {
-			// Since on board, must have WallMove associated with it
-			if (!checkWallMoveAgainstTileMap(w.getMove(), tileMap)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * Checks if wall is on top of a tile that has already been occupied
-	 * 
-	 * @param move The move with wall placement information
-	 * @param tileMap The tile map, cells will be toggled
-	 * @return true if wall is in valid position, false otherwise
-	 * 
-	 * @author Group 9
-	 */
-	private static boolean checkWallMoveAgainstTileMap(WallMove move, boolean[][] tileMap) {
-		final Direction dir = move.getWallDirection();
-		final Tile tile = move.getTargetTile();
-		
-		// Change indexing from 1-based to 0-based
-		final int row = tile.getRow() - 1;
-		final int col = tile.getColumn() - 1;
-
-		// These two lines check if a particular spot on the tile map
-		// is already occupied (toggled). If it is, then wall is not
-		// in a valid position, hence it returns false. Otherwise,
-		// the particular spot will be toggled (as this wall now
-		// occupies this spot)
-		if (tileMap[row][col]) return false;
-		tileMap[row][col] = true;
-		
-		// The Direction test looks counter intuitive because
-		// the tile map actually stores the transpose of the
-		// expected grid (which is why increments look inverted)
-		switch (dir) {
-			case Vertical:
-				if (tileMap[row + 1][col]) return false;
-				tileMap[row + 1][col] = true;
-				break;
-			case Horizontal:
-				if (tileMap[row][col + 1]) return false;
-				tileMap[row][col + 1] = true;
-				break;
-			default:
-				throw new AssertionError("Unrecognized wall direction: " + dir);
-		}
-
 		return true;
 	}
 
