@@ -1496,16 +1496,20 @@ public static TOWall grabWall() {
 		int row = tile.getRow();
 		int col = tile.getColumn();
 
-		if (dir == orientation) {
-			// Check for extension case
-			if (dir == Orientation.VERTICAL) {
-				return col - t1Col == 0 && Math.abs(row - t1Row) == 1;
-			} else {
-				return row - t1Row == 0 && Math.abs(col - t1Col) == 1;
-			}
+		if (row == t1Row && col == t1Col) {
+			return true;
+		}
+
+		if (dir != orientation) {
+			// Different direction, only way to overlap is by having same tile, which we already tested
+			return false;
+		}
+
+		// Check for extension case
+		if (dir == Orientation.VERTICAL) {
+			return col - t1Col == 0 && Math.abs(row - t1Row) == 1;
 		} else {
-			// Check for cris-crossing case
-			return row == t1Row && col == t1Col;
+			return row - t1Row == 0 && Math.abs(col - t1Col) == 1;
 		}
 	}
 
