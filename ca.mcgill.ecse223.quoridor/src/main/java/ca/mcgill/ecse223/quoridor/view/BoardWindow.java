@@ -212,7 +212,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         // Get the grid to display correct info
 
-        this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
+        this.gridPanel.setWhitePlayer(QuoridorController.getWhitePlayer());
+        this.gridPanel.setBlackPlayer(QuoridorController.getBlackPlayer());
         this.gridPanel.setWhiteWalls(QuoridorController.getWhiteWallsOnBoard());
         this.gridPanel.setBlackWalls(QuoridorController.getBlackWallsOnBoard());
 
@@ -420,6 +421,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         wall = new TOWallCandidate(Orientation.HORIZONTAL, 3, 5);
 
         newBoardWindow.gridPanel.setWallCandidate(wall);
+        
+        JOptionPane.showMessageDialog(newBoardWindow, "Game has started");
 
     }
 }

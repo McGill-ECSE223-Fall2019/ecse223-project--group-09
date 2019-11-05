@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
+import ca.mcgill.ecse223.quoridor.controller.Color;
 import ca.mcgill.ecse223.quoridor.controller.InvalidInputException;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 
@@ -121,7 +122,6 @@ public class OpeningWindow extends JFrame {
 		try {
 			GameSetupDialog gameSetupDialog = new GameSetupDialog();
 			gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
-			BoardWindow.launchWindow();
 			final String namePlayer1;
 			final String namePlayer2;
 
@@ -139,19 +139,24 @@ public class OpeningWindow extends JFrame {
 				}
 			}
 
-			QuoridorController.createUsername(gameSetupDialog.getName()); //add the username to the list of users 
-			QuoridorController.selectUsername(gameSetupDialog.getName()); //select the username for the players
+			//TODO: Call the new game 
+			QuoridorController.createGame();// make a game
+			QuoridorController.createOrSelectUsername(namePlayer1, Color.WHITE); 
+			QuoridorController.createOrSelectUsername(namePlayer2, Color.BLACK);
+			QuoridorController.startNewGame();
+			QuoridorController.initiateBoard();
+
 			Time time = gameSetupDialog.getThinkingTime();
 			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
+			
+			
 
+			//TODO: more stuff about board, etc.
 			// Dispose the current window
 			this.dispose();
 
 			// Create the next window
 			BoardWindow.launchWindow();
-		}
-		catch (InvalidInputException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), "Error!", JOptionPane.ERROR_MESSAGE); 
 		}
 		catch (RuntimeException ex) {
 			SaveLoadPanel.displayThrowableTrace(this, ex);
