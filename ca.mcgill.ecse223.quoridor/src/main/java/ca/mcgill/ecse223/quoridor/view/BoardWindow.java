@@ -39,8 +39,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     private static final int UPDATE_DELAY = 350;
 
     // ***** Rendering State Variables *****
-    
-    public static TOWallCandidate wall;
+
     private final DefaultListModel<String> replayList = new DefaultListModel<>();
     private final Timer PLAYER_INFO_TIMER;
 
@@ -222,11 +221,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         // Enable/Disable buttons based on what the player can do
 
-        final boolean grabbed = true; // player == null ? false : player.hasWallInHand();
+        final boolean grabbed = player == null ? false : player.hasWallInHand();
         this.dropWall.setEnabled(grabbed);
         this.rotateWall.setEnabled(grabbed);
 
-        final boolean canGrab = true;// player == null ? false : player.canGrabWall();
+        final boolean canGrab = player == null ? false : player.canGrabWall();
         this.grabWallButton.setEnabled(canGrab);
     }
 
@@ -448,11 +447,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
-        
-        wall = new TOWallCandidate(Orientation.HORIZONTAL, 3, 5);
 
-        newBoardWindow.gridPanel.setWallCandidate(wall);
-        
         JOptionPane.showMessageDialog(newBoardWindow, "Game has started");
         QuoridorController.StartClock();
     }
