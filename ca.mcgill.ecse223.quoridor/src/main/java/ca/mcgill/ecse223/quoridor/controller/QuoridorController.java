@@ -205,7 +205,6 @@ public class QuoridorController {
 		And It shall be shown that this is White's turn
 		 */
 		
-<<<<<<< HEAD
 		//Given The game is ready to start
 		if(aGame.getGameStatus() == GameStatus.ReadyToStart){
 			
