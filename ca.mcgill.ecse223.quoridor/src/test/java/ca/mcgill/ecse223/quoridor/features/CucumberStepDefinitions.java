@@ -267,7 +267,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("White player chooses a username")
 	public void whitePlayerChoosesUsername() {
-		throw new PendingException();
+		QuoridorController.createOrSelectUsername("user test 1", Color.WHITE);
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("Black player chooses a username")
 	public void blackPlayerChoosesUsername() {
-		throw new PendingException();
+		QuoridorController.createOrSelectUsername("user test 2", Color.BLACK);
 	}
 
 	/**
@@ -283,7 +283,9 @@ public class CucumberStepDefinitions {
 	 */
 	@And("Total thinking time is set")
 	public void totalThinkingTimeSet() {
-		throw new PendingException();
+		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame(); 
+		Assert.assertNotNull(aNewGame.getWhitePlayer().getRemainingTime());
+		Assert.assertNotNull(aNewGame.getBlackPlayer().getRemainingTime());
 	}
 
 	/**

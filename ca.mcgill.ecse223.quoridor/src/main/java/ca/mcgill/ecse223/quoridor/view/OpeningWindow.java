@@ -146,6 +146,7 @@ public class OpeningWindow extends JFrame {
 			Time time = gameSetupDialog.getThinkingTime();
 			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
 
+			//TODO: more stuff about board, etc.
 			// Dispose the current window
 			this.dispose();
 
