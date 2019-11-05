@@ -335,13 +335,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
     	//rotateWall
     	double val = Math.abs(clicks);
-    	if(val > 0.150 && val < 0.25) {
+    	if(val > 0.8 && val < 1.2) {
   			QuoridorController.rotateWall(wallCandidate);
   			System.out.println("Rotated the wall candidate " );
   			this.repaint();
   			
     	}else{
-    		System.out.println("To rotate must be bigger than 0.15 and smaller than 0.25: " + Math.abs(clicks));	
+    		System.out.println("To rotate must be bigger than 0.8 and smaller than 1,2: " + Math.abs(clicks));	
     	}
     }
     
