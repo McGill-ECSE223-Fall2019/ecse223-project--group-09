@@ -49,20 +49,20 @@ public class CucumberStepDefinitions {
 	// ***********************************************
 	// Background step definitions
 	// ***********************************************
-	
+
 	private List<TOWall> wallStock;
 	private TOWall currentWall;
 	private TOWallCandidate wallCandidate;
-	
+
 	private WallMove currentMove;
-	
+
 	private boolean noMoreWallsFlag = false;
 	private boolean invalidPositionFlag = false;
-	
+
 	private boolean wallGrabbedFlag  = false;
-	
-	
-	
+
+
+
 	@Given("^The game is not running$")
 	public void theGameIsNotRunning() {
 		initQuoridorAndBoard();
@@ -128,10 +128,10 @@ public class CucumberStepDefinitions {
 		System.out.println();
 
 	}
-	
+
 
 	/**
-	 * @author Alixe Delabrousse (260868412) and Mohamed Mohamed 
+	 * @author Alixe Delabrousse (260868412) and Mohamed Mohamed
 	 */
 
 	@And("I do not have a wall in my hand")
@@ -142,26 +142,26 @@ public class CucumberStepDefinitions {
 		} catch (NoGrabbedWallException e) {
 			this.wallGrabbedFlag = false;
 		}
-		
+
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412) and Mohamed Mohamed
-	 * 
+	 *
 	 * @throws Throwable
 	 */
-	
+
 	@And("^I have a wall in my hand over the board$")
 	public void iHaveAWallInMyHandOverTheBoard() throws Throwable {
 
-			
+
 			this.wallCandidate = QuoridorController.getWallCandidate();
 			if (this.wallCandidate == null) {
 				QuoridorController.grabWall();
 				this.wallCandidate = QuoridorController.getWallCandidate();
 			}
 
-		
+
 		Assert.assertFalse(this.wallGrabbedFlag);
 		Assert.assertNotNull(QuoridorController.getCurrentGrabbedWall());
 
@@ -180,10 +180,10 @@ public class CucumberStepDefinitions {
 
 	/*
 	 * TODO Insert your missing step definitions here
-	 * 
+	 *
 	 * Call the methods of the controller that will manipulate the model once they
 	 * are implemented
-	 * 
+	 *
 	 */
 
 	// ***** InitializeBoard.feature *****
@@ -283,7 +283,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("Total thinking time is set")
 	public void totalThinkingTimeSet() {
-		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame(); 
+		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame();
 		Assert.assertNotNull(aNewGame.getWhitePlayer().getRemainingTime());
 		Assert.assertNotNull(aNewGame.getBlackPlayer().getRemainingTime());
 	}
@@ -346,7 +346,7 @@ public class CucumberStepDefinitions {
 
 	@Given("Next player to set user name is {string}")
 	public void nextPlayerToSetUserNameIsColor(String color) {
-		this.color = Color.valueOf(color.toUpperCase()); 
+		this.color = Color.valueOf(color.toUpperCase());
 	}
 
 	/**
@@ -357,7 +357,7 @@ public class CucumberStepDefinitions {
 	@And("There is existing user {string}")
 	public void existingUser(String user) {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		quoridor.addUser(user); //check user is there 
+		quoridor.addUser(user); //check user is there
 		Assert.assertTrue(QuoridorController.usernameExists(user));
 	}
 
@@ -377,8 +377,8 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The name of player {string} in the new game shall be {string}")
 	public void nameOfPlayerInNewGameShallBeUsername(String color, String user) {
-		TOPlayer aPlayer = QuoridorController.getPlayerByColor(Color.valueOf(color.toUpperCase()));		
-		Assert.assertEquals(aPlayer.getUsername(), user); 
+		TOPlayer aPlayer = QuoridorController.getPlayerByColor(Color.valueOf(color.toUpperCase()));
+		Assert.assertEquals(aPlayer.getUsername(), user);
 
 	}
 
@@ -393,7 +393,7 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(QuoridorController.usernameExists(user));
 	}
 
-	boolean ExceptionThrown = false; 
+	boolean ExceptionThrown = false;
 
 	/**
 	 * @param String user;
@@ -401,43 +401,43 @@ public class CucumberStepDefinitions {
 	 * @throws InvalidInputException
 	 */
 	@When("The player provides new user name: {string}")
-	public void playerProvidesNewUserName(String user) { 
+	public void playerProvidesNewUserName(String user) {
 		try {
-			this.ExceptionThrown = false; 
+			this.ExceptionThrown = false;
 			QuoridorController.createNewUsername(user, this.color);
 		}
 		catch (Exception e) {
-			this.ExceptionThrown = true; 
-		}		
+			this.ExceptionThrown = true;
+		}
 	}
 
 	// user name already exists
 
 	/**
-	 * @param String user; 
+	 * @param String user;
 	 * @author Ada Andrei
 	 * @throws InvalidInputException
 	 */
-	
-	@Then("The player shall be warned that {string} already exists") 
+
+	@Then("The player shall be warned that {string} already exists")
 	public void playerShallBeWarnedThatUsernameAlreadyExists(String user) {//throws InvalidInputException {
-		Assert.assertTrue(this.ExceptionThrown); 
+		Assert.assertTrue(this.ExceptionThrown);
 	}
-	
+
 	/**
 	*@author Ada Andrei
 	*/
 	@And("Next player to set user name shall be {string}")
 	public void nextPlayerToSetUserNameShallBe(String color) {
-		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame(); 
-		if (color.equalsIgnoreCase("WHITE")) {		
-			Assert.assertFalse(aNewGame.hasWhitePlayer()); 
+		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame();
+		if (color.equalsIgnoreCase("WHITE")) {
+			Assert.assertFalse(aNewGame.hasWhitePlayer());
 		}
 		else if (color.equalsIgnoreCase("BLACK")) {
 			Assert.assertFalse(aNewGame.hasBlackPlayer());
 		}
 	}
-	
+
 	// ***** SetTotalThinkingTime.feature *****
 
 	/**
@@ -447,12 +447,12 @@ public class CucumberStepDefinitions {
 	*/
 	@When("{int}:{int} is set as the thinking time")
 	public void setAsThinkingTime(int mins, int secs) {
-		QuoridorController.setTime(mins, secs); 
+		QuoridorController.setTime(mins, secs);
 	}
 
 	/**
 	*@param int mins;
-	*@param int secs; 
+	*@param int secs;
 	*@author Ada Andrei
 	*/
 	@Then("Both players shall have {int}:{int} remaining time left")
@@ -468,7 +468,7 @@ public class CucumberStepDefinitions {
 
 	}
 
-	
+
 	// ***** SavePosition.feature *****
 
 	private String fileName;
@@ -543,7 +543,7 @@ public class CucumberStepDefinitions {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
 	}
-	
+
 	/**
 	 * @param filename Name of file
 	 * @author Paul Teng (260862906)
@@ -556,7 +556,7 @@ public class CucumberStepDefinitions {
 		// Actual file-updated check
 		Assert.assertTrue(this.fileOverwriteFlag);
 	}
-	
+
 	/**
 	 * @author Paul Teng (260862906)
 	 */
@@ -569,7 +569,7 @@ public class CucumberStepDefinitions {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
 	}
-	
+
 	/**
 	 * @param filename Name of file
 	 * @author Paul Teng (260862906)
@@ -582,7 +582,7 @@ public class CucumberStepDefinitions {
 		// Actual file-updated check
 		Assert.assertFalse(this.fileOverwriteFlag);
 	}
-	
+
 	// ***** LoadPosition.feature *****
 
 	private boolean positionValidFlag;
@@ -684,7 +684,7 @@ public class CucumberStepDefinitions {
 	public void positionToLoadIsInvalid() {
 		Assert.assertFalse(this.positionValidFlag);
 	}
-	
+
 	/**
 	 * @author Paul Teng (260862906)
 	 */
@@ -692,32 +692,32 @@ public class CucumberStepDefinitions {
 	public void loadReturns() {
 		Assert.assertFalse(this.positionValidFlag);
 	}
-	
-	
-	
-	
+
+
+
+
 	// ***** GrabWall.feature *****
-	
+
 		//Start wall placement
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 */
 	@Given("I have more walls on stock")
 	public void moreWallsOnStock() {
-		
+
 			this.player = QuoridorController.getPlayerOfCurrentTurn();
 			Assert.assertTrue(this.player.getWallsRemaining() != 0);
 			this.wallStock = QuoridorController.getRemainingWallsOfCurrentPlayer();
 			this.currentWall = this.wallStock.get(this.player.getWallsRemaining()-1);
 			this.wallCandidate = new TOWallCandidate(QuoridorController.INITIAL_TO_ORIENTATION, QuoridorController.INITIAL_ROW,QuoridorController.INITIAL_COLUMN);
-			
+
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 */
-	
+
 	@When("I try to grab a wall from my stock")
 	public void playerTryToGrabWall() {
 		try{
@@ -727,44 +727,44 @@ public class CucumberStepDefinitions {
 			this.currentWall = null;
 			this.wallCandidate= null;
 		}
-		
+
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse
 	 * @param currentGrabbedWall
 	 */
-	
+
 	@Then("A wall move candidate shall be created at initial position")
 	public void createNewWallMoveCandidate() {
-		
+
 		this.wallCandidate = QuoridorController.getWallCandidate();
 		Assert.assertNotNull(this.wallCandidate);
 
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412) & Mohamed Mohamed (260855731)
 	 */
-	
+
 	@And("I shall have a wall in my hand over the board")
 	public void wallOverBoard() {
-		
+
 		Assert.assertFalse(this.noMoreWallsFlag);
 		Assert.assertNotNull(this.currentWall);
-		
+
 	}
 
 	/**
-	 * 
+	 *
 	 * @author Alixe Delabrousse (260868412)
-	 * 
+	 *
 	 */
 	@And("The wall in my hand shall disappear from my stock")
 	public void removeWallFromStock() {
 		Assert.assertFalse(this.wallStock.contains(this.currentWall));
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 */
@@ -773,11 +773,11 @@ public class CucumberStepDefinitions {
 
 		this.player = QuoridorController.getPlayerOfCurrentTurn();
 		this.player.setWallsRemaining(0);
-		
+
 		Assert.assertTrue(this.player.getWallsRemaining() == 0);
 		this.noMoreWallsFlag = true;
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 */
@@ -785,62 +785,62 @@ public class CucumberStepDefinitions {
 	public void notifNoMoreWalls() {
 		Assert.assertTrue(this.noMoreWallsFlag);
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412)
-	 * 
+	 *
 	 */
 	@But("I shall have no walls in my hand")
 	public void noWallInHand() {
-		
+
 		Assert.assertFalse(this.wallGrabbedFlag);
 	}
-	
 
-	
+
+
 	// ***** MoveWall.feature *****
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412) & Mohamed Mohamed (260855731)
 	 */
 	@Given("A wall move candidate exists with {string} at position \\({int}, {int})")
 	public void wallCandidateExists(String direction, int row, int column) {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
-		
+
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
-		
+
 		this.currentMove = quoridor.getCurrentGame().getWallMoveCandidate();
-		
+
 		int aRow = (9 - row);// we invert the row because in the controller, the rows
 							// were numbered from bottom to top, unlike the Gherkin scenarios
-		
+
 		Tile targetTile = QuoridorController.getTileFromRowAndColumn(aRow, column);
-		
+
 		this.currentMove.setTargetTile(targetTile);
-		
+
 		this.wallCandidate = QuoridorController.getWallCandidate();
 		this.wallCandidate.setOrientation(orientation);			//
 		this.wallCandidate.setColumn(column);					// this is of the rotate wall test to pass
 		this.wallCandidate.setRow(aRow);						//
-		
+
 		//we have to create the precondition
-		
+
 		this.currentWall = QuoridorController.getCurrentGrabbedWall();
 		this.currentWall.setOrientation(orientation);
 		this.currentWall.setColumn(column);
 		this.currentWall.setRow(aRow);
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @author Alixe Delabrousse (260868412)
-	 * 
+	 *
 	 * @param wallCandidate
 	 */
 	@And("The wall candidate is not at the {string} edge of the board")
 	public void wallCandidateNotOnEdge(String side) {
-		
+
 		if (side.equals("up")) {
 			Assert.assertTrue(this.wallCandidate.getRow() != 9);
 		} else if (side.equals("down")) {
@@ -850,73 +850,73 @@ public class CucumberStepDefinitions {
 		} else if (side.equals("right")) {
 			Assert.assertTrue(this.wallCandidate.getColumn() != 9);
 		}
-	
+
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412)
 	 */
 	@When("I try to move the wall {string}")
 	public void attemptToMoveWall(String side) {
-		
+
 		try {
 			this.wallCandidate = QuoridorController.moveWall(side);
 		} catch (InvalidPositionException e) {
 			this.invalidPositionFlag = true;
 		}
-		
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @author Alixe Delabrousse (260868412)
-	 * 
+	 *
 	 * @param row
 	 * @param column
 	 */
 	@Then("The wall shall be moved over the board to position \\({int}, {int})")
 	public void wallMoving(int row, int column) {
-		
+
 		int aRow= (9 - row);
-		
-		
+
+
 		this.currentWall.setRow(aRow);
 		this.currentWall.setColumn(column);
-		
-	
+
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @author Alixe Delabrousse (260868412) & Mohamed Mohamed (260855731)
-	 * 
+	 *
 	 * @param direction
 	 * @param nrow
 	 * @param ncolumn
 	 */
-	
+
 	@And("A wall move candidate shall exist with {string} at position \\({int}, {int})")
 	public void newWallCandidate(String direction, int row, int col) {
-		
+
 		Orientation orientation = Orientation.valueOf(direction.toUpperCase());
-		
+
 		int aRow = (9 - row);
-		
-		
+
+
 		this.wallCandidate.setOrientation(orientation);
 		this.wallCandidate.setRow(aRow);
 		this.wallCandidate.setColumn(col);
 	}
-	
+
 	/**
 	 * @author Alixe Delabrousse (260868412)
-	 * 
-	 * 
+	 *
+	 *
 	 */
-	
+
 	@And("The wall candidate is at the {string} edge of the board")
 	public void wallCandidateAtEdge(String side) {
-	
+
 			if (side.equals("up")) {
 				this.wallCandidate.setRow(8);
 			} else if (side.equals("down")) {
@@ -927,26 +927,26 @@ public class CucumberStepDefinitions {
 				this.wallCandidate.setColumn(8);
 			}
 	}
-	
+
 	/**
 	 * @author alixe delabrousse (260868412) & mohamed mohamed (260855731)
 	 */
-	
+
 	@Then("I shall be notified that my move is illegal")
 	public void notifIllegalMove() {
-		
+
 		Assert.assertTrue(this.invalidPositionFlag);
-	
+
 	}
 
 
 	// ***** RotateWall feature ***** @Author Mohamed Mohamed
-	
-		//background feature is already written 
+
+		//background feature is already written
 		//given clause already implemented
 		//then clause implemented
-	
-		
+
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
@@ -955,7 +955,7 @@ public class CucumberStepDefinitions {
 		QuoridorController.rotateWall(this.wallCandidate);
 		//this method will do the rotate wall method on a wall candidate that will do the following -->
 	}
-	
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
@@ -964,40 +964,40 @@ public class CucumberStepDefinitions {
 		//checking if the wall actually got rotated to newdir
 		Orientation newDir=Orientation.valueOf(newdir.toUpperCase());//constructor takes an Orientation enum so the conversion is necessary
 		Assert.assertTrue(this.wallCandidate.getOrientation()==newDir);
-		
+
 	}
-		
-	
-	
+
+
+
 	// ***** DropWall feature ***** @Author Mohamed Mohamed
-	
-			//background feature is already written 
-	
-	
+
+			//background feature is already written
+
+
 	private TOPlayer player=null; //will be used to switch current player
 	boolean tester=false;
-	
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
 	@Given("The wall move candidate with {string} at position \\({int}, {int}) is valid")
 	public void wallMoveCandidateIsValid(String direction, int row, int col) {
-		
+
 		this.wallCandidate=new TOWallCandidate(Orientation.valueOf(direction.toUpperCase()), row, col);
 		this.wallCandidate.setValidity(true);
 		this.currentWall=wallCandidate.getAssociatedWall(); //for testing that i still have it
-		
+
 		//now check if the position is valid
 		boolean isValid= QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
 		Assert.assertTrue(isValid);//if valid it will be true
 		player=new TOPlayer();
 		this.player.setColor(QuoridorController.getPlayerOfCurrentTurn().getColor());
-			
+
 	}
-	
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
-	 */	
+	 */
 	@When("I release the wall in my hand")
 	public void realeaseWall() {
 		//calling the method drop wall that should drop the wall by removing the wall form hand and registering the position
@@ -1006,7 +1006,7 @@ public class CucumberStepDefinitions {
 		this.currentWall=wallCandidate.getAssociatedWall();
 
 	}
-		
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 * @param dir Dir is a string that indicates the direction of the wall
@@ -1017,9 +1017,9 @@ public class CucumberStepDefinitions {
 	public void aWallIsRegisteredAt(String dir, int row , int col){
 	//	check if a wall exists at the given information //implemented by the drop wall method
 		Assert.assertTrue(QuoridorController.checkLastWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));
-		
+
 	}
-	
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
@@ -1027,16 +1027,16 @@ public class CucumberStepDefinitions {
 	public void removeWallFromHand() {
 		Assert.assertFalse(QuoridorController.getPlayerOfCurrentTurn().hasWallInHand());//check if the player has a wall or not
 	}
-	
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
 	@And("My move shall be completed")
 	public void CompleteMove() {
 	Assert.assertTrue(tester);
-	
+
 	}
-		
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
@@ -1055,7 +1055,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("The wall move candidate with {string} at position \\({int}, {int}) is invalid")
 	public void wallMoveCandidateIsInvalid(String direction, int row, int col) {
-		
+
 		this.wallCandidate=new TOWallCandidate(Orientation.valueOf(direction.toUpperCase()), row, col);
 		this.wallCandidate.setValidity(false);
 		this.currentWall=wallCandidate.getAssociatedWall();
@@ -1063,9 +1063,9 @@ public class CucumberStepDefinitions {
 		boolean isValid=QuoridorController.validateWallPlacement(row, col, Orientation.valueOf(direction.toUpperCase()));
 		Assert.assertFalse(isValid);//should be false since there is no move available
 		player=QuoridorController.getPlayerOfCurrentTurn();
-		
+
 	}
-    
+
 	/**
 	 * @author Mohamed Mohamed (260855731)
 	 */
@@ -1074,10 +1074,10 @@ public class CucumberStepDefinitions {
     	//UI implemented method that will tell the user that he can't place the wall there
         //if it's an invalid move than the boolean should return a false to indicate to the
     	//ui that i have to give a message to the user.
-    	
+
     	Assert.assertFalse(tester); //tester must be false bc drop wont allow it
     	//Assert.assertFalse(QuoridorController.dropWall(this.wallCandidate.getAssociatedWall()));;
-        
+
     }
 
     /**
@@ -1085,7 +1085,7 @@ public class CucumberStepDefinitions {
 	 */
     @And("It shall be my turn to move")
     public void continueMove() {
-    	
+
     	Assert.assertTrue(this.player.getColor().equals(QuoridorController.getPlayerOfCurrentTurn().getColor()) );//condition should be true
     }
 
@@ -1094,13 +1094,13 @@ public class CucumberStepDefinitions {
 	 */
     @But("No wall move shall be registered with {string} at position \\({int}, {int})")
     public void unregisteredWallMove(String dir, int row, int col){
-    	Assert.assertFalse(QuoridorController.checkLastWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));  
+    	Assert.assertFalse(QuoridorController.checkLastWallMove(row, col, Orientation.valueOf(dir.toUpperCase())));
     }
-	
-	
-	
-	
-	
+
+
+
+
+
 	// ***** ValidatePosition.feature *****
 
 	private boolean positionValidityFlag;
@@ -1254,7 +1254,85 @@ public class CucumberStepDefinitions {
 		Assert.assertNotNull(player);
 		Assert.assertEquals(Color.valueOf(playerColor.toUpperCase()), player.getColor());
 	}
-	
+
+	// ***** JumpPawn.feature *****
+
+	/**
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 *
+	 * @author Group-9
+	 */
+	@And("The player is located at {int}:{int}")
+	public void playerIsLocatedAt(int row, int col) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 *
+	 * @author Group-9
+	 */
+	@And("The opponent is located at {int}:{int}")
+	public void opponentIsLocatedAt(int row, int col) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param direction Direction of the wall
+	 * @param side Side relative to the player
+	 *
+	 * @author Group-9
+	 */
+	@And("There are no {string} walls {string} from the player nearby")
+	public void noWallsFromPlayerNearby(String direction, String side) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param color Color of the player
+	 * @param side Side player is moving
+	 *
+	 * @author Group-9
+	 */
+	@When("Player {string} initiates to move {string}")
+	public void playerInitiatesToMove(String color, String side) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param side Side of movement
+	 * @param status "success" or "illegal"
+	 *
+	 * @author Group-9
+	 */
+	@Then("The move {string} shall be {string}")
+	public void theMoveShallBe(String side, String status) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 *
+	 * @author Group-9
+	 */
+	@And("Player's new position shall be {int}:{int}")
+	public void newPositionOfPlayerShallBe(int row, int col) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param playerColor color of player
+	 * 
+	 * @author Group-9
+	 */
+	@And("The next player to move shall become {string}")
+	public void nextPlayerToMoveShallBecome(String playerColor) {
+		throw new PendingException();
+	}
+
 	// ***********************************************
 	// Clean up
 	// ***********************************************
@@ -1311,7 +1389,7 @@ public class CucumberStepDefinitions {
 		 * |x->    <-x|
 		 * |          |
 		 * |__________|
-		 * 
+		 *
 		 */
 		//@formatter:on
 		Player player1 = new Player(new Time(thinkingTime), user1, 9, Direction.Horizontal);
@@ -1326,11 +1404,11 @@ public class CucumberStepDefinitions {
 				new Wall(i * 10 + j, players[i]);
 			}
 		}
-		
+
 		ArrayList<Player> playersList = new ArrayList<Player>();
 		playersList.add(player1);
 		playersList.add(player2);
-		
+
 		return playersList;
 	}
 
@@ -1340,7 +1418,7 @@ public class CucumberStepDefinitions {
 		// positions
 		Tile player1StartPos = quoridor.getBoard().getTile(4);
 		Tile player2StartPos = quoridor.getBoard().getTile(76);
-		
+
 		Game game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
 		game.setWhitePlayer(players.get(0));
 		game.setBlackPlayer(players.get(1));
