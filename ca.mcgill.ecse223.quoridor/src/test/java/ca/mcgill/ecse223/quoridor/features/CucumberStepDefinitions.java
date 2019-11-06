@@ -1325,11 +1325,23 @@ public class CucumberStepDefinitions {
 
 	/**
 	 * @param playerColor color of player
-	 * 
+	 *
 	 * @author Group-9
 	 */
 	@And("The next player to move shall become {string}")
 	public void nextPlayerToMoveShallBecome(String playerColor) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param direction Direction of the wall
+	 * @param row Row in wall coordinates
+	 * @param col Column in wall coordinates
+	 *
+	 * @author Group-9
+	 */
+	@And("There is a {string} wall at {int}:{int}")
+	public void thereIsWallAt(String direction, int row, int col) {
 		throw new PendingException();
 	}
 
