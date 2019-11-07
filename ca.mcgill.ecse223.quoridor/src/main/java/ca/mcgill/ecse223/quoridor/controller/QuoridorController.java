@@ -1335,7 +1335,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Group 9
 	 */
-	private static boolean validatePawnPlacement(GamePosition gpos, final int row, final int col) {
+	/* package */ static boolean validatePawnPlacement(GamePosition gpos, final int row, final int col) {
 		// Position must be on the board for it to be potentially valid
 		if (!isValidPawnCoordinate(row, col)) {
 			return false;
@@ -1983,7 +1983,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Paul Teng (260862906)
 	 */
-	private static boolean anyWallAboveTile(GamePosition gamePos, final int row, final int col) {
+	/* package */ static boolean anyWallAboveTile(GamePosition gamePos, final int row, final int col) {
 		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
 			if (wallIsAboveTile(w, row, col)) {
 				return true;
@@ -2052,7 +2052,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Paul Teng (260862906)
 	 */
-	private static boolean anyWallBelowTile(GamePosition gamePos, final int row, final int col) {
+	/* package */ static boolean anyWallBelowTile(GamePosition gamePos, final int row, final int col) {
 		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
 			if (wallIsBelowTile(w, row, col)) {
 				return true;
@@ -2132,7 +2132,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Paul Teng (260862906)
 	 */
-	private static boolean anyWallRightOfTile(GamePosition gamePos, final int row, final int col) {
+	/* package */ static boolean anyWallRightOfTile(GamePosition gamePos, final int row, final int col) {
 		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
 			if (wallIsRightOfTile(w, row, col)) {
 				return true;
@@ -2201,7 +2201,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Paul Teng (260862906)
 	 */
-	private static boolean anyWallLeftOfTile(GamePosition gamePos, final int row, final int col) {
+	/* package */ static boolean anyWallLeftOfTile(GamePosition gamePos, final int row, final int col) {
 		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
 			if (wallIsLeftOfTile(w, row, col)) {
 				return true;
