@@ -1345,6 +1345,39 @@ public class CucumberStepDefinitions {
 		throw new PendingException();
 	}
 
+	// ***** MovePawn.feature *****
+
+	/**
+	 * @param side Side
+	 *
+	 * @author Group-9
+	 */
+	@And("My opponent is not {string} from the player")
+	public void myOpponentIsNotFromThePlayer(String side) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param direction Direction of wall
+	 * @param side Side relative to player
+	 *
+	 * @author Group-9
+	 */
+	@And("There are no {string} walls {string} from the player")
+	public void thereAreNoWallsFromThePlayer(String direction, String side) {
+		throw new PendingException();
+	}
+
+	/**
+	 * @param side Side
+	 *
+	 * @author Group-9
+	 */
+	@And("The opponent is not {string} from the player")
+	public void theOpponentIsNotFromThePlayer(String side) {
+		throw new PendingException();
+	}
+
 	// ***********************************************
 	// Clean up
 	// ***********************************************
