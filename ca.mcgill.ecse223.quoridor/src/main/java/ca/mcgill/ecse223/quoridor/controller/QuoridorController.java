@@ -1864,31 +1864,6 @@ public static TOWall grabWall() {
 	}
 
 	/**
-	 * See this simplified board:
-	 *
-	 *   +---+---+   +---+---+
-	 * 2 |   |   | 2 |   |   | Y IS INVERTED
-	 *   +[>====]+   +[>====]+ where @ is the tile, [>====] is the wall
-	 * 1 | @ |   | 1 |   | @ |
-	 *   +---+---+   +---+---+
-	 *     1   2       1   2
-	 *    [fig.1]     [fig.2]
-	 *
-	 * Only these two scenarios will return true
-	 *
-	 * @param wall A wall that is potentially above a tile
-	 * @param tile A tile that potentially has the specific wall above it
-	 * @return true if wall is above tile, false otherwise
-	 *
-	 * @see QuoridorController#wallIsBelowTile(Wall, Tile) wallsIsBelowTile
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	private static boolean wallIsAboveTile(Wall wall, Tile tile) {
-		return wallIsAboveTile(wall, tile.getRow(), tile.getColumn());
-	}
-
-	/**
 	 * Checks to see if there is a wall above the tile
 	 * 
 	 * @param wall A wall that is potentially above the tile
@@ -1962,20 +1937,6 @@ public static TOWall grabWall() {
 
 		final GamePosition gpos = quoridor.getCurrentGame().getCurrentPosition();
 		return anyWallAboveTile(gpos, row, col);
-	}
-
-	/**
-	 *
-	 * @param wall A wall that is potentially below a tile
-	 * @param tile A tile that potentially has the specific wall below it
-	 * @return true if wall is below tile, false otherwise
-	 *
-	 * @see QuoridorController#wallIsAboveTile(Wall, Tile) wallsIsAboveTile
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	private static boolean wallIsBelowTile(Wall wall, Tile tile) {
-		return wallIsBelowTile(wall, tile.getRow(), tile.getColumn());
 	}
 
 	/**
@@ -2053,30 +2014,6 @@ public static TOWall grabWall() {
 	}
 
 	/**
-	 * See this simplified board:
-	 *
-	 *   +---+    +---+
-	 * 2 |   -  2 | @ -
-	 *   +---v    +---v where @ is the tile, | > | is the wall
-	 * 1 | @ -  1 |   -
-	 *   +---+    +---+
-	 *  [fig.1]  [fig.2]
-	 *
-	 * Only these two scenarios will return true
-	 *
-	 * @param wall A wall that is potentially on the right of a tile
-	 * @param tile A tile that potentially has the specific wall on the right of it
-	 * @return true if wall is on the right side of tile, false otherwise
-	 *
-	 * @see QuoridorController#wallIsLeftOfTile(Wall, Tile) wallsIsLeftOfTile
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	private static boolean wallIsRightOfTile(Wall wall, Tile tile) {
-		return wallIsRightOfTile(wall, tile.getRow(), tile.getColumn());
-	}
-
-	/**
 	 * Checks to see if there is a wall on the right of the tile
 	 *
 	 * @param wall A wall that is potentially on the right of the tile
@@ -2149,20 +2086,6 @@ public static TOWall grabWall() {
 
 		final GamePosition gpos = quoridor.getCurrentGame().getCurrentPosition();
 		return anyWallRightOfTile(gpos, row, col);
-	}
-
-	/**
-	 *
-	 * @param wall A wall that is potentially on the left of a tile
-	 * @param tile A tile that potentially has the specific wall on the left of it
-	 * @return true if wall is on the left side of tile, false otherwise
-	 *
-	 * @see QuoridorController#wallIsRightOfTile(Wall, Tile) wallIsRightOfTile
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	private static boolean wallIsLeftOfTile(Wall wall, Tile tile) {
-		return wallIsLeftOfTile(wall, tile.getRow(), tile.getColumn());
 	}
 
 	/**
