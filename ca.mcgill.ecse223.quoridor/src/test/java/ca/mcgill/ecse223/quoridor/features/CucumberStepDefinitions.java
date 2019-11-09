@@ -6,7 +6,6 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.junit.Assert;
 
@@ -1258,124 +1257,85 @@ public class CucumberStepDefinitions {
 	// ***** JumpPawn.feature *****
 
 	/**
-	 * @param row Row in pawn coordinates
-	 * @param col Column in pawn coordinates
-	 *
-	 * @author Group-9
-	 */
-	@And("The player is located at {int}:{int}")
-	public void playerIsLocatedAt(int row, int col) {
-		throw new PendingException();
-	}
-
-	/**
-	 * @param row Row in pawn coordinates
-	 * @param col Column in pawn coordinates
-	 *
-	 * @author Group-9
-	 */
-	@And("The opponent is located at {int}:{int}")
-	public void opponentIsLocatedAt(int row, int col) {
-		throw new PendingException();
-	}
-
-	/**
 	 * @param direction Direction of the wall
 	 * @param side Side relative to the player
 	 *
-	 * @author Group-9
+	 * @author Paul Teng (260862906)
 	 */
 	@And("There are no {string} walls {string} from the player nearby")
 	public void noWallsFromPlayerNearby(String direction, String side) {
-		throw new PendingException();
+		noWallsFromPlayerHelper(direction, side);
 	}
 
 	/**
-	 * @param color Color of the player
-	 * @param side Side player is moving
+	 * A helper tester(?) because there are two clauses that do the exact same thing
 	 *
-	 * @author Group-9
-	 */
-	@When("Player {string} initiates to move {string}")
-	public void playerInitiatesToMove(String color, String side) {
-		throw new PendingException();
-	}
-
-	/**
-	 * @param side Side of movement
-	 * @param status "success" or "illegal"
-	 *
-	 * @author Group-9
-	 */
-	@Then("The move {string} shall be {string}")
-	public void theMoveShallBe(String side, String status) {
-		throw new PendingException();
-	}
-
-	/**
-	 * @param row Row in pawn coordinates
-	 * @param col Column in pawn coordinates
-	 *
-	 * @author Group-9
-	 */
-	@And("Player's new position shall be {int}:{int}")
-	public void newPositionOfPlayerShallBe(int row, int col) {
-		throw new PendingException();
-	}
-
-	/**
-	 * @param playerColor color of player
-	 *
-	 * @author Group-9
-	 */
-	@And("The next player to move shall become {string}")
-	public void nextPlayerToMoveShallBecome(String playerColor) {
-		throw new PendingException();
-	}
-
-	/**
 	 * @param direction Direction of the wall
-	 * @param row Row in wall coordinates
-	 * @param col Column in wall coordinates
+	 * @param side Side relative to the player
 	 *
-	 * @author Group-9
+	 * @author Paul Teng (260862906)
 	 */
-	@And("There is a {string} wall at {int}:{int}")
-	public void thereIsWallAt(String direction, int row, int col) {
-		throw new PendingException();
+	private void noWallsFromPlayerHelper(String direction, String side) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		final GamePosition gpos = quoridor.getCurrentGame().getCurrentPosition();
+
+		final Tile pos;
+		if (gpos.getPlayerToMove().hasGameAsWhite()) {
+			pos = gpos.getWhitePosition().getTile();
+		} else {
+			pos = gpos.getBlackPosition().getTile();
+		}
+
+		// Note: In the controller and the view, up is defined as increasing in rows
+		// which is the opposite from the tester. Same thing with down.
+		//
+		// which is why the code calls the method with opposite Y-direction!
+
+		switch (side) {
+			case "left":
+				Assert.assertFalse(QuoridorController.anyWallLeftOfTile(pos.getRow(), pos.getColumn()));
+				break;
+			case "right":
+				Assert.assertFalse(QuoridorController.anyWallRightOfTile(pos.getRow(), pos.getColumn()));
+				break;
+			case "up":
+				Assert.assertFalse(QuoridorController.anyWallBelowTile(pos.getRow(), pos.getColumn()));
+				break;
+			case "down":
+				Assert.assertFalse(QuoridorController.anyWallAboveTile(pos.getRow(), pos.getColumn()));
+				break;
+			case "upright":
+				Assert.assertFalse(QuoridorController.anyWallBelowTile(pos.getRow(), pos.getColumn())
+						&& QuoridorController.anyWallRightOfTile(pos.getRow(), pos.getColumn()));
+				break;
+			case "downright":
+				Assert.assertFalse(QuoridorController.anyWallAboveTile(pos.getRow(), pos.getColumn())
+						&& QuoridorController.anyWallRightOfTile(pos.getRow(), pos.getColumn()));
+				break;
+			case "upleft":
+				Assert.assertFalse(QuoridorController.anyWallBelowTile(pos.getRow(), pos.getColumn())
+						&& QuoridorController.anyWallLeftOfTile(pos.getRow(), pos.getColumn()));
+				break;
+			case "downleft":
+				Assert.assertFalse(QuoridorController.anyWallAboveTile(pos.getRow(), pos.getColumn())
+						&& QuoridorController.anyWallLeftOfTile(pos.getRow(), pos.getColumn()));
+				break;
+			default:
+				throw new AssertionError("Unknown side: " + side);
+		}
 	}
 
 	// ***** MovePawn.feature *****
 
 	/**
-	 * @param side Side
-	 *
-	 * @author Group-9
-	 */
-	@And("My opponent is not {string} from the player")
-	public void myOpponentIsNotFromThePlayer(String side) {
-		throw new PendingException();
-	}
-
-	/**
 	 * @param direction Direction of wall
 	 * @param side Side relative to player
 	 *
-	 * @author Group-9
+	 * @author Paul Teng (260862906)
 	 */
 	@And("There are no {string} walls {string} from the player")
 	public void thereAreNoWallsFromThePlayer(String direction, String side) {
-		throw new PendingException();
-	}
-
-	/**
-	 * @param side Side
-	 *
-	 * @author Group-9
-	 */
-	@And("The opponent is not {string} from the player")
-	public void theOpponentIsNotFromThePlayer(String side) {
-		throw new PendingException();
+		noWallsFromPlayerHelper(direction, side);
 	}
 
 	// ***********************************************

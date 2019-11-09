@@ -1841,80 +1841,26 @@ public static TOWall grabWall() {
 	}
 
 	/**
-	 * Tries to play a pawn move:
-	 * Tries to play a {@link QuoridorController#tryPlayStepMove(int, int, Player, Tile, GamePosition) step move} first.
-	 * If failed, tries to play a  {@link QuoridorController#tryPlayJumpMove(int, int, Player, Tile, GamePosition) jump move}
-	 * 
-	 * @param moveNumber Move number of the move
-	 * @param roundNumber Round number of the move
-	 * @param currentPlayer Player of the move
-	 * @param target Tile of the move
-	 * @param gamePos holds pre-state of move, will hold post-state of move
-	 * @return A move instance of move is legal, null if move is illegal
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static Move tryPlayPawnMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
-		final Move move = tryPlayStepMove(moveNumber, roundNumber, currentPlayer, target, gamePos);
-		if (move != null) {
-			return move;
-			}
-
-		return tryPlayJumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos);
-	}
-
-	/**
-	 * Tries to play a step move onto a game position
+	 * Plays a step move onto a game position regardless if the move is legal or not
 	 *
-	 * @param moveNumber Move number of the move
-	 * @param roundNumber Round number of the move
+	 * @param moveNumber    Move number of the move
+	 * @param roundNumber   Round number of the move
 	 * @param currentPlayer Player of the move
-	 * @param target Tile of the move
-	 * @param gamePos holds pre-state of move, will hold post-state of move
-	 * @return A StepMove instance of move is legal, null if move is illegal
-	 * 
+	 * @param target        Tile of the move
+	 * @param gamePos       holds pre-state of move, will hold post-state of move
+	 * @return A StepMove instance of the move
+	 *
 	 * @author Paul Teng (260862906)
 	 */
-	private static StepMove tryPlayStepMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
-		final int row = target.getRow();
-		final int col = target.getColumn();
-		if (!validatePawnPlacement(gamePos, row, col)) {
-			// If the tile is already occupied, then, obviously, the move cannot be completed
-			return null;
-		}
-
-		final boolean playerHasWhitePawn = currentPlayer.hasGameAsWhite();
-		final PlayerPosition playerPos;
-		if (playerHasWhitePawn) {
-			playerPos = gamePos.getWhitePosition();
-		} else {
-			playerPos = gamePos.getBlackPosition();
-		}
-
-		// Valid movement for a step (not jumps) must be one of
-		// (x+1, y), (x-1, y), (x, y+1), (x, y-1) where x = row, y = column
-		final Tile currentPos = playerPos.getTile();
-		final int deltaRow = row - currentPos.getRow();
-		final int deltaCol = col - currentPos.getColumn();
-		if (1 != Math.abs(deltaRow) + Math.abs(deltaCol)) {
-			// sum of the movement distances in rows and columns do not add up to 1
-			// move cannot be completed because player tried moving too much
-			return null;
-		}
-
-		// Finally, player cannot be moving stepping through walls
-		if (isWallBlockingMovementFromTile(deltaRow, deltaCol, currentPos, gamePos)) {
-			return null;
-		}
-
-		if (playerHasWhitePawn) {
+	/* package */ static StepMove forcePlayStepMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target,
+			GamePosition gamePos) {
+		if (currentPlayer.hasGameAsWhite()) {
 			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
 		} else {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
 		}
 
-		final StepMove move = new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
-		return move;
+		return new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
 	}
 
 	/**
@@ -2000,6 +1946,25 @@ public static TOWall grabWall() {
 	}
 
 	/**
+	 * Checks if any wall is above a particular tile in the current board configuration
+	 *
+	 * @param row     Row in pawn coordinates
+	 * @param col     Column in pawn coordinates
+	 * @return true if wall is immediately above, false if not
+	 *
+	 * @author Group-9
+	 */
+	public static boolean anyWallAboveTile(final int row, final int col) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to check for walls when not in game");
+		}
+
+		final GamePosition gpos = quoridor.getCurrentGame().getCurrentPosition();
+		return anyWallAboveTile(gpos, row, col);
+	}
+
+	/**
 	 *
 	 * @param wall A wall that is potentially below a tile
 	 * @param tile A tile that potentially has the specific wall below it
@@ -2066,6 +2031,25 @@ public static TOWall grabWall() {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Checks if any wall is below a particular tile in the current board configuration
+	 *
+	 * @param row     Row in pawn coordinates
+	 * @param col     Column in pawn coordinates
+	 * @return true if wall is immediately below, false if not
+	 *
+	 * @author Group-9
+	 */
+	public static boolean anyWallBelowTile(final int row, final int col) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to check for walls when not in game");
+		}
+
+		final GamePosition gpos = quoridor.getCurrentGame().getCurrentPosition();
+		return anyWallBelowTile(gpos, row, col);
 	}
 
 	/**
@@ -2149,6 +2133,25 @@ public static TOWall grabWall() {
 	}
 
 	/**
+	 * Checks if any wall is on the right of a particular tile in the current board configuration
+	 *
+	 * @param row     Row in pawn coordinates
+	 * @param col     Column in pawn coordinates
+	 * @return true if wall is on the immediate right, false if not
+	 *
+	 * @author Group-9
+	 */
+	public static boolean anyWallRightOfTile(final int row, final int col) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to check for walls when not in game");
+		}
+
+		final GamePosition gpos = quoridor.getCurrentGame().getCurrentPosition();
+		return anyWallRightOfTile(gpos, row, col);
+	}
+
+	/**
 	 *
 	 * @param wall A wall that is potentially on the left of a tile
 	 * @param tile A tile that potentially has the specific wall on the left of it
@@ -2218,216 +2221,45 @@ public static TOWall grabWall() {
 	}
 
 	/**
-	 * Tries to play a jump move onto a game position
+	 * Checks if any wall is on the left of a particular tile in the current board configuration
 	 *
-	 * @param moveNumber Move number of the move
-	 * @param roundNumber Round number of the move
+	 * @param row     Row in pawn coordinates
+	 * @param col     Column in pawn coordinates
+	 * @return true if wall is on the immediate left, false if not
+	 *
+	 * @author Group-9
+	 */
+	public static boolean anyWallLeftOfTile(final int row, final int col) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to check for walls when not in game");
+		}
+
+		final GamePosition gpos = quoridor.getCurrentGame().getCurrentPosition();
+		return anyWallLeftOfTile(gpos, row, col);
+	}
+
+	/**
+	 * Plays a jump move onto a game position regardless if the move is legal or not
+	 *
+	 * @param moveNumber    Move number of the move
+	 * @param roundNumber   Round number of the move
 	 * @param currentPlayer Player of the move
-	 * @param target Tile of the move
-	 * @param gamePos holds pre-state of move, will hold post-state of move
-	 * @return A JumpMove instance of move is legal, null if move is illegal
-	 * 
+	 * @param target        Tile of the move
+	 * @param gamePos       holds pre-state of move, will hold post-state of move
+	 * @return A JumpMove instance of the move
+	 *
 	 * @author Paul Teng (260862906)
 	 */
-	private static JumpMove tryPlayJumpMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target, GamePosition gamePos) {
-		final int row = target.getRow();
-		final int col = target.getColumn();
-		if (!validatePawnPlacement(gamePos, row, col)) {
-			// If the tile is already occupied, then, obviously, the move cannot be completed
-			return null;
-		}
-
-		final boolean playerHasWhitePawn = currentPlayer.hasGameAsWhite();
-		final PlayerPosition playerPos;
-		if (playerHasWhitePawn) {
-			playerPos = gamePos.getWhitePosition();
-		} else {
-			playerPos = gamePos.getBlackPosition();
-		}
-
-		// Valid movement for a jumps (not steps) must be one of
-		// - far Jumps: (x+2, y), (x-2, y), (x, y+2), (x, y-2)
-		// - Lateral Shifts: (x+1, y+1), (x+1, y+1), (x-1, y+1), (x-1, y-1)
-		final Tile currentPos = playerPos.getTile();
-		final int deltaRow = row - currentPos.getRow();
-		final int deltaCol = col - currentPos.getColumn();
-		if (2 != Math.abs(deltaRow) + Math.abs(deltaCol)) {
-			// In other words, the absolute value of the movements must add up to 2
-			return null;
-		}
-
-		// Walls block all movements, so check that first
-		if (isWallBlockingMovementFromTile(deltaRow, deltaCol, currentPos, gamePos)) {
-			// Pawn cannot move from the current position with
-			// the selected direction since blocked by wall
-			return null;
-		}
-
-		if (Math.abs(deltaRow) == 2 || Math.abs(deltaCol) == 2) {
-			// We are doing a far jump:
-			// +---+---+---+    +---+---+---+
-			// | @ | O |   | => |   | O | @ | '@' is the player jumping
-			// +---+---+---+    +---+---+---+ 'O' is another player
-			//   1   2   3        1   2   3
-
-			final int testRow = currentPos.getRow() + deltaRow / 2;
-			final int testCol = currentPos.getColumn() + deltaCol / 2;
-
-			// Test if 'O' exists, it should
-			if (validatePawnPlacement(gamePos, testRow, testCol)) {
-				// If 'O' exists, it would not be a valid pawn placement
-				// => move is invalid if we the placement is valid
-				return null;
-			}
-
-			// Now make sure no walls are in between rows or columns
-			// (in above example, none should be between columns 1, 2, 3)
-
-			if (isWallBlockingMovementToTile(deltaRow, deltaCol, target, gamePos)) {
-				return null;
-			}
-		} else {
-			// We are doing a lateral jump
-			// +---+---+---+    +---+---+---+
-			// |   | X |   |    |   | X |   | '@' is the player jumping
-			// +[>====]+---+    +[>====]+---+ 'O' and 'X' are another players
-			// |   | O |   |    |   | O | @ | '[>====]' is a wall
-			// +---+---+---+ => +---+---+---+
-			// |   | @ | ? |    |   |   | ? | Note: 'O' and either 'X' or the
-			// +---+---+---+    +---+---+---+ wall enough for lateral jumps
-			//   1   2   3        1   2   3
-
-			// Check if 'O' exists, notice that with a single
-			// tile check it could also be a lateral jump due
-			// a blockage on the '?' side
-
-			final int currentRow = currentPos.getRow();
-			final int currentCol = currentPos.getColumn();
-
-			boolean canPerformJump = false;
-
-			// Check if '?' exists
-			if (!canPerformJump && !validatePawnPlacement(gamePos, currentRow, currentCol + deltaCol / 2)) {
-				// There should be sth, be it a wall or pawn, behind '?'
-				canPerformJump = !validatePawnPlacement(gamePos, currentRow, currentCol + deltaCol)
-						|| (deltaCol < 0 && anyWallRightOfTile(gamePos, currentRow, currentCol + deltaCol))
-						|| (deltaCol > 0 && anyWallLeftOfTile(gamePos, currentRow, currentCol + deltaCol));
-			}
-
-			// Check if 'O' exists
-			if (!canPerformJump && !validatePawnPlacement(gamePos, currentRow + deltaRow / 2, currentCol)) {
-				// There should be sth, be it a wall or pawn, behind 'O'
-				canPerformJump = !validatePawnPlacement(gamePos, currentRow + deltaRow, currentCol)
-						|| (deltaRow < 0 && anyWallAboveTile(gamePos, currentRow + deltaRow, currentCol))
-						|| (deltaRow > 0 && anyWallBelowTile(gamePos, currentRow + deltaRow, currentCol));
-			}
-
-			// If after both searches and the jump
-			// is still illegal, return null
-			if (!canPerformJump) {
-				return null;
-			}
-		}
-
+	/* package */ static JumpMove forcePlayJumpMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target,
+			GamePosition gamePos) {
 		if (currentPlayer.hasGameAsWhite()) {
 			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
 		} else {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
 		}
 
-		final JumpMove move = new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
-		return move;
-	}
-
-	/**
-	 * Checks if movement from a particular tile in a particular direction is
-	 * being blocked by a wall
-	 *
-	 * @param deltaRow Relative movement by row
-	 * @param deltaCol Relative movement by column
-	 * @param src Movement from this tile
-	 * @param gamePos Curreng board setup
-	 * @return true if any wall is blocking movement from a tile,
-	 *         false if not blocking
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	private static boolean isWallBlockingMovementFromTile(final int deltaRow, final int deltaCol, Tile src, GamePosition gamePos) {
-		for (Wall w : gamePos.getWhiteWallsOnBoard()) {
-			// If moving down, cannot have wall below the current or above the target (y inverted)
-			if (deltaRow < 0 && wallIsBelowTile(w, src)) return true;
-
-			// If moving up, cannot have wall above the current or below the target (y inverted)
-			if (deltaRow > 0 && wallIsAboveTile(w, src)) return true;
-
-			// If moving left, cannot have wall on the left of current or on the right of target
-			if (deltaCol < 0 && wallIsLeftOfTile(w, src)) return true;
-
-			// If moving right, cannot have wall on the right of current or on the left of target
-			if (deltaCol > 0 && wallIsRightOfTile(w, src)) return true;
-		}
-
-		for (Wall w : gamePos.getBlackWallsOnBoard()) {
-			// See above explaination
-			if (deltaRow < 0 && wallIsBelowTile(w, src)) return true;
-			if (deltaRow > 0 && wallIsAboveTile(w, src)) return true;
-			if (deltaCol < 0 && wallIsLeftOfTile(w, src)) return true;
-			if (deltaCol > 0 && wallIsRightOfTile(w, src)) return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Checks if movement to a particular tile in a particular direction is
-	 * being blocked by a wall
-	 *
-	 * @param deltaRow Relative movement by row
-	 * @param deltaCol Relative movement by column
-	 * @param dst Movement to this tile
-	 * @param gamePos Curreng board setup
-	 * @return true if any wall is blocking movement to a tile,
-	 *         false if not blocking
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	private static boolean isWallBlockingMovementToTile(int deltaRow, int deltaCol, Tile dst, GamePosition gamePos) {
-		return isWallBlockingMovementFromTile(-deltaRow, -deltaCol, dst, gamePos);
-	}
-
-	/**
-	 * Tries to play a wall move onto a game position
-	 *
-	 * @param moveNumber Move number of the move
-	 * @param roundNumber Round number of the move
-	 * @param wall Wall of the move
-	 * @param dir Direction of the wall
-	 * @param target Tile of the move
-	 * @param gamePos holds pre-state of move, will hold post-state of move
-	 * @return A WallMove instance of move is legal, null if move is illegal
-	 * 
-	 * @author Paul Teng (260862906)
-	 */
-	private static WallMove tryPlayWallMove(int moveNumber, int roundNumber, Wall wall, Direction dir, Tile target, GamePosition gamePos) {
-		if (!validateWallPlacement(gamePos, target.getRow(), target.getColumn(), fromDirection(dir))) {
-			// If the wall is already occupied, then, obviously, the move cannot be completed
-			return null;
-		}
-
-		// XXX: A proper Quoridor game needs to check if paths are
-		// blocked, and this implementation does not do that!
-
-		final Player currentPlayer = wall.getOwner();
-		if (currentPlayer.hasGameAsWhite()) {
-			gamePos.removeWhiteWallsInStock(wall);
-			gamePos.addWhiteWallsOnBoard(wall);
-		} else {
-			gamePos.removeBlackWallsInStock(wall);
-			gamePos.addBlackWallsOnBoard(wall);
-		}
-
-		final WallMove move = new WallMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame(), dir, wall);
-		return move;
+		return new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
 	}
 
 	/**
@@ -3028,6 +2860,165 @@ public static TOWall grabWall() {
 
 		return game.getCurrentPosition().getBlackWallsOnBoard().stream().map(QuoridorController::fromWall)
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Creates a pawn state machine for the current player and game and initializes
+	 * it
+	 *
+	 * @return An initialized pawn state machine
+	 *
+	 * @author Group-9
+	 */
+	private static PawnBehavior setupPawnStateMachine() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to use state machine when no game exists");
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		final PawnBehavior sm = new PawnBehavior();
+		sm.setCurrentGame(game);
+		sm.setPlayer(game.getCurrentPosition().getPlayerToMove());
+		sm.initialize();
+
+		return sm;
+	}
+
+	/**
+	 * Tries to move the current pawn upwards by 1 row
+	 *
+	 * @return true if move succeeds, false if failed
+	 *
+	 * @author Group-9
+	 */
+	public static boolean moveCurrentPawnUp() {
+		return setupPawnStateMachine().moveUp();
+	}
+
+	/**
+	 * Tries to move the current pawn downards by 1 row
+	 *
+	 * @return true if move succeeds, false if failed
+	 *
+	 * @author Group-9
+	 */
+	public static boolean moveCurrentPawnDown() {
+		return setupPawnStateMachine().moveDown();
+	}
+
+	/**
+	 * Tries to move the current pawn leftwards by 1 column
+	 *
+	 * @return true if move succeeds, false if failed
+	 *
+	 * @author Group-9
+	 */
+	public static boolean moveCurrentPawnLeft() {
+		return setupPawnStateMachine().moveLeft();
+	}
+
+	/**
+	 * Tries to move the current pawn rightwards by 1 column
+	 *
+	 * @return true if move succeeds, false if faled
+	 *
+	 * @author Group-9
+	 */
+	public static boolean moveCurrentPawnRight() {
+		return setupPawnStateMachine().moveRight();
+	}
+
+	/**
+	 * Tries to move the current pawn upwards by 2 rows
+	 *
+	 * @return true if move succeeds, false if failed
+	 *
+	 * @author Group-9
+	 */
+	public static boolean jumpCurrentPawnUp() {
+		return setupPawnStateMachine().jumpUp();
+	}
+
+	/**
+	 * Tries to move the current pawn dowards by 2 rows
+	 *
+	 * @return true if move succeeds, false if failed
+	 *
+	 * @author Group-9
+	 */
+	public static boolean jumpCurrentPawnDown() {
+		return setupPawnStateMachine().jumpDown();
+	}
+
+	/**
+	 * Tries to move the current pawn leftwards by 2 columns
+	 *
+	 * @return true if move succeds, false if failed
+	 *
+	 * @author Group-9
+	 */
+	public static boolean jumpCurrentPawnLeft() {
+		return setupPawnStateMachine().jumpLeft();
+	}
+
+	/**
+	 * Tries to move the current pawn rightwards by 2 columnss
+	 *
+	 * @return true if move succeeds, false if failed
+	 *
+	 * @author Group-9
+	 */
+	public static boolean jumpCurrentPawnRight() {
+		return setupPawnStateMachine().jumpRight();
+	}
+
+	/**
+	 * Tries to move the currrent pawn in the upwards-right direction
+	 * 
+	 * @return true if move succeeds, false if failed
+	 * 
+	 * @author Group-9
+	 */
+	public static boolean jumpCurrentPawnUpRight() {
+		final PawnBehavior sm = setupPawnStateMachine();
+		return sm.jumpUpRight() || sm.jumpRightUp();
+	}
+
+	/**
+	 * Tries to move the currrent pawn in the downwards-right direction
+	 * 
+	 * @return true if move succeeds, false if failed
+	 * 
+	 * @author Group-9
+	 */
+	public static boolean jumpCurrentPawnDownRight() {
+		final PawnBehavior sm = setupPawnStateMachine();
+		return sm.jumpDownRight() || sm.jumpRightDown();
+	}
+
+	/**
+	 * Tries to move the currrent pawn in the upwards-left direction
+	 * 
+	 * @return true if move succeeds, false if failed
+	 * 
+	 * @author Group-9
+	 */
+	public static boolean jumpCurrentPawnUpLeft() {
+		final PawnBehavior sm = setupPawnStateMachine();
+		return sm.jumpUpLeft() || sm.jumpLeftUp();
+	}
+
+	/**
+	 * Tries to move the currrent pawn in the downwards-left direction
+	 * 
+	 * @return true if move succeeds, false if failed
+	 * 
+	 * @author Group-9
+	 */
+	public static boolean jumpCurrentPawnDownLeft() {
+		final PawnBehavior sm = setupPawnStateMachine();
+		return sm.jumpDownLeft() || sm.jumpLeftDown();
 	}
 
 }// end QuoridorController
