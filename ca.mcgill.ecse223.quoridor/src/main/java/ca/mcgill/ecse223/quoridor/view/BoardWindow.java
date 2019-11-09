@@ -368,6 +368,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         
     }
 
+    /**
+     * This gets the pawn moving!
+     *
+     * @author Group-9
+     */
     @Override
     public void onTileClicked(int row, int col) {
         if (this.gridPanel.getWallCandidate() != null) {
@@ -375,7 +380,32 @@ public class BoardWindow extends JFrame implements GameBoardListener {
             return;
         }
 
-        // TODO: Fill in the code that gets the pawn moving
+        // Here we try to move the player
+
+        final TOPlayer currentPlayer = QuoridorController.getPlayerOfCurrentTurn();
+        final int r = currentPlayer.getRow();
+        final int c = currentPlayer.getColumn();
+
+        final int dcol = col - c;
+        final int drow = row - r;
+
+        // Steps
+        if (dcol == 1 && drow == 0)     QuoridorController.moveCurrentPawnRight();
+        if (dcol == -1 && drow == 0)    QuoridorController.moveCurrentPawnLeft();
+        if (dcol == 0 && drow == 1)     QuoridorController.moveCurrentPawnUp();
+        if (dcol == 0 && drow == -1)    QuoridorController.moveCurrentPawnDown();
+
+        // Far jumps
+        if (dcol == 2 && drow == 0)     QuoridorController.jumpCurrentPawnRight();
+        if (dcol == -2 && drow == 0)    QuoridorController.jumpCurrentPawnLeft();
+        if (dcol == 0 && drow == 2)     QuoridorController.jumpCurrentPawnUp();
+        if (dcol == 0 && drow == -2)    QuoridorController.jumpCurrentPawnDown();
+
+        // Lateral jumps
+        if (dcol == 1 && drow == 1)     QuoridorController.jumpCurrentPawnUpRight();
+        if (dcol == -1 && drow == 1)    QuoridorController.jumpCurrentPawnUpLeft();
+        if (dcol == 1 && drow == -1)    QuoridorController.jumpCurrentPawnDownRight();
+        if (dcol == -1 && drow == -1)   QuoridorController.jumpCurrentPawnDownLeft();
     }
 
     @Override
