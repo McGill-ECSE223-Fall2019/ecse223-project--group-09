@@ -276,12 +276,12 @@ public class QuoridorController {
 		else if (COLOR == Color.BLACK) {
 			if (!usernameExists(user))	{
 				User anUser = quoridor.addUser(user);
-				Player player = new Player(null, anUser, 1, Direction.Vertical);
+				Player player = new Player(null, anUser, 1, Direction.Horizontal);
 				game.setBlackPlayer(player); 
 				}
 			else {
 				User.getWithName(user);
-				Player aPlayer = new Player(null,User.getWithName(user), 1, Direction.Vertical); 
+				Player aPlayer = new Player(null,User.getWithName(user), 1, Direction.Horizontal); 
 				game.setBlackPlayer(aPlayer);
 			}
 		}
@@ -310,7 +310,7 @@ public class QuoridorController {
 			else if (COLOR == Color.BLACK) {
 				if (!usernameExists(user))	{
 					User anUser = quoridor.addUser(user);
-					Player player = new Player(null, anUser, 1, Direction.Vertical);
+					Player player = new Player(null, anUser, 1, Direction.Horizontal);
 					game.setBlackPlayer(player); 
 					}
 				else {
