@@ -196,7 +196,7 @@ public class SaveLoadPanel extends JPanel {
         textArea.setTabSize(2);
 
         final JComponent[] list = {
-            new JLabel("Something bad just happened"),
+            new JLabel(throwable instanceof UnsupportedOperationException ? "Operation is not supported yet!" : "Something bad just happened"),
             new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
         };
         JOptionPane.showMessageDialog(parentComponent, list, "Internal Error", JOptionPane.WARNING_MESSAGE);
