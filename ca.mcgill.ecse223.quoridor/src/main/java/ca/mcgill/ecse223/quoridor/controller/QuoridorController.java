@@ -1420,7 +1420,13 @@ public static TOWall grabWall() {
 			}
 		}
 
-		return true;
+		// Then finally we check if a path can be found!
+		// (that is, for both players)
+		final Node[][] nodeMap = createPathNodes(gpos);
+		unlinkNodeWithWallMove(nodeMap, row, column, orientation);
+
+		return createPathFinderForPlayer(gpos, Color.WHITE, nodeMap).trace()
+			&& createPathFinderForPlayer(gpos, Color.BLACK, nodeMap).trace();
 	}
 
 	/**
