@@ -197,9 +197,4 @@ public final class Node {
             cons.accept(this.west);
         }
     }
-
-    @Override
-    public String toString() {
-        return String.format("{N:%s, S:%s, E:%s, W:%s}", this.north, this.south, this.east, this.west);
-    }
 }
