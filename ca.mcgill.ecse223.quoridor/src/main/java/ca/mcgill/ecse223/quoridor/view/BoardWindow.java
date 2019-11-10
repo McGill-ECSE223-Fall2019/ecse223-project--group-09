@@ -370,8 +370,12 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
     @Override
     public void onTileClicked(int row, int col) {
-        // Proof that it works:
-        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row);
+        if (this.gridPanel.getWallCandidate() != null) {
+            // We are grabbing the wall, so no tile clicking is allowed
+            return;
+        }
+
+        // TODO: Fill in the code that gets the pawn moving
     }
 
     @Override
