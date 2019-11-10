@@ -98,7 +98,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition97__()
+  private boolean __autotransition1__()
   {
     boolean wasEventProcessed = false;
     
@@ -121,7 +121,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition98__()
+  private boolean __autotransition2__()
   {
     boolean wasEventProcessed = false;
     
@@ -144,7 +144,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition99__()
+  private boolean __autotransition3__()
   {
     boolean wasEventProcessed = false;
     
@@ -411,7 +411,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition100__()
+  private boolean __autotransition4__()
   {
     boolean wasEventProcessed = false;
     
@@ -434,7 +434,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition101__()
+  private boolean __autotransition5__()
   {
     boolean wasEventProcessed = false;
     
@@ -457,7 +457,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition102__()
+  private boolean __autotransition6__()
   {
     boolean wasEventProcessed = false;
     
@@ -774,9 +774,9 @@ public class PawnBehavior
     {
       case Horizontal:
         if (pawnSMPlayingHorizontalHorizontal == PawnSMPlayingHorizontalHorizontal.Null) { setPawnSMPlayingHorizontalHorizontal(PawnSMPlayingHorizontalHorizontal.AtCenter); }
-        __autotransition97__();
-        __autotransition98__();
-        __autotransition99__();
+        __autotransition1__();
+        __autotransition2__();
+        __autotransition3__();
         break;
     }
   }
@@ -824,9 +824,9 @@ public class PawnBehavior
     {
       case Vertical:
         if (pawnSMPlayingVerticalVertical == PawnSMPlayingVerticalVertical.Null) { setPawnSMPlayingVerticalVertical(PawnSMPlayingVerticalVertical.AtCenter); }
-        __autotransition100__();
-        __autotransition101__();
-        __autotransition102__();
+        __autotransition4__();
+        __autotransition5__();
+        __autotransition6__();
         break;
     }
   }
@@ -1060,11 +1060,11 @@ public class PawnBehavior
                     case South:
                         return (QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1)
                             || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 2))
-                            && !QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+                            && !QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1);
                     case North:
                         return (QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1)
                             || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 2))
-                            && !QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+                            && !QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1);
                     default:
                         return false;
                 }
@@ -1083,11 +1083,11 @@ public class PawnBehavior
                     case East:
                         return (QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn())
                             || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() - 2, this.getCurrentPawnColumn()))
-                            && !QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+                            && !QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn());
                     case West:
                         return (QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn())
                             || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() - 2, this.getCurrentPawnColumn()))
-                            && !QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+                            && !QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn());
                     default:
                         return false;
                 }
@@ -1106,11 +1106,11 @@ public class PawnBehavior
                     case South:
                         return (QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1)
                             || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 2))
-                            && !QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+                            && !QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1);
                     case North:
                         return (QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1)
                             || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 2))
-                            && !QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+                            && !QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1);
                     default:
                         return false;
                 }
@@ -1129,11 +1129,11 @@ public class PawnBehavior
                     case East:
                         return (QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn())
                             || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() + 2, this.getCurrentPawnColumn()))
-                            && !QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+                            && !QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn());
                     case West:
                         return (QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn())
                             || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() + 2, this.getCurrentPawnColumn()))
-                            && !QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+                            && !QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn());
                     default:
                         return false;
                 }
