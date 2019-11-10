@@ -112,7 +112,7 @@ public class SaveLoadPanel extends JPanel {
      */
     public void doSaveAction() {
         File file;
-        FileFilter filter;
+        IOPerformer filter;
         while (true) {
             if (this.chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
                 // User did not click on save/approve button in file chooser,
@@ -120,8 +120,9 @@ public class SaveLoadPanel extends JPanel {
                 return;
             }
 
-            filter = this.chooser.getFileFilter();
-            file = this.chooser.getSelectedFile();
+            filter = (IOPerformer) this.chooser.getFileFilter();
+            file = filter.normalizeExtension(this.chooser.getSelectedFile());
+
             if (!file.exists()) {
                 // File is doesn't exist, no need to prompt for overwriting
                 break;
@@ -144,7 +145,7 @@ public class SaveLoadPanel extends JPanel {
         }
 
         try {
-            ((IOPerformer) filter).performSave(file);
+            filter.performSave(file);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Save operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (RuntimeException ex) {
@@ -164,10 +165,10 @@ public class SaveLoadPanel extends JPanel {
             return;
         }
 
-        final FileFilter filter = this.chooser.getFileFilter();
-        final File file = this.chooser.getSelectedFile();
+        final IOPerformer filter = (IOPerformer) this.chooser.getFileFilter();
+        final File file = filter.normalizeExtension(this.chooser.getSelectedFile());
         try {
-            ((IOPerformer) filter).performLoad(file);
+            filter.performLoad(file);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Load operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (InvalidLoadException ex) {

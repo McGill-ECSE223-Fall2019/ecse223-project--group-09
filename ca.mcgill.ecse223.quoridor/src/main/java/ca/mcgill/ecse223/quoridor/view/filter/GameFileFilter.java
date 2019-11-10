@@ -30,6 +30,14 @@ public class GameFileFilter extends FileFilter implements IOPerformer {
     }
 
     @Override
+    public File normalizeExtension(final File file) {
+        if (this.accept(file)) {
+            return file;
+        }
+        return new File(file.getAbsolutePath() + EXTENSION);
+    }
+
+    @Override
     public String getDescription() {
         return "Game (" + EXTENSION + ")";
     }

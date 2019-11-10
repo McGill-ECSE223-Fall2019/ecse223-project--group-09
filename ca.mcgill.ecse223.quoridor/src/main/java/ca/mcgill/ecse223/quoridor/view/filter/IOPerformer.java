@@ -14,6 +14,16 @@ import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 public interface IOPerformer {
 
     /**
+     * Appends the file extension if it does not exist
+     *
+     * @param file File
+     * @return File with extension
+     *
+     * @author Paul Teng (260862906)
+     */
+    public abstract File normalizeExtension(File file);
+
+    /**
      * Tries to save whatever it is to a file. Should overwrite if file already
      * exists.
      *
