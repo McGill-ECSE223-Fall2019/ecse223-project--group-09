@@ -23,7 +23,7 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
-import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.view.filter.*;
 
 /**
  * A custom component that displays a save and load button
@@ -196,138 +196,9 @@ public class SaveLoadPanel extends JPanel {
         textArea.setTabSize(2);
 
         final JComponent[] list = {
-            new JLabel("Something bad just happened"),
+            new JLabel(throwable instanceof UnsupportedOperationException ? "Operation is not supported yet!" : "Something bad just happened"),
             new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
         };
         JOptionPane.showMessageDialog(parentComponent, list, "Internal Error", JOptionPane.WARNING_MESSAGE);
-    }
-
-    /**
-     * Hack around needing to do instanceof when checking which method to load
-     * the file with
-     *
-     * @author Paul Teng (260862906)
-     */
-    private static interface IOPerformer {
-
-        /**
-         * Tries to save whatever it is to a file. Should overwrite if file
-         * already exists.
-         *
-         * @param file The file being written to
-         * @throws IOException any IOException that happens...
-         *
-         * @author Paul Teng (260862906)
-         */
-        public abstract void performSave(File file) throws IOException;
-
-        /**
-         * Tries to load whatever it is from a file. File guaranteed to exist
-         *
-         * @param file The file being read from
-         * @throws IOException any IOException that happens ...
-         * @throws InvalidLoadException any invalid loading that happens ...
-         */
-        public abstract void performLoad(File file) throws IOException, InvalidLoadException;
-    }
-
-    /**
-     * A file filter that only accepts GamePosition files
-     *
-     * Note: This is so we can differentiate between game positions and games
-     *
-     * @author Paul Teng (260862906)
-     */
-    private static class GamePositionFileFilter extends FileFilter implements IOPerformer {
-
-        @Override
-        public boolean accept(File f) {
-            // Right now there is no filtering process
-            return true;
-        }
-
-        @Override
-        public String getDescription() {
-            return "Board Snapshot (GamePosition)";
-        }
-
-        /**
-         * Saves the game position to the file
-         *
-         * @param file The file being written to
-         * @throws IOException any IOException that happens...
-         *
-         * @author Paul Teng (260862906)
-         */
-        @Override
-        public void performSave(File file) throws IOException {
-            // If file does not exist, overwrite flag is ignored,
-            // If file does exist, reaching here means we want overwriting
-            // (hence true for overwrite-flag parameter)
-            QuoridorController.savePosition(file.getAbsolutePath(), true);
-        }
-
-        /**
-         * Loads the game position from the file
-         *
-         * @param file The file being read from
-         * @throws IOException any IOException that happens ...
-         * @throws InvalidLoadException any invalid loading that happens ...
-         *
-         * @author Paul Teng (260862906)
-         */
-        @Override
-        public void performLoad(File file) throws IOException, InvalidLoadException {
-            QuoridorController.loadPosition(file.getAbsolutePath());
-        }
-    }
-
-    /**
-     * A file filter that only accepts Game files
-     *
-     * Right now it is just a placeholder for the future save-game and
-     * load-game feature
-     *
-     * Note: This is so we can differentiate between game positions and games
-     *
-     * @author Paul Teng (260862906)
-     */
-    private static class GameFileFilter extends FileFilter implements IOPerformer {
-
-        @Override
-        public boolean accept(File f) {
-            // Right now there is no filtering process
-            return true;
-        }
-
-        @Override
-        public String getDescription() {
-            return "Game";
-        }
-
-        /**
-         * This will be filled in by whoever is asssigned to the later save
-         * game feature (hence no author)
-         *
-         * @param file The file being written to
-         * @throws IOException any IOException that happens...
-         */
-        @Override
-        public void performSave(File file) throws IOException {
-            throw new UnsupportedOperationException("Wait for Phase 2 Save game");
-        }
-
-        /**
-         * This will be filled in by whoever is asssigned to the later load
-         * game feature (hence no author)
-         *
-         * @param file The file being read from
-         * @throws IOException any IOException that happens ...
-         * @throws InvalidLoadException any invalid loading that happens ...
-         */
-        @Override
-        public void performLoad(File file) throws IOException, InvalidLoadException {
-            throw new UnsupportedOperationException("Wait for Phase 2 Load game");
-        }
     }
 }

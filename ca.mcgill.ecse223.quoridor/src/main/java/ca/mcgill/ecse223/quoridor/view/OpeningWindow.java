@@ -5,21 +5,26 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.sql.Time;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
+import javax.swing.filechooser.FileFilter;
 
 import ca.mcgill.ecse223.quoridor.controller.Color;
-import ca.mcgill.ecse223.quoridor.controller.InvalidInputException;
+import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.view.filter.*;
 
 public class OpeningWindow extends JFrame {
 
@@ -35,10 +40,16 @@ public class OpeningWindow extends JFrame {
 
 	JPanel mainPanel;
 
+	private final JFileChooser chooser = new JFileChooser();
+
 	// new quoridor page
 	public OpeningWindow() {
 		initWelcomePage();
 
+        // Only use the filters we provide (no Choose-any-file-type option)
+        this.chooser.setAcceptAllFileFilterUsed(false);
+
+        this.chooser.addChoosableFileFilter(new GameFileFilter());
 	}
 
 	public void initWelcomePage() {
@@ -106,10 +117,6 @@ public class OpeningWindow extends JFrame {
 		mainPanel.add(quitGameButton);
 
 		this.add(mainPanel);
-
-		// XXX: Disable features not for this deliverable!
-		this.loadGameButton.setEnabled(false);
-
 	}
 
 	/**
@@ -164,12 +171,24 @@ public class OpeningWindow extends JFrame {
 	/**
 	 * This will be called when the loadGameButton is clicked
 	 *
-	 * TODO: Whoever implements these methods needs to add their name
-	 * to the author tag
+	 * @author Paul Teng (260862906) [Getting the UI to showup]
 	 */
 	public void loadGameButtonActionPerformed() {
-		// Proof that it works
-		JOptionPane.showMessageDialog(this, "called method loadGameButtonActionPerformed\n\nRemember to change this behaviour!");
+		if (this.chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+
+        final FileFilter filter = this.chooser.getFileFilter();
+        final File file = this.chooser.getSelectedFile();
+        try {
+            ((IOPerformer) filter).performLoad(file);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Load operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (InvalidLoadException ex) {
+            JOptionPane.showMessageDialog(this, "Loaded file is invalid:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (RuntimeException ex) {
+            SaveLoadPanel.displayThrowableTrace(this, ex);
+        }
 	}
 
 	/**
