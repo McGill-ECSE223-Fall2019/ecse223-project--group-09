@@ -197,20 +197,16 @@ public class OpeningWindow extends JFrame {
 	 * @author Paul Teng (260862906)
 	 */
 	public void rulesButtonActionPerformed() {
-		// // Proof that it works
-		// JOptionPane.showMessageDialog(this,
-		// 		"called method rulesButtonActionPerformed\n\nRemember to change this behaviour!");
-
 		final JLabel lbl = new JLabel("Rules");
 		lbl.setFont(lbl.getFont().deriveFont(28.0f));
 
 		final JLabel ruleText = new JLabel();
-		ruleText.setText("<html>Please consult <a href=\"https://en.wikipedia.org/wiki/Quoridor\">https://en.wikipedia.org/wiki/Quoridor</a> for rules</html>");
+		ruleText.setText("<html>Please consult <a href=\"\">http://lode.ameije.com/quoridor/Rules/quoridor_rules.html</a> for rules</html>");
 		ruleText.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					java.awt.Desktop.getDesktop().browse(URI.create("https://en.wikipedia.org/wiki/Quoridor"));
+					java.awt.Desktop.getDesktop().browse(URI.create("http://lode.ameije.com/quoridor/Rules/quoridor_rules.html"));
 				} catch (Exception ex) {
 					// Well... nothing we can do
 				}
