@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -1425,11 +1426,60 @@ public static TOWall grabWall() {
 		final Node[][] nodeMap = createPathNodes(gpos);
 		unlinkNodeWithWallMove(nodeMap, row, column, orientation);
 
-		// // Comment the following out to see the node map (useful when debugging)
-		// Node.debugPrint(System.out, nodeMap);
+		// Checks to see if all players have valid paths
+		return EnumSet.allOf(Color.class).equals(getPlayersWithValidPaths(gpos, nodeMap));
+	}
 
-		return createPathFinderForPlayer(gpos, Color.WHITE, nodeMap).trace()
-			&& createPathFinderForPlayer(gpos, Color.BLACK, nodeMap).trace();
+	/**
+	 * Checks to see if each player has a path to their respected destination
+	 *
+	 * @param gpos    GamePosition
+	 * @param nodeMap Node map
+	 * @return a set of player's color whose paths are valid
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static EnumSet<Color> getPlayersWithValidPaths(final GamePosition gpos, final Node[][] nodeMap) {
+		// // Comment the following out to see the node map (useful when debugging)
+		// Node.debugPrint(System.err, nodeMap);
+
+		// Assume all players have a valid path to the destination
+		final EnumSet<Color> set = EnumSet.allOf(Color.class);
+		// The color from the set if a path cannot be traced
+		set.removeIf(color -> !createPathFinderForPlayer(gpos, color, nodeMap).trace());
+		// And return whatever is left in that set
+		return set;
+	}
+
+	/**
+	 * Initiates the path existence test for all players given the current board
+	 * snapshot and wall candidate
+	 *
+	 * @return a set of player's color whose paths are valid
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static EnumSet<Color> initiatePathExistenceTest() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// No Game No Path
+			return EnumSet.noneOf(Color.class);
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		final GamePosition gpos = game.getCurrentPosition();
+
+		// Create the graph
+		final Node[][] nodeMap = createPathNodes(gpos);
+		// Unlink (if necessary) based on wall move candidate
+		if (game.hasWallMoveCandidate()) {
+			final WallMove move = game.getWallMoveCandidate();
+			final Tile t = move.getTargetTile();
+			unlinkNodeWithWallMove(nodeMap, t.getRow(), t.getColumn(), fromDirection(move.getWallDirection()));
+		}
+
+		// Trace path!
+		return getPlayersWithValidPaths(gpos, nodeMap);
 	}
 
 	/**
