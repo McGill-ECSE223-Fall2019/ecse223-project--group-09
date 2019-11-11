@@ -197,4 +197,32 @@ public final class Node {
             cons.accept(this.west);
         }
     }
+
+    /**
+     * Prints out the grid with '*' as the tile (node) and '-' or '|' as links
+     *
+     * @param out  The stream to print to
+     * @param grid The grid
+     *
+     * @author Paul Teng (260862906)
+     */
+    public static void debugPrint(java.io.PrintStream out, Node[][] grid) {
+        for (int i = grid.length - 1; i >= 0; --i) {
+            final Node[] row = grid[i];
+
+            for (int j = 0; j < row.length; ++j) {
+                out.print('*');
+                out.print(row[j].east != null ? '-' : ' ');
+            }
+            out.print(' ');
+            out.print(i + 1);
+            out.println();
+
+            for (int j = 0; j < row.length; ++j) {
+                out.print(row[j].south != null ? '|' : ' ');
+                out.print(' ');
+            }
+            out.println();
+        }
+    }
 }

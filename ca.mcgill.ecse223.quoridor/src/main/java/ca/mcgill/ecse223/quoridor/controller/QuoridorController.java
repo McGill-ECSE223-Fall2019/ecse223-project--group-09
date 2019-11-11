@@ -1425,6 +1425,9 @@ public static TOWall grabWall() {
 		final Node[][] nodeMap = createPathNodes(gpos);
 		unlinkNodeWithWallMove(nodeMap, row, column, orientation);
 
+		// // Comment the following out to see the node map (useful when debugging)
+		// Node.debugPrint(System.out, nodeMap);
+
 		return createPathFinderForPlayer(gpos, Color.WHITE, nodeMap).trace()
 			&& createPathFinderForPlayer(gpos, Color.BLACK, nodeMap).trace();
 	}
@@ -3003,16 +3006,14 @@ public static TOWall grabWall() {
 	 * @author Paul Teng (260862906)
 	 */
 	private static void unlinkNodeWithWallMove(Node[][] nodeMap, int row, int col, Orientation orientation) {
-		final Node affected = nodeMap[row - 1][col - 1];
-
 		switch (orientation) {
 		case VERTICAL:
-			affected.unlinkEast();
-			affected.consumeNorthNode(Node::unlinkEast);
+			nodeMap[row - 1][col - 1].unlinkEast();
+			nodeMap[row][col - 1].unlinkEast();
 			break;
 		case HORIZONTAL:
-			affected.unlinkNorth();
-			affected.consumeEastNode(Node::unlinkNorth);
+			nodeMap[row - 1][col - 1].unlinkNorth();
+			nodeMap[row - 1][col].unlinkNorth();
 			break;
 		}
 	}
