@@ -2269,7 +2269,7 @@ public static TOWall grabWall() {
 	 * 
 	 * @author Paul Teng (260862906)
 	 */
-	private static TOPlayer fromPlayer(Player p) {
+	public static TOPlayer fromPlayer(Player p) {
 		final TOPlayer player = new TOPlayer();
 		player.setUsername(p.getUser().getName());
 

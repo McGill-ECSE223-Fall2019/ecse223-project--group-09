@@ -27,6 +27,7 @@ import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
+import ca.mcgill.ecse223.quoridor.model.JumpMove;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
@@ -1260,25 +1261,6 @@ public class CucumberStepDefinitions {
 	/**
 	 * 
 	 * @author Alixe Delabrousse (260868412)
-	 *  
-	 * @param player
-	 */
-	@Given("The player to move is {string}")
-	public void thePlayerToMoveIs(String p) {
-		final TOPlayer player;
-		if (p.equals("black")) {
-			player = QuoridorController.getBlackPlayer();
-		} else {
-			player = QuoridorController.getWhitePlayer();
-		}
-		
-		Assert.assertNotNull(player);
-		Assert.assertEquals(player.getColor().toString().toLowerCase(), p.toLowerCase());
-	}
-	
-	/**
-	 * 
-	 * @author 
 	 * 
 	 * @param prow
 	 * @param pcol
@@ -1286,12 +1268,21 @@ public class CucumberStepDefinitions {
 	
 	@And("The player is located at {int}:{int}")
 	public void thePlayerIsLocatedAt(int prow, int pcol) {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		PlayerPosition ppos;
+		if (QuoridorController.getCurrentPlayer().hasGameAsBlack()) {
+			ppos = game.getCurrentPosition().getBlackPosition();
+		} else {
+			ppos = game.getCurrentPosition().getWhitePosition();
+		}
+		
+		ppos.setTile(QuoridorController.getTileFromRowAndColumn(prow, pcol));
+	
 	}
 	
 	/**
 	 * 
-	 * @author 
+	 * @author Alixe Delabrousse (260868412)
 	 * 
 	 * @param orow
 	 * @param ocol
@@ -1299,7 +1290,16 @@ public class CucumberStepDefinitions {
 	
 	@And("The opponent is located at {int}:{int}")
 	public void theOpponentIsLocatedAt(int orow, int ocol) {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		PlayerPosition opos;
+		if (QuoridorController.getCurrentPlayer().hasGameAsBlack()) {
+			opos = game.getCurrentPosition().getWhitePosition();
+		} else {
+			opos = game.getCurrentPosition().getBlackPosition();
+		}
+		
+		opos.setTile(QuoridorController.getTileFromRowAndColumn(orow, ocol));
+	
 	}
 	
 	/**
@@ -1373,14 +1373,32 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author
+	 * @author alixe delabrousse (260868412)
 	 * 
 	 * @param player
 	 * @param side
 	 */
 	@When("Player {string} initiates to move {string}")
 	public void playerInititatesToMove(String player, String side) {
-		throw new PendingException();
+		final Player p = QuoridorController.getCurrentPlayer();
+		
+		if(player.equals("black")) {
+			Assert.assertTrue(p.hasGameAsBlack());
+		} else {
+			Assert.assertTrue(p.hasGameAsWhite());
+		}
+		
+		if (side.equals("down")) {
+			QuoridorController.jumpCurrentPawnDown();
+		} else if (side.equals("up")) {
+			QuoridorController.jumpCurrentPawnUp();
+		} else if (side.equals("left")) {
+			QuoridorController.jumpCurrentPawnLeft();
+		} else if (side.contentEquals("right")) {
+			QuoridorController.jumpCurrentPawnRight();
+		}
+		
+	
 	}
 	
 	/**
@@ -1411,26 +1429,27 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author alixe delabrousse
+	 * @author alixe delabrousse (260868412)
 	 * 
 	 * @param nPlayer
 	 */
 	
 	@And("The next player to move shall become {string}")
 	public void theNextPlayerToMoveIs(String nPlayer) {
-		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
-		Assert.assertNotNull(player);
-		
-		final TOPlayer nextPlayer;
-		if (player.getColor().toString() == "black") {
-			nextPlayer = QuoridorController.getWhitePlayer();
-		} else {
-			nextPlayer = QuoridorController.getBlackPlayer();
-		}
-		
-		Assert.assertNotNull(nextPlayer);
-		
+//		final Player player = QuoridorController.getCurrentPlayer();
+//		Assert.assertNotNull(player);
+//		
+//		final Player nextPlayer = player.getNextPlayer();
+//		
+//		Assert.assertNotNull(nextPlayer);
+//		if (nPlayer.equals("black")) {
+//			Assert.assertTrue(nextPlayer.hasGameAsBlack());
+//		} else {
+//			Assert.assertTrue(nextPlayer.hasGameAsWhite());
+//		}
 	
+		QuoridorController.updatePlayerOfCurrentRound(Color.valueOf(nPlayer.toUpperCase()));
+		
 	}
 	
 	/**
