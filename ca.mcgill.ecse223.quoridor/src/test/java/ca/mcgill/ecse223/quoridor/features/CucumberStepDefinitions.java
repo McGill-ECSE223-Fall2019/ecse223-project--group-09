@@ -1408,7 +1408,7 @@ public class CucumberStepDefinitions {
 	 * @param nPlayer
 	 */
 	
-	@And("The next player to move shall become \"<nplayer>\"")
+	@And("The next player to move shall become {string}")
 	public void theNextPlayerToMoveIs(String nPlayer) {
 		
 	}
@@ -1422,7 +1422,7 @@ public class CucumberStepDefinitions {
 	 * @param wcol
 	 */
 	
-	@And("There is a \"<dir>\" wall at <wrow>:<wcol>")
+	@And("There is a {string} wall at {int}:{int}")
 	public void thereIsAWallAt(String direction, int wrow, int wcol) {
 		
 	}
