@@ -1255,7 +1255,45 @@ public class CucumberStepDefinitions {
 	}
 
 	// ***** JumpPawn.feature *****
-
+	
+	
+	/**
+	 * 
+	 * @author 
+	 *  
+	 * @param player
+	 */
+	@Given("The player to move is {string}")
+	public void thePlayerToMoveIs(String player) {
+		
+	}
+	
+	/**
+	 * 
+	 * @author 
+	 * 
+	 * @param prow
+	 * @param pcol
+	 */
+	
+	@And("The player is located at {int}:{int}")
+	public void thePlayerIsLocatedAt(int prow, int pcol) {
+		
+	}
+	
+	/**
+	 * 
+	 * @author 
+	 * 
+	 * @param orow
+	 * @param ocol
+	 */
+	
+	@And("The opponent is located at {int}:{int}")
+	public void theOpponentIsLocatedAt(int orow, int ocol) {
+		
+	}
+	
 	/**
 	 * @param direction Direction of the wall
 	 * @param side Side relative to the player
@@ -1324,8 +1362,76 @@ public class CucumberStepDefinitions {
 				throw new AssertionError("Unknown side: " + side);
 		}
 	}
+	
+	/**
+	 * 
+	 * @author
+	 * 
+	 * @param player
+	 * @param side
+	 */
+	@When("Player {string} initiates to move {string}")
+	public void playerInititatesToMove(String player, String side) {
+		
+	}
+	
+	/**
+	 * 
+	 * @author 
+	 * 
+	 * @param side
+	 * @param status
+	 */
+	
+	@Then("The move {string} shall be {string}")
+	public void theMoveShallBe(String side, String status) {
+		
+	}
+	
+	/**
+	 * 
+	 * @author
+	 * 
+	 * @param nrow
+	 * @param ncol
+	 */
+	
+	@And("Player's new position shall be {int}:{int}")
+	public void playerNewPosition(int nrow, int ncol) {
+		
+	}
+	
+	/**
+	 * 
+	 * @author 
+	 * 
+	 * @param nPlayer
+	 */
+	
+	@And("The next player to move shall become \"<nplayer>\"")
+	public void theNextPlayerToMoveIs(String nPlayer) {
+		
+	}
+	
+	/**
+	 * 
+	 * @author
+	 * 
+	 * @param direction
+	 * @param wrow
+	 * @param wcol
+	 */
+	
+	@And("There is a \"<dir>\" wall at <wrow>:<wcol>")
+	public void thereIsAWallAt(String direction, int wrow, int wcol) {
+		
+	}
+	
+	
 
 	// ***** MovePawn.feature *****
+	
+	
 
 	/**
 	 * @param direction Direction of wall
@@ -1337,6 +1443,19 @@ public class CucumberStepDefinitions {
 	public void thereAreNoWallsFromThePlayer(String direction, String side) {
 		noWallsFromPlayerHelper(direction, side);
 	}
+	
+	/**
+	 * 
+	 * @author 
+	 * 
+	 * @param side
+	 */
+	
+	@And("The opponent is not {string} from the player")
+	public void theOpponentIsNotNextToThePlayer(String side) {
+		
+	}
+	
 
 	// ***********************************************
 	// Clean up
