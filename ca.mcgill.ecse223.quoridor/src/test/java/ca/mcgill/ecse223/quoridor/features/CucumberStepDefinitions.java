@@ -1259,13 +1259,21 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author 
+	 * @author Alixe Delabrousse (260868412)
 	 *  
 	 * @param player
 	 */
 	@Given("The player to move is {string}")
-	public void thePlayerToMoveIs(String player) {
+	public void thePlayerToMoveIs(String p) {
+		final TOPlayer player;
+		if (p.equals("black")) {
+			player = QuoridorController.getBlackPlayer();
+		} else {
+			player = QuoridorController.getWhitePlayer();
+		}
 		
+		Assert.assertNotNull(player);
+		Assert.assertEquals(player.getColor().toString().toLowerCase(), p.toLowerCase());
 	}
 	
 	/**
@@ -1278,7 +1286,7 @@ public class CucumberStepDefinitions {
 	
 	@And("The player is located at {int}:{int}")
 	public void thePlayerIsLocatedAt(int prow, int pcol) {
-		
+		throw new PendingException();
 	}
 	
 	/**
@@ -1291,7 +1299,7 @@ public class CucumberStepDefinitions {
 	
 	@And("The opponent is located at {int}:{int}")
 	public void theOpponentIsLocatedAt(int orow, int ocol) {
-		
+		throw new PendingException();
 	}
 	
 	/**
@@ -1372,7 +1380,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("Player {string} initiates to move {string}")
 	public void playerInititatesToMove(String player, String side) {
-		
+		throw new PendingException();
 	}
 	
 	/**
@@ -1385,7 +1393,7 @@ public class CucumberStepDefinitions {
 	
 	@Then("The move {string} shall be {string}")
 	public void theMoveShallBe(String side, String status) {
-		
+		throw new PendingException();
 	}
 	
 	/**
@@ -1398,19 +1406,31 @@ public class CucumberStepDefinitions {
 	
 	@And("Player's new position shall be {int}:{int}")
 	public void playerNewPosition(int nrow, int ncol) {
-		
+		throw new PendingException();
 	}
 	
 	/**
 	 * 
-	 * @author 
+	 * @author alixe delabrousse
 	 * 
 	 * @param nPlayer
 	 */
 	
 	@And("The next player to move shall become {string}")
 	public void theNextPlayerToMoveIs(String nPlayer) {
+		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+		Assert.assertNotNull(player);
 		
+		final TOPlayer nextPlayer;
+		if (player.getColor().toString() == "black") {
+			nextPlayer = QuoridorController.getWhitePlayer();
+		} else {
+			nextPlayer = QuoridorController.getBlackPlayer();
+		}
+		
+		Assert.assertNotNull(nextPlayer);
+		
+	
 	}
 	
 	/**
@@ -1424,7 +1444,7 @@ public class CucumberStepDefinitions {
 	
 	@And("There is a {string} wall at {int}:{int}")
 	public void thereIsAWallAt(String direction, int wrow, int wcol) {
-		
+		throw new PendingException();
 	}
 	
 	
@@ -1453,7 +1473,7 @@ public class CucumberStepDefinitions {
 	
 	@And("The opponent is not {string} from the player")
 	public void theOpponentIsNotNextToThePlayer(String side) {
-		
+		throw new PendingException();
 	}
 	
 
