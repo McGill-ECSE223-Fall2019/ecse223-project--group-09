@@ -612,12 +612,20 @@ public class CucumberStepDefinitions {
 	@When("I initiate to load a saved game {string}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
-			QuoridorController.loadPosition(filename);
-			this.positionValidFlag = true;
+			if (filename.endsWith(".dat")) {
+				try {
+					QuoridorController.loadPosition(filename);
+					this.positionValidFlag = true;
+				} catch (InvalidLoadException ex) {
+					this.positionValidFlag = false;
+				}
+			} else if (filename.endsWith(".mov")) {
+				throw new UnsupportedOperationException("Someone needs to implement the loadGame method");
+			} else {
+				Assert.fail("Unhandled file type (.dat|.move) for file name: " + filename);
+			}
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
-		} catch (InvalidLoadException ex) {
-			this.positionValidFlag = false;
 		}
 	}
 
