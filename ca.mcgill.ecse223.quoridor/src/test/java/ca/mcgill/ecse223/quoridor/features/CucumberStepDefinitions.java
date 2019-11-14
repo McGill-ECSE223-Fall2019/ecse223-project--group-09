@@ -502,10 +502,16 @@ public class CucumberStepDefinitions {
 	@Then("A file with {string} shall be created in the filesystem")
 	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
 		try {
-			// Passing false as argument since file does not exist:
-			// we are not overwriting any file (but this argument
-			// is ignored in this case)
-			Assert.assertTrue(QuoridorController.savePosition(this.fileName, false));
+			if (this.fileName.endsWith(".dat")) {
+				// Passing false as argument since file does not exist:
+				// we are not overwriting any file (but this argument
+				// is ignored in this case)
+				Assert.assertTrue(QuoridorController.savePosition(this.fileName, false));
+			} else if (this.fileName.endsWith(".mov")) {
+				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+			} else {
+				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
+			}
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
@@ -537,8 +543,14 @@ public class CucumberStepDefinitions {
 	@And("The user confirms to overwrite existing file")
 	public void userConfirmsToOverwriteExistingFile() {
 		try {
-			// Pass true since we are overwriting a file
-			this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, true);
+			if (this.fileName.endsWith(".dat")) {
+				// Pass true since we are overwriting a file
+				this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, true);
+			} else if (this.fileName.endsWith(".mov")) {
+				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+			} else {
+				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
+			}
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
@@ -563,8 +575,14 @@ public class CucumberStepDefinitions {
 	@And("The user cancels to overwrite existing file")
 	public void userCancelsToOverwriteExistingFile() {
 		try {
-			// Pass false since we are not overwriting a file
-			this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, false);
+			if (this.fileName.endsWith(".dat")) {
+				// Pass false since we are not overwriting a file
+				this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, false);
+			} else if (this.fileName.endsWith(".mov")) {
+				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+			} else {
+				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
+			}
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
