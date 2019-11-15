@@ -1429,7 +1429,7 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author 
+	 * @author Ada Andrei (260866279)
 	 * 
 	 * @param side
 	 * @param status
@@ -1437,12 +1437,20 @@ public class CucumberStepDefinitions {
 	
 	@Then("The move {string} shall be {string}")
 	public void theMoveShallBe(String side, String status) {
-		throw new PendingException();
-	}
+		switch (status) {
+			case "success":
+				Assert.assertTrue(this.moveResult);
+				break;
+			case "illegal":
+				Assert.assertFalse(this.moveResult);
+				break;
+			default:
+				throw new IllegalArgumentException("Unrecognized status: " + status);
+		}	}
 	
 	/**
 	 * 
-	 * @author
+	 * @author Ada Andrei
 	 * 
 	 * @param nrow
 	 * @param ncol
@@ -1450,7 +1458,10 @@ public class CucumberStepDefinitions {
 	
 	@And("Player's new position shall be {int}:{int}")
 	public void playerNewPosition(int nrow, int ncol) {
-		throw new PendingException();
+		final TOPlayer player = QuoridorController.getPlayerByColor(this.lastPlayerColor);
+		Assert.assertNotNull(player);
+		Assert.assertEquals(row, player.getRow());
+		Assert.assertEquals(col, player.getColumn());
 	}
 	
 	/**
