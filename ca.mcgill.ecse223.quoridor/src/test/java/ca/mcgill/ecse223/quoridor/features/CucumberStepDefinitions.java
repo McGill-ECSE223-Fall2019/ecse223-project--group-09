@@ -1498,9 +1498,10 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author Mohamed Mohamed
+	 * @author Mohamed Mohamed(260855731)
 	 * 
 	 * @param nPlayer
+	 * 
 	 */
 	@And("The next player to move shall become {string}")
 	public void theNextPlayerToMoveIs(String nPlayer) {
@@ -1557,6 +1558,13 @@ public class CucumberStepDefinitions {
 	}
 	
 
+	/**
+	 * 
+	 * @author Mohamed Mohamed(260855731)
+	 * 
+	 * @param side Side of the the enemy player, could be left, right, up or down.
+	 * 
+	 */
 	@And("The opponent is not {string} from the player")
 	public void theOpponentIsNotFromThePlayer(String side) {
 		Quoridor quoridor = QuoridorApplication.getQuoridor(); // getting the current game
