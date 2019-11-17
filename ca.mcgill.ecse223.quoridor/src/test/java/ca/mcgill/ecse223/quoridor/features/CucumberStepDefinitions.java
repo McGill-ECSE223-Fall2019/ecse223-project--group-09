@@ -1258,6 +1258,8 @@ public class CucumberStepDefinitions {
 	// ***** JumpPawn.feature *****
 	
 	
+
+	
 	/**
 	 * 
 	 * @author Alixe Delabrousse (260868412)
@@ -1311,6 +1313,7 @@ public class CucumberStepDefinitions {
 	@And("There are no {string} walls {string} from the player nearby")
 	public void noWallsFromPlayerNearby(String direction, String side) {
 		noWallsFromPlayerHelper(direction, side);
+		
 	}
 
 	/**
@@ -1371,6 +1374,8 @@ public class CucumberStepDefinitions {
 		}
 	}
 	
+	boolean successfulMoveFlag = false;
+	
 	/**
 	 * 
 	 * @author alixe delabrousse (260868412)
@@ -1389,13 +1394,21 @@ public class CucumberStepDefinitions {
 		}
 		
 		if (side.equals("down")) {
-			QuoridorController.jumpCurrentPawnDown();
+			successfulMoveFlag = QuoridorController.jumpCurrentPawnUp();
 		} else if (side.equals("up")) {
-			QuoridorController.jumpCurrentPawnUp();
+			successfulMoveFlag = QuoridorController.jumpCurrentPawnDown();
 		} else if (side.equals("left")) {
-			QuoridorController.jumpCurrentPawnLeft();
-		} else if (side.contentEquals("right")) {
-			QuoridorController.jumpCurrentPawnRight();
+			successfulMoveFlag = QuoridorController.jumpCurrentPawnLeft();
+		} else if (side.equals("right")) {
+			successfulMoveFlag = QuoridorController.jumpCurrentPawnRight();
+		} else if (side.equals("upleft")) {
+			successfulMoveFlag = QuoridorController.jumpCurrentPawnDownLeft();
+		} else if (side.equals("downleft")) {
+			successfulMoveFlag = QuoridorController.jumpCurrentPawnUpLeft();
+		}  else if (side.equals("upright")) {
+			successfulMoveFlag = QuoridorController.jumpCurrentPawnDownRight();
+		} else if (side.equals("downright")) {
+			successfulMoveFlag = QuoridorController.jumpCurrentPawnUpRight();
 		}
 		
 	
