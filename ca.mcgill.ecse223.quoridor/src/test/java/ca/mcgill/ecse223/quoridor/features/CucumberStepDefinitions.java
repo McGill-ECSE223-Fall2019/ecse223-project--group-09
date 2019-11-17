@@ -1535,48 +1535,63 @@ public class CucumberStepDefinitions {
 	 */
 	@And("My opponent is not {string} from the player")
 	public void myOpponentIsNotFromThePlayer(String side) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-		final GamePosition gamePos = quoridor.getCurrentGame().getCurrentPosition();
-		final Tile playerTile;
-		if (gamePos.getPlayerToMove().hasGameAsWhite()) {
+		Quoridor quoridor = QuoridorApplication.getQuoridor(); // getting the current game
+		GamePosition gamePos = quoridor.getCurrentGame().getCurrentPosition(); // getting the current gamePos
+		Tile playerTile; // will be the tile of the current player.
+		
+		if (gamePos.getPlayerToMove().hasGameAsWhite()) {//is white
 			playerTile = gamePos.getWhitePosition().getTile();
-		} else {
+
+		} else {//is black
 			playerTile = gamePos.getBlackPosition().getTile();
+
 		}
 
-		Tile target = null;
-		for (int i = 0; i < 81; ++i) {
+		Tile target = null; // the tile pawn is going to
+		for (int i = 0; i < 81; ++i) { // making as so the target tile will cover all the tiles of the board
+			
 			target = quoridor.getBoard().getTile(i);
 
-			final int rowDiff = target.getRow() - playerTile.getRow();
-			final int colDiff = target.getColumn() - playerTile.getColumn();
+			int rowDiff = target.getRow() - playerTile.getRow(); // difference in row
+			int colDiff = target.getColumn() - playerTile.getColumn(); // difference in col
 
-			// Sure, same tile is for sure not on side, but thats kind of dumb...
-			if (rowDiff == 0 && colDiff == 0) continue;
+			// Same tile is for sure not on the side, but thats kind of dumb...
+			if (rowDiff == 0 && colDiff == 0) {
+				continue;
+			}
 
 			switch (side) {
 				case "left":
-					if (rowDiff == 0 && colDiff == 1) continue;
-					break;
+					if (rowDiff == 0 && colDiff == 1) { //if he is on left than this should be true 
+						continue;// continue for loop until this becomes true, when it does, we have the position
+					}  
+					break; //dont check for the rest bc it stopped here
 				case "right":
-					if (rowDiff == 0 && colDiff == -1) continue;
+					if (rowDiff == 0 && colDiff == -1) {
+						continue;
+					}
 					break;
 				case "up":
-					if (rowDiff == 1 && colDiff == 0) continue;
+					if (rowDiff == 1 && colDiff == 0) {
+						continue;
+					}
 					break;
 				case "down":
-					if (rowDiff == -1 && colDiff == 0) continue;
+					if (rowDiff == -1 && colDiff == 0) {
+						continue;
+					}
 					break;
+				//there is no deffault bc he should input something right	
 			}
 
-			break;
+			break;//if break than it was true that we have the position
 		}
 
-		Assert.assertNotNull(target);
+		Assert.assertNotNull(target); 
 
 		// Then give this tile to the opponent
 		if (gamePos.getPlayerToMove().hasGameAsWhite()) {
-			gamePos.getBlackPosition().setTile(target);
+			gamePos.getBlackPosition().setTile(target); //changing the position to black to where he is or should be
 		} else {
 			gamePos.getWhitePosition().setTile(target);
 		}
@@ -1615,37 +1630,49 @@ public class CucumberStepDefinitions {
 
 		Tile target = null; // the tile pawn is going to
 		for (int i = 0; i < 81; ++i) { // making as so the target tile will cover all the tiles of the board
+			
 			target = quoridor.getBoard().getTile(i);
 
 			int rowDiff = target.getRow() - playerTile.getRow(); // difference in row
 			int colDiff = target.getColumn() - playerTile.getColumn(); // difference in col
 
-			// Sure, same tile is for sure not on side, but thats kind of dumb...
-			if (rowDiff == 0 && colDiff == 0) continue;
+			// Same tile is for sure not on the side, but thats kind of dumb...
+			if (rowDiff == 0 && colDiff == 0) {
+				continue;
+			}
 
 			switch (side) {
 				case "left":
-					if (rowDiff == 0 && colDiff == 1) continue; //if he is on left than 
-					break;
+					if (rowDiff == 0 && colDiff == 1) { //if he is on left than this should be true 
+						continue;// continue for loop until this becomes true, when it does, we have the position
+					}  
+					break; //dont check for the rest bc it stopped here
 				case "right":
-					if (rowDiff == 0 && colDiff == -1) continue;
+					if (rowDiff == 0 && colDiff == -1) {
+						continue;
+					}
 					break;
 				case "up":
-					if (rowDiff == 1 && colDiff == 0) continue;
+					if (rowDiff == 1 && colDiff == 0) {
+						continue;
+					}
 					break;
 				case "down":
-					if (rowDiff == -1 && colDiff == 0) continue;
+					if (rowDiff == -1 && colDiff == 0) {
+						continue;
+					}
 					break;
+				//there is no deffault bc he should input something right	
 			}
 
-			break;
+			break;//if break than it was true that we have the position
 		}
 
-		Assert.assertNotNull(target);
+		Assert.assertNotNull(target); 
 
 		// Then give this tile to the opponent
 		if (gamePos.getPlayerToMove().hasGameAsWhite()) {
-			gamePos.getBlackPosition().setTile(target); //changing his position
+			gamePos.getBlackPosition().setTile(target); //changing the position to black to where he is or should be
 		} else {
 			gamePos.getWhitePosition().setTile(target);
 		}
