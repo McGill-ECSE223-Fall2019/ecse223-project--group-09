@@ -1512,7 +1512,7 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author
+	 * @author Barry Chen (260632542)
 	 * 
 	 * @param direction
 	 * @param wrow
@@ -1521,7 +1521,27 @@ public class CucumberStepDefinitions {
 	
 	@And("There is a {string} wall at {int}:{int}")
 	public void thereIsAWallAt(String direction, int wrow, int wcol) {
-		throw new PendingException();
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		final Game game = quoridor.getCurrentGame();
+		final GamePosition gpos = game.getCurrentPosition();
+
+		final Direction dir = direction.equals("vertical") ? Direction.Vertical : Direction.Horizontal;
+		final Tile tile = QuoridorController.getTileFromRowAndColumn(wrow, wcol);
+
+		if (gpos.hasWhiteWallsOnBoard()) {
+			final WallMove m = gpos.getWhiteWallsOnBoard(0).getMove();
+			m.setTargetTile(tile);
+			m.setWallDirection(dir);
+		} else if (gpos.hasBlackWallsOnBoard()) {
+			final WallMove m = gpos.getBlackWallsOnBoard(0).getMove();
+			m.setTargetTile(tile);
+			m.setWallDirection(dir);
+		} else {
+			final Wall w = gpos.getWhiteWallsInStock(0);
+			gpos.removeWhiteWallsInStock(w);
+			new WallMove(0, 0, game.getWhitePlayer(), tile, game, dir, w);
+			gpos.addWhiteWallsOnBoard(w);
+		}
 	}
 	
 	
