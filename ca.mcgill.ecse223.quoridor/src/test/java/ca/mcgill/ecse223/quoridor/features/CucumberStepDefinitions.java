@@ -955,7 +955,7 @@ public class CucumberStepDefinitions {
 	}
 
 	/**
-	 * @author alixe delabrousse (260868412) & mohamed mohamed (260855731)
+	 * @author Alixe Delabrousse (260868412) & Mohamed Mohamed (260855731)
 	 */
 
 	@Then("I shall be notified that my move is illegal")
@@ -1528,7 +1528,59 @@ public class CucumberStepDefinitions {
 
 	// ***** MovePawn.feature *****
 	
-	
+	/**
+	 * @param side Side
+	 *
+	 * @author Mohamed Mohamed
+	 */
+	@And("My opponent is not {string} from the player")
+	public void myOpponentIsNotFromThePlayer(String side) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		final GamePosition gamePos = quoridor.getCurrentGame().getCurrentPosition();
+		final Tile playerTile;
+		if (gamePos.getPlayerToMove().hasGameAsWhite()) {
+			playerTile = gamePos.getWhitePosition().getTile();
+		} else {
+			playerTile = gamePos.getBlackPosition().getTile();
+		}
+
+		Tile target = null;
+		for (int i = 0; i < 81; ++i) {
+			target = quoridor.getBoard().getTile(i);
+
+			final int rowDiff = target.getRow() - playerTile.getRow();
+			final int colDiff = target.getColumn() - playerTile.getColumn();
+
+			// Sure, same tile is for sure not on side, but thats kind of dumb...
+			if (rowDiff == 0 && colDiff == 0) continue;
+
+			switch (side) {
+				case "left":
+					if (rowDiff == 0 && colDiff == 1) continue;
+					break;
+				case "right":
+					if (rowDiff == 0 && colDiff == -1) continue;
+					break;
+				case "up":
+					if (rowDiff == 1 && colDiff == 0) continue;
+					break;
+				case "down":
+					if (rowDiff == -1 && colDiff == 0) continue;
+					break;
+			}
+
+			break;
+		}
+
+		Assert.assertNotNull(target);
+
+		// Then give this tile to the opponent
+		if (gamePos.getPlayerToMove().hasGameAsWhite()) {
+			gamePos.getBlackPosition().setTile(target);
+		} else {
+			gamePos.getWhitePosition().setTile(target);
+		}
+	}
 
 	/**
 	 * @param direction Direction of wall
@@ -1542,15 +1594,61 @@ public class CucumberStepDefinitions {
 	}
 	
 	/**
+	 * @author Mohamed Mohamed
+	 *
+	 * @param side Side, could be wither left right up or down 
 	 * 
-	 * @author 
-	 * 
-	 * @param side
 	 */
-	
 	@And("The opponent is not {string} from the player")
-	public void theOpponentIsNotNextToThePlayer(String side) {
-		throw new PendingException();
+	public void theOpponentIsNotFromThePlayer(String side) {
+		Quoridor quoridor = QuoridorApplication.getQuoridor(); // getting the current game
+		GamePosition gamePos = quoridor.getCurrentGame().getCurrentPosition(); // getting the current gamePos
+		Tile playerTile; // will be the tile of the current player.
+		
+		if (gamePos.getPlayerToMove().hasGameAsWhite()) {//is white
+			playerTile = gamePos.getWhitePosition().getTile();
+
+		} else {//is black
+			playerTile = gamePos.getBlackPosition().getTile();
+
+		}
+
+		Tile target = null; // the tile pawn is going to
+		for (int i = 0; i < 81; ++i) { // making as so the target tile will cover all the tiles of the board
+			target = quoridor.getBoard().getTile(i);
+
+			int rowDiff = target.getRow() - playerTile.getRow(); // difference in row
+			int colDiff = target.getColumn() - playerTile.getColumn(); // difference in col
+
+			// Sure, same tile is for sure not on side, but thats kind of dumb...
+			if (rowDiff == 0 && colDiff == 0) continue;
+
+			switch (side) {
+				case "left":
+					if (rowDiff == 0 && colDiff == 1) continue; //if he is on left than 
+					break;
+				case "right":
+					if (rowDiff == 0 && colDiff == -1) continue;
+					break;
+				case "up":
+					if (rowDiff == 1 && colDiff == 0) continue;
+					break;
+				case "down":
+					if (rowDiff == -1 && colDiff == 0) continue;
+					break;
+			}
+
+			break;
+		}
+
+		Assert.assertNotNull(target);
+
+		// Then give this tile to the opponent
+		if (gamePos.getPlayerToMove().hasGameAsWhite()) {
+			gamePos.getBlackPosition().setTile(target); //changing his position
+		} else {
+			gamePos.getWhitePosition().setTile(target);
+		}
 	}
 	
 
