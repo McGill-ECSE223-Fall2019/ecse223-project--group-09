@@ -502,10 +502,16 @@ public class CucumberStepDefinitions {
 	@Then("A file with {string} shall be created in the filesystem")
 	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
 		try {
-			// Passing false as argument since file does not exist:
-			// we are not overwriting any file (but this argument
-			// is ignored in this case)
-			Assert.assertTrue(QuoridorController.savePosition(this.fileName, false));
+			if (this.fileName.endsWith(".dat")) {
+				// Passing false as argument since file does not exist:
+				// we are not overwriting any file (but this argument
+				// is ignored in this case)
+				Assert.assertTrue(QuoridorController.savePosition(this.fileName, false));
+			} else if (this.fileName.endsWith(".mov")) {
+				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+			} else {
+				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
+			}
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
@@ -537,8 +543,14 @@ public class CucumberStepDefinitions {
 	@And("The user confirms to overwrite existing file")
 	public void userConfirmsToOverwriteExistingFile() {
 		try {
-			// Pass true since we are overwriting a file
-			this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, true);
+			if (this.fileName.endsWith(".dat")) {
+				// Pass true since we are overwriting a file
+				this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, true);
+			} else if (this.fileName.endsWith(".mov")) {
+				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+			} else {
+				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
+			}
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
@@ -563,8 +575,14 @@ public class CucumberStepDefinitions {
 	@And("The user cancels to overwrite existing file")
 	public void userCancelsToOverwriteExistingFile() {
 		try {
-			// Pass false since we are not overwriting a file
-			this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, false);
+			if (this.fileName.endsWith(".dat")) {
+				// Pass false since we are not overwriting a file
+				this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, false);
+			} else if (this.fileName.endsWith(".mov")) {
+				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+			} else {
+				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
+			}
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen: " + ex.getMessage());
 		}
@@ -594,12 +612,20 @@ public class CucumberStepDefinitions {
 	@When("I initiate to load a saved game {string}")
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
-			QuoridorController.loadPosition(filename);
-			this.positionValidFlag = true;
+			if (filename.endsWith(".dat")) {
+				try {
+					QuoridorController.loadPosition(filename);
+					this.positionValidFlag = true;
+				} catch (InvalidLoadException ex) {
+					this.positionValidFlag = false;
+				}
+			} else if (filename.endsWith(".mov")) {
+				throw new UnsupportedOperationException("Someone needs to implement the loadGame method");
+			} else {
+				Assert.fail("Unhandled file type (.dat|.move) for file name: " + filename);
+			}
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
-		} catch (InvalidLoadException ex) {
-			this.positionValidFlag = false;
 		}
 	}
 
@@ -1416,7 +1442,7 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author 
+	 * @author Ada Andrei (260866279)
 	 * 
 	 * @param side
 	 * @param status
@@ -1424,12 +1450,20 @@ public class CucumberStepDefinitions {
 	
 	@Then("The move {string} shall be {string}")
 	public void theMoveShallBe(String side, String status) {
-		throw new PendingException();
-	}
+		switch (status) {
+			case "success":
+				Assert.assertTrue(this.moveResult);
+				break;
+			case "illegal":
+				Assert.assertFalse(this.moveResult);
+				break;
+			default:
+				throw new IllegalArgumentException("Unrecognized status: " + status);
+		}	}
 	
 	/**
 	 * 
-	 * @author
+	 * @author Ada Andrei
 	 * 
 	 * @param nrow
 	 * @param ncol
@@ -1437,7 +1471,10 @@ public class CucumberStepDefinitions {
 	
 	@And("Player's new position shall be {int}:{int}")
 	public void playerNewPosition(int nrow, int ncol) {
-		throw new PendingException();
+		final TOPlayer player = QuoridorController.getPlayerByColor(this.lastPlayerColor);
+		Assert.assertNotNull(player);
+		Assert.assertEquals(row, player.getRow());
+		Assert.assertEquals(col, player.getColumn());
 	}
 	
 	/**
