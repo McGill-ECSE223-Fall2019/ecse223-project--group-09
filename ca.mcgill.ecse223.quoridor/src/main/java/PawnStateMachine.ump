@@ -1,0 +1,341 @@
+namespace ca.mcgill.ecse223.quoridor.controller;
+
+use QuoridorGame.ump;
+
+class PawnBehavior {
+
+    0..1 -> 0..1 Game currentGame;
+    0..1 -> 0..1 Player player;
+
+    pawnSM {
+        Idle {
+            initialize -> Playing;
+        }
+
+        Playing {
+            Horizontal {
+                [getCurrentPawnRow() == 1] -> Horizontal.AtBottomBorder;
+                [getCurrentPawnRow() == 9] -> Horizontal.AtTopBorder;
+                [inRangeExclusive(getCurrentPawnRow(), 1, 9)] -> Horizontal.AtCenter;
+
+                jumpUpLeft [isLegalLateralJump(MoveDirection.North, MoveDirection.West)] / { this.playJumpMove(1, -1); } -> Finished;
+                jumpUpRight [isLegalLateralJump(MoveDirection.North, MoveDirection.East)] / { this.playJumpMove(1, 1); } -> Finished;
+
+                jumpDownLeft [isLegalLateralJump(MoveDirection.South, MoveDirection.West)] / { this.playJumpMove(-1, -1); } -> Finished;
+                jumpDownRight [isLegalLateralJump(MoveDirection.South, MoveDirection.East)] / { this.playJumpMove(-1, 1); } -> Finished;
+
+                AtCenter {
+                    moveUp [isLegalStep(MoveDirection.North)] / { this.playStepMove(1, 0); } -> Finished;
+                    moveDown [isLegalStep(MoveDirection.South)] / { this.playStepMove(-1, 0); } -> Finished;
+
+                    jumpUp [isLegalFarJump(MoveDirection.North)] / { this.playJumpMove(2, 0); } -> Finished;
+                    jumpDown [isLegalFarJump(MoveDirection.South)] / { this.playJumpMove(-2, 0); } -> Finished;
+                }
+
+                AtTopBorder {
+                    moveDown [isLegalStep(MoveDirection.South)] / { this.playStepMove(-1, 0); } -> Finished;
+
+                    jumpDown [isLegalFarJump(MoveDirection.South)] / { this.playJumpMove(-2, 0); } -> Finished;
+                }
+
+                AtBottomBorder {
+                    moveUp [isLegalStep(MoveDirection.North)] / { this.playStepMove(1, 0); } -> Finished;
+
+                    jumpUp [isLegalFarJump(MoveDirection.North)] / { this.playJumpMove(2, 0); } -> Finished;
+                }
+            }
+
+            ||
+
+            Vertical {
+                [getCurrentPawnColumn() == 1] -> Vertical.AtLeftBorder;
+                [getCurrentPawnColumn() == 9] -> Vertical.AtRightBorder;
+                [inRangeExclusive(getCurrentPawnColumn(), 1, 9)] -> Vertical.AtCenter;
+
+                jumpLeftUp [isLegalLateralJump(MoveDirection.West, MoveDirection.North)] / { this.playJumpMove(1, -1); } -> Finished;
+                jumpLeftDown [isLegalLateralJump(MoveDirection.West, MoveDirection.South)] / { this.playJumpMove(-1, -1); } -> Finished;
+
+                jumpRightUp [isLegalLateralJump(MoveDirection.East, MoveDirection.North)] / { this.playJumpMove(1, 1); } -> Finished;
+                jumpRightDown [isLegalLateralJump(MoveDirection.East, MoveDirection.South)] / { this.playJumpMove(-1, 1); } -> Finished;
+
+                AtCenter {
+                    moveLeft [isLegalStep(MoveDirection.West)] / { this.playStepMove(0, -1); } -> Finished;
+                    moveRight [isLegalStep(MoveDirection.East)] / { this.playStepMove(0, 1); } -> Finished;
+
+                    jumpLeft [isLegalFarJump(MoveDirection.West)] / { this.playJumpMove(0, -2); } -> Finished;
+                    jumpRight [isLegalFarJump(MoveDirection.East)] / { this.playJumpMove(0, 2); } -> Finished;
+                }
+
+                AtLeftBorder {
+                    moveRight [isLegalStep(MoveDirection.East)] / { this.playStepMove(0, 1); } -> Finished;
+
+                    jumpRight [isLegalFarJump(MoveDirection.East)] / { this.playJumpMove(0, 2); } -> Finished;
+                }
+
+                AtRightBorder {
+                    moveLeft [isLegalStep(MoveDirection.West)] / { this.playStepMove(0, -1); } -> Finished;
+
+                    jumpLeft [isLegalFarJump(MoveDirection.West)] / { this.playJumpMove(0, -2); } -> Finished;
+                }
+            }
+        }
+
+        Finished {
+            entry / { QuoridorController.switchCurrentPlayer(); }
+        }
+    }
+
+    // Returns the current row number of the pawn
+    int getCurrentPawnRow() {
+        final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
+        if (this.getPlayer().hasGameAsWhite()) {
+            return gpos.getWhitePosition().getTile().getRow();
+        } else {
+            return gpos.getBlackPosition().getTile().getRow();
+        }
+    }
+
+    // Returns the current column number of the pawn
+    int getCurrentPawnColumn() {
+        final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
+        if (this.getPlayer().hasGameAsWhite()) {
+            return gpos.getWhitePosition().getTile().getColumn();
+        } else {
+            return gpos.getBlackPosition().getTile().getColumn();
+        }
+    }
+
+    // Returns if it is legal to step in the given direction
+    boolean isLegalStep(MoveDirection dir) {
+        final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
+
+        // If we have a pawn or pawn in the direction we are moving,
+        // the step cannot be legal
+        switch (dir) {
+            case East:
+                return QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1)
+                    && !QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+            case South:
+                return QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn())
+                    && !QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+            case West:
+                return QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1)
+                    && !QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+            case North:
+                return QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn())
+                    && !QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn());
+            default:
+                throw new IllegalArgumentException("Unknown move direction: " + dir);
+        }
+    }
+
+    // Returns if it is legal to far jump in the given direction
+    boolean isLegalFarJump(MoveDirection dir) {
+        final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
+
+        // Two types:
+        // - Far jump:
+        //   [X O @] where 'X' jumps over 'O' to '@'
+        //   [     ]
+        // - Lateral jump:
+        //   [X O| ] where 'X' moves over 'O' to '@'
+        //   [  @  ]
+
+        switch (dir) {
+            case East:
+                if (QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1)) {
+                    // We expected pawn 'O' and it's not there
+                    // Pawn 'X' should not be able to jump
+                    return false;
+                }
+                if (QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn())) {
+                    // Nothing can jump over walls
+                    return false;
+                }
+
+                // This determines if we are far jumping or lateral jumping
+                return QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 2)
+                    && !QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1);
+            case South:
+                if (QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn())) {
+                    // We expected pawn 'O' and it's not there
+                    // Pawn 'X' should not be able to jump
+                    return false;
+                }
+                if (QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn())) {
+                    // Nothing can jump over walls
+                    return false;
+                }
+
+                return QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() - 2, this.getCurrentPawnColumn())
+                    && !QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn());
+            case West:
+                if (QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1)) {
+                    // We expected pawn 'O' and it's not there
+                    // Pawn 'X' should not be able to jump
+                    return false;
+                }
+                if (QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn())) {
+                    // Nothing can jump over walls
+                    return false;
+                }
+
+                return QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 2)
+                    && !QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1);
+            case North:
+                if (QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn())) {
+                    // We expected pawn 'O' and it's not there
+                    // Pawn 'X' should not be able to jump
+                    return false;
+                }
+                if (QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn())) {
+                    // Nothing can jump over walls
+                    return false;
+                }
+
+                return QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() + 2, this.getCurrentPawnColumn())
+                    && !QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn());
+        default:
+            throw new IllegalArgumentException("Unknown jump direction: " + dir);
+        }
+    }
+
+    // Returns if it is legal to lateral jump in the given direction
+    boolean isLegalLateralJump(MoveDirection dir1, MoveDirection dir2) {
+        final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
+
+        // Two types:
+        // - Far jump:
+        //   [X O @] where 'X' jumps over 'O' to '@'
+        //   [     ]
+        // - Lateral jump:
+        //   [X O| ] where 'X' moves over 'O' to '@'
+        //   [  @  ]
+
+        switch (dir1) {
+            case East:
+                if (QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1)) {
+                    // We expected pawn 'O' and it's not there
+                    // Pawn 'X' should not be able to jump
+                    return false;
+                }
+                if (QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn())) {
+                    // Nothing can jump over walls
+                    return false;
+                }
+
+                switch (dir2) {
+                    case South:
+                        return (QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1)
+                            || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 2))
+                            && !QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1);
+                    case North:
+                        return (QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1)
+                            || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 2))
+                            && !QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() + 1);
+                    default:
+                        return false;
+                }
+            case South:
+                if (QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn())) {
+                    // We expected pawn 'O' and it's not there
+                    // Pawn 'X' should not be able to jump
+                    return false;
+                }
+                if (QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn())) {
+                    // Nothing can jump over walls
+                    return false;
+                }
+
+                switch (dir2) {
+                    case East:
+                        return (QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn())
+                            || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() - 2, this.getCurrentPawnColumn()))
+                            && !QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn());
+                    case West:
+                        return (QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn())
+                            || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() - 2, this.getCurrentPawnColumn()))
+                            && !QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow() - 1, this.getCurrentPawnColumn());
+                    default:
+                        return false;
+                }
+            case West:
+                if (QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1)) {
+                    // We expected pawn 'O' and it's not there
+                    // Pawn 'X' should not be able to jump
+                    return false;
+                }
+                if (QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn())) {
+                    // Nothing can jump over walls
+                    return false;
+                }
+
+                switch (dir2) {
+                    case South:
+                        return (QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1)
+                            || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 2))
+                            && !QuoridorController.anyWallBelowTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1);
+                    case North:
+                        return (QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1)
+                            || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 2))
+                            && !QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn() - 1);
+                    default:
+                        return false;
+                }
+            case North:
+                if (QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn())) {
+                    // We expected pawn 'O' and it's not there
+                    // Pawn 'X' should not be able to jump
+                    return false;
+                }
+                if (QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow(), this.getCurrentPawnColumn())) {
+                    // Nothing can jump over walls
+                    return false;
+                }
+
+                switch (dir2) {
+                    case East:
+                        return (QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn())
+                            || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() + 2, this.getCurrentPawnColumn()))
+                            && !QuoridorController.anyWallRightOfTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn());
+                    case West:
+                        return (QuoridorController.anyWallAboveTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn())
+                            || !QuoridorController.validatePawnPlacement(gpos, this.getCurrentPawnRow() + 2, this.getCurrentPawnColumn()))
+                            && !QuoridorController.anyWallLeftOfTile(gpos, this.getCurrentPawnRow() + 1, this.getCurrentPawnColumn());
+                    default:
+                        return false;
+                }
+        default:
+            throw new IllegalArgumentException("Unknown jump direction: " + dir1);
+        }
+    }
+
+    private void playStepMove(int drow, int dcol) {
+        final int moves = this.getCurrentGame().numberOfMoves();
+        final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
+        final Tile target = QuoridorController.getTileFromRowAndColumn(
+                this.getCurrentPawnRow() + drow, this.getCurrentPawnColumn() + dcol);
+        QuoridorController.forcePlayStepMove(moves, moves / 2, this.getPlayer(), target, gpos);
+    }
+
+    private void playJumpMove(int drow, int dcol) {
+        final int moves = this.getCurrentGame().numberOfMoves();
+        final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
+        final Tile target = QuoridorController.getTileFromRowAndColumn(
+                this.getCurrentPawnRow() + drow, this.getCurrentPawnColumn() + dcol);
+        QuoridorController.forcePlayJumpMove(moves, moves / 2, this.getPlayer(), target, gpos);
+    }
+
+    // Action to be called when an illegal move is attempted
+    void illegalMove() {
+        throw new IllegalPawnMoveException("Attempted pawn move is illegal!");
+    }
+
+    private static boolean inRangeExclusive(int val, int lo, int hi) {
+        return lo < val && val < hi;
+    }
+
+    // Enumeration for the possible moving directions
+    // (directions are from the viewpoint of white player)
+    enum MoveDirection { East, South, West, North; }
+}

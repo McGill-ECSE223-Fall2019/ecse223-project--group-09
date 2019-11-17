@@ -335,13 +335,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
     	//rotateWall
     	double val = Math.abs(clicks);
-    	if(val > 0.150 && val < 0.25) {
+    	if(val > 0.8 && val < 1.2) {
   			QuoridorController.rotateWall(wallCandidate);
   			System.out.println("Rotated the wall candidate " );
   			this.repaint();
   			
     	}else{
-    		System.out.println("To rotate must be bigger than 0.15 and smaller than 0.25: " + Math.abs(clicks));	
+    		System.out.println("To rotate must be bigger than 0.8 and smaller than 1,2: " + Math.abs(clicks));	
     	}
     }
     
@@ -368,10 +368,44 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         
     }
 
+    /**
+     * This gets the pawn moving!
+     *
+     * @author Group-9
+     */
     @Override
     public void onTileClicked(int row, int col) {
-        // Proof that it works:
-        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row);
+        if (this.gridPanel.getWallCandidate() != null) {
+            // We are grabbing the wall, so no tile clicking is allowed
+            return;
+        }
+
+        // Here we try to move the player
+
+        final TOPlayer currentPlayer = QuoridorController.getPlayerOfCurrentTurn();
+        final int r = currentPlayer.getRow();
+        final int c = currentPlayer.getColumn();
+
+        final int dcol = col - c;
+        final int drow = row - r;
+
+        // Steps
+        if (dcol == 1 && drow == 0)     QuoridorController.moveCurrentPawnRight();
+        if (dcol == -1 && drow == 0)    QuoridorController.moveCurrentPawnLeft();
+        if (dcol == 0 && drow == 1)     QuoridorController.moveCurrentPawnUp();
+        if (dcol == 0 && drow == -1)    QuoridorController.moveCurrentPawnDown();
+
+        // Far jumps
+        if (dcol == 2 && drow == 0)     QuoridorController.jumpCurrentPawnRight();
+        if (dcol == -2 && drow == 0)    QuoridorController.jumpCurrentPawnLeft();
+        if (dcol == 0 && drow == 2)     QuoridorController.jumpCurrentPawnUp();
+        if (dcol == 0 && drow == -2)    QuoridorController.jumpCurrentPawnDown();
+
+        // Lateral jumps
+        if (dcol == 1 && drow == 1)     QuoridorController.jumpCurrentPawnUpRight();
+        if (dcol == -1 && drow == 1)    QuoridorController.jumpCurrentPawnUpLeft();
+        if (dcol == 1 && drow == -1)    QuoridorController.jumpCurrentPawnDownRight();
+        if (dcol == -1 && drow == -1)   QuoridorController.jumpCurrentPawnDownLeft();
     }
 
     @Override
