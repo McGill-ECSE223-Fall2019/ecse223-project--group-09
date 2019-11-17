@@ -1405,7 +1405,7 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author alixe delabrousse (260868412)
+	 * @author ???
 	 * 
 	 * @param player
 	 * @param side
@@ -1498,7 +1498,7 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author alixe delabrousse (260868412)
+	 * @author ???
 	 * 
 	 * @param nPlayer
 	 */
