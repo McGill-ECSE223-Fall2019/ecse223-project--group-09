@@ -1283,7 +1283,8 @@ public class CucumberStepDefinitions {
 
 	// ***** JumpPawn.feature *****
 	
-	
+	private boolean moveResult;
+	private Color lastPlayerColor;
 
 	
 	/**
@@ -1410,35 +1411,53 @@ public class CucumberStepDefinitions {
 	 * @param side
 	 */
 	@When("Player {string} initiates to move {string}")
-	public void playerInititatesToMove(String player, String side) {
-		final Player p = QuoridorController.getCurrentPlayer();
-		
-		if(player.equals("black")) {
-			Assert.assertTrue(p.hasGameAsBlack());
-		} else {
-			Assert.assertTrue(p.hasGameAsWhite());
+	public void playerInititatesToMove(String color, String side) {
+		this.lastPlayerColor = Color.valueOf(color.toUpperCase());
+
+		// Note: In the controller and the view, up is defined as increasing in rows
+		// which is the opposite from the tester. Same thing with down.
+		//
+		// which is why the code calls the method with opposite Y-direction!
+
+		// Since jumps and moves both use the same thing
+		// we will try moves first, and then try jumps if
+		// that was unsuccessful
+		switch (side) {
+			case "left":
+				this.moveResult = QuoridorController.moveCurrentPawnLeft()
+						|| QuoridorController.jumpCurrentPawnLeft();
+				break;
+			case "right":
+				this.moveResult = QuoridorController.moveCurrentPawnRight()
+						|| QuoridorController.jumpCurrentPawnRight();
+				break;
+			case "down":
+				this.moveResult = QuoridorController.moveCurrentPawnUp()
+						|| QuoridorController.jumpCurrentPawnUp();
+				break;
+			case "up":
+				this.moveResult = QuoridorController.moveCurrentPawnDown()
+						|| QuoridorController.jumpCurrentPawnDown();
+				break;
+			case "downright":
+				this.moveResult = QuoridorController.jumpCurrentPawnUpRight();
+				break;
+			case "upright":
+				this.moveResult = QuoridorController.jumpCurrentPawnDownRight();
+				break;
+			case "downleft":
+				this.moveResult = QuoridorController.jumpCurrentPawnUpLeft();
+				break;
+			case "upleft":
+				this.moveResult = QuoridorController.jumpCurrentPawnDownLeft();
+				break;
+			default:
+				throw new AssertionError("Unsupported move side: " + side);
 		}
-		
-		if (side.equals("down")) {
-			successfulMoveFlag = QuoridorController.jumpCurrentPawnUp();
-		} else if (side.equals("up")) {
-			successfulMoveFlag = QuoridorController.jumpCurrentPawnDown();
-		} else if (side.equals("left")) {
-			successfulMoveFlag = QuoridorController.jumpCurrentPawnLeft();
-		} else if (side.equals("right")) {
-			successfulMoveFlag = QuoridorController.jumpCurrentPawnRight();
-		} else if (side.equals("upleft")) {
-			successfulMoveFlag = QuoridorController.jumpCurrentPawnDownLeft();
-		} else if (side.equals("downleft")) {
-			successfulMoveFlag = QuoridorController.jumpCurrentPawnUpLeft();
-		}  else if (side.equals("upright")) {
-			successfulMoveFlag = QuoridorController.jumpCurrentPawnDownRight();
-		} else if (side.equals("downright")) {
-			successfulMoveFlag = QuoridorController.jumpCurrentPawnUpRight();
-		}
+	}
 		
 	
-	}
+	
 	
 	/**
 	 * 
@@ -1473,8 +1492,8 @@ public class CucumberStepDefinitions {
 	public void playerNewPosition(int nrow, int ncol) {
 		final TOPlayer player = QuoridorController.getPlayerByColor(this.lastPlayerColor);
 		Assert.assertNotNull(player);
-		Assert.assertEquals(row, player.getRow());
-		Assert.assertEquals(col, player.getColumn());
+		Assert.assertEquals(nrow, player.getRow());
+		Assert.assertEquals(ncol, player.getColumn());
 	}
 	
 	/**
@@ -1486,20 +1505,9 @@ public class CucumberStepDefinitions {
 	
 	@And("The next player to move shall become {string}")
 	public void theNextPlayerToMoveIs(String nPlayer) {
-//		final Player player = QuoridorController.getCurrentPlayer();
-//		Assert.assertNotNull(player);
-//		
-//		final Player nextPlayer = player.getNextPlayer();
-//		
-//		Assert.assertNotNull(nextPlayer);
-//		if (nPlayer.equals("black")) {
-//			Assert.assertTrue(nextPlayer.hasGameAsBlack());
-//		} else {
-//			Assert.assertTrue(nextPlayer.hasGameAsWhite());
-//		}
-	
-		QuoridorController.updatePlayerOfCurrentRound(Color.valueOf(nPlayer.toUpperCase()));
-		
+		final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
+		Assert.assertNotNull(player);
+		Assert.assertEquals(Color.valueOf(nPlayer.toUpperCase()), player.getColor());
 	}
 	
 	/**
