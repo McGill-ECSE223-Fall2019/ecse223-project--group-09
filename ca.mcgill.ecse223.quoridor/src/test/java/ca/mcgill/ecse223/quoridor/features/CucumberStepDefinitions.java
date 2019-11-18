@@ -267,7 +267,9 @@ public class CucumberStepDefinitions {
 	 */
 	@And("White player chooses a username")
 	public void whitePlayerChoosesUsername() {
-		QuoridorController.createOrSelectUsername("user test 1", Color.WHITE);
+		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame();
+		QuoridorController.createOrSelectUsername("Player Un", Color.WHITE);
+		Assert.assertNotNull(aNewGame.getBlackPlayer().getUser().getName());
 	}
 
 	/**
@@ -275,7 +277,9 @@ public class CucumberStepDefinitions {
 	 */
 	@And("Black player chooses a username")
 	public void blackPlayerChoosesUsername() {
-		QuoridorController.createOrSelectUsername("user test 2", Color.BLACK);
+		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame();
+		QuoridorController.createOrSelectUsername("Player Deux", Color.BLACK);
+		Assert.assertNotNull(aNewGame.getBlackPlayer().getUser().getName());
 	}
 
 	/**
