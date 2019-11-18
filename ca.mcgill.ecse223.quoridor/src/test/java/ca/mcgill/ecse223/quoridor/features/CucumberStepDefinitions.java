@@ -1405,7 +1405,7 @@ public class CucumberStepDefinitions {
 	
 	/**
 	 * 
-	 * @author ???
+	 * @author Group-9
 	 * 
 	 * @param player
 	 * @param side
