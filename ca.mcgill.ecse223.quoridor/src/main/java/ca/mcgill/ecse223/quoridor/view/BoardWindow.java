@@ -55,10 +55,9 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     private final JButton grabWallButton = new JButton("Grab a wall");
 
     /**
-     * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
+     * @author Mohamed Mohamed adding the rotate wall JButton
      */
 
-    private final JButton dropWall = new JButton("Drop Wall");
     private final JButton rotateWall = new JButton("Rotate Wall");
 
     public BoardWindow() {
@@ -120,14 +119,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         grabWallButton.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         grabWallButton.addActionListener(e -> this.onGrabAWallButtonClicked());
 
-        /**
-         * @author Mohamed Mohamed adding the drop wall and rotate wall JButton
-         */
-      	dropWall.setAlignmentX(Component.CENTER_ALIGNMENT);
-        dropWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
-        dropWall.setEnabled(true);
-        dropWall.addActionListener(e -> this.onDropWallButtonClicked());
-
         rotateWall.setAlignmentX(Component.CENTER_ALIGNMENT);
         rotateWall.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         rotateWall.setEnabled(true);
@@ -148,25 +139,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         panel.add(playerInfoPanel);
 
         panel.add(grabWallButton);
-        panel.add(dropWall);
         panel.add(rotateWall);
-
-        // might just delete this depends on my patience
-        /*
-         * panel.setLayout(new GridBagLayout());
-         *
-         *
-         * GridBagConstraints dropCst = new GridBagConstraints(); dropCst.gridx = 0;
-         * dropCst.gridy = 0; dropCst.weightx = 0.5; dropCst.fill =
-         * GridBagConstraints.HORIZONTAL; panel.add(dropWall, dropCst);
-         *
-         * GridBagConstraints rotateCst = new GridBagConstraints(); rotateCst.gridx = 1;
-         * rotateCst.gridy = 0; rotateCst.weightx = 0.5; rotateCst.fill =
-         * GridBagConstraints.HORIZONTAL; panel.add(rotateWall, rotateCst);
-         *
-         * panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-         */
-
         panel.add(btnResign);
 
         // Add breathing room between the resign
@@ -222,7 +195,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         // Enable/Disable buttons based on what the player can do
 
         final boolean grabbed = player == null ? false : player.hasWallInHand();
-        this.dropWall.setEnabled(grabbed);
         this.rotateWall.setEnabled(grabbed);
 
         final boolean canGrab = player == null ? false : player.canGrabWall();
@@ -307,14 +279,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     }
 
     /**
-     * This method is called when Drop Wall button is clicked
-     */
-   private void onDropWallButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Click on Wall to drop it!");
-
-    }
-
-    /**
      * This method is called when rotate wall button is clicked
      */
     private void onRotateWallButtonClicked() {
@@ -323,9 +287,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	
     	this.repaint();
         System.out.println("Rotated the wall candidate " );
-       // JOptionPane.showMessageDialog(this, "Drop Wall is not implemented yet!");
-    //	TOWallCandidate wall = QuoridorController.getWallCandidate();
-    //    QuoridorController.rotateWall(wall.getAssociatedWall());
 
     }
 
