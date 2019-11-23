@@ -14,11 +14,17 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import ca.mcgill.ecse223.quoridor.controller.path.Node;
+import ca.mcgill.ecse223.quoridor.controller.path.PathFinder;
 import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
+import ca.mcgill.ecse223.quoridor.model.Destination;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
@@ -1415,7 +1421,65 @@ public static TOWall grabWall() {
 			}
 		}
 
-		return true;
+		// Then finally we check if a path can be found!
+		// (that is, for both players)
+		final Node[][] nodeMap = createPathNodes(gpos);
+		unlinkNodeWithWallMove(nodeMap, row, column, orientation);
+
+		// Checks to see if all players have valid paths
+		return EnumSet.allOf(Color.class).equals(getPlayersWithValidPaths(gpos, nodeMap));
+	}
+
+	/**
+	 * Checks to see if each player has a path to their respected destination
+	 *
+	 * @param gpos    GamePosition
+	 * @param nodeMap Node map
+	 * @return a set of player's color whose paths are valid
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static EnumSet<Color> getPlayersWithValidPaths(final GamePosition gpos, final Node[][] nodeMap) {
+		// // Comment the following out to see the node map (useful when debugging)
+		// Node.debugPrint(System.err, nodeMap);
+
+		// Assume all players have a valid path to the destination
+		final EnumSet<Color> set = EnumSet.allOf(Color.class);
+		// The color from the set if a path cannot be traced
+		set.removeIf(color -> !createPathFinderForPlayer(gpos, color, nodeMap).trace());
+		// And return whatever is left in that set
+		return set;
+	}
+
+	/**
+	 * Initiates the path existence test for all players given the current board
+	 * snapshot and wall candidate
+	 *
+	 * @return a set of player's color whose paths are valid
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static EnumSet<Color> initiatePathExistenceTest() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// No Game No Path
+			return EnumSet.noneOf(Color.class);
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		final GamePosition gpos = game.getCurrentPosition();
+
+		// Create the graph
+		final Node[][] nodeMap = createPathNodes(gpos);
+		// Unlink (if necessary) based on wall move candidate
+		if (game.hasWallMoveCandidate()) {
+			final WallMove move = game.getWallMoveCandidate();
+			final Tile t = move.getTargetTile();
+			unlinkNodeWithWallMove(nodeMap, t.getRow(), t.getColumn(), fromDirection(move.getWallDirection()));
+		}
+
+		// Trace path!
+		return getPlayersWithValidPaths(gpos, nodeMap);
 	}
 
 	/**
@@ -2942,6 +3006,120 @@ public static TOWall grabWall() {
 	public static boolean jumpCurrentPawnDownLeft() {
 		final PawnBehavior sm = setupPawnStateMachine();
 		return sm.jumpDownLeft() || sm.jumpLeftDown();
+	}
+
+	/**
+	 * Creates the path nodes.
+	 *
+	 * Note: Wall candidate information is not taken into account
+	 *
+	 * @param gpos GamePosition
+	 * @return the path nodes as a 2D array
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static Node[][] createPathNodes(GamePosition gpos) {
+		// Board is 9 by 9
+		final Node[][] nodes = new Node[9][9];
+
+		// Link every node together (assume there are no walls)
+		for (int i = 0; i < 9; ++i) {
+			for (int j = 0; j < 9; ++j) {
+				final Node curr = new Node();
+				nodes[i][j] = curr;
+
+				if (i > 0)
+					curr.linkSouth(nodes[i - 1][j]);
+				if (j > 0)
+					curr.linkWest(nodes[i][j - 1]);
+			}
+		}
+
+		// Remove the links blocked by walls
+		Stream.concat(gpos.getWhiteWallsOnBoard().stream(), gpos.getBlackWallsOnBoard().stream()).map(Wall::getMove)
+				.forEach(move -> {
+					final Tile t = move.getTargetTile();
+					final Direction dir = move.getWallDirection();
+					QuoridorController.unlinkNodeWithWallMove(nodes, t.getRow(), t.getColumn(), fromDirection(dir));
+				});
+		return nodes;
+	}
+
+	/**
+	 * Unlinks node with a wall
+	 *
+	 * @param nodeMap     Node map (9 by 9 grid)
+	 * @param row         Row in wall coordinates
+	 * @param col         Column in wall coordinates
+	 * @param orientation Orientation
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static void unlinkNodeWithWallMove(Node[][] nodeMap, int row, int col, Orientation orientation) {
+		switch (orientation) {
+		case VERTICAL:
+			nodeMap[row - 1][col - 1].unlinkEast();
+			nodeMap[row][col - 1].unlinkEast();
+			break;
+		case HORIZONTAL:
+			nodeMap[row - 1][col - 1].unlinkNorth();
+			nodeMap[row - 1][col].unlinkNorth();
+			break;
+		}
+	}
+
+	/**
+	 * Creates path finder for player based on the node map
+	 *
+	 * @param gpos    GamePosition
+	 * @param color   Color of the player
+	 * @param nodeMap Node map
+	 * @return the path finder for that player
+	 *
+	 * @see QuoridorController#createPathNodes(GamePosition) this creates the node
+	 *      map
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static PathFinder createPathFinderForPlayer(GamePosition gpos, Color color, Node[][] nodeMap) {
+		final Game game = gpos.getGame();
+		final PathFinder finder = new PathFinder();
+
+		// Set the starting node
+		final Tile t;
+		final Destination d;
+		switch (color) {
+		case WHITE:
+			t = gpos.getWhitePosition().getTile();
+			d = game.getWhitePlayer().getDestination();
+			break;
+		case BLACK:
+			t = gpos.getBlackPosition().getTile();
+			d = game.getBlackPlayer().getDestination();
+			break;
+		default:
+			throw new UnsupportedOperationException("Unsupported path test for player with color: " + color);
+		}
+		finder.setStartingNode(nodeMap[t.getRow() - 1][t.getColumn() - 1]);
+
+		// Set the ending nodes
+		final HashSet<Node> set = new HashSet<>();
+		final int k = d.getTargetNumber() - 1;
+		switch (d.getDirection()) {
+		case Vertical:
+			for (int i = 0; i < 9; ++i) {
+				set.add(nodeMap[i][k]);
+			}
+			break;
+		case Horizontal:
+			for (int i = 0; i < 9; ++i) {
+				set.add(nodeMap[k][i]);
+			}
+			break;
+		}
+		finder.setEndingNodes(set);
+
+		return finder;
 	}
 
 }// end QuoridorController

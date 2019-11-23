@@ -3,6 +3,7 @@ package ca.mcgill.ecse223.quoridor.features;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
+import java.util.EnumSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 import ca.mcgill.ecse223.quoridor.controller.WallStockEmptyException;
 import ca.mcgill.ecse223.quoridor.model.Board;
+import ca.mcgill.ecse223.quoridor.model.Destination;
 import ca.mcgill.ecse223.quoridor.model.Direction;
 import ca.mcgill.ecse223.quoridor.model.Game;
 import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
@@ -1621,6 +1623,91 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(isThere); // making sure he is not on my side
 		Assert.assertNotNull(enemyTile); // should exist
 
+	}
+
+	// ***** CheckIfPathExists.feature *****
+
+	private EnumSet<Color> pathFindResult;
+
+	/**
+	 * @param dir Direction
+	 * @param row Row in wall coordinates
+	 * @param col Column in wall coordinates
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	@Given("A {string} wall move candidate exists at position {int}:{int}")
+	public void wallMoveCandidateExistsAt(String dir, int row, int col) {
+		QuoridorController.grabWall();
+
+		// TEST IS NOT PASSING, I THINK ISSUE IS WITH Y-AXIS INVERSION
+		final WallMove move = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
+		move.setTargetTile(QuoridorController.getTileFromRowAndColumn(row, col));
+		move.setWallDirection("vertical".equalsIgnoreCase(dir) ? Direction.Vertical : Direction.Horizontal);
+	}
+
+	/**
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	@And("The black player is located at {int}:{int}")
+	public void blackPlayerIsLocatedAt(int row, int col) {
+		QuoridorApplication.getQuoridor()
+				.getCurrentGame()
+				.getCurrentPosition()
+				.getBlackPosition()
+				.setTile(QuoridorController.getTileFromRowAndColumn(row, col));
+
+		final Destination d = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getDestination();
+		d.setTargetNumber(9);
+	}
+
+	/**
+	 * @param row Row in pawn coordinates
+	 * @param col Column in pawn coordinates
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	@And("The white player is located at {int}:{int}")
+	public void whitePlayerIsLocatedAt(int row, int col) {
+		QuoridorApplication.getQuoridor()
+				.getCurrentGame()
+				.getCurrentPosition()
+				.getWhitePosition()
+				.setTile(QuoridorController.getTileFromRowAndColumn(row, col));
+
+		final Destination d = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getDestination();
+		d.setTargetNumber(1);
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@When("Check path existence is initiated")
+	public void initiateCheckPathExistence() {
+		this.pathFindResult = QuoridorController.initiatePathExistenceTest();
+	}
+
+	/**
+	 * @param result "white" | "black" | "both" | "none"
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	@Then("Path is available for {string} player\\(s)")
+	public void pathIsAvailableForPlayers(String result) {
+		switch (result) {
+			case "both":
+				Assert.assertEquals(EnumSet.allOf(Color.class), this.pathFindResult);
+				break;
+			case "none":
+				Assert.assertEquals(EnumSet.noneOf(Color.class), this.pathFindResult);
+				break;
+			default:
+				Assert.assertEquals(EnumSet.of(Color.valueOf(result.toUpperCase())), this.pathFindResult);
+				break;
+		}
 	}
 
 	// ***********************************************
