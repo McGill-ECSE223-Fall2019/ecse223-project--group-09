@@ -480,48 +480,6 @@ public static TOWall grabWall() {
 
 		Tile targetTile;
 		
-//		if(side.equals("up")) {
-//			if (wallCandidate.getRow() == 8) {
-//				throw new InvalidPositionException("Invalid move, already at edge");
-//			} else {
-//				targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()-1, wallMove.getTargetTile().getColumn());
-//				wallMove.setTargetTile(targetTile);
-//				wallCandidate.setColumn(targetTile.getColumn());
-//				wallCandidate.setRow(targetTile.getRow());
-//			}
-//		} else if (side.equals("down")) {
-//			if (wallCandidate.getRow() == 1) {
-//				throw new InvalidPositionException("Invalid move, already at edge");
-//			} else {
-//				targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow()+1, wallMove.getTargetTile().getColumn());
-//				wallMove.setTargetTile(targetTile);
-//				wallCandidate.setColumn(targetTile.getColumn());
-//				wallCandidate.setRow(targetTile.getRow());
-//			}
-//		} else if (side.equals("right")) {
-//			if (wallCandidate.getColumn() == 8) {
-//				throw new InvalidPositionException("Invalid move, already at edge");
-//				
-//			} else {
-//				targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()+1);
-//				wallMove.setTargetTile(targetTile);
-//				wallCandidate.setColumn(targetTile.getColumn());
-//				wallCandidate.setRow(targetTile.getRow());
-//			}
-//		} else if (side.equals("left")) {
-//			if (wallCandidate.getColumn() == 1) {
-//				throw new InvalidPositionException("Invalid move, already at edge");
-//			} else {
-//				targetTile = getTileFromRowAndColumn(wallMove.getTargetTile().getRow(), wallMove.getTargetTile().getColumn()-1);
-//				wallMove.setTargetTile(targetTile);
-//				wallCandidate.setColumn(targetTile.getColumn());
-//				wallCandidate.setRow(targetTile.getRow());
-//			}
-//		} else {
-//			throw new InvalidPositionException("invalid move");
-//		} 
-//		
-//		return wallCandidate;
 		
 		if (side.equals("up") || side.equals("down") || side.equals("left") || side.equals("right")) {			
 			if (wallCandidate.getOrientation() == Orientation.VERTICAL) {
@@ -893,6 +851,35 @@ public static TOWall grabWall() {
 		
 		return wallCandidate;
 	}
+	
+	/**
+	 * moveWall method used by the view for the application to have a smoother feel.
+	 * 
+	 * @author Alixe Delabrousse (260868412)
+	 * 
+	 * 
+	 * @param row
+	 * @param column
+	 * @return
+	 */
+	
+	
+	public static TOWallCandidate moveWall(int row, int column) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game game = quoridor.getCurrentGame();
+
+		WallMove wallMove = game.getWallMoveCandidate();
+		TOWallCandidate wallCandidate = getWallCandidate();
+
+		Tile targetTile = getTileFromRowAndColumn(row, column);
+		
+		wallMove.setTargetTile(targetTile);
+		wallCandidate.setColumn(targetTile.getColumn());
+		wallCandidate.setRow(targetTile.getRow());
+		
+		return wallCandidate;
+	}
+	
 	
 	
 	

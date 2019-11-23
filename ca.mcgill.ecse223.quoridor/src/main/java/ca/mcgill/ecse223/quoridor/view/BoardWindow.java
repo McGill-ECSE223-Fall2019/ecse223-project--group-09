@@ -259,7 +259,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         if (quoridor.getCurrentGame() != null) {
         	
         	try {
-        	TOWall currentWall = QuoridorController.grabWall();
+        		TOWall currentWall = QuoridorController.grabWall();
         	   WallMove wallMove = quoridor.getCurrentGame().getWallMoveCandidate();
                TOPlayer p = QuoridorController.getPlayerOfCurrentTurn();
                TOWallCandidate wallCandidate = QuoridorController.createTOWallCandidateFromWallMove(wallMove);
@@ -396,28 +396,36 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
         try {
-            int aRow = wallCandidate.getRow();
-            int aCol = wallCandidate.getColumn();
-            Orientation aOrientation = wallCandidate.getOrientation();
-            String side;
-
-            if (orientation == aOrientation) {
-                if (row == aRow && col == (aCol + 1)) {
-                    side = "right";
-                } else if (row == aRow && col == (aCol - 1)) {
-                    side = "left";
-                } else if (col == aCol && row == (aRow + 1)) {
-                    side = "up";
-                } else if (col == aCol && row == (aRow - 1)) {
-                    side = "down";
-                } else {
-                    side = "no new candidate";
-                }
-            } else {
-                side = "no new candidate";
-            }
-
-            wallCandidate = QuoridorController.moveWall(side);
+//            int aRow = wallCandidate.getRow();
+//            int aCol = wallCandidate.getColumn();
+        	
+//            String side;
+//
+//            if (orientation == aOrientation) {
+//                if (row == aRow && col == (aCol + 1)) {
+//                    side = "right";
+//                } else if (row == aRow && col == (aCol - 1)) {
+//                    side = "left";
+//                } else if (col == aCol && row == (aRow + 1)) {
+//                    side = "up";
+//                } else if (col == aCol && row == (aRow - 1)) {
+//                    side = "down";
+//                } else {
+//                    side = "no new candidate";
+//                }
+//            } else {
+//                side = "no new candidate";
+//            }
+//
+//            wallCandidate = QuoridorController.moveWall(side);
+        	
+        	Orientation aOrientation = wallCandidate.getOrientation();
+        	if (aOrientation == orientation) {
+        	 	wallCandidate = QuoridorController.moveWall(row, col);
+        	} else {
+        		wallCandidate = QuoridorController.moveWall("no new candidate");
+        	}
+        	
             this.repaint();
         } catch (NullPointerException e) {
             System.out.println("No wall grabbed");
