@@ -984,12 +984,54 @@ public static TOWall grabWall() {
 		Direction currentDirection = currentMove.getWallDirection();
 		Direction newDirection=null;
 		if (currentDirection.equals(Direction.Horizontal)) {
+			
 			newDirection=Direction.Vertical;
 		}else {
 			newDirection=Direction.Horizontal;
 		}
 		currentMove.setWallDirection(newDirection);
 	}
+	
+	
+	
+	/**
+	 * 
+	 * @author Mohamed Mohamed
+	 * 
+	 */
+	public static void stepBackward() {
+		
+		
+		Game game=null;
+		
+		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
+			game=QuoridorApplication.getQuoridor().getCurrentGame();
+		}
+			
+		if(!game.getGameStatus().equals(GameStatus.Replay)) {
+			return;
+		}else {
+			
+			GamePosition theGame=game.getCurrentPosition();
+			for (Move  move : theGame.getGame().getMoves()) {
+				System.err.print(move.toString());
+			}
+			
+		}
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @author Mohamed Mohamed
+	 * 
+	 */
+	public static void stepForward() {
+		
+	}
+	
+	
 	
 	/**
 	 * 
@@ -3108,5 +3150,7 @@ public static TOWall grabWall() {
 
 		return finder;
 	}
+
+	
 
 }// end QuoridorController
