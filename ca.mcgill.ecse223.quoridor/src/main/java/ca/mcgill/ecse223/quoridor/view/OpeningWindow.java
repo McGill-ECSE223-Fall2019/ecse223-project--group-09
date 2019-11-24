@@ -279,12 +279,14 @@ public class OpeningWindow extends JFrame {
 		}
 	}
 
-	public static void launchWindow() {
+	public static OpeningWindow launchWindow() {
 		final OpeningWindow openWindow = new OpeningWindow();
 
 		openWindow.setSize(400, 550);
 		openWindow.setDefaultCloseOperation(3);
 		openWindow.setLocationRelativeTo(null);
 		openWindow.setVisible(true);
+
+		return openWindow;
 	}
 }
