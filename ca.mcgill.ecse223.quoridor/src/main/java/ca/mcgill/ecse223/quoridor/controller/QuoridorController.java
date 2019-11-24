@@ -2945,6 +2945,29 @@ public static TOWall grabWall() {
 	}
 
 	/**
+	 * Create a pawn state machine for the specified player (current game) and
+	 * initializes it. A method solely used by tester.
+	 * 
+	 * @return An initialized pawn state machine
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static PawnBehavior setupPawnStateMachineForPlayer(Color color) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to use state machine when no game exists");
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		final PawnBehavior sm = new PawnBehavior();
+		sm.setCurrentGame(game);
+		sm.setPlayer(getModelPlayerByColor(color));
+		sm.initialize();
+
+		return sm;
+	}
+
+	/**
 	 * Tries to move the current pawn upwards by 1 row
 	 *
 	 * @return true if move succeeds, false if failed
