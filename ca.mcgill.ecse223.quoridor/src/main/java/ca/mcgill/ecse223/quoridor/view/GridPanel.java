@@ -195,5 +195,18 @@ public final class GridPanel extends JPanel {
         this.tileMap.removeGameBoardListener(lis);
     }
 
-
+    /**
+     * Decides if future input events to the installed game board listeners should
+     * be swallowed (meaning no events get fired, listeners are not dispatched).
+     * 
+     * Note: This only includes input events, you can still force it by calling the
+     * corresponding dispatch-event methods.
+     *
+     * @param flag true if events should be swallowed, false otherwise
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setBlockListenerEvents(final boolean flag) {
+        this.tileMap.setBlockListenerEvents(flag);
+    }
 }
