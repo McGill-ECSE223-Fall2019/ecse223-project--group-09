@@ -1476,6 +1476,12 @@ public static TOWall grabWall() {
 	 * @author Group 9
 	 */
 	public static boolean validateWallPlacement(GamePosition gpos, final int row, final int column, Orientation orientation) {
+		if (!getWinnerForGame(gpos.getGame()).isEmpty()) {
+			// Game already has a winner or it was a draw:
+			// all moves are invalid since game ended
+			return false;
+		}
+
 		// If both of the tiles are out of the board, the placement must be invalid
 		if (!isValidWallCoordinate(row, column)) {
 			return false;
