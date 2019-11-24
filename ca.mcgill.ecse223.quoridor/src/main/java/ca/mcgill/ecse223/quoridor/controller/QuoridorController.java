@@ -3190,6 +3190,46 @@ public static TOWall grabWall() {
 		return finder;
 	}
 
-	
+	/**
+	 * Checks to see if any player has won and returns the color.
+	 * 
+	 * Note: This is based on the status of the game!
+	 *
+	 * @return color of the winner, none if no winner, all if draw
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static EnumSet<Color> getWinner() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// No Game No Winner
+			return EnumSet.noneOf(Color.class);
+		}
+
+		return getWinnerForGame(quoridor.getCurrentGame());
+	}
+
+	/**
+	 * Checks to see if any player has won for a particular game and returns the color.
+	 * 
+	 * Note: This is based on the status of the game!
+	 *
+	 * @return color of the winner, none if no winner, all if draw
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static EnumSet<Color> getWinnerForGame(final Game game) {
+		final GameStatus status = game.getGameStatus();
+		switch (status) {
+			case WhiteWon:
+				return EnumSet.of(Color.WHITE);
+			case BlackWon:
+				return EnumSet.of(Color.BLACK);
+			case Draw:
+				return EnumSet.allOf(Color.class);
+			default:
+				return EnumSet.noneOf(Color.class);
+		}
+	}
 
 }// end QuoridorController
