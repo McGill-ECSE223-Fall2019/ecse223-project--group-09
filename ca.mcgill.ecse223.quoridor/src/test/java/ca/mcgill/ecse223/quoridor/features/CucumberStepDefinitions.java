@@ -1724,8 +1724,6 @@ public class CucumberStepDefinitions {
 	    public void the_game_is_in_replay_mode() throws Throwable {
 			Quoridor quoridor = QuoridorApplication.getQuoridor();
 			//QuoridorController.initiateBoard();
-			quoridor.setCurrentGame(QuoridorApplication.getQuoridor().getCurrentGame());
-			
 			System.err.print("\n\n\n   "+quoridor.hasCurrentGame()+" "+quoridor.getCurrentGame()+"\n\n\n");
 //			game.setGameStatus(GameStatus.Replay);
 //			//System.err.print(game.getGameStatus().toString());
@@ -1744,7 +1742,7 @@ public class CucumberStepDefinitions {
 	    public void step_backward_is_initiated() throws Throwable {
 	        //call the stepBackward method;
 	    	QuoridorController.stepBackward();
-	    
+	    	
 	    }
 
 	    @Then("^The next move shall be (.+).(.+)$")
@@ -1762,7 +1760,9 @@ public class CucumberStepDefinitions {
 	    public void the_next_move_is_(String movno, String rndno) throws Throwable {
 	    	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
 	    	int numOfMoves=moves.size();
+	    	
 	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-1);
+	    	
 	        int moveNum=Integer.parseInt(movno);
 	        int roundNum=Integer.parseInt(rndno);
 	        Assert.assertTrue((moveNum==move.getMoveNumber())&&(roundNum==move.getRoundNumber()));

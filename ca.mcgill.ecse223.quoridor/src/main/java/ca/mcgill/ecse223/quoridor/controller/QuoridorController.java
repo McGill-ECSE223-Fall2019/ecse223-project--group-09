@@ -1012,11 +1012,20 @@ public static TOWall grabWall() {
 			return;
 		}else {
 			
-			GamePosition theGame=game.getCurrentPosition();
-			for (Move  move : theGame.getGame().getMoves()) {
-				System.err.print(move.toString());
+			//get the previous gamePosition
+			GamePosition currentPosition= game.getCurrentPosition();
+			if(currentPosition.equals(game.getPosition(0))) {
+				//if this is the first move cannot step backward
+				return;
 			}
 			
+			
+			//game.getPositions().lastIndexOf(currentPosition);
+			int currMove = game.getPositions().indexOf(currentPosition);
+			GamePosition prevPosition= game.getPosition(currMove-1);
+			game.setCurrentPosition(prevPosition);
+			//the next move shall be the previous one moveNum and Round
+					
 		}
 		
 	}
@@ -1028,6 +1037,32 @@ public static TOWall grabWall() {
 	 * 
 	 */
 	public static void stepForward() {
+		
+		Game game=null;
+		
+		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
+			game=QuoridorApplication.getQuoridor().getCurrentGame();
+		}
+			
+		if(!game.getGameStatus().equals(GameStatus.Replay)) {
+			return;
+		}else {
+			
+			//get the previous gamePosition
+			GamePosition currentPosition= game.getCurrentPosition();
+			
+			if(currentPosition.equals(game.getPosition(game.getPositions().size()-1))) {
+				//if this is the last move cannot step forward
+				return;
+			}
+			
+			//game.getPositions().lastIndexOf(currentPosition);
+			int currMove = game.getPositions().indexOf(currentPosition);
+			GamePosition nextPosition= game.getPosition(currMove+1);
+			game.setCurrentPosition(nextPosition);
+			//the next move shall be the previous one moveNum and Round
+					
+		}
 		
 	}
 	
