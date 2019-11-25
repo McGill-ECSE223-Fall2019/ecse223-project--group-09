@@ -3,12 +3,14 @@ package ca.mcgill.ecse223.quoridor.view;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.EnumSet;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -20,6 +22,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
 
 import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
+import ca.mcgill.ecse223.quoridor.controller.Color;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
@@ -39,6 +42,10 @@ import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
 public class BoardWindow extends JFrame implements GameBoardListener {
 
     private static final int UPDATE_DELAY = 350;
+
+    // ***** Result Screen Constants *****
+
+    private static final String[] OPTIONS = { "Restart Game", "Quit Game" };
 
     // ***** Rendering State Variables *****
 
@@ -224,6 +231,61 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         
         boolean inReplay=false;
         
+
+        final EnumSet<Color> winners = QuoridorController.getWinner();
+        if (!winners.isEmpty()) {
+            // Remember to stop the thread! Very important!
+            this.stopFetchInfoThread();
+
+            // Block all future events to the grid-panel
+            this.gridPanel.setBlockListenerEvents(true);
+
+            // Clear the wall candidate (just in case)
+            this.gridPanel.setWallCandidate(null);
+
+            // Disable the relevant buttons
+            this.rotateWall.setEnabled(false);
+            this.grabWallButton.setEnabled(false);
+            this.btnResign.setEnabled(false);
+
+            this.generateResultScreen(winners);
+        }
+    }
+
+    /**
+     * Generates the result screen defined by result_screen.png
+     *
+     * @param winners Set of winners
+     *
+     * @author Paul Teng (260862906)
+     */
+    private void generateResultScreen(EnumSet<Color> winners) {
+        String title = "";
+        JLabel lbl = new JLabel("Fallback message");
+        if (EnumSet.allOf(Color.class).equals(winners)) {
+            lbl = new JLabel("DRAW!");
+            title = "Quoridor: draw";
+        } else {
+            String str = "";
+            for (Color c : winners) {
+                str = QuoridorController.getPlayerByColor(c).getUsername();
+                title = "Quoridor: " + c.name().toLowerCase() + " won";
+            }
+            lbl = new JLabel(str + " WON!");
+        }
+        lbl.setFont(lbl.getFont().deriveFont(28.0f));
+
+        final int result = JOptionPane.showOptionDialog(this, lbl, title, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, OPTIONS, OPTIONS[0]);
+        switch (result) {
+            case 0: // Restart game
+                this.dispose();
+                OpeningWindow.launchWindow().newGameButtonActionPerformed();
+                break;
+            case 1: // Quit game
+                this.onQuitGameButtonClicked();
+                break;
+        }
     }
 
     /**

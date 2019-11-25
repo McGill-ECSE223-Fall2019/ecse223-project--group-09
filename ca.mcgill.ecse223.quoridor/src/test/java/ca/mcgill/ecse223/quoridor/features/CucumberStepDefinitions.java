@@ -17,6 +17,7 @@ import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 import ca.mcgill.ecse223.quoridor.controller.InvalidPositionException;
 import ca.mcgill.ecse223.quoridor.controller.NoGrabbedWallException;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
+import ca.mcgill.ecse223.quoridor.controller.PawnBehavior;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
@@ -1711,10 +1712,6 @@ public class CucumberStepDefinitions {
 		}
 	}
 
-	
-	
-	
-	
 	//********STEP BACKWARD FEATURE***********
 	
 	
@@ -1849,9 +1846,88 @@ public class CucumberStepDefinitions {
 //	    public void black_has_on_stock(String bwallno) throws Throwable {
 //	        throw new PendingException();
 //	    }  
-	   
-	    
-	    
+
+	// ***** ReportFinalResult.feature *****
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@When("The game is no longer running")
+	public void gameNoLongerRunning() {
+		// We start the game first
+		// (otherwise game would just be null
+		// which makes this test pretty useless
+		// since in the actual game, game will
+		// most certainly *not* be null)
+		this.theGameIsRunning();
+
+		// Let's say that white player won
+		// (but really it doesn't matter)
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		quoridor.getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@Then("The final result shall be displayed")
+	public void finalResultShallBeDisplayed() {
+		// GUI code will call the following method
+		// to check if there is a winner
+
+		// Also scenario doesn't actually ask us
+		// to check which player has won
+		Assert.assertTrue(!QuoridorController.getWinner().isEmpty());
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@And("White's clock shall not be counting down")
+	public void whiteClockShallNotBeCountingDown() {
+		Assert.assertFalse(QuoridorController.clockIsRunningForPlayer(Color.WHITE));
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@And("Black's clock shall not be counting down")
+	public void blackClockShallNotBeCountingDown() {
+		Assert.assertFalse(QuoridorController.clockIsRunningForPlayer(Color.WHITE));
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@And("White shall be unable to move")
+	public void whiteShallBeUnableToMove() {
+		// Test by checking if white can move at all
+		// If the hasn't ended yet, white would at least
+		// be able to move in one of up, down, left, right directions
+
+		final PawnBehavior sm = QuoridorController.setupPawnStateMachineForPlayer(Color.WHITE);
+		Assert.assertFalse(sm.moveLeft());
+		Assert.assertFalse(sm.moveRight());
+		Assert.assertFalse(sm.moveUp());
+		Assert.assertFalse(sm.moveDown());
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@And("Black shall be unable to move")
+	public void blackShallBeUnableToMove() {
+		// Test by checking if black can move at all
+		// If the hasn't ended yet, black would at least
+		// be able to move in one of up, down, left, right directions
+
+		final PawnBehavior sm = QuoridorController.setupPawnStateMachineForPlayer(Color.BLACK);
+		Assert.assertFalse(sm.moveLeft());
+		Assert.assertFalse(sm.moveRight());
+		Assert.assertFalse(sm.moveUp());
+		Assert.assertFalse(sm.moveDown());
+	}
+
 	// ***********************************************
 	// Clean up
 	// ***********************************************
