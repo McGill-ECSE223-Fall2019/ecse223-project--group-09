@@ -223,9 +223,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         this.grabWallButton.setEnabled(canGrab);
         
         boolean inReplay=false;
-        if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus().equals(GameStatus.Replay)) {
-        	//set all the grab buttons to unenabled, etc and enable the step back step front, etc
-        }
+        
     }
 
     /**
@@ -339,6 +337,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         // Proof that it works:
     	
     	//dropWall
+    	
+    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()-1)+"\n");
+    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+" current Move \n");
+    	
+    	
        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
      	if(QuoridorController.dropWall(wallCandidate.getAssociatedWall())) {//if true drop it
     		
@@ -367,7 +370,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         }
 
         // Here we try to move the player
-
+        
+        
+        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()-1)+"\n");
+        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+" current Move \n");
+        
         final TOPlayer currentPlayer = QuoridorController.getPlayerOfCurrentTurn();
         final int r = currentPlayer.getRow();
         final int c = currentPlayer.getColumn();
