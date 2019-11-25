@@ -289,7 +289,7 @@ public class CucumberStepDefinitions {
 	public void whitePlayerChoosesUsername() {
 		Game aNewGame = QuoridorApplication.getQuoridor().getCurrentGame();
 		QuoridorController.createOrSelectUsername("Player Un", Color.WHITE);
-		Assert.assertNotNull(aNewGame.getBlackPlayer().getUser().getName());
+		Assert.assertNotNull(aNewGame.getWhitePlayer().getUser().getName());
 	}
 
 	/**
