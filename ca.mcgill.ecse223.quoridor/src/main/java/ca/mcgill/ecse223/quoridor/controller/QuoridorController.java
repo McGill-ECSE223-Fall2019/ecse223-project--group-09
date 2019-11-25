@@ -3245,9 +3245,9 @@ public static TOWall grabWall() {
 	
 	public static int getIndexFromMoveAndRoundNumber(int movno, int rndno) {
 		if (rndno == 2) {
-			return movno*2;
-		} else if (rndno == 1) {
 			return movno*2-1;
+		} else if (rndno == 1) {
+			return (movno-1)*2;
 		} else {
 			return -1;
 		}
@@ -3279,6 +3279,7 @@ public static TOWall grabWall() {
 		Move firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
 		GamePosition gamePos = game.getPosition(0);
 		game.setCurrentPosition(gamePos);
+		game.setCurrentMove(firstMove);
 		
 		return firstMove;
 	}

@@ -1877,26 +1877,6 @@ public class CucumberStepDefinitions {
 
 	//********STEP BACKWARD FEATURE***********
 	
-	
-	
-	
-		@Given("^The game is in replay mode$")
-	    public void the_game_is_in_replay_mode() throws Throwable {
-			Quoridor quoridor = QuoridorApplication.getQuoridor();
-			//QuoridorController.initiateBoard();
-			System.err.print("\n\n\n   "+quoridor.hasCurrentGame()+" "+quoridor.getCurrentGame()+"\n\n\n");
-//			game.setGameStatus(GameStatus.Replay);
-//			//System.err.print(game.getGameStatus().toString());
-//			Assert.assertTrue(game.getGameStatus().equals(GameStatus.Replay));
-		
-		
-		}
-
-	    @Given("^The following moves have been played in game:$")
-	    public void the_following_moves_have_been_played_in_game() throws Throwable {
-	        //euhmm ok?
-	    	throw new PendingException();
-	    }
 
 	    @When("^Step backward is initiated$")
 	    public void step_backward_is_initiated() throws Throwable {
@@ -1905,28 +1885,34 @@ public class CucumberStepDefinitions {
 	    	
 	    }
 
-	    @Then("^The next move shall be (.+).(.+)$")
-	    public void the_next_move_shall_be_(String nmov, String nrnd) throws Throwable {
-	    	System.err.printf("the next move should be %s move %s round ",nmov,nrnd);
-	    	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
-	    	int numOfMoves=moves.size();
-	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-2);
-	        int moveNum=Integer.parseInt(nmov);
-	        int roundNum=Integer.parseInt(nrnd);
-	        Assert.assertTrue((moveNum==move.getMoveNumber())&&(roundNum==move.getRoundNumber()));
-	    }
-
-	    @And("^The next move is (.+).(.+)$")
-	    public void the_next_move_is_(String movno, String rndno) throws Throwable {
-	    	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
+	    @Then("^The next move shall be {int}.{int}$")
+	    public void the_next_move_shall_be_(int nmov, int nrnd) throws Throwable {
+	     	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
 	    	int numOfMoves=moves.size();
 	    	
 	    	//Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-1);
 	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove();
 	    	
-	        int moveNum=Integer.parseInt(movno);
-	        int roundNum=Integer.parseInt(rndno);
-	        Assert.assertTrue((moveNum==move.getMoveNumber())&&(roundNum==move.getRoundNumber()));
+	    	int index = QuoridorController.getIndexFromMoveAndRoundNumber(nmov, nrnd);
+	    	Move nmove = moves.get(index);
+	    	
+	    	Assert.assertEquals(nmove, move);
+	    }
+
+	    @And("^The next move is {int}.{int}$")
+	    public void the_next_move_is_(int movno, int rndno) throws Throwable {
+	    	Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+	    	
+	    	Move move= game.getCurrentMove();
+	    	int index = game.getMoves().indexOf(move);
+	    	Move nextMove= game.getMove(index+1);
+	    	
+	     
+	        
+	        Move aMove = game.getMove(QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno));
+	        
+	        Assert.assertEquals(nextMove, aMove);
+	
 	    }
 
 	    @And("^White player's position shall be ((.+),(.+))$")
