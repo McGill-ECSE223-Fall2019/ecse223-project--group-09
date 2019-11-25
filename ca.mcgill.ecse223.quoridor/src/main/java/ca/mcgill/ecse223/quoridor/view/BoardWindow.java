@@ -286,7 +286,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	QuoridorController.rotateWall(wallCandidate);
     	
     	this.repaint();
-        System.out.println("Rotated the wall candidate " );
+     // *****  System.out.println("Rotated the wall candidate " );
 
     }
 
@@ -298,11 +298,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	double val = Math.abs(clicks);
     	if(val > 0.8 && val < 1.2) {
   			QuoridorController.rotateWall(wallCandidate);
-  			System.out.println("Rotated the wall candidate " );
+  	// *****		System.out.println("Rotated the wall candidate " );
   			this.repaint();
   			
     	}else{
-    		System.out.println("To rotate must be bigger than 0.8 and smaller than 1,2: " + Math.abs(clicks));	
+    	// *****		System.out.println("To rotate must be bigger than 0.8 and smaller than 1,2: " + Math.abs(clicks));	
     	}
     }
     
@@ -322,10 +322,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     		JOptionPane.showMessageDialog(this, "You cannot drop a wall here.");
     	}
     	
-        System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row
-                + (orientation == Orientation.VERTICAL ? "v" : "h"));
-        
-        
+    // *****     System.out.println("Clicked: " + Character.toString((char) (col - 1 + 'a')) + row
+    // *****             + (orientation == Orientation.VERTICAL ? "v" : "h"));
         
     }
 
@@ -372,13 +370,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     @Override
     public void onTileEntered(int row, int col) {
         // Proof that it works:
-        System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row);
+    	// *****    System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row);
     }
 
     @Override
     public void onTileExited(int row, int col) {
         // Proof that it works:
-        System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row);
+    	// *****    System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row);
     }
     
     /**
@@ -391,8 +389,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     @Override
     public void onSlotEntered(int row, int col, Orientation orientation) {
         // Proof that it works:
-        System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
-                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+    	// *****    System.out.println("Entered: " + Character.toString((char) (col - 1 + 'a')) + row
+    	// *****            + (orientation == Orientation.VERTICAL ? "v" : "h"));
 
         TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
         try {
@@ -436,8 +434,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     @Override
     public void onSlotExited(int row, int col, Orientation orientation) {
         // Proof that it works:
-        System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row
-                + (orientation == Orientation.VERTICAL ? "v" : "h"));
+    	// *****      System.out.println("Exited: " + Character.toString((char) (col - 1 + 'a')) + row
+    	// *****              + (orientation == Orientation.VERTICAL ? "v" : "h"));
     }
 
     public static void launchWindow() {
