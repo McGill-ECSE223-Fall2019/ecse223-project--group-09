@@ -1761,7 +1761,8 @@ public class CucumberStepDefinitions {
 	    	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
 	    	int numOfMoves=moves.size();
 	    	
-	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-1);
+	    	//Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-1);
+	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove();
 	    	
 	        int moveNum=Integer.parseInt(movno);
 	        int roundNum=Integer.parseInt(rndno);
@@ -1816,7 +1817,7 @@ public class CucumberStepDefinitions {
 
 	    @When("^Step forward is initiated$")
 	    public void step_forward_is_initiated() throws Throwable {
-	        throw new PendingException();
+	    	QuoridorController.stepForward();
 	    }
 
 //	    @Then("^The next move shall be (.+).(.+)$")

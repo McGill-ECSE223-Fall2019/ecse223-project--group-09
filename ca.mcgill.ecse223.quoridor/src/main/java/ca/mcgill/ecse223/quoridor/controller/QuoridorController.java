@@ -431,6 +431,7 @@ public static TOWall grabWall() {
 			
 			// create the new Wall Move
 			WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+			game.setCurrentMove(wallMove);
 			game.addMove(wallMove);
 			game.setWallMoveCandidate(wallMove); // Set current wall move
 			game.addMove(wallMove);
@@ -1024,6 +1025,7 @@ public static TOWall grabWall() {
 			int currMove = game.getPositions().indexOf(currentPosition);
 			GamePosition prevPosition= game.getPosition(currMove-1);
 			game.setCurrentPosition(prevPosition);
+			game.setCurrentMove(game.getMove(currMove-1));
 			//the next move shall be the previous one moveNum and Round
 					
 		}
@@ -1151,6 +1153,7 @@ public static TOWall grabWall() {
 			}else {
 				Move prevMove= game.getMove(game.numberOfMoves()-2); //is the last move
 				prevMove.setNextMove(currentMove); //links the moves
+				game.setCurrentMove(currentMove);
 			}
 			//add the wall to the board AND set the next player, but first we need to check who is the current player
 			if(currentMove.getPlayer().hasGameAsBlack()) { // it's a black player
