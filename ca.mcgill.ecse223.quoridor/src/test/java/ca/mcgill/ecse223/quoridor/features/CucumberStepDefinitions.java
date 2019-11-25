@@ -1730,8 +1730,9 @@ public class CucumberStepDefinitions {
 		}
 
 	    @Given("^The following moves have been played in game:$")
-	    public void the_following_moves_have_been_played_in_game() throws Throwable {
+	    public void the_following_moves_have_been_played_in_game(io.cucumber.datatable.DataTable data) throws Throwable {
 	        //euhmm ok?
+	    	List<Map<String, String>>=data.asMaps();
 	    	throw new PendingException();
 	    }
 

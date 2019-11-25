@@ -2333,7 +2333,9 @@ public static TOWall grabWall() {
 		}
 
 		final JumpMove jumpMove=new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		gamePos.getGame().setCurrentMove(jumpMove);
 		return jumpMove; 
+		
 	}
 
 	/**
