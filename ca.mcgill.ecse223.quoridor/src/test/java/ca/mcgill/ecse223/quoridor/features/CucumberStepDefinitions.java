@@ -30,15 +30,18 @@ import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Game.MoveMode;
 import ca.mcgill.ecse223.quoridor.model.GamePosition;
 import ca.mcgill.ecse223.quoridor.model.JumpMove;
+import ca.mcgill.ecse223.quoridor.model.Move;
 import ca.mcgill.ecse223.quoridor.model.Player;
 import ca.mcgill.ecse223.quoridor.model.PlayerPosition;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
+import ca.mcgill.ecse223.quoridor.model.StepMove;
 import ca.mcgill.ecse223.quoridor.model.Tile;
 import ca.mcgill.ecse223.quoridor.model.User;
 import ca.mcgill.ecse223.quoridor.model.Wall;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.BoardWindow;
 import cucumber.api.PendingException;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.But;
@@ -130,7 +133,7 @@ public class CucumberStepDefinitions {
 		System.out.println();
 
 	}
-
+	
 
 	/**
 	 * @author Alixe Delabrousse (260868412) and Mohamed Mohamed
@@ -174,6 +177,20 @@ public class CucumberStepDefinitions {
 		initQuoridorAndBoard();
 		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
 		new Game(GameStatus.Initializing, MoveMode.PlayerMove, QuoridorApplication.getQuoridor());
+	}
+	
+	/**
+	 * @author alixe delabrousse
+	 */
+	
+	@Given("The game is in replay mode")
+	public void theGameIsInReplayMode() {
+		initQuoridorAndBoard();
+		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
+		createAndStartGame(players);
+		
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		game.setGameStatus(GameStatus.Replay);
 	}
 
 	// ***********************************************
@@ -1709,6 +1726,153 @@ public class CucumberStepDefinitions {
 				break;
 		}
 	}
+	
+	//***** JumpToFinal.feature*****
+	
+	Move nextMove = null;
+	
+	@Given("The following moves have been played in game:")
+	public void theFollowingMovesHaveBeenPlayedInGame(DataTable dataTable) {
+		
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		
+		Player player1 = game.getWhitePlayer();
+		Player player2 = game.getBlackPlayer();
+		
+		GamePosition gpos = game.getCurrentPosition();
+		Move aMove;
+		
+		try {
+			int a = player1.numberOfWalls();
+		} catch (Exception e) {
+			System.err.println("err");
+		}
+		
+//		System.err.println("number of wall 1" + player1.numberOfWalls());
+//		System.err.println("number of wall 2" + player2.numberOfWalls());
+	
+		List<Map<String, String>> valueMaps = dataTable.asMaps();
+		//keys: mv, rnd, move
+		for (Map<String, String> map : valueMaps) {
+			Integer mov = Integer.decode(map.get("mv"));
+			Integer rnd = Integer.decode(map.get("rnd"));
+			String move = map.get("move");
+		
+			
+			int col = QuoridorController.letterToNumberColumn(move.charAt(0));
+			int row = Character.getNumericValue(move.charAt(1));
+			
+			
+			if(move.length() == 3) {
+				Wall nwall;
+				
+				Direction dir;
+				if (move.charAt(2) == 'h') {
+					dir = Direction.Horizontal;
+				} else {
+					dir = Direction.Vertical;
+				}
+				
+				if (rnd == 1) {
+					nwall = gpos.getWhiteWallsInStock(player1.numberOfWalls());
+					aMove = new WallMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
+				} else {
+					nwall = gpos.getBlackWallsInStock(player2.numberOfWalls());
+					aMove = new WallMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
+				}
+			} else {
+				if (rnd == 1) {
+					aMove = new StepMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game);
+				} else {
+					aMove = new StepMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game);
+				}
+				
+			}
+			
+			game.addMoveAt(aMove, QuoridorController.getIndexFromMoveAndRoundNumber(mov, rnd));
+		
+		
+		}
+		
+	}
+	
+	@And("The next move is {int}.{int}")
+	public void theNextMoveIs(int movno, int rndno) {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		int index = QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno);
+		System.err.println(index);
+		this.nextMove = game.getMove(index);
+		
+		
+		
+	}
+	
+	@When("Jump to start position is initiated")
+	public void jumpToStartPositionIsInitiated() {
+		this.nextMove = QuoridorController.jumpToFinalPosition();
+		
+	}
+	
+	@Then("The next move shall be {int}.{int}")
+	public void theNextMoveShallBe(int movno, int rndno) {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		int index = QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno);
+		//System.err.println(index);
+		Move nNextMove = game.getMove(index);
+		
+		Assert.assertEquals(nNextMove, this.nextMove);
+	
+	}
+	
+	@And("White player's position shall be \\({int},{int})")
+	public void whitePlayerPositionShallBe(int wrow, int wcol) {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		int aWRow = (10 - wrow);
+		
+		int posWRow = game.getCurrentPosition().getWhitePosition().getTile().getRow();	
+		int posWCol = game.getCurrentPosition().getWhitePosition().getTile().getColumn();
+		
+		Assert.assertTrue(aWRow == posWRow);
+		Assert.assertTrue(wcol == posWCol);
+		
+	}
+	
+	@And("Black player's position shall be \\({int},{int})")
+	public void blackPlayerPostionShallBe(int brow, int bcol) {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		int aBRow = (10 - brow);
+		
+		int posBRow = game.getCurrentPosition().getBlackPosition().getTile().getRow();	
+		int posBCol = game.getCurrentPosition().getBlackPosition().getTile().getColumn();
+		
+		Assert.assertTrue(aBRow == posBRow);
+		Assert.assertTrue(bcol == posBCol);
+	}
+	
+	@And("White has {int} on stock")
+	public void whiteHasOnStock(int wwallno) {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		
+		int posWWallNo = game.getCurrentPosition().getWhiteWallsInStock().size();
+		Assert.assertTrue(wwallno == posWWallNo);
+		
+	}
+	
+	@And("Black has {int} on stock")
+	public void blackHasOnStock(int bwallno) {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		
+		int posWWallNo = game.getCurrentPosition().getBlackWallsInStock().size();
+		Assert.assertTrue(bwallno == posWWallNo);
+	}
+	
+	//****** JumpToStart.feature******
+	
+//	@When("Jump to start position is initiated")
+//	public void jumpToStartPosInitiated() {
+//		this.nextMove = QuoridorController.jumpToStartPosition();
+//	}
+	
 
 	// ***********************************************
 	// Clean up

@@ -3108,5 +3108,89 @@ public static TOWall grabWall() {
 
 		return finder;
 	}
+	
+	/**
+	 * returns the index of a specific move inside the list of moves of the game, by its move number and round number
+	 * 
+	 * @param movno
+	 * @param rndno
+	 * @return
+	 * 
+	 * @author alixe delabrousse
+	 * 
+	 */
+	
+	public static int getIndexFromMoveAndRoundNumber(int movno, int rndno) {
+		if (rndno == 2) {
+			return movno*2;
+		} else if (rndno == 1) {
+			return movno*2-1;
+		} else {
+			return -1;
+		}
+	}
+	
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @return
+	 */
+	
+	public static Move jumpToFinalPosition() {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Move lastMove = game.getMove(game.numberOfMoves());
+		GamePosition gamePos = game.getPositions().get(game.numberOfPositions());
+		game.setCurrentPosition(gamePos);
+		
+		return lastMove;
+		
+	}
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @return
+	 */
+	
+	public static Move jumpToStartPosition() {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Move firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
+		GamePosition gamePos = game.getPosition(0);
+		game.setCurrentPosition(gamePos);
+		
+		return firstMove;
+	}
+	
+	/**
+	 * @author alixe delabrousse
+	 * @param letter
+	 * @return
+	 */
+	
+	public static int letterToNumberColumn(char letter) {
+		switch (letter) {
+			case 'a':
+				return 1;
+			case 'b':
+				return 2;
+			case 'c':
+				return 3;
+			case 'd':
+				return 4;
+			case 'e':
+				return 5;
+			case 'f':
+				return 6;
+			case 'g': 
+				return 7;
+			case 'h':
+				return 8;
+			case 'i':
+				return 9;
+			default:	
+				return -1;
+			
+		}
+		
+	}
 
 }// end QuoridorController
