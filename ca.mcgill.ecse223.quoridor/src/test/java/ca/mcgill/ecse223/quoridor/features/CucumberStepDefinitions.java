@@ -17,6 +17,7 @@ import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
 import ca.mcgill.ecse223.quoridor.controller.InvalidPositionException;
 import ca.mcgill.ecse223.quoridor.controller.NoGrabbedWallException;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
+import ca.mcgill.ecse223.quoridor.controller.PawnBehavior;
 import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
 import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
@@ -1874,6 +1875,222 @@ public class CucumberStepDefinitions {
 //	}
 	
 
+	//********STEP BACKWARD FEATURE***********
+	
+	
+	
+	
+		@Given("^The game is in replay mode$")
+	    public void the_game_is_in_replay_mode() throws Throwable {
+			Quoridor quoridor = QuoridorApplication.getQuoridor();
+			//QuoridorController.initiateBoard();
+			System.err.print("\n\n\n   "+quoridor.hasCurrentGame()+" "+quoridor.getCurrentGame()+"\n\n\n");
+//			game.setGameStatus(GameStatus.Replay);
+//			//System.err.print(game.getGameStatus().toString());
+//			Assert.assertTrue(game.getGameStatus().equals(GameStatus.Replay));
+		
+		
+		}
+
+	    @Given("^The following moves have been played in game:$")
+	    public void the_following_moves_have_been_played_in_game() throws Throwable {
+	        //euhmm ok?
+	    	throw new PendingException();
+	    }
+
+	    @When("^Step backward is initiated$")
+	    public void step_backward_is_initiated() throws Throwable {
+	        //call the stepBackward method;
+	    	QuoridorController.stepBackward();
+	    	
+	    }
+
+	    @Then("^The next move shall be (.+).(.+)$")
+	    public void the_next_move_shall_be_(String nmov, String nrnd) throws Throwable {
+	    	System.err.printf("the next move should be %s move %s round ",nmov,nrnd);
+	    	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
+	    	int numOfMoves=moves.size();
+	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-2);
+	        int moveNum=Integer.parseInt(nmov);
+	        int roundNum=Integer.parseInt(nrnd);
+	        Assert.assertTrue((moveNum==move.getMoveNumber())&&(roundNum==move.getRoundNumber()));
+	    }
+
+	    @And("^The next move is (.+).(.+)$")
+	    public void the_next_move_is_(String movno, String rndno) throws Throwable {
+	    	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
+	    	int numOfMoves=moves.size();
+	    	
+	    	//Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-1);
+	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove();
+	    	
+	        int moveNum=Integer.parseInt(movno);
+	        int roundNum=Integer.parseInt(rndno);
+	        Assert.assertTrue((moveNum==move.getMoveNumber())&&(roundNum==move.getRoundNumber()));
+	    }
+
+	    @And("^White player's position shall be ((.+),(.+))$")
+	    public void white_players_position_shall_be_(String wrow, String wcol) throws Throwable {
+	    	PlayerPosition white=QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
+	        Assert.assertTrue( (white.getTile().getRow()==Integer.parseInt(wrow)) && (white.getTile().getColumn()==Integer.parseInt(wcol)) );
+	        
+	    }
+
+	    @And("^Black player's position shall be ((.+),(.+))$")
+	    public void black_players_position_shall_be_(String brow, String bcol) throws Throwable {
+	    	PlayerPosition black=QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
+	        Assert.assertTrue( (black.getTile().getRow()==Integer.parseInt(brow)) && (black.getTile().getColumn()==Integer.parseInt(bcol)) );
+	        
+	    }
+
+	    @And("^White has (.+) on stock$")
+	    public void white_has_on_stock(String wwallno) throws Throwable {
+	    	GamePosition game= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+	    	Assert.assertTrue(game.numberOfWhiteWallsInStock()==Integer.parseInt(wwallno));
+ 	    			
+	    }
+
+	    @And("^Black has (.+) on stock$")
+	    public void black_has_on_stock(String bwallno) throws Throwable {
+	    	GamePosition game= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+	    	Assert.assertTrue(game.numberOfBlackWallsInStock()==Integer.parseInt(bwallno));
+ 	    	
+	    }
+	    
+	    
+	    
+	    
+	
+	  //********STEP FORWARD FEATURE***********    
+	    
+	    
+	    
+//	    @Given("^The game is in replay mode$")
+//	    public void the_game_is_in_replay_mode() throws Throwable {
+//	        throw new PendingException();
+//	    }
+//
+//	    @Given("^The following moves have been played in game:$")
+//	    public void the_following_moves_have_been_played_in_game() throws Throwable {
+//	        throw new PendingException();
+//	    }
+
+	    @When("^Step forward is initiated$")
+	    public void step_forward_is_initiated() throws Throwable {
+	    	QuoridorController.stepForward();
+	    }
+
+//	    @Then("^The next move shall be (.+).(.+)$")
+//	    public void the_next_move_shall_be_(String nmov, String nrnd) throws Throwable {
+//	        throw new PendingException();
+//	    }
+//
+//	    @And("^The next move is (.+).(.+)$")
+//	    public void the_next_move_is_(String movno, String rndno) throws Throwable {
+//	        throw new PendingException();
+//	    }
+//
+//	    @And("^White player's position shall be ((.+),(.+))$")
+//	    public void white_players_position_shall_be_(String wrow, String wcol) throws Throwable {
+//	        throw new PendingException();
+//	    }
+//
+//	    @And("^Black player's position shall be ((.+),(.+))$")
+//	    public void black_players_position_shall_be_(String brow, String bcol) throws Throwable {
+//	        throw new PendingException();
+//	    }
+//
+//	    @And("^White has (.+) on stock$")
+//	    public void white_has_on_stock(String wwallno) throws Throwable {
+//	        throw new PendingException();
+//	    }
+//
+//	    @And("^Black has (.+) on stock$")
+//	    public void black_has_on_stock(String bwallno) throws Throwable {
+//	        throw new PendingException();
+//	    }  
+
+	// ***** ReportFinalResult.feature *****
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@When("The game is no longer running")
+	public void gameNoLongerRunning() {
+		// We start the game first
+		// (otherwise game would just be null
+		// which makes this test pretty useless
+		// since in the actual game, game will
+		// most certainly *not* be null)
+		this.theGameIsRunning();
+
+		// Let's say that white player won
+		// (but really it doesn't matter)
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		quoridor.getCurrentGame().setGameStatus(GameStatus.WhiteWon);
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@Then("The final result shall be displayed")
+	public void finalResultShallBeDisplayed() {
+		// GUI code will call the following method
+		// to check if there is a winner
+
+		// Also scenario doesn't actually ask us
+		// to check which player has won
+		Assert.assertTrue(!QuoridorController.getWinner().isEmpty());
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@And("White's clock shall not be counting down")
+	public void whiteClockShallNotBeCountingDown() {
+		Assert.assertFalse(QuoridorController.clockIsRunningForPlayer(Color.WHITE));
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@And("Black's clock shall not be counting down")
+	public void blackClockShallNotBeCountingDown() {
+		Assert.assertFalse(QuoridorController.clockIsRunningForPlayer(Color.WHITE));
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@And("White shall be unable to move")
+	public void whiteShallBeUnableToMove() {
+		// Test by checking if white can move at all
+		// If the hasn't ended yet, white would at least
+		// be able to move in one of up, down, left, right directions
+
+		final PawnBehavior sm = QuoridorController.setupPawnStateMachineForPlayer(Color.WHITE);
+		Assert.assertFalse(sm.moveLeft());
+		Assert.assertFalse(sm.moveRight());
+		Assert.assertFalse(sm.moveUp());
+		Assert.assertFalse(sm.moveDown());
+	}
+
+	/**
+	 * @author Paul Teng (260862906)
+	 */
+	@And("Black shall be unable to move")
+	public void blackShallBeUnableToMove() {
+		// Test by checking if black can move at all
+		// If the hasn't ended yet, black would at least
+		// be able to move in one of up, down, left, right directions
+
+		final PawnBehavior sm = QuoridorController.setupPawnStateMachineForPlayer(Color.BLACK);
+		Assert.assertFalse(sm.moveLeft());
+		Assert.assertFalse(sm.moveRight());
+		Assert.assertFalse(sm.moveUp());
+		Assert.assertFalse(sm.moveDown());
+	}
+
 	// ***********************************************
 	// Clean up
 	// ***********************************************
@@ -1981,4 +2198,12 @@ public class CucumberStepDefinitions {
 
 		game.setCurrentPosition(gamePosition);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 }

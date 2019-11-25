@@ -408,14 +408,17 @@ public static TOWall grabWall() {
 		Tile initialTile = getTileFromRowAndColumn(INITIAL_ROW, INITIAL_COLUMN); // Tile at initial position
 		if (toCurrentPlayer.getWallsRemaining() != 0) {
 
+			int rnd = 0;
 			// Grab the first wall of the stock, also need a hack for the test scenarios
 			for (int i = 0; grabbedWall == null && i < toCurrentPlayer.getWallsRemaining(); ++i) {
 				if (currentPlayer.hasGameAsWhite()) {
 					grabbedWall = gpos.getWhiteWallsInStock(i);
 					gpos.removeWhiteWallsInStock(grabbedWall);
+					rnd = 1;
 				} else {
 					grabbedWall = gpos.getBlackWallsInStock(i);
 					gpos.removeBlackWallsInStock(grabbedWall);
+					rnd = 2;
 				}
 			}
 
@@ -430,7 +433,8 @@ public static TOWall grabWall() {
 			
 			
 			// create the new Wall Move
-			WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+			WallMove wallMove = new WallMove(game.getMoves().size() / 2 + 1, rnd, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+			game.setCurrentMove(wallMove);
 			game.addMove(wallMove);
 			game.setWallMoveCandidate(wallMove); // Set current wall move
 			game.addMove(wallMove);
@@ -846,7 +850,7 @@ public static TOWall grabWall() {
 			
 		
 		} else {
-			throw new InvalidPositionException("Illegal Move");
+		// *****	throw new InvalidPositionException("Illegal Move");
 		}
 		
 		return wallCandidate;
@@ -984,12 +988,91 @@ public static TOWall grabWall() {
 		Direction currentDirection = currentMove.getWallDirection();
 		Direction newDirection=null;
 		if (currentDirection.equals(Direction.Horizontal)) {
+			
 			newDirection=Direction.Vertical;
 		}else {
 			newDirection=Direction.Horizontal;
 		}
 		currentMove.setWallDirection(newDirection);
 	}
+	
+	
+	
+	/**
+	 * 
+	 * @author Mohamed Mohamed
+	 * 
+	 */
+	public static void stepBackward() {
+		
+		
+		Game game=null;
+		
+		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
+			game=QuoridorApplication.getQuoridor().getCurrentGame();
+		}
+			
+		if(!game.getGameStatus().equals(GameStatus.Replay)) {
+			return;
+		}else {
+			
+			//get the previous gamePosition
+			GamePosition currentPosition= game.getCurrentPosition();
+			if(currentPosition.equals(game.getPosition(0))) {
+				//if this is the first move cannot step backward
+				return;
+			}
+			
+			
+			//game.getPositions().lastIndexOf(currentPosition);
+			int currMove = game.getPositions().indexOf(currentPosition);
+			GamePosition prevPosition= game.getPosition(currMove-1);
+			game.setCurrentPosition(prevPosition);
+			game.setCurrentMove(game.getMove(currMove-1));
+			//the next move shall be the previous one moveNum and Round
+					
+		}
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @author Mohamed Mohamed
+	 * 
+	 */
+	public static void stepForward() {
+		
+		Game game=null;
+		
+		if(QuoridorApplication.getQuoridor().getCurrentGame()!=null) { //if the game exists reset the game to the current game
+			game=QuoridorApplication.getQuoridor().getCurrentGame();
+		}
+			
+		if(!game.getGameStatus().equals(GameStatus.Replay)) {
+			return;
+		}else {
+			
+			//get the previous gamePosition
+			GamePosition currentPosition= game.getCurrentPosition();
+			
+			if(currentPosition.equals(game.getPosition(game.getPositions().size()-1))) {
+				//if this is the last move cannot step forward
+				return;
+			}
+			
+			//game.getPositions().lastIndexOf(currentPosition);
+			int currMove = game.getPositions().indexOf(currentPosition);
+			GamePosition prevPosition= game.getPosition(currMove+1);
+			game.setCurrentPosition(prevPosition);
+			game.setCurrentMove(game.getMove(currMove+1));
+			//the next move shall be the previous one moveNum and Round
+					
+		}
+		
+	}
+	
+	
 	
 	/**
 	 * 
@@ -1074,6 +1157,7 @@ public static TOWall grabWall() {
 			}else {
 				Move prevMove= game.getMove(game.numberOfMoves()-2); //is the last move
 				prevMove.setNextMove(currentMove); //links the moves
+				game.setCurrentMove(currentMove);
 			}
 			//add the wall to the board AND set the next player, but first we need to check who is the current player
 			if(currentMove.getPlayer().hasGameAsBlack()) { // it's a black player
@@ -1329,6 +1413,12 @@ public static TOWall grabWall() {
 	 * @author Group 9
 	 */
 	/* package */ static boolean validatePawnPlacement(GamePosition gpos, final int row, final int col) {
+		if (!getWinnerForGame(gpos.getGame()).isEmpty()) {
+			// Game already has a winner or it was a draw:
+			// all moves are invalid since game ended
+			return false;
+		}
+
 		// Position must be on the board for it to be potentially valid
 		if (!isValidPawnCoordinate(row, col)) {
 			return false;
@@ -1389,6 +1479,12 @@ public static TOWall grabWall() {
 	 * @author Group 9
 	 */
 	public static boolean validateWallPlacement(GamePosition gpos, final int row, final int column, Orientation orientation) {
+		if (!getWinnerForGame(gpos.getGame()).isEmpty()) {
+			// Game already has a winner or it was a draw:
+			// all moves are invalid since game ended
+			return false;
+		}
+
 		// If both of the tiles are out of the board, the placement must be invalid
 		if (!isValidWallCoordinate(row, column)) {
 			return false;
@@ -1910,8 +2006,11 @@ public static TOWall grabWall() {
 		} else {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
 		}
-
-		return new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+			
+		final StepMove stepMove =new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		gamePos.getGame().setCurrentMove(stepMove);
+		
+		return stepMove;
 	}
 
 	/**
@@ -2233,7 +2332,8 @@ public static TOWall grabWall() {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
 		}
 
-		return new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		final JumpMove jumpMove=new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		return jumpMove; 
 	}
 
 	/**
@@ -2791,8 +2891,6 @@ public static TOWall grabWall() {
 		return pos.getPlayerToMove();
 		
 	}
-	
-
 
 	/**
 	 * Returns a list of white walls on board
@@ -2860,6 +2958,29 @@ public static TOWall grabWall() {
 	}
 
 	/**
+	 * Create a pawn state machine for the specified player (current game) and
+	 * initializes it. A method solely used by tester.
+	 * 
+	 * @return An initialized pawn state machine
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static PawnBehavior setupPawnStateMachineForPlayer(Color color) {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			throw new IllegalStateException("Attempt to use state machine when no game exists");
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		final PawnBehavior sm = new PawnBehavior();
+		sm.setCurrentGame(game);
+		sm.setPlayer(getModelPlayerByColor(color));
+		sm.initialize();
+
+		return sm;
+	}
+
+	/**
 	 * Tries to move the current pawn upwards by 1 row
 	 *
 	 * @return true if move succeeds, false if failed
@@ -2867,7 +2988,9 @@ public static TOWall grabWall() {
 	 * @author Group-9
 	 */
 	public static boolean moveCurrentPawnUp() {
+		
 		return setupPawnStateMachine().moveUp();
+		
 	}
 
 	/**
@@ -3191,6 +3314,48 @@ public static TOWall grabWall() {
 			
 		}
 		
+	}
+
+	/**
+	 * Checks to see if any player has won and returns the color.
+	 * 
+	 * Note: This is based on the status of the game!
+	 *
+	 * @return color of the winner, none if no winner, all if draw
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static EnumSet<Color> getWinner() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// No Game No Winner
+			return EnumSet.noneOf(Color.class);
+		}
+
+		return getWinnerForGame(quoridor.getCurrentGame());
+	}
+
+	/**
+	 * Checks to see if any player has won for a particular game and returns the color.
+	 * 
+	 * Note: This is based on the status of the game!
+	 *
+	 * @return color of the winner, none if no winner, all if draw
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	private static EnumSet<Color> getWinnerForGame(final Game game) {
+		final GameStatus status = game.getGameStatus();
+		switch (status) {
+			case WhiteWon:
+				return EnumSet.of(Color.WHITE);
+			case BlackWon:
+				return EnumSet.of(Color.BLACK);
+			case Draw:
+				return EnumSet.allOf(Color.class);
+			default:
+				return EnumSet.noneOf(Color.class);
+		}
 	}
 
 }// end QuoridorController

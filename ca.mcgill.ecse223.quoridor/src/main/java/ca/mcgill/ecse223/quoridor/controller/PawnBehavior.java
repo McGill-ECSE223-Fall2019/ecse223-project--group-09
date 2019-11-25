@@ -1148,7 +1148,7 @@ public class PawnBehavior
         final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
         final Tile target = QuoridorController.getTileFromRowAndColumn(
                 this.getCurrentPawnRow() + drow, this.getCurrentPawnColumn() + dcol);
-        QuoridorController.forcePlayStepMove(moves, moves / 2, this.getPlayer(), target, gpos);
+        QuoridorController.forcePlayStepMove(moves / 2 + 1, this.getPlayer().hasGameAsWhite() ? 1 : 2, this.getPlayer(), target, gpos);
   }
 
   // line 322 "../../../../../PawnStateMachine.ump"
@@ -1157,7 +1157,7 @@ public class PawnBehavior
         final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
         final Tile target = QuoridorController.getTileFromRowAndColumn(
                 this.getCurrentPawnRow() + drow, this.getCurrentPawnColumn() + dcol);
-        QuoridorController.forcePlayJumpMove(moves, moves / 2, this.getPlayer(), target, gpos);
+        QuoridorController.forcePlayJumpMove(moves / 2 + 1, this.getPlayer().hasGameAsWhite() ? 1 : 2, this.getPlayer(), target, gpos);
   }
 
 
