@@ -408,14 +408,17 @@ public static TOWall grabWall() {
 		Tile initialTile = getTileFromRowAndColumn(INITIAL_ROW, INITIAL_COLUMN); // Tile at initial position
 		if (toCurrentPlayer.getWallsRemaining() != 0) {
 
+			int rnd = 0;
 			// Grab the first wall of the stock, also need a hack for the test scenarios
 			for (int i = 0; grabbedWall == null && i < toCurrentPlayer.getWallsRemaining(); ++i) {
 				if (currentPlayer.hasGameAsWhite()) {
 					grabbedWall = gpos.getWhiteWallsInStock(i);
 					gpos.removeWhiteWallsInStock(grabbedWall);
+					rnd = 1;
 				} else {
 					grabbedWall = gpos.getBlackWallsInStock(i);
 					gpos.removeBlackWallsInStock(grabbedWall);
+					rnd = 2;
 				}
 			}
 
@@ -430,7 +433,7 @@ public static TOWall grabWall() {
 			
 			
 			// create the new Wall Move
-			WallMove wallMove = new WallMove(game.getMoves().size(), game.getMoves().size()/2, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
+			WallMove wallMove = new WallMove(game.getMoves().size() / 2 + 1, rnd, currentPlayer, initialTile, game, INITIAL_ORIENTATION, grabbedWall);
 			game.setCurrentMove(wallMove);
 			game.addMove(wallMove);
 			game.setWallMoveCandidate(wallMove); // Set current wall move
