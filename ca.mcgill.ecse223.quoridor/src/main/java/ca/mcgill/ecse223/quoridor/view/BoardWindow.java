@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicArrowButton;
 
 import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.controller.Orientation;
@@ -25,6 +26,7 @@ import ca.mcgill.ecse223.quoridor.controller.TOPlayer;
 import ca.mcgill.ecse223.quoridor.controller.TOWall;
 import ca.mcgill.ecse223.quoridor.controller.TOWallCandidate;
 import ca.mcgill.ecse223.quoridor.controller.WallStockEmptyException;
+import ca.mcgill.ecse223.quoridor.model.Game.GameStatus;
 import ca.mcgill.ecse223.quoridor.model.Quoridor;
 import ca.mcgill.ecse223.quoridor.model.WallMove;
 import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
@@ -59,9 +61,12 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      */
 
     private final JButton rotateWall = new JButton("Rotate Wall");
+    private final JButton stepBackward = new JButton("Rotate Wall");
+    private final JButton stepForward = new JButton("step right");
 
     public BoardWindow() {
-        this.setLayout(new BorderLayout());
+    	
+    	this.setLayout(new BorderLayout());
 
         this.add(generateRightPanel(), BorderLayout.EAST);
         this.add(gridPanel, BorderLayout.CENTER);
@@ -95,6 +100,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      */
     private JPanel generateRightPanel() {
         final JPanel panel = new JPanel();
+        
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         final JScrollPane listMoves = new JScrollPane(new JList<>(replayList), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -126,7 +132,23 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         panel.add(container);
         panel.add(btnEnterReplayMode);
-
+        
+     // might just delete this depends on my patience
+        /*
+         * panel.setLayout(new GridBagLayout());
+         *
+         *
+         * GridBagConstraints dropCst = new GridBagConstraints(); dropCst.gridx = 0;
+         * dropCst.gridy = 0; dropCst.weightx = 0.5; dropCst.fill =
+         * GridBagConstraints.HORIZONTAL; panel.add(dropWall, dropCst);
+         *
+         * GridBagConstraints rotateCst = new GridBagConstraints(); rotateCst.gridx = 1;
+         * rotateCst.gridy = 0; rotateCst.weightx = 0.5; rotateCst.fill =
+         * GridBagConstraints.HORIZONTAL; panel.add(rotateWall, rotateCst);
+         *
+         * panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+         */
+        
         panel.add(saveLoadPanel);
 
         panel.add(btnQuitGame);
@@ -199,6 +221,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         final boolean canGrab = player == null ? false : player.canGrabWall();
         this.grabWallButton.setEnabled(canGrab);
+        
+        boolean inReplay=false;
+        if(QuoridorApplication.getQuoridor().getCurrentGame().getGameStatus().equals(GameStatus.Replay)) {
+        	//set all the grab buttons to unenabled, etc and enable the step back step front, etc
+        }
     }
 
     /**
@@ -426,7 +453,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         	
             this.repaint();
         } catch (NullPointerException e) {
-            System.out.println("No wall grabbed");
+        // *****    System.out.println("No wall grabbed");
         }
 
     }

@@ -847,7 +847,7 @@ public static TOWall grabWall() {
 			
 		
 		} else {
-			throw new InvalidPositionException("Illegal Move");
+		// *****	throw new InvalidPositionException("Illegal Move");
 		}
 		
 		return wallCandidate;
@@ -1060,8 +1060,9 @@ public static TOWall grabWall() {
 			
 			//game.getPositions().lastIndexOf(currentPosition);
 			int currMove = game.getPositions().indexOf(currentPosition);
-			GamePosition nextPosition= game.getPosition(currMove+1);
-			game.setCurrentPosition(nextPosition);
+			GamePosition prevPosition= game.getPosition(currMove+1);
+			game.setCurrentPosition(prevPosition);
+			game.setCurrentMove(game.getMove(currMove+1));
 			//the next move shall be the previous one moveNum and Round
 					
 		}
@@ -2871,8 +2872,6 @@ public static TOWall grabWall() {
 		return pos.getPlayerToMove();
 		
 	}
-	
-
 
 	/**
 	 * Returns a list of white walls on board
@@ -2947,7 +2946,9 @@ public static TOWall grabWall() {
 	 * @author Group-9
 	 */
 	public static boolean moveCurrentPawnUp() {
+		
 		return setupPawnStateMachine().moveUp();
+		
 	}
 
 	/**
