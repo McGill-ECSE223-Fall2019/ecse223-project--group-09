@@ -87,6 +87,8 @@ public class TileMapPanel extends JPanel {
 
     private final List<GameBoardListener> listeners = new ArrayList<>();
 
+    private boolean blockEvents;
+
     private int lastRow;
     private int lastCol;
     private Orientation lastOrientation;
@@ -675,6 +677,21 @@ public class TileMapPanel extends JPanel {
     }
 
     /**
+     * Decides if future input events to the installed game board listeners should
+     * be swallowed (meaning no events get fired, listeners are not dispatched).
+     * 
+     * Note: This only includes input events, you can still force it by calling the
+     * corresponding dispatch-event methods.
+     *
+     * @param flag true if events should be swallowed, false otherwise
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setBlockListenerEvents(boolean flag) {
+        this.blockEvents = flag;
+    }
+
+    /**
      * A class that handles mouse related stuff for the Quoridor grid
      *
      * @author Paul Teng (260862906)
@@ -691,6 +708,10 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
+            if (TileMapPanel.this.blockEvents) {
+                return;
+            }
+
             TileMapPanel.this.onMouseWheelRotate(e.getPreciseWheelRotation());
         }
 
@@ -706,6 +727,10 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseClicked(MouseEvent e) {
+            if (TileMapPanel.this.blockEvents) {
+                return;
+            }
+
             this.defaultMouseEventHandler(e, TileMapPanel.this::onTileClicked, TileMapPanel.this::onSlotClicked);
         }
 
@@ -722,6 +747,10 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseMoved(MouseEvent e) {
+            if (TileMapPanel.this.blockEvents) {
+                return;
+            }
+
             this.defaultMouseEventHandler(e, TileMapPanel.this::dispatchEnterTileEvent,
                     TileMapPanel.this::dispatchEnterSlotEvent);
         }
@@ -739,6 +768,10 @@ public class TileMapPanel extends JPanel {
          */
         @Override
         public void mouseExited(MouseEvent e) {
+            if (TileMapPanel.this.blockEvents) {
+                return;
+            }
+
             TileMapPanel.this.dispatchExitEvent();
         }
 
