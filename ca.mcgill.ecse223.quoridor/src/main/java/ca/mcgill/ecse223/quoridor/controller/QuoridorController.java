@@ -2006,8 +2006,11 @@ public static TOWall grabWall() {
 		} else {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
 		}
-
-		return new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+			
+		final StepMove stepMove =new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		gamePos.getGame().setCurrentMove(stepMove);
+		
+		return stepMove;
 	}
 
 	/**
@@ -2329,7 +2332,8 @@ public static TOWall grabWall() {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
 		}
 
-		return new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		final JumpMove jumpMove=new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
+		return jumpMove; 
 	}
 
 	/**

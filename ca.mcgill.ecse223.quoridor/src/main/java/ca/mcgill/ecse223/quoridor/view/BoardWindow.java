@@ -400,10 +400,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	
     	//dropWall
     	
-    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()-1)+"\n");
-    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+" current Move \n");
-    	
-    	
        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
      	if(QuoridorController.dropWall(wallCandidate.getAssociatedWall())) {//if true drop it
     		
@@ -433,10 +429,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
         // Here we try to move the player
         
-        
-        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getMove(QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()-1)+"\n");
-        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+" current Move \n");
-        
         final TOPlayer currentPlayer = QuoridorController.getPlayerOfCurrentTurn();
         final int r = currentPlayer.getRow();
         final int c = currentPlayer.getColumn();
@@ -461,6 +453,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         if (dcol == -1 && drow == 1)    QuoridorController.jumpCurrentPawnUpLeft();
         if (dcol == 1 && drow == -1)    QuoridorController.jumpCurrentPawnDownRight();
         if (dcol == -1 && drow == -1)   QuoridorController.jumpCurrentPawnDownLeft();
+        
     }
 
     @Override
