@@ -1040,9 +1040,20 @@ public static TOWall grabWall() {
 				return false;
 			}
 			GamePosition prevPosition= game.getPosition(currPos-1);
+			//prevPosition.setBlackPosition(prevPosition.getBlackPosition());
+			//prevPosition.setWhitePosition(prevPosition.getWhitePosition());
 		//	prevPosition.setBlackPosition(aNewBlackPosition);
 		//	prevPosition.setWhitePosition(prevPosition.get)
 			game.setCurrentPosition(prevPosition);
+			Move currentMove= game.getCurrentMove();
+			int currMove = game.getMoves().indexOf(currentMove);
+			if(currMove==0) {
+				//do nothing
+			}else{
+				game.setCurrentMove(game.getMove(currMove-1));
+			}
+			
+			
 			
 			
 			
@@ -1088,12 +1099,21 @@ public static TOWall grabWall() {
 //			}
 			int currPos=game.getPositions().indexOf(currentPosition);
 			System.err.print(currPos+" is the index");
-			if(currPos==game.getPositions().size()-2) {
+			if(currPos>=game.getPositions().size()-2) {
 				return false;
 			}
 			GamePosition nextPos= game.getPosition(currPos+1);
 			game.setCurrentPosition(nextPos);
 			game.setCurrentMove(game.getMove(currPos+1));
+			
+			
+			Move currentMove= game.getCurrentMove();
+			int currMove = game.getMoves().indexOf(currentMove);
+			if(currMove==game.getMoves().size()-1) {
+				//do nothing
+			}else{
+				game.setCurrentMove(game.getMove(currMove+1));
+			}
 			//the next move shall be the previous one moveNum and Round
 					
 		}

@@ -466,6 +466,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	if(!QuoridorController.stepForward()) {
         	JOptionPane.showMessageDialog(this, "You are already at the end!");
         }
+    	
     	System.out.print("\n"+QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().toString()+"\n");
     	System.out.print("\n was the fist move \n"+QuoridorApplication.getQuoridor().getCurrentGame().getPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()-1)+"\n");
     	this.repaint();	
@@ -484,11 +485,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     }
     
     private void onJumpToStartButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Jump to start position is not implemented yet!");
+    	JOptionPane.showMessageDialog(this, "Jump to start position is not implemented yet!");
     }
     
     private void onJumpToFinalButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
+    	JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
     }
     
     private void onContinueButtonClicked() {
