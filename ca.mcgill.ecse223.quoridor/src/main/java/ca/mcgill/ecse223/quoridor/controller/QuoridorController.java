@@ -1978,8 +1978,11 @@ public static TOWall grabWall() {
 			}
 		}
 
-		// TODO: Put our game into replay mode if necessary!
-		if (game.getGameStatus() != GameStatus.Running) {
+		// Put our game into replay mode if necessary!
+		if (game.getGameStatus() == GameStatus.Running) {
+			QuoridorController.stopClockForCurrentPlayer();
+			game.setGameStatus(GameStatus.ReadyToStart);
+		} else {
 			game.setGameStatus(GameStatus.Replay);
 		}
 	}

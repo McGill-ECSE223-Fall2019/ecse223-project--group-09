@@ -20,10 +20,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileFilter;
 
 import ca.mcgill.ecse223.quoridor.controller.InvalidLoadException;
-import ca.mcgill.ecse223.quoridor.view.filter.*;
+import ca.mcgill.ecse223.quoridor.controller.QuoridorController;
+import ca.mcgill.ecse223.quoridor.view.filter.GameFileFilter;
+import ca.mcgill.ecse223.quoridor.view.filter.GamePositionFileFilter;
+import ca.mcgill.ecse223.quoridor.view.filter.IOPerformer;
 
 /**
  * A custom component that displays a save and load button
@@ -111,45 +113,51 @@ public class SaveLoadPanel extends JPanel {
      * @author Paul Teng (260862906)
      */
     public void doSaveAction() {
-        File file;
-        IOPerformer filter;
-        while (true) {
-            if (this.chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
-                // User did not click on save/approve button in file chooser,
-                // we are done.
-                return;
-            }
-
-            filter = (IOPerformer) this.chooser.getFileFilter();
-            file = filter.normalizeExtension(this.chooser.getSelectedFile());
-
-            if (!file.exists()) {
-                // File is doesn't exist, no need to prompt for overwriting
-                break;
-            }
-
-            final int retVal = JOptionPane.showConfirmDialog(this,
-                    "Selected file " + file.getName() + " already exists...\n" +
-                    "\n" +
-                    "Are you sure you want to save here?\n" +
-                    "This will overwrite the contents of the selected file",
-                    "Confirm File Overwrite",
-                    JOptionPane.YES_NO_CANCEL_OPTION);
-
-            // Yes    -> Proceed with overwriting
-            // No     -> Stop this saving process
-            // Cancel -> Prompts user for file again
-            if (retVal == JOptionPane.YES_OPTION) break;
-            if (retVal == JOptionPane.NO_OPTION) return;
-            if (retVal == JOptionPane.CANCEL_OPTION) continue;
-        }
-
         try {
-            filter.performSave(file);
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Save operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (RuntimeException ex) {
-            displayThrowableTrace(this, ex);
+            QuoridorController.stopClockForCurrentPlayer();
+
+            File file;
+            IOPerformer filter;
+            while (true) {
+                if (this.chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+                    // User did not click on save/approve button in file chooser,
+                    // we are done.
+                    return;
+                }
+
+                filter = (IOPerformer) this.chooser.getFileFilter();
+                file = filter.normalizeExtension(this.chooser.getSelectedFile());
+
+                if (!file.exists()) {
+                    // File is doesn't exist, no need to prompt for overwriting
+                    break;
+                }
+
+                final int retVal = JOptionPane.showConfirmDialog(this,
+                        "Selected file " + file.getName() + " already exists...\n" +
+                        "\n" +
+                        "Are you sure you want to save here?\n" +
+                        "This will overwrite the contents of the selected file",
+                        "Confirm File Overwrite",
+                        JOptionPane.YES_NO_CANCEL_OPTION);
+
+                // Yes    -> Proceed with overwriting
+                // No     -> Stop this saving process
+                // Cancel -> Prompts user for file again
+                if (retVal == JOptionPane.YES_OPTION) break;
+                if (retVal == JOptionPane.NO_OPTION) return;
+                if (retVal == JOptionPane.CANCEL_OPTION) continue;
+            }
+
+            try {
+                filter.performSave(file);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Save operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (RuntimeException ex) {
+                displayThrowableTrace(this, ex);
+            }
+        } finally {
+            QuoridorController.runClockForCurrentPlayer();
         }
     }
 
@@ -161,20 +169,27 @@ public class SaveLoadPanel extends JPanel {
      * @author Paul Teng (260862906)
      */
     public void doLoadAction() {
-        if (this.chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final IOPerformer filter = (IOPerformer) this.chooser.getFileFilter();
-        final File file = filter.normalizeExtension(this.chooser.getSelectedFile());
         try {
-            filter.performLoad(file);
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(this, "Load operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (InvalidLoadException ex) {
-            JOptionPane.showMessageDialog(this, "Loaded file is invalid:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (RuntimeException ex) {
-            displayThrowableTrace(this, ex);
+            QuoridorController.stopClockForCurrentPlayer();
+
+            if (this.chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+
+            final IOPerformer filter = (IOPerformer) this.chooser.getFileFilter();
+            final File file = filter.normalizeExtension(this.chooser.getSelectedFile());
+            try {
+                filter.performLoad(file);
+                BoardWindow.launchWindow("File: " + file + " was successfully loaded\nGet ready!");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Load operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (InvalidLoadException ex) {
+                JOptionPane.showMessageDialog(this, "Loaded file is invalid:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (RuntimeException ex) {
+                displayThrowableTrace(this, ex);
+            }
+        } finally {
+            QuoridorController.runClockForCurrentPlayer();
         }
     }
 

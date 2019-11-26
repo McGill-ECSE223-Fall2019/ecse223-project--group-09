@@ -186,9 +186,7 @@ public class OpeningWindow extends JFrame {
         try {
 			// If we succeed, then we display the game board
 			((IOPerformer) filter).performLoad(file);
-			QuoridorController.stopClockForCurrentPlayer();
-			BoardWindow.launchWindow("Game was loaded from file: " + file);
-			QuoridorController.runClockForCurrentPlayer();
+			BoardWindow.launchWindow("Game was successfully loaded from file: " + file + "\nGet ready!");
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Load operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (InvalidLoadException ex) {
