@@ -311,6 +311,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      */
     private void onEnterReplayModeButtonClicked() {
         JOptionPane.showMessageDialog(this, "Enter replay mode is not implemented yet!");
+    	//QuoridorController.playerResigns();
     }
 
     /**
@@ -331,7 +332,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      * This method is called when the resign button is clicked
      */
     private void onResignButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Resign is not implemented yet!");
+        //JOptionPane.showMessageDialog(this, "Resign is not implemented yet!");
+    	QuoridorController.playerResigns();
     }
 
     /**
