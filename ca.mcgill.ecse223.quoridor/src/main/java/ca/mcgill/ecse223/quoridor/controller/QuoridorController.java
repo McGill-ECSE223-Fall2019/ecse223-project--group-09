@@ -1814,34 +1814,26 @@ public static TOWall grabWall() {
 		//   to retrieve the players. Also player has some very specific
 		//   information such as thinking time, yet it is not saved.
 
+		if (quoridor.numberOfUsers() < 2) {
+			// Provide dummy users
+			quoridor.addUser("User 1");
+			quoridor.addUser("User 2");
+		}
+
+		QuoridorController.createGame();
+
 		final Player whitePlayer = new Player(new Time(0, 3, 0), quoridor.getUser(0), 9, Direction.Horizontal);
 		final Player blackPlayer = new Player(new Time(0, 3, 0), quoridor.getUser(1), 1, Direction.Horizontal);
 		whitePlayer.setNextPlayer(blackPlayer);
 		blackPlayer.setNextPlayer(whitePlayer);
 
-		// Give our player some walls, they deserve it!
-		for (int i = 1; i <= 20; ++i) {
-			final Player p = i <= 10 ? whitePlayer : blackPlayer;
-			if (Wall.hasWithId(i)) {
-				p.addWall(Wall.getWithId(i));
-			} else {
-				p.addWall(i);
-			}
-		}
-
-		final Game game;
-		if (quoridor.hasCurrentGame()) {
-			// Delete the current game
-			quoridor.getCurrentGame().delete();
-		}
-
-		// Create a brand new game
-		game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
+		final Game game = quoridor.getCurrentGame();
 		game.setWhitePlayer(whitePlayer);
 		game.setBlackPlayer(blackPlayer);
 
-		final GamePosition initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
-		game.setCurrentPosition(initialPosition);
+		QuoridorController.startNewGame();
+		QuoridorController.initiateBoard();
+		QuoridorController.StartClock();
 
 		// Then we just replay the whole game!
 		String action;
@@ -1854,12 +1846,141 @@ public static TOWall grabWall() {
 				throw new InvalidLoadException("Illegal action in game save: `" + action + '`');
 			}
 
-			final int moveNumber = Integer.parseInt(matcher.group(1));
-			final String wpMove = matcher.group(2);
-			final String bpMove = matcher.group(3);
+			// // Uncomment this if we do need the moveNumber
+			// final int moveNumber = Integer.parseInt(matcher.group(1));
 
-			// Handle these
-			throw new UnsupportedOperationException("Not done yet!");
+			{
+				// Play white player's move first
+				final String wpMove = matcher.group(2);
+				final int wpRow = wpMove.charAt(1) - '1' + 1;
+				final int wpCol = wpMove.charAt(0) - 'a' + 1;
+				if (wpMove.length() == 2) {
+					// This is either a step or a jump move
+					final PlayerPosition pos = game.getCurrentPosition().getWhitePosition();
+					final Tile t = pos.getTile();
+
+					final int drow = wpRow - t.getRow();
+					final int dcol = wpCol - t.getColumn();
+
+					if (Math.abs(drow) + Math.abs(dcol) > 2) {
+						throw new InvalidLoadException("Invalid pawn move for white player: " + action);
+					}
+
+					boolean result = false;
+
+					// Shamelessly taken from BoardWindow#onTileClicked(int, int)
+
+					// Steps
+					if (dcol == 1 && drow == 0)     result = QuoridorController.moveCurrentPawnRight();
+					if (dcol == -1 && drow == 0)    result = QuoridorController.moveCurrentPawnLeft();
+					if (dcol == 0 && drow == 1)     result = QuoridorController.moveCurrentPawnUp();
+					if (dcol == 0 && drow == -1)    result = QuoridorController.moveCurrentPawnDown();
+
+					// Far jumps
+					if (dcol == 2 && drow == 0)     result = QuoridorController.jumpCurrentPawnRight();
+					if (dcol == -2 && drow == 0)    result = QuoridorController.jumpCurrentPawnLeft();
+					if (dcol == 0 && drow == 2)     result = QuoridorController.jumpCurrentPawnUp();
+					if (dcol == 0 && drow == -2)    result = QuoridorController.jumpCurrentPawnDown();
+
+					// Lateral jumps
+					if (dcol == 1 && drow == 1)     result = QuoridorController.jumpCurrentPawnUpRight();
+					if (dcol == -1 && drow == 1)    result = QuoridorController.jumpCurrentPawnUpLeft();
+					if (dcol == 1 && drow == -1)    result = QuoridorController.jumpCurrentPawnDownRight();
+					if (dcol == -1 && drow == -1)   result = QuoridorController.jumpCurrentPawnDownLeft();
+
+					if (!result) {
+						throw new InvalidLoadException("Invalid pawn move for white player: " + action);
+					}
+				} else {
+					// This must be a wall move (by regex)
+					final Direction dir;
+					switch (wpMove.charAt(2)) {
+						case 'v': dir = Direction.Vertical; break;
+						case 'h': dir = Direction.Horizontal; break;
+						default:  throw new InvalidLoadException("Invalid direction format for white wall: " + wpMove.charAt(2));
+					}
+
+					// Grab, move and/or rotate, then plant wall
+					grabWall();
+					moveWall(wpRow, wpCol);
+					final TOWallCandidate candidate = QuoridorController.getWallCandidate();
+					if (candidate.getOrientation() != fromDirection(dir)) {
+						QuoridorController.rotateWall(candidate);
+					}
+					if (!QuoridorController.dropWall(candidate.getAssociatedWall())) {
+						throw new InvalidLoadException("Invalid wall move for white player: " + action);
+					}
+				}
+			}
+
+			{
+				// Play black player's move next
+				final String bpMove = matcher.group(3);
+				final int bpRow = bpMove.charAt(1) - '1' + 1;
+				final int bpCol = bpMove.charAt(0) - 'a' + 1;
+				if (bpMove.length() == 2) {
+					// This is either a step or a jump move
+					final PlayerPosition pos = game.getCurrentPosition().getBlackPosition();
+					final Tile t = pos.getTile();
+
+					final int drow = bpRow - t.getRow();
+					final int dcol = bpCol - t.getColumn();
+
+					if (Math.abs(drow) + Math.abs(dcol) > 2) {
+						throw new InvalidLoadException("Invalid pawn move for black player: " + action);
+					}
+
+					boolean result = false;
+
+					// Shamelessly taken from BoardWindow#onTileClicked(int, int)
+
+					// Steps
+					if (dcol == 1 && drow == 0)     result = QuoridorController.moveCurrentPawnRight();
+					if (dcol == -1 && drow == 0)    result = QuoridorController.moveCurrentPawnLeft();
+					if (dcol == 0 && drow == 1)     result = QuoridorController.moveCurrentPawnUp();
+					if (dcol == 0 && drow == -1)    result = QuoridorController.moveCurrentPawnDown();
+
+					// Far jumps
+					if (dcol == 2 && drow == 0)     result = QuoridorController.jumpCurrentPawnRight();
+					if (dcol == -2 && drow == 0)    result = QuoridorController.jumpCurrentPawnLeft();
+					if (dcol == 0 && drow == 2)     result = QuoridorController.jumpCurrentPawnUp();
+					if (dcol == 0 && drow == -2)    result = QuoridorController.jumpCurrentPawnDown();
+
+					// Lateral jumps
+					if (dcol == 1 && drow == 1)     result = QuoridorController.jumpCurrentPawnUpRight();
+					if (dcol == -1 && drow == 1)    result = QuoridorController.jumpCurrentPawnUpLeft();
+					if (dcol == 1 && drow == -1)    result = QuoridorController.jumpCurrentPawnDownRight();
+					if (dcol == -1 && drow == -1)   result = QuoridorController.jumpCurrentPawnDownLeft();
+
+					if (!result) {
+						throw new InvalidLoadException("Invalid pawn move for black player: " + action);
+					}
+				} else {
+					// This must be a wall move (by regex)
+					final Direction dir;
+					switch (bpMove.charAt(2)) {
+						case 'v': dir = Direction.Vertical; break;
+						case 'h': dir = Direction.Horizontal; break;
+						default:  throw new InvalidLoadException("Invalid direction format for black wall: " + bpMove.charAt(2));
+					}
+
+					// Grab, move and/or rotate, then plant wall
+					grabWall();
+					moveWall(bpRow, bpCol);
+					final TOWallCandidate candidate = QuoridorController.getWallCandidate();
+					if (candidate.getOrientation() != fromDirection(dir)) {
+						QuoridorController.rotateWall(candidate);
+					}
+					if (!QuoridorController.dropWall(candidate.getAssociatedWall())) {
+						throw new InvalidLoadException("Invalid wall move for black player: " + action);
+					}
+				}
+			}
+		}
+
+		// TODO: Put our game into replay mode if necessary!
+		if (game.getGameStatus() != GameStatus.Running) {
+			game.setGameStatus(GameStatus.Replay);
 		}
 	}
 
@@ -2094,9 +2215,8 @@ public static TOWall grabWall() {
 	private static GamePosition createInitialGamePosition(Player whitePlayer, Player blackPlayer, Player startingPlayer, Game game) {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 
-		// Tile numbers are from CucumberStepDefinitions
-		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, quoridor.getBoard().getTile(36));
-		final PlayerPosition initialBlackPosition = new PlayerPosition(blackPlayer, quoridor.getBoard().getTile(44));
+		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, getTileFromRowAndColumn(1, 5));
+		final PlayerPosition initialBlackPosition = new PlayerPosition(blackPlayer, getTileFromRowAndColumn(9, 5));
 
 		if (GamePosition.hasWithId(0)) {
 			// Deletes the existing game position with id=0
