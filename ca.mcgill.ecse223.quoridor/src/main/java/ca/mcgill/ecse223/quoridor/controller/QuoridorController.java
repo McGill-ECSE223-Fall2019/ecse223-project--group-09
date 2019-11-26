@@ -248,6 +248,10 @@ public class QuoridorController {
 			//Then It shall be white player to move
 			aGame.setCurrentPosition(newCurrentPosition);
 			for(int i=1; i<=20; i++) {
+				if (Wall.hasWithId(i)) {
+					Wall.getWithId(i).delete();
+				}
+
 				if(i <= 10){
 					//And All of White's walls shall be in stock
 					aGame.getCurrentPosition().addWhiteWallsInStock(new Wall(i,aGame.getWhitePlayer()));
