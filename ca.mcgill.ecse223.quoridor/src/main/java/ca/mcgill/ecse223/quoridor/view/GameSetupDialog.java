@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.sql.Time;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -145,9 +146,9 @@ public class GameSetupDialog extends JPanel {
 
     /**
      * Checks to see if all players have a name selected
-     * 
+     *
      * @return true if all players have a name selected, false otherwise
-     * 
+     *
      * @author Group 9
      */
     public boolean allPlayersHaveName() {
@@ -233,19 +234,7 @@ public class GameSetupDialog extends JPanel {
      * @author Group 9
      */
     public Time getThinkingTime() {
-        final String text = this.timeField.getText();
-        final Matcher matcher = TimeInputVerifier.TIME_FMT.matcher(text);
-        if (!matcher.matches()) {
-            // Bad format
-            return null;
-        }
-
-        final String hstr = matcher.group(1);
-        final String mstr = matcher.group(2);
-        final String sstr = matcher.group(3);
-
-        return new Time(hstr == null ? 0 : Integer.parseInt(hstr), mstr == null ? 0 : Integer.parseInt(mstr),
-                sstr == null ? 0 : Integer.parseInt(sstr));
+        return TimeInputVerifier.parseTime(this.timeField.getText()).orElse(null);
     }
 
     /**
@@ -287,13 +276,56 @@ public class GameSetupDialog extends JPanel {
         @Override
         public boolean verify(JComponent component) {
             // We will only use this on a JTextField
-            JTextField field = (JTextField) component;
-            final boolean result = TIME_FMT.matcher(field.getText()).matches();
+            final JTextField field = (JTextField) component;
+            final Optional<Time> opt = parseTime(field.getText());
 
-            // Change to red if input is bad!
-            field.setForeground(result ? VALID_COLOR : INVALID_COLOR);
+            if (opt.isPresent()) {
+                // Change to black if input is good!
+                field.setForeground(VALID_COLOR);
+                // Also we should reformat to *standard* form
+                final Time time = opt.get();
 
-            return result;
+                final String formatted;
+                // final StringBuilder sb = new StringBuilder();
+                if (time.getHours() > 0) {
+                    // Display the full HH:MM:SS
+                    formatted = String.format("%02d:%02d:%02d", time.getHours(), time.getMinutes(), time.getSeconds());
+                } else {
+                    formatted = String.format("%02d:%02d", time.getMinutes(), time.getSeconds());
+                }
+
+                field.setText(formatted);
+            } else {
+                // Change to red if input is bad!
+                field.setForeground(INVALID_COLOR);
+            }
+
+            return opt.isPresent();
+        }
+
+        /**
+         * Converts a string to time based on verification pattern
+         *
+         * @param text The string
+         *
+         * @return the thinking time based on the values provided by the user; empty if
+         *         input has bad format and is not a *time*
+         *
+         * @author Group 9
+         */
+        public static Optional<Time> parseTime(String text) {
+            final Matcher matcher = TimeInputVerifier.TIME_FMT.matcher(text);
+            if (!matcher.matches()) {
+                // Bad format
+                return Optional.empty();
+            }
+
+            final String hstr = matcher.group(1);
+            final String mstr = matcher.group(2);
+            final String sstr = matcher.group(3);
+
+            return Optional.of(new Time(hstr == null ? 0 : Integer.parseInt(hstr), mstr == null ? 0 : Integer.parseInt(mstr),
+                    sstr == null ? 0 : Integer.parseInt(sstr)));
         }
     }
 }
