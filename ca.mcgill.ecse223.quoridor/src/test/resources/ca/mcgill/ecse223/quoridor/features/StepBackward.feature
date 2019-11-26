@@ -23,7 +23,7 @@ Feature: Step backward
     And White player's position shall be (<wrow>,<wcol>)
     And Black player's position shall be (<brow>,<bcol>)
     And White has <wwall> on stock
-    And Black has <bwall> on stock
+    And Black has <bwallno> on stock
 
     Examples: 
       | movno | rndno | nmov | nrnd | wrow | wcol | wwall | brow | bcol | bwallno |

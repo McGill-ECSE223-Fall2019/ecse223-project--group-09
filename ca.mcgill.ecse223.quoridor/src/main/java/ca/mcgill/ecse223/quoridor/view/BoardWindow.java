@@ -400,9 +400,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	
     	//dropWall
     	
+    	
+    	
        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
      	if(QuoridorController.dropWall(wallCandidate.getAssociatedWall())) {//if true drop it
     		
+     		System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
+        	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
     		this.repaint();//the wall has been drawn and now you to 
     		gridPanel.setWallCandidate(null); //set the candidate to null once the wall is dropped 
     			
@@ -454,6 +458,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         if (dcol == 1 && drow == -1)    QuoridorController.jumpCurrentPawnDownRight();
         if (dcol == -1 && drow == -1)   QuoridorController.jumpCurrentPawnDownLeft();
         
+        System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
+    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
     }
 
     @Override

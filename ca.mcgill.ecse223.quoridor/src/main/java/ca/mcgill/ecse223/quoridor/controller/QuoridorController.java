@@ -1013,24 +1013,36 @@ public static TOWall grabWall() {
 		}
 			
 		if(!game.getGameStatus().equals(GameStatus.Replay)) {
+			System.err.println("the game status is not in replay");
 			return;
 		}else {
 			
 			//get the previous gamePosition
 			GamePosition currentPosition= game.getCurrentPosition();
-			if(currentPosition.equals(game.getPosition(0))) {
-				//if this is the first move cannot step backward
+			System.err.println("i set the move to be the first but the game has :"+game.getMoves().size()+" moves BUT "+game.getPositions().size()+" gamepositions");
+			
+			if(game.getMoves().indexOf(game.getCurrentMove())==0) {
+				//there is one move
+				game.setCurrentPosition(game.getPosition(1));
+				game.setCurrentMove(game.getMove(0));
 				return;
-			}
+			
+			}else {//not the first move
 			
 			
 			//game.getPositions().lastIndexOf(currentPosition);
-			int currMove = game.getPositions().indexOf(currentPosition);
-			GamePosition prevPosition= game.getPosition(currMove-1);
-			game.setCurrentPosition(prevPosition);
+			int currMove = game.getMoves().indexOf(game.getCurrentMove());
 			game.setCurrentMove(game.getMove(currMove-1));
+				
+			//int currPos = game.getPositions().indexOf(currentPosition);
+			GamePosition prevPosition= game.getPosition(currMove);
+			game.setCurrentPosition(prevPosition);
+			
+			
+			
 			//the next move shall be the previous one moveNum and Round
-					
+		//	System.err.print(game.getMove(currMove-1)+" returned move "+game.getMoves().size()+" num of moves ");
+			}
 		}
 		
 	}

@@ -1740,7 +1740,10 @@ public class CucumberStepDefinitions {
 		Player player1 = game.getWhitePlayer();
 		Player player2 = game.getBlackPlayer();
 		
-		GamePosition gpos = game.getCurrentPosition();
+		int whiteWallUsed=1;
+		int blackWallUsed=1;
+		
+		
 		Move aMove;
 		
 		try {
@@ -1758,11 +1761,11 @@ public class CucumberStepDefinitions {
 			Integer mov = Integer.decode(map.get("mv"));
 			Integer rnd = Integer.decode(map.get("rnd"));
 			String move = map.get("move");
-		
-			
+		//	System.err.println("\n"+mov+" move "+rnd+" round "+move+" move ");
+			GamePosition gpos = game.getCurrentPosition();
 			int col = QuoridorController.letterToNumberColumn(move.charAt(0));
 			int row = Character.getNumericValue(move.charAt(1));
-			
+			System.err.println("\n");
 			
 			if(move.length() == 3) {
 				Wall nwall;
@@ -1773,19 +1776,29 @@ public class CucumberStepDefinitions {
 				} else {
 					dir = Direction.Vertical;
 				}
-				
+				//
 				if (rnd == 1) {
-					nwall = gpos.getWhiteWallsInStock(player1.numberOfWalls());
+					nwall = gpos.getWhiteWallsInStock(player1.numberOfWalls()-whiteWallUsed);
+					whiteWallUsed++;
 					aMove = new WallMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
+					QuoridorController.switchCurrentPlayer();
+					//game.setCurrentMove(aMove);
 				} else {
-					nwall = gpos.getBlackWallsInStock(player2.numberOfWalls());
+					nwall = gpos.getBlackWallsInStock(player2.numberOfWalls()-blackWallUsed);
+					blackWallUsed++;
 					aMove = new WallMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
+					QuoridorController.switchCurrentPlayer();
+					//game.setCurrentMove(aMove);
 				}
 			} else {
 				if (rnd == 1) {
 					aMove = new StepMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game);
+					QuoridorController.switchCurrentPlayer();
+					//game.setCurrentMove(aMove);
 				} else {
 					aMove = new StepMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game);
+					QuoridorController.switchCurrentPlayer();
+					//game.setCurrentMove(aMove);
 				}
 				
 			}
@@ -1811,6 +1824,7 @@ public class CucumberStepDefinitions {
 		int posWRow = game.getCurrentPosition().getWhitePosition().getTile().getRow();	
 		int posWCol = game.getCurrentPosition().getWhitePosition().getTile().getColumn();
 		
+		System.err.print(wrow+" "+wcol+" should be the position and i have"+posWRow+" "+posWCol);
 		Assert.assertTrue(aWRow == posWRow);
 		Assert.assertTrue(wcol == posWCol);
 		
@@ -1827,6 +1841,9 @@ public class CucumberStepDefinitions {
 		Assert.assertTrue(aBRow == posBRow);
 		Assert.assertTrue(bcol == posBCol);
 	}
+	
+	
+	
 	
 	@And("White has {int} on stock")
 	public void whiteHasOnStock(int wwallno) {
@@ -1856,14 +1873,37 @@ public class CucumberStepDefinitions {
 	//********STEP BACKWARD FEATURE***********
 	
 
-	    @When("^Step backward is initiated$")
+	    @And("The next move is {int}.{int}")
+	    public void the_next_move_is_(int movno, int rndno) throws Throwable {
+	    	Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+	    	
+//	    	Move move= game.getCurrentMove();
+//	    	int index = game.getMoves().indexOf(move);
+//	    	
+//	    	if(game.getMoves().size()==index) {
+//	    		Move nextMove= game.getMove(index+1);
+//	    	}else {
+//	    		Move nextMove= game.getMove(index);
+//	    	}	
+	     
+	        //System.err.println(movno+" moveno "+rndno+" roundnum");
+	        Move aMove = game.getMove(QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno));
+	        game.setCurrentMove(aMove);
+	       // System.err.println(aMove+"\n\n my move BEFORE \n");
+	      //  System.err.print(b);
+	     //   System.err.print(nextMove.toString()+"\n \n is the move from me \n"+aMove.toString()+" is from alixe "+movno+" is movnum"+rndno+" is the roundNum");
+	      //  Assert.assertEquals(nextMove, aMove);
+	
+	    }
+	    
+	    @When("Step backward is initiated")
 	    public void step_backward_is_initiated() throws Throwable {
 	        //call the stepBackward method;
 	    	QuoridorController.stepBackward();
 	    	
 	    }
-
-	    @Then("^The next move shall be {int}.{int}$")
+	    
+	    @Then("The next move shall be {int}.{int}")
 	    public void the_next_move_shall_be_(int nmov, int nrnd) throws Throwable {
 	     	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
 	    	int numOfMoves=moves.size();
@@ -1874,52 +1914,41 @@ public class CucumberStepDefinitions {
 	    	int index = QuoridorController.getIndexFromMoveAndRoundNumber(nmov, nrnd);
 	    	Move nmove = moves.get(index);
 	    	
+	    	//System.err.println(move+"\n my CURRENT move "+nmove+"\n move a Alixe");
+	    	System.err.println(nmov+" moveno "+nrnd+" roundnum");
+	    	
 	    	Assert.assertEquals(nmove, move);
 	    }
 
-	    @And("^The next move is {int}.{int}$")
-	    public void the_next_move_is_(int movno, int rndno) throws Throwable {
-	    	Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-	    	
-	    	Move move= game.getCurrentMove();
-	    	int index = game.getMoves().indexOf(move);
-	    	Move nextMove= game.getMove(index+1);
-	    	
-	     
-	        
-	        Move aMove = game.getMove(QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno));
-	        
-	        Assert.assertEquals(nextMove, aMove);
-	
-	    }
+	    
 
-	    @And("^White player's position shall be ((.+),(.+))$")
-	    public void white_players_position_shall_be_(String wrow, String wcol) throws Throwable {
-	    	PlayerPosition white=QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
-	        Assert.assertTrue( (white.getTile().getRow()==Integer.parseInt(wrow)) && (white.getTile().getColumn()==Integer.parseInt(wcol)) );
-	        
-	    }
-
-	    @And("^Black player's position shall be ((.+),(.+))$")
-	    public void black_players_position_shall_be_(String brow, String bcol) throws Throwable {
-	    	PlayerPosition black=QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
-	        Assert.assertTrue( (black.getTile().getRow()==Integer.parseInt(brow)) && (black.getTile().getColumn()==Integer.parseInt(bcol)) );
-	        
-	    }
-
-	    @And("^White has (.+) on stock$")
-	    public void white_has_on_stock(String wwallno) throws Throwable {
-	    	GamePosition game= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
-	    	Assert.assertTrue(game.numberOfWhiteWallsInStock()==Integer.parseInt(wwallno));
- 	    			
-	    }
-
-	    @And("^Black has (.+) on stock$")
-	    public void black_has_on_stock(String bwallno) throws Throwable {
-	    	GamePosition game= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
-	    	Assert.assertTrue(game.numberOfBlackWallsInStock()==Integer.parseInt(bwallno));
- 	    	
-	    }
+//	    @And("^White player's position shall be ((.+),(.+))$")
+//	    public void white_players_position_shall_be_(String wrow, String wcol) throws Throwable {
+//	    	PlayerPosition white=QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhitePosition();
+//	        Assert.assertTrue( (white.getTile().getRow()==Integer.parseInt(wrow)) && (white.getTile().getColumn()==Integer.parseInt(wcol)) );
+//	        
+//	    }
+//
+//	    @And("^Black player's position shall be ((.+),(.+))$")
+//	    public void black_players_position_shall_be_(String brow, String bcol) throws Throwable {
+//	    	PlayerPosition black=QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getBlackPosition();
+//	        Assert.assertTrue( (black.getTile().getRow()==Integer.parseInt(brow)) && (black.getTile().getColumn()==Integer.parseInt(bcol)) );
+//	        
+//	    }
+//
+//	    @And("^White has (.+) on stock$")
+//	    public void white_has_on_stock(String wwallno) throws Throwable {
+//	    	GamePosition game= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+//	    	Assert.assertTrue(game.numberOfWhiteWallsInStock()==Integer.parseInt(wwallno));
+// 	    			
+//	    }
+//
+//	    @And("^Black has (.+) on stock$")
+//	    public void black_has_on_stock(String bwallno) throws Throwable {
+//	    	GamePosition game= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition();
+//	    	Assert.assertTrue(game.numberOfBlackWallsInStock()==Integer.parseInt(bwallno));
+// 	    	
+//	    }
 	    
 	    
 	    
@@ -1927,52 +1956,12 @@ public class CucumberStepDefinitions {
 	
 	  //********STEP FORWARD FEATURE***********    
 	    
-	    
-	    
-//	    @Given("^The game is in replay mode$")
-//	    public void the_game_is_in_replay_mode() throws Throwable {
-//	        throw new PendingException();
-//	    }
-//
-//	    @Given("^The following moves have been played in game:$")
-//	    public void the_following_moves_have_been_played_in_game() throws Throwable {
-//	        throw new PendingException();
-//	    }
 
-	    @When("^Step forward is initiated$")
+	    @When("Step forward is initiated")
 	    public void step_forward_is_initiated() throws Throwable {
 	    	QuoridorController.stepForward();
 	    }
 
-//	    @Then("^The next move shall be (.+).(.+)$")
-//	    public void the_next_move_shall_be_(String nmov, String nrnd) throws Throwable {
-//	        throw new PendingException();
-//	    }
-//
-//	    @And("^The next move is (.+).(.+)$")
-//	    public void the_next_move_is_(String movno, String rndno) throws Throwable {
-//	        throw new PendingException();
-//	    }
-//
-//	    @And("^White player's position shall be ((.+),(.+))$")
-//	    public void white_players_position_shall_be_(String wrow, String wcol) throws Throwable {
-//	        throw new PendingException();
-//	    }
-//
-//	    @And("^Black player's position shall be ((.+),(.+))$")
-//	    public void black_players_position_shall_be_(String brow, String bcol) throws Throwable {
-//	        throw new PendingException();
-//	    }
-//
-//	    @And("^White has (.+) on stock$")
-//	    public void white_has_on_stock(String wwallno) throws Throwable {
-//	        throw new PendingException();
-//	    }
-//
-//	    @And("^Black has (.+) on stock$")
-//	    public void black_has_on_stock(String bwallno) throws Throwable {
-//	        throw new PendingException();
-//	    }  
 
 	// ***** ReportFinalResult.feature *****
 
