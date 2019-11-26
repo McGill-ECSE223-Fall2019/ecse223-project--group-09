@@ -3274,14 +3274,17 @@ public static TOWall grabWall() {
 	 * @return
 	 */
 	
-	public static Move jumpToStartPosition() {
+	public static void jumpToStartPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Move firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
-		GamePosition gamePos = game.getPosition(0);
-		game.setCurrentPosition(gamePos);
-		game.setCurrentMove(firstMove);
+		Move firstMove;
+		GamePosition gamePos;
 		
-		return firstMove;
+		if (game.getGameStatus() == GameStatus.Replay){		
+			firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
+			gamePos = game.getPosition(0);
+			game.setCurrentPosition(gamePos);
+			game.setCurrentMove(firstMove);
+		} 
 	}
 	
 	/**
