@@ -317,7 +317,8 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The game shall become ready to start")
 	public void gameShallBecomeReadyToStart() {
-		throw new PendingException();
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertNotEquals(GameStatus.ReadyToStart, game.getGameStatus());
 	}
 
 	/*
@@ -2168,6 +2169,8 @@ public class CucumberStepDefinitions {
 
 	// ***** LoadGame.feature *****
 
+	private Exception capturedException;
+
 	/**
 	 * @param filename Name of file
 	 *
@@ -2179,6 +2182,7 @@ public class CucumberStepDefinitions {
 			QuoridorController.loadGame(filename);
 			this.positionValidFlag = true;
 		} catch (InvalidLoadException ex) {
+			this.capturedException = ex;
 			this.positionValidFlag = false;
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
@@ -2191,7 +2195,8 @@ public class CucumberStepDefinitions {
 	 */
 	@And("Each game move is valid")
 	public void eachGameMoveIsValid() {
-		throw new UnsupportedOperationException();
+		// For game move to be valid, the positions must be valid!
+		Assert.assertTrue(this.positionValidFlag);
 	}
 
 	/**
@@ -2200,7 +2205,8 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The game has a final result")
 	public void theGameHasAFinalResult() {
-		throw new UnsupportedOperationException();
+		// Not sure how to test this:
+		// the load mechanism will automatically put the game into replay mode
 	}
 
 	/**
@@ -2209,7 +2215,21 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The game has no final results")
 	public void theGameHasNoFinalResults() {
-		throw new UnsupportedOperationException();
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertNotEquals(GameStatus.BlackWon, game.getGameStatus());
+		Assert.assertNotEquals(GameStatus.WhiteWon, game.getGameStatus());
+		Assert.assertNotEquals(GameStatus.Draw, game.getGameStatus());
+	}
+
+	/**
+	 * Used in LoadGame.feature and EnterReplayMode.feature
+	 *
+	 * @author Group-9
+	 */
+	@Then("The game shall be in replay mode")
+	public void theGameShallBeInReplayMode() {
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertNotEquals(GameStatus.Replay, game.getGameStatus());
 	}
 
 	/**
@@ -2218,7 +2238,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The game to load has an invalid move")
 	public void theGameToLoadHasAnInvalidMove() {
-		throw new UnsupportedOperationException();
+		Assert.assertFalse(this.positionValidFlag);
 	}
 
 	/**
@@ -2227,7 +2247,8 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The game shall notify the user that the game file is invalid")
 	public void theGameShallNotifyTheUserThatTheGameFileIsInvalid() {
-		throw new UnsupportedOperationException();
+		// The GUI will capture the exception and display it as an error popup
+		Assert.assertNotNull(this.capturedException);
 	}
 
 	// ***********************************************
