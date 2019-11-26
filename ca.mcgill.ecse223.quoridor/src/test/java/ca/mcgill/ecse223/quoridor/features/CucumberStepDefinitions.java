@@ -2100,7 +2100,7 @@ public class CucumberStepDefinitions {
 	 */
 	@Given("Player {string} has just completed his move")
 	public void playerHasJustCompletedHisMove(String color) {
-		throw new UnsupportedOperationException();
+		// Do nothing, all done by next clause
 	}
 
 	/**
