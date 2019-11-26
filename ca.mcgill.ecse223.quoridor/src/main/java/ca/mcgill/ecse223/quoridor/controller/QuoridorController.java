@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 
 import ca.mcgill.ecse223.quoridor.controller.path.Node;
 import ca.mcgill.ecse223.quoridor.controller.path.PathFinder;
+import ca.mcgill.ecse223.quoridor.controller.Color;
 import ca.mcgill.ecse223.quoridor.application.QuoridorApplication;
 import ca.mcgill.ecse223.quoridor.model.Board;
 import ca.mcgill.ecse223.quoridor.model.Destination;
@@ -3316,7 +3317,40 @@ public static TOWall grabWall() {
 		}
 		
 	}
+	
+	public static void enterReplayMode(Game game){
+		if(game.getGameStatus() != GameStatus.Running) {
+			game.setGameStatus(GameStatus.Replay);
+		}
+	}
 
+	
+	/*
+	Given The game is running
+	Scenario Outline: Player resigns
+    Given The player to move is "<player>"
+    When Player initates to resign
+    Then Game result shall be "<result>"
+    And The game shall no longer be running
+	 */
+	
+	public static void playerResigns() {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game aGame = quoridor.getCurrentGame();
+
+		if(aGame.getGameStatus() == GameStatus.Running){
+			TOPlayer currentPlayer= getPlayerOfCurrentTurn();
+			if(currentPlayer.getColor()==Color.WHITE) {
+				//System.out.println("Black Wins");
+				aGame.setGameStatus(GameStatus.BlackWon);
+			}
+			else {
+				//System.out.println("White Wins");
+				aGame.setGameStatus(GameStatus.WhiteWon);
+			}
+		}
+	}
+	
 	/**
 	 * Checks to see if any player has won and returns the color.
 	 * 
