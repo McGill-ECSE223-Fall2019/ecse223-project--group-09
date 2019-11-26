@@ -1063,8 +1063,8 @@ public static TOWall grabWall() {
 			
 			//game.getPositions().lastIndexOf(currentPosition);
 			int currMove = game.getPositions().indexOf(currentPosition);
-			GamePosition prevPosition= game.getPosition(currMove+1);
-			game.setCurrentPosition(prevPosition);
+			GamePosition nextPos= game.getPosition(currMove+1);
+			game.setCurrentPosition(nextPos);
 			game.setCurrentMove(game.getMove(currMove+1));
 			//the next move shall be the previous one moveNum and Round
 					
@@ -3232,6 +3232,91 @@ public static TOWall grabWall() {
 		finder.setEndingNodes(set);
 
 		return finder;
+	}
+	
+	/**
+	 * returns the index of a specific move inside the list of moves of the game, by its move number and round number
+	 * 
+	 * @param movno
+	 * @param rndno
+	 * @return
+	 * 
+	 * @author alixe delabrousse
+	 * 
+	 */
+	
+	public static int getIndexFromMoveAndRoundNumber(int movno, int rndno) {
+		if (rndno == 2) {
+			return movno*2-1;
+		} else if (rndno == 1) {
+			return (movno-1)*2;
+		} else {
+			return -1;
+		}
+	}
+	
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @return
+	 */
+	
+	public static Move jumpToFinalPosition() {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Move lastMove = game.getMove(game.numberOfMoves());
+		GamePosition gamePos = game.getPositions().get(game.numberOfPositions());
+		game.setCurrentPosition(gamePos);
+		
+		return lastMove;
+		
+	}
+	/**
+	 * @author alixe delabrousse
+	 * 
+	 * @return
+	 */
+	
+	public static Move jumpToStartPosition() {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Move firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
+		GamePosition gamePos = game.getPosition(0);
+		game.setCurrentPosition(gamePos);
+		game.setCurrentMove(firstMove);
+		
+		return firstMove;
+	}
+	
+	/**
+	 * @author alixe delabrousse
+	 * @param letter
+	 * @return
+	 */
+	
+	public static int letterToNumberColumn(char letter) {
+		switch (letter) {
+			case 'a':
+				return 1;
+			case 'b':
+				return 2;
+			case 'c':
+				return 3;
+			case 'd':
+				return 4;
+			case 'e':
+				return 5;
+			case 'f':
+				return 6;
+			case 'g': 
+				return 7;
+			case 'h':
+				return 8;
+			case 'i':
+				return 9;
+			default:	
+				return -1;
+			
+		}
+		
 	}
 
 	/**
