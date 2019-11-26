@@ -1772,6 +1772,37 @@ public static TOWall grabWall() {
 	}
 
 	/**
+	 * Loads a previously saved game from a file
+	 * 
+	 * @param filePath The file being read
+	 * @throws IOException If reading operation fails 
+	 * @throws InvalidLoadException If file cannot be processed
+	 * 
+	 * @author Group-9
+	 */
+	public static void loadGame(String filePath) throws IOException, InvalidLoadException {
+		try (final Reader reader = new FileReader(filePath)) {
+			loadGame(reader);
+		}
+	}
+
+	/**
+	 * Reads in a previously saved game
+	 *
+	 * Note: this method does not close any streams; it is the caller's
+	 * responsibility to do so.
+	 * 
+	 * @param source The stream we are reading from
+	 * @throws IOException If reading operation fails
+	 * @throws InvalidLoadException If stream cannot be processed
+	 * 
+	 * @author Group-9
+	 */
+	public static void loadGame(Reader source) throws IOException, InvalidLoadException {
+		throw new UnsupportedOperationException("loadGame is not supported (yet)");
+	}
+
+	/**
 	 * Loads a previously saved board from a file 
 	 * 
 	 * @param filePath The file being read

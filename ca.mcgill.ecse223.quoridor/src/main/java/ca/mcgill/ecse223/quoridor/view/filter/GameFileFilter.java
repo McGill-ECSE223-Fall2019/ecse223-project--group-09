@@ -55,15 +55,16 @@ public class GameFileFilter extends FileFilter implements IOPerformer {
     }
 
     /**
-     * This will be filled in by whoever is asssigned to the later load game feature
-     * (hence no author)
+     * Loads the game from the files
      *
      * @param file The file being read from
      * @throws IOException          any IOException that happens ...
      * @throws InvalidLoadException any invalid loading that happens ...
+     * 
+     * @author Group-9
      */
     @Override
     public void performLoad(File file) throws IOException, InvalidLoadException {
-        throw new UnsupportedOperationException("Wait for Phase 2 Load game");
+        QuoridorController.loadGame(file.getAbsolutePath());
     }
 }
