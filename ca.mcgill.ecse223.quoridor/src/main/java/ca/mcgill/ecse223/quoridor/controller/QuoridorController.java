@@ -2766,7 +2766,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Group 9
 	 */
-	private static void runClockForPlayer(Player player) {
+	private static void runClockForPlayer(final Player player) {
 		if (player == null) {
 			// wut?
 			return;
@@ -2785,6 +2785,18 @@ public static TOWall grabWall() {
 
 					// Update the remaining time
 					player.setRemainingTime(newTime);
+				} else {
+					// This means the player ran out of time!
+
+					// the other player wins!
+					if (player.hasGameAsBlack()) {
+						QuoridorController.setWinner(player.getGameAsBlack().getWhitePlayer());
+					} else {
+						QuoridorController.setWinner(player.getGameAsWhite().getBlackPlayer());
+					}
+					
+					// stop the task
+					QuoridorController.stopClockForPlayer(player);
 				}
 			}
 		};
@@ -2828,6 +2840,31 @@ public static TOWall grabWall() {
 		if (task != null) {
 			task.cancel();
 		}
+	}
+	
+	/**
+	 * Sets the winner of the game
+	 * 
+	 * @param p the winner, does nothing if null
+	 * 
+	 * @author Group-9
+	 */
+	private static void setWinner(Player p) {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game game = quoridor.getCurrentGame();
+
+		if (p == null) {
+			return;
+		}
+
+		if (p.hasGameAsWhite()) {
+			game.setGameStatus(GameStatus.WhiteWon);
+		} else {
+			game.setGameStatus(GameStatus.BlackWon);
+		}
+		
+		// Do more proper cleanup here
+		game.setWallMoveCandidate(null);
 	}
 
 	/**
@@ -3356,6 +3393,29 @@ public static TOWall grabWall() {
 			default:
 				return EnumSet.noneOf(Color.class);
 		}
+	}
+	
+	/**
+	 * Checks to see if game should terminate (due to winning or draw conditions)
+	 * 
+	 * @author Group-9
+	 */
+	public static void initiateCheckGameResult() {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// Nothing to process
+			return;
+		}
+
+		Game game = quoridor.getCurrentGame();
+		if (game.getGameStatus() != GameStatus.Running) {
+			// Nothing to process
+			return;
+		}
+		
+		// TODO: check if player has reached the corresponding row / column
+		// TODO: check if player repeated move three times (draw condition)
+		// then call setWinner(p) on the correct player
 	}
 
 }// end QuoridorController

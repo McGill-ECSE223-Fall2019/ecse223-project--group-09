@@ -2132,7 +2132,23 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The clock of {string} counts down to zero")
 	public void clockCountsDownToZero(String color) {
-		throw new UnsupportedOperationException();
+		// Set remaining time to zero
+		switch (color) {
+		case "white":
+			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(0, 0, 0));
+			QuoridorController.runClockForPlayer(Color.WHITE);
+			break;
+		case "black":
+			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setRemainingTime(new Time(0, 0, 0));
+			QuoridorController.runClockForPlayer(Color.BLACK);
+			break;
+		}
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException ex) {
+			// Welp...
+		}
 	}
 
 	/**
@@ -2141,7 +2157,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("Checking of game result is initated")
 	public void checkingOfGameResultIsInitiated() {
-		throw new UnsupportedOperationException();
+		QuoridorController.initiateCheckGameResult();
 	}
 
 	/**
@@ -2151,7 +2167,23 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("Game result shall be {string}")
 	public void gameResultShallBe(String status) {
-		throw new UnsupportedOperationException();
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		switch (status.toLowerCase()) {
+		case "pending":
+			Assert.assertEquals(GameStatus.Running, game.getGameStatus());
+			break;
+		case "whitewon":
+			Assert.assertEquals(GameStatus.WhiteWon, game.getGameStatus());
+			break;
+		case "blackwon":
+			Assert.assertEquals(GameStatus.BlackWon, game.getGameStatus());
+			break;
+		case "drawn":
+			Assert.assertEquals(GameStatus.Draw, game.getGameStatus());
+			break;
+		default:
+			throw new AssertionError("Unhandled result case: " + status);
+		}
 	}
 
 	/**
@@ -2160,7 +2192,8 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The game shall no longer be running")
 	public void gameShallNoLongerBeRunning() {
-		throw new UnsupportedOperationException();
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertNotEquals(GameStatus.Running, game.getGameStatus());
 	}
 
 	// ***********************************************
