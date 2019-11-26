@@ -3104,6 +3104,30 @@ public static TOWall grabWall() {
 	}
 
 	/**
+	 * Starts the clock for the current player
+	 * 
+	 * @author Group 9
+	 */
+	public static void runClockForCurrentPlayer() {
+		runClockForPlayer(QuoridorApplication.getQuoridor()
+				.getCurrentGame()
+				.getCurrentPosition()
+				.getPlayerToMove());
+	}
+
+	/**
+	 * Stops the clock for the current player
+	 * 
+	 * @author Group 9
+	 */
+	public static void stopClockForCurrentPlayer() {
+		stopClockForPlayer(QuoridorApplication.getQuoridor()
+				.getCurrentGame()
+				.getCurrentPosition()
+				.getPlayerToMove());
+	}
+
+	/**
 	 * Sets the winner of the game
 	 *
 	 * @param p the winner, does nothing if null

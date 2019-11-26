@@ -662,6 +662,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     }
 
     public static void launchWindow() {
+        launchWindow("Game has started");
+    }
+
+    public static void launchWindow(String msg) {
         BoardWindow newBoardWindow = new BoardWindow();
         newBoardWindow.setSize(800, 550);
         newBoardWindow.setDefaultCloseOperation(3);
@@ -670,7 +674,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         newBoardWindow.setVisible(true);
         newBoardWindow.startFetchInfoThread();
 
-        JOptionPane.showMessageDialog(newBoardWindow, "Game has started");
+        JOptionPane.showMessageDialog(newBoardWindow, msg);
         QuoridorController.StartClock();
     }
 }

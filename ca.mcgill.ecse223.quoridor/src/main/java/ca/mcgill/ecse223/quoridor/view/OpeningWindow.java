@@ -184,7 +184,11 @@ public class OpeningWindow extends JFrame {
         final FileFilter filter = this.chooser.getFileFilter();
         final File file = this.chooser.getSelectedFile();
         try {
-            ((IOPerformer) filter).performLoad(file);
+			// If we succeed, then we display the game board
+			((IOPerformer) filter).performLoad(file);
+			QuoridorController.stopClockForCurrentPlayer();
+			BoardWindow.launchWindow("Game was loaded from file: " + file);
+			QuoridorController.runClockForCurrentPlayer();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Load operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (InvalidLoadException ex) {
