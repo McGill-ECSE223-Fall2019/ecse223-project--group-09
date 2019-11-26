@@ -462,11 +462,25 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     }
     
     private void onStepForwardButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Step forward is not implemented yet!");
+
+    	if(!QuoridorController.stepForward()) {
+        	JOptionPane.showMessageDialog(this, "You are already at the end!");
+        }
+    	System.out.print("\n"+QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().toString()+"\n");
+    	System.out.print("\n was the fist move \n"+QuoridorApplication.getQuoridor().getCurrentGame().getPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()-1)+"\n");
+    	this.repaint();	
+     			
+     	
     }
     
     private void onStepBackwardButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Step backward is not implemented yet!");
+        
+        if(!QuoridorController.stepBackward()) {
+        	JOptionPane.showMessageDialog(this, "You are already at the start!");
+        }
+        System.out.print("\n"+QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().toString()+"\n");
+        System.out.print("\n was the fist move \n"+QuoridorApplication.getQuoridor().getCurrentGame().getPosition(0)+"\n");
+        this.repaint();
     }
     
     private void onJumpToStartButtonClicked() {
@@ -514,9 +528,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
      	if(QuoridorController.dropWall(wallCandidate.getAssociatedWall())) {//if true drop it
     		
+//     		System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
+//        	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
      		System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
-        	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
-    		this.repaint();//the wall has been drawn and now you to 
+     		this.repaint();//the wall has been drawn and now you to 
     		gridPanel.setWallCandidate(null); //set the candidate to null once the wall is dropped 
     			
     	}else {
@@ -567,8 +582,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         if (dcol == 1 && drow == -1)    QuoridorController.jumpCurrentPawnDownRight();
         if (dcol == -1 && drow == -1)   QuoridorController.jumpCurrentPawnDownLeft();
         
-        System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
-    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
+//        System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
+//    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
+    
+    	System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
+    //	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
     }
 
     @Override
