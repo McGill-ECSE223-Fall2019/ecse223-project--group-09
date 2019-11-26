@@ -257,7 +257,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     public final void fetchCurrentPlayerInfoFromController() {
         final TOPlayer player = QuoridorController.getPlayerOfCurrentTurn();
 
-        this.playerInfoPanel.updateInfo(player);
         this.gridPanel.setWallCandidate(QuoridorController.getWallCandidate());
 
         // Get the grid to display correct info
@@ -295,7 +294,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
             this.btnResign.setEnabled(false);
 
             this.generateResultScreen(winners);
+            return;
         }
+
+        // Only update player info panel if game is still running!
+        this.playerInfoPanel.updateInfo(player);
     }
 
     /**
