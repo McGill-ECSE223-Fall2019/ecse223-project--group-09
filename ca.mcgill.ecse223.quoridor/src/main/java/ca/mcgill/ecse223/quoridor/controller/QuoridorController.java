@@ -1229,6 +1229,11 @@ public static TOWall grabWall() {
 		}
 
 		final Game game = quoridor.getCurrentGame();
+
+		// Check the game result, and if game status is changed, we are done
+		if (initiateCheckGameResult()) {
+			return;
+		}
 		
 		// Stop the clock of the current player
 		final GamePosition oldState = game.getCurrentPosition();
@@ -2767,7 +2772,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Group 9
 	 */
-	private static void runClockForPlayer(Player player) {
+	private static void runClockForPlayer(final Player player) {
 		if (player == null) {
 			// wut?
 			return;
@@ -2786,6 +2791,18 @@ public static TOWall grabWall() {
 
 					// Update the remaining time
 					player.setRemainingTime(newTime);
+				} else {
+					// This means the player ran out of time!
+
+					// the other player wins!
+					if (player.hasGameAsBlack()) {
+						QuoridorController.setWinner(player.getGameAsBlack().getWhitePlayer());
+					} else {
+						QuoridorController.setWinner(player.getGameAsWhite().getBlackPlayer());
+					}
+					
+					// stop the task
+					QuoridorController.stopClockForPlayer(player);
 				}
 			}
 		};
@@ -2829,6 +2846,31 @@ public static TOWall grabWall() {
 		if (task != null) {
 			task.cancel();
 		}
+	}
+	
+	/**
+	 * Sets the winner of the game
+	 * 
+	 * @param p the winner, does nothing if null
+	 * 
+	 * @author Group-9
+	 */
+	private static void setWinner(Player p) {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		Game game = quoridor.getCurrentGame();
+
+		if (p == null) {
+			return;
+		}
+
+		if (p.hasGameAsWhite()) {
+			game.setGameStatus(GameStatus.WhiteWon);
+		} else {
+			game.setGameStatus(GameStatus.BlackWon);
+		}
+		
+		// Do more proper cleanup here
+		game.setWallMoveCandidate(null);
 	}
 
 	/**
@@ -3407,6 +3449,62 @@ public static TOWall grabWall() {
 				return EnumSet.allOf(Color.class);
 			default:
 				return EnumSet.noneOf(Color.class);
+		}
+	}
+	
+	/**
+	 * Checks to see if game should terminate (due to winning or draw conditions)
+	 * 
+	 * @return true if game status is changed, false otherwise 
+	 * 
+	 * @author Group-9
+	 */
+	public static boolean initiateCheckGameResult() {
+		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			// Nothing to process
+			return false;
+		}
+
+		Game game = quoridor.getCurrentGame();
+		if (game.getGameStatus() != GameStatus.Running) {
+			// Nothing to process
+			return false;
+		}
+		
+		// TODO: check if player repeated move three times (draw condition)
+		// then call setWinner(p) on the correct player
+		
+		GamePosition gpos = game.getCurrentPosition();
+		if (testDestinationAndTile(game.getWhitePlayer().getDestination(), gpos.getWhitePosition().getTile())) {
+			setWinner(game.getWhitePlayer());
+			return true;
+		}
+		if (testDestinationAndTile(game.getBlackPlayer().getDestination(), gpos.getBlackPosition().getTile())) {
+			setWinner(game.getBlackPlayer());
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks to see if the tile matches the provided destination
+	 * 
+	 * @param dest destination of the player
+	 * @param tile tile of the player
+	 * @return true if destination reached, false otherwise
+	 * 
+	 * @author Group-9
+	 */
+	private static boolean testDestinationAndTile(Destination dest, Tile tile) {
+		switch (dest.getDirection()) {
+		case Vertical:
+			return tile.getColumn() == dest.getTargetNumber();
+		case Horizontal:
+			return tile.getRow() == dest.getTargetNumber();
+		default:
+			throw new AssertionError("Unhandled target direction: " + dest.getDirection());
 		}
 	}
 
