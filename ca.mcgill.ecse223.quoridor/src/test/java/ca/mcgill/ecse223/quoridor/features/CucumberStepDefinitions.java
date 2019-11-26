@@ -2168,6 +2168,63 @@ public class CucumberStepDefinitions {
 		Assert.assertNotEquals(GameStatus.Running, game.getGameStatus());
 	}
 
+	// ***** LoadGame.feature *****
+
+	/**
+	 * @param filename Name of file
+	 *
+	 * @author Group-9
+	 */
+	@When("I initiate to load a game in {string}")
+	public void iInitiateToLoadAGame(String filename) {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("Each game move is valid")
+	public void eachGameMoveIsValid() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("The game has a final result")
+	public void theGameHasAFinalResult() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("The game has no final results")
+	public void theGameHasNoFinalResults() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("The game to load has an invalid move")
+	public void theGameToLoadHasAnInvalidMove() {
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@Then("The game shall notify the user that the game file is invalid")
+	public void theGameShallNotifyTheUserThatTheGameFileIsInvalid() {
+		throw new UnsupportedOperationException();
+	}
+
 	// ***********************************************
 	// Clean up
 	// ***********************************************
