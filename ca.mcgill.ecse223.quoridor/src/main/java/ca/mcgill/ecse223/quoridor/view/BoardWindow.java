@@ -221,9 +221,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         // button and the bottom of the app
         panel.add(Box.createVerticalStrut(30));
 
-        // XXX: Disable features not for this deliverable!
-        //btnEnterReplayMode.setEnabled(false);
-
         return panel;
     }
 
