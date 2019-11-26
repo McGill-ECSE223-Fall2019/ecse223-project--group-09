@@ -2024,33 +2024,27 @@ public static TOWall grabWall() {
 		//   to retrieve the players. Also player has some very specific
 		//   information such as thinking time, yet it is not saved.
 
+		if (quoridor.numberOfUsers() < 2) {
+			// Provide dummy users
+			quoridor.addUser("User 1");
+			quoridor.addUser("User 2");
+		}
+
+		QuoridorController.createGame();
+
 		final Player whitePlayer = new Player(new Time(0, 3, 0), quoridor.getUser(0), 9, Direction.Horizontal);
 		final Player blackPlayer = new Player(new Time(0, 3, 0), quoridor.getUser(1), 1, Direction.Horizontal);
 		whitePlayer.setNextPlayer(blackPlayer);
 		blackPlayer.setNextPlayer(whitePlayer);
 
-		// Give our player some walls, they deserve it!
-		for (int i = 1; i <= 20; ++i) {
-			final Player p = i <= 10 ? whitePlayer : blackPlayer;
-			if (Wall.hasWithId(i)) {
-				p.addWall(Wall.getWithId(i));
-			} else {
-				p.addWall(i);
-			}
-		}
-
-		final Game game;
-		if (!quoridor.hasCurrentGame()) {
-			game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
-		} else {
-			game = quoridor.getCurrentGame();
-			game.setGameStatus(GameStatus.Running);
-			game.setMoveMode(MoveMode.PlayerMove);
-		}
+		final Game game = quoridor.getCurrentGame();
 		game.setWhitePlayer(whitePlayer);
 		game.setBlackPlayer(blackPlayer);
 
-		final GamePosition initialPosition;
+		QuoridorController.startNewGame();
+		QuoridorController.initiateBoard();
+
+		final GamePosition initialPosition = game.getCurrentPosition();
 
 		// Meaningfull moves only start at index 1 (which
 		// actually matches up with the corresponding round number)
@@ -2071,7 +2065,7 @@ public static TOWall grabWall() {
 						throw new InvalidLoadException("Bad player color specification: W -> " + line2.charAt(0));
 					}
 					whiteStarts = true;
-					initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
+					initialPosition.setPlayerToMove(whitePlayer);
 					break;
 				case 'B':
 					// Sanity check line2 must start with 'W'
@@ -2079,7 +2073,7 @@ public static TOWall grabWall() {
 						throw new InvalidLoadException("Bad player color specification: B -> " + line2.charAt(0));
 					}
 					whiteStarts = false;
-					initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, blackPlayer, game);
+					initialPosition.setPlayerToMove(blackPlayer);
 					break;
 				default:
 					throw new InvalidLoadException("Bad player color specification: " + line1.charAt(0));
@@ -2199,54 +2193,6 @@ public static TOWall grabWall() {
 
 		game.setWallMoveCandidate(null);
 		game.setCurrentPosition(initialPosition);
-	}
-
-	/**
-	 * Creates or resuses a game position with id=0 that has white/black
-	 * player in their initial position and all walls in stock.
-	 *
-	 * Note: This does not set the game position as current
-	 *
-	 * @param whitePlayer White player
-	 * @param blackPlayer Black player
-	 * @param startingPlayer Starting player
-	 * @param game Associated game
-	 * @return game position with id=0
-	 *
-	 * @author Paul Teng (260862906)
-	 */
-	private static GamePosition createInitialGamePosition(Player whitePlayer, Player blackPlayer, Player startingPlayer, Game game) {
-		final Quoridor quoridor = QuoridorApplication.getQuoridor();
-
-		final PlayerPosition initialWhitePosition = new PlayerPosition(whitePlayer, getTileFromRowAndColumn(1, 5));
-		final PlayerPosition initialBlackPosition = new PlayerPosition(blackPlayer, getTileFromRowAndColumn(9, 5));
-
-		if (GamePosition.hasWithId(0)) {
-			// Deletes the existing game position with id=0
-			GamePosition.getWithId(0).delete();
-		}
-
-		// Create a new game position with id=0
-		final GamePosition initialPosition = new GamePosition(0, initialWhitePosition, initialBlackPosition, startingPlayer, game);
-
-		// Ensure all walls are in stock
-		for (Wall w : whitePlayer.getWalls()) {
-			initialPosition.removeWhiteWallsOnBoard(w);
-			initialPosition.addWhiteWallsInStock(w);
-		}
-
-		for (Wall w : blackPlayer.getWalls()) {
-			initialPosition.removeBlackWallsOnBoard(w);
-			initialPosition.addBlackWallsInStock(w);
-		}
-
-		// As a sanity check, make sure this position is actually valid...
-		if (!validateGamePosition(initialPosition)) {
-			// so, somehow, it is not valid... crash!
-			throw new AssertionError("PLEASE FIX THIS INITIAL GAME POSITION SETUP CUZ IT AIN'T VALID!!");
-		}
-
-		return initialPosition;
 	}
 
 	/**
