@@ -58,6 +58,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     private final GridPanel gridPanel = new GridPanel();
 
     private final JButton btnEnterReplayMode = new JButton("Enter Replay Mode");
+    private final JButton btnExitReplayMode = new JButton("Exit Replay Mode");
+    
     private final JButton btnQuitGame = new JButton("Quit Game");
     private final JButton btnResign = new JButton("Resign");
 
@@ -68,8 +70,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      */
 
     private final JButton rotateWall = new JButton("Rotate Wall");
-    private final JButton stepBackward = new JButton("Rotate Wall");
-    private final JButton stepForward = new JButton("step right");
+    private final JButton stepBackward = new JButton("Step Backward");
+    private final JButton stepForward = new JButton("Step Forward");
+    
+    private final JButton jumpToFinal = new JButton("Jump to Final Position");
+    private final JButton jumpToStart = new JButton("Jump to Start Position");
+    
+    private final JButton cont = new JButton("continue");
 
     public BoardWindow() {
     	
@@ -119,6 +126,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         btnEnterReplayMode.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnEnterReplayMode.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         btnEnterReplayMode.addActionListener(e -> this.onEnterReplayModeButtonClicked());
+        
+        btnExitReplayMode.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnExitReplayMode.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        btnExitReplayMode.addActionListener(e -> this.onExitReplayModeButtonClicked());
+        btnExitReplayMode.setVisible(false);
 
         btnQuitGame.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnQuitGame.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
@@ -137,8 +149,34 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         rotateWall.setEnabled(true);
         rotateWall.addActionListener(e -> this.onRotateWallButtonClicked());
 
+        stepBackward.setAlignmentX(Component.CENTER_ALIGNMENT);
+        stepBackward.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        stepBackward.addActionListener(e -> this.onStepBackwardButtonClicked());
+        stepBackward.setVisible(false);
+
+        stepForward.setAlignmentX(Component.CENTER_ALIGNMENT);
+        stepForward.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        stepForward.addActionListener(e -> this.onStepForwardButtonClicked());
+        stepForward.setVisible(false);
+        
+        jumpToStart.setAlignmentX(Component.CENTER_ALIGNMENT);
+        jumpToStart.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        jumpToStart.addActionListener(e -> this.onJumpToStartButtonClicked());
+        jumpToStart.setVisible(false);
+        
+        jumpToFinal.setAlignmentX(Component.CENTER_ALIGNMENT);
+        jumpToFinal.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        jumpToFinal.addActionListener(e -> this.onJumpToFinalButtonClicked());
+        jumpToFinal.setVisible(false);
+        
+        cont.setAlignmentX(Component.CENTER_ALIGNMENT);
+        cont.setMaximumSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
+        cont.addActionListener(e -> this.onContinueButtonClicked());
+        cont.setVisible(false);
+        
         panel.add(container);
         panel.add(btnEnterReplayMode);
+        panel.add(btnExitReplayMode);
         
      // might just delete this depends on my patience
         /*
@@ -170,13 +208,21 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         panel.add(grabWallButton);
         panel.add(rotateWall);
         panel.add(btnResign);
+        
+        panel.add(stepForward);
+        panel.add(stepBackward);
+        panel.add(jumpToStart);
+        panel.add(jumpToFinal);
+        
+        panel.add(cont);
+        
 
         // Add breathing room between the resign
         // button and the bottom of the app
         panel.add(Box.createVerticalStrut(30));
 
         // XXX: Disable features not for this deliverable!
-        btnEnterReplayMode.setEnabled(false);
+        //btnEnterReplayMode.setEnabled(false);
 
         return panel;
     }
@@ -308,9 +354,44 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
     /**
      * This method is called when the enter-replay-mode button is clicked
+     * 
+     * @author Barry Chen
      */
     private void onEnterReplayModeButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Enter replay mode is not implemented yet!");
+        //JOptionPane.showMessageDialog(this, "Enter replay mode is not implemented yet!");
+    	QuoridorController.enterReplayMode();
+    	this.btnEnterReplayMode.setVisible(false);
+    	this.grabWallButton.setVisible(false);
+    	this.rotateWall.setVisible(false);
+    	this.btnResign.setVisible(false);
+        this.btnExitReplayMode.setVisible(true);
+        this.stepBackward.setVisible(true);
+        this.stepForward.setVisible(true);
+        this.jumpToStart.setVisible(true);
+        this.jumpToFinal.setVisible(true);
+        this.cont.setVisible(true);
+        
+    }
+    
+    /**
+     * This method is called when the exit replay button is clicked
+     *
+     *
+     * @author Barry Chen
+     * 
+     */
+    private void onExitReplayModeButtonClicked() {
+    	QuoridorController.exitReplayMode();
+    	this.btnEnterReplayMode.setVisible(true);
+    	this.grabWallButton.setVisible(true);
+    	this.rotateWall.setVisible(true);
+    	this.btnResign.setVisible(true);
+        this.btnExitReplayMode.setVisible(false);
+        this.stepBackward.setVisible(false);
+        this.stepForward.setVisible(false);
+        this.jumpToStart.setVisible(false);
+        this.jumpToFinal.setVisible(false);
+        this.cont.setVisible(false);
     }
 
     /**
@@ -329,9 +410,12 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
     /**
      * This method is called when the resign button is clicked
+     * 
+     * @author Barry Chen
      */
     private void onResignButtonClicked() {
-        JOptionPane.showMessageDialog(this, "Resign is not implemented yet!");
+        //JOptionPane.showMessageDialog(this, "Resign is not implemented yet!");
+    	QuoridorController.playerResigns();
     }
 
     /**
@@ -376,6 +460,26 @@ public class BoardWindow extends JFrame implements GameBoardListener {
      // *****  System.out.println("Rotated the wall candidate " );
 
     }
+    
+    private void onStepForwardButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Step forward is not implemented yet!");
+    }
+    
+    private void onStepBackwardButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Step backward is not implemented yet!");
+    }
+    
+    private void onJumpToStartButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Jump to start position is not implemented yet!");
+    }
+    
+    private void onJumpToFinalButtonClicked() {
+        JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
+    }
+    
+    private void onContinueButtonClicked() {
+        JOptionPane.showMessageDialog(this, "continue is not implemented yet!");
+    }
 
     @Override
     public void onMouseWheelRotated(double clicks) {
@@ -403,6 +507,11 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	
     	
        TOWallCandidate wallCandidate = gridPanel.getWallCandidate();
+       if (wallCandidate == null) {
+           // no wall
+           return;
+       }
+
      	if(QuoridorController.dropWall(wallCandidate.getAssociatedWall())) {//if true drop it
     		
      		System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
