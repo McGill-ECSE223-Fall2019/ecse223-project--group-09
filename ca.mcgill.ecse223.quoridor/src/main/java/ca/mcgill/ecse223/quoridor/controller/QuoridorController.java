@@ -1257,11 +1257,6 @@ public static TOWall grabWall() {
 		}
 
 		final Game game = quoridor.getCurrentGame();
-
-		// Check the game result, and if game status is changed, we are done
-		if (initiateCheckGameResult()) {
-			return;
-		}
 		
 		// Stop the clock of the current player
 		final GamePosition oldState = game.getCurrentPosition();
@@ -1287,6 +1282,11 @@ public static TOWall grabWall() {
 
 		// Make the new state the current state
 		game.setCurrentPosition(newState);
+
+		// Check the game result, and if game status is changed, we are done
+		if (initiateCheckGameResult()) {
+			return;
+		}
 
 		// Start the clock of this new player
 		runClockForPlayer(newPlayer);
