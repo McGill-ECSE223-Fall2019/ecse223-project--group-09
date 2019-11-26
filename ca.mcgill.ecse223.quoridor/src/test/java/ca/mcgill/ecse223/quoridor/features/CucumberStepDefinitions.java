@@ -2044,6 +2044,132 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(sm.moveDown());
 	}
 
+	// ***** IdentifyGameWon.feature *****
+
+	/**
+	 * @param color Color of player
+	 *
+	 * @author Group-9
+	 */
+	@Given("Player {string} has just completed his move")
+	public void playerHasJustCompletedHisMove(String color) {
+		// Do nothing, all done by next clause
+	}
+
+	/**
+	 * @param color Color of player
+	 * @param row Row of player
+	 * @param col Column of player
+	 *
+	 * @author Group-9
+	 */
+	@And("The new position of {string} is {int}:{int}")
+	public void playerHasJustCompletedHisMove(String color, int row, int col) {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		GamePosition gpos = game.getCurrentPosition();
+		Tile tile = QuoridorController.getTileFromRowAndColumn(row, col);
+		switch (color) {
+		case "white":
+			gpos.getWhitePosition().setTile(tile);
+			break;
+		case "black":
+			gpos.getBlackPosition().setTile(tile);
+			break;
+		}
+	}
+
+	/**
+	 * @param color Color of player
+	 *
+	 * @author Group-9
+	 */
+	@And("The clock of {string} is more than zero")
+	public void clockIsMoreThanZero(String color) {
+		Time t = null;
+		switch (color) {
+		case "white":
+			t = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime();
+			break;
+		case "black":
+			t = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime();
+			break;
+		}
+		
+		// One of the HH:MM:SS fields must be greater than zero
+		Assert.assertTrue(t.getHours() > 0 || t.getMinutes() > 0 || t.getSeconds() > 0);
+	}
+
+	/**
+	 * @param color Color of player
+	 *
+	 * @author Group-9
+	 */
+	@And("The clock of {string} counts down to zero")
+	public void clockCountsDownToZero(String color) {
+		// Set remaining time to zero
+		switch (color) {
+		case "white":
+			QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().setRemainingTime(new Time(0, 0, 0));
+			QuoridorController.runClockForPlayer(Color.WHITE);
+			break;
+		case "black":
+			QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().setRemainingTime(new Time(0, 0, 0));
+			QuoridorController.runClockForPlayer(Color.BLACK);
+			break;
+		}
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException ex) {
+			// Welp...
+		}
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@When("Checking of game result is initated")
+	public void checkingOfGameResultIsInitiated() {
+		QuoridorController.initiateCheckGameResult();
+	}
+
+	/**
+	 * @param status regex: [Pp]ending|whiteWon|blackWon|Drawn
+	 *
+	 * @author Group-9
+	 */
+	@Then("Game result shall be {string}")
+	public void gameResultShallBe(String status) {
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		switch (status.toLowerCase()) {
+		case "pending":
+			Assert.assertEquals(GameStatus.Running, game.getGameStatus());
+			break;
+		case "whitewon":
+			Assert.assertEquals(GameStatus.WhiteWon, game.getGameStatus());
+			break;
+		case "blackwon":
+			Assert.assertEquals(GameStatus.BlackWon, game.getGameStatus());
+			break;
+		case "drawn":
+			Assert.assertEquals(GameStatus.Draw, game.getGameStatus());
+			break;
+		default:
+			throw new AssertionError("Unhandled result case: " + status);
+		}
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("The game shall no longer be running")
+	public void gameShallNoLongerBeRunning() {
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertNotEquals(GameStatus.Running, game.getGameStatus());
+	}
+
 	// ***********************************************
 	// Clean up
 	// ***********************************************
