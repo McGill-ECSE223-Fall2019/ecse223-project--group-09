@@ -3336,6 +3336,8 @@ public static TOWall grabWall() {
 			gamePos = game.getPositions().get(game.numberOfPositions()-1);
 			game.setCurrentPosition(gamePos);
 			
+		} else {
+			System.out.println("The game is not in replay mode");
 		}
 		
 	}
