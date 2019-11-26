@@ -2112,7 +2112,17 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The new position of {string} is {int}:{int}")
 	public void playerHasJustCompletedHisMove(String color, int row, int col) {
-		throw new UnsupportedOperationException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		GamePosition gpos = game.getCurrentPosition();
+		Tile tile = QuoridorController.getTileFromRowAndColumn(row, col);
+		switch (color) {
+		case "white":
+			gpos.getWhitePosition().setTile(tile);
+			break;
+		case "black":
+			gpos.getBlackPosition().setTile(tile);
+			break;
+		}
 	}
 
 	/**
@@ -2122,7 +2132,18 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The clock of {string} is more than zero")
 	public void clockIsMoreThanZero(String color) {
-		throw new UnsupportedOperationException();
+		Time t = null;
+		switch (color) {
+		case "white":
+			t = QuoridorApplication.getQuoridor().getCurrentGame().getWhitePlayer().getRemainingTime();
+			break;
+		case "black":
+			t = QuoridorApplication.getQuoridor().getCurrentGame().getBlackPlayer().getRemainingTime();
+			break;
+		}
+		
+		// One of the HH:MM:SS fields must be greater than zero
+		Assert.assertTrue(t.getHours() > 0 || t.getMinutes() > 0 || t.getSeconds() > 0);
 	}
 
 	/**
