@@ -1794,19 +1794,12 @@ public static TOWall grabWall() {
 		blackPlayer.setNextPlayer(whitePlayer);
 
 		// Give our player some walls, they deserve it!
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 1; i <= 20; ++i) {
+			final Player p = i <= 10 ? whitePlayer : blackPlayer;
 			if (Wall.hasWithId(i)) {
-				whitePlayer.addWall(Wall.getWithId(i));
+				p.addWall(Wall.getWithId(i));
 			} else {
-				whitePlayer.addWall(i);
-			}
-		}
-
-		for (int i = 10; i < 20; ++i) {
-			if (Wall.hasWithId(i)) {
-				blackPlayer.addWall(Wall.getWithId(i));
-			} else {
-				blackPlayer.addWall(i);
+				p.addWall(i);
 			}
 		}
 
