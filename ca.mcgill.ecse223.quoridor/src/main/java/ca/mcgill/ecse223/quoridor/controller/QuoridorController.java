@@ -1277,11 +1277,6 @@ public static TOWall grabWall() {
 		}
 
 		final Game game = quoridor.getCurrentGame();
-
-		// Check the game result, and if game status is changed, we are done
-		if (initiateCheckGameResult()) {
-			return;
-		}
 		
 		// Stop the clock of the current player
 		final GamePosition oldState = game.getCurrentPosition();
@@ -1307,6 +1302,11 @@ public static TOWall grabWall() {
 
 		// Make the new state the current state
 		game.setCurrentPosition(newState);
+
+		// Check the game result, and if game status is changed, we are done
+		if (initiateCheckGameResult()) {
+			return;
+		}
 
 		// Start the clock of this new player
 		runClockForPlayer(newPlayer);
@@ -1814,19 +1814,12 @@ public static TOWall grabWall() {
 		blackPlayer.setNextPlayer(whitePlayer);
 
 		// Give our player some walls, they deserve it!
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 1; i <= 20; ++i) {
+			final Player p = i <= 10 ? whitePlayer : blackPlayer;
 			if (Wall.hasWithId(i)) {
-				whitePlayer.addWall(Wall.getWithId(i));
+				p.addWall(Wall.getWithId(i));
 			} else {
-				whitePlayer.addWall(i);
-			}
-		}
-
-		for (int i = 10; i < 20; ++i) {
-			if (Wall.hasWithId(i)) {
-				blackPlayer.addWall(Wall.getWithId(i));
-			} else {
-				blackPlayer.addWall(i);
+				p.addWall(i);
 			}
 		}
 
@@ -3352,13 +3345,20 @@ public static TOWall grabWall() {
 	 * @return
 	 */
 	
-	public static Move jumpToFinalPosition() {
+	public static void jumpToFinalPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Move lastMove = game.getMove(game.numberOfMoves());
-		GamePosition gamePos = game.getPositions().get(game.numberOfPositions());
-		game.setCurrentPosition(gamePos);
+		Move lastMove;
+		GamePosition gamePos;
 		
-		return lastMove;
+		if (game.getGameStatus() == GameStatus.Replay) {
+			lastMove = game.getMove(game.numberOfMoves()-1);
+			game.setCurrentMove(lastMove);
+			gamePos = game.getPositions().get(game.numberOfPositions()-1);
+			game.setCurrentPosition(gamePos);
+			
+		} else {
+			System.out.println("The game is not in replay mode");
+		}
 		
 	}
 	/**
@@ -3367,14 +3367,17 @@ public static TOWall grabWall() {
 	 * @return
 	 */
 	
-	public static Move jumpToStartPosition() {
+	public static void jumpToStartPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Move firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
-		GamePosition gamePos = game.getPosition(0);
-		game.setCurrentPosition(gamePos);
-		game.setCurrentMove(firstMove);
+		Move firstMove;
+		GamePosition gamePos;
 		
-		return firstMove;
+		if (game.getGameStatus() == GameStatus.Replay){		
+			firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
+			gamePos = game.getPosition(0);
+			game.setCurrentPosition(gamePos);
+			game.setCurrentMove(firstMove);
+		} 
 	}
 	
 	/**
