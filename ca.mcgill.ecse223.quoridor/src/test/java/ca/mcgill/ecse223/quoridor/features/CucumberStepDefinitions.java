@@ -1792,41 +1792,50 @@ public class CucumberStepDefinitions {
 					nwall = gpos.getWhiteWallsInStock(player1.numberOfWalls()-whiteWallUsed);
 					whiteWallUsed++;
 					ngpos = new GamePosition(gposIndex, gpos.getWhitePosition(), gpos.getBlackPosition(), player2, game);
+//					gpos.removeWhiteWallsInStock(nwall);
 					ngpos.removeWhiteWallsInStock(nwall);
 					aMove = new WallMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
 //					QuoridorController.switchCurrentPlayer();
 					game.setCurrentMove(aMove);
+					game.setCurrentPosition(ngpos);
 					
 				} else {
 					nwall = gpos.getBlackWallsInStock(player2.numberOfWalls()-blackWallUsed);
 					blackWallUsed++;
 					ngpos = new GamePosition(gposIndex, gpos.getWhitePosition(), gpos.getBlackPosition(), player1, game);
+//					gpos.removeBlackWallsInStock(nwall);
 					ngpos.removeBlackWallsInStock(nwall);
 					aMove = new WallMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
 //					QuoridorController.switchCurrentPlayer();
 					game.setCurrentMove(aMove);
+					game.setCurrentPosition(ngpos);
 				}
 			} else {
 				if (rnd == 1) {
+					
 					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, target), gpos.getBlackPosition(), player2, game);
+//					gpos.setWhitePosition(new PlayerPosition(player1, target));
 					aMove = new StepMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game);
 //					QuoridorController.switchCurrentPlayer();
-					game.setCurrentPosition(ngpos);
+//					game.setCurrentPosition(ngpos);
 					game.setCurrentMove(aMove);
-					
+					game.setCurrentPosition(ngpos);
 					
 				} else {
+					
 					ngpos = new GamePosition(gposIndex, gpos.getWhitePosition(), new PlayerPosition(player2, target), player1, game);
+//					gpos.setBlackPosition(new PlayerPosition(player2, target));
 					aMove = new StepMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game);
 //					QuoridorController.switchCurrentPlayer();
-					game.setCurrentPosition(ngpos);
+//					game.setCurrentPosition(ngpos);
 					game.setCurrentMove(aMove);
+					game.setCurrentPosition(ngpos);
 				}
 				
 			}
 			
 			game.addMoveAt(aMove, QuoridorController.getIndexFromMoveAndRoundNumber(mov, rnd));
-			game.addPosition(ngpos);
+			game.addPositionAt(ngpos, gposIndex);
 //			System.err.println("Move: "+ aMove.getMoveNumber()+ " Round: "+ aMove.getRoundNumber());
 			gposIndex++;
 			
