@@ -1063,11 +1063,11 @@ public static TOWall grabWall() {
 			}else{
 				game.setCurrentMove(game.getMove(currMove-1));
 			}
-			
-			
-			
-			
-			
+
+
+
+
+
 			//the next move shall be the previous one moveNum and Round
 		//	System.err.print(game.getMove(currMove-1)+" returned move "+game.getMoves().size()+" num of moves ");
 		//	}
@@ -1110,14 +1110,14 @@ public static TOWall grabWall() {
 //			}
 			int currPos=game.getPositions().indexOf(currentPosition);
 			System.err.print(currPos+" is the index");
-			if(currPos>=game.getPositions().size()-2) {
+			if(currPos>=game.getPositions().size()-1) {
 				return false;
 			}
 			GamePosition nextPos= game.getPosition(currPos+1);
 			game.setCurrentPosition(nextPos);
 			game.setCurrentMove(game.getMove(currPos+1));
-			
-			
+
+
 			Move currentMove= game.getCurrentMove();
 			int currMove = game.getMoves().indexOf(currentMove);
 			if(currMove==game.getMoves().size()-1) {
@@ -1183,6 +1183,11 @@ public static TOWall grabWall() {
 		//case where we do not know if the wall is valid or not and depends on previous circumstances.
 		boolean isValid = validateWallPlacement(row, column, orientation); // this returns true if it is a valid wallmove.
 		if (isValid==true) {
+			// Clone the current game position
+			final GamePosition newState = deriveNextPosition(gamePosition);
+			game.setCurrentPosition(newState);
+			gamePosition = newState;
+
 			//reset the position of the wallMove
 			WallMove currentMove= game.getWallMoveCandidate();
 			currentMove.setTargetTile(board.getTile((row-1)*9 +column-1));
@@ -1294,9 +1299,6 @@ public static TOWall grabWall() {
 		final Player oldPlayer = oldState.getPlayerToMove();
 		stopClockForPlayer(oldPlayer);
 
-		// Clone the current game position but with playerToMove changed
-		final GamePosition newState = deriveNextPosition(oldState);
-
 		// Get the next player
 		Player newPlayer = oldPlayer.getNextPlayer();
 		if (newPlayer == null) {
@@ -1309,10 +1311,7 @@ public static TOWall grabWall() {
 			}
 		}
 
-		newState.setPlayerToMove(newPlayer);
-
-		// Make the new state the current state
-		game.setCurrentPosition(newState);
+		oldState.setPlayerToMove(newPlayer);
 
 		// Check the game result, and if game status is changed, we are done
 		if (initiateCheckGameResult()) {
@@ -2213,14 +2212,24 @@ public static TOWall grabWall() {
 	 */
 	/* package */ static StepMove forcePlayStepMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target,
 			GamePosition gamePos) {
+
+		final Game game = gamePos.getGame();
+
+		// Clone the current game position
+		final GamePosition newState = deriveNextPosition(gamePos);
+		game.setCurrentPosition(newState);
+
+		// Switch the game position
+		gamePos = newState;
+
 		if (currentPlayer.hasGameAsWhite()) {
 			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
 		} else {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
 		}
 
-		final StepMove stepMove =new StepMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
-		gamePos.getGame().setCurrentMove(stepMove);
+		final StepMove stepMove =new StepMove(moveNumber, roundNumber, currentPlayer, target, game);
+		game.setCurrentMove(stepMove);
 
 		return stepMove;
 	}
@@ -2538,14 +2547,24 @@ public static TOWall grabWall() {
 	 */
 	/* package */ static JumpMove forcePlayJumpMove(int moveNumber, int roundNumber, Player currentPlayer, Tile target,
 			GamePosition gamePos) {
+
+		final Game game = gamePos.getGame();
+
+		// Clone the current game position
+		final GamePosition newState = deriveNextPosition(gamePos);
+		game.setCurrentPosition(newState);
+
+		// Switch the game position
+		gamePos = newState;
+
 		if (currentPlayer.hasGameAsWhite()) {
 			gamePos.setWhitePosition(new PlayerPosition(currentPlayer, target));
 		} else {
 			gamePos.setBlackPosition(new PlayerPosition(currentPlayer, target));
 		}
 
-		final JumpMove jumpMove=new JumpMove(moveNumber, roundNumber, currentPlayer, target, gamePos.getGame());
-		gamePos.getGame().setCurrentMove(jumpMove);
+		final JumpMove jumpMove=new JumpMove(moveNumber, roundNumber, currentPlayer, target, game);
+		game.setCurrentMove(jumpMove);
 		return jumpMove;
 
 	}
@@ -3058,7 +3077,7 @@ public static TOWall grabWall() {
 
 	/**
 	 * Starts the clock for the current player
-	 * 
+	 *
 	 * @author Group 9
 	 */
 	public static void runClockForCurrentPlayer() {
@@ -3070,7 +3089,7 @@ public static TOWall grabWall() {
 
 	/**
 	 * Stops the clock for the current player
-	 * 
+	 *
 	 * @author Group 9
 	 */
 	public static void stopClockForCurrentPlayer() {
@@ -3533,35 +3552,35 @@ public static TOWall grabWall() {
 	 *
 	 * @return
 	 */
-	
+
 	public static void jumpToFinalPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		Move lastMove;
 		GamePosition gamePos;
-		
+
 		if (game.getGameStatus() == GameStatus.Replay) {
 			lastMove = game.getMove(game.numberOfMoves()-1);
 			game.setCurrentMove(lastMove);
 			gamePos = game.getPositions().get(game.numberOfPositions()-1);
 			game.setCurrentPosition(gamePos);
-			
+
 		} else {
 			System.out.println("The game is not in replay mode");
 		}
-		
+
 	}
 	/**
 	 * @author alixe delabrousse
 	 *
 	 * @return
 	 */
-	
+
 	public static void jumpToStartPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		Move firstMove;
 		GamePosition gamePos;
-		
-		if (game.getGameStatus() == GameStatus.Replay){		
+
+		if (game.getGameStatus() == GameStatus.Replay){
 			firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
 			gamePos = game.getPosition(0);
 			game.setCurrentPosition(gamePos);
