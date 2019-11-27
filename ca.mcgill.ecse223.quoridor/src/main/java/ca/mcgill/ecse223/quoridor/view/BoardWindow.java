@@ -494,6 +494,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     }
     
     private void onJumpToFinalButtonClicked() {
+
     	
 
     	if (QuoridorController.jumpToFinalPosition()) {
@@ -501,6 +502,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     	}
     	this.repaint();
     	//JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
+
 
     }
     
