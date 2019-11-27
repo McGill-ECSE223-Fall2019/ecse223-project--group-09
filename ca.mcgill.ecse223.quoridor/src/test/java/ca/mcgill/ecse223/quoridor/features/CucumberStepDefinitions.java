@@ -317,7 +317,8 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The game shall become ready to start")
 	public void gameShallBecomeReadyToStart() {
-		throw new PendingException();
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertNotEquals(GameStatus.ReadyToStart, game.getGameStatus());
 	}
 
 	/*
@@ -637,17 +638,15 @@ public class CucumberStepDefinitions {
 	public void iInitiateToLoadASavedGame(String filename) {
 		try {
 			if (filename.endsWith(".dat")) {
-				try {
-					QuoridorController.loadPosition(filename);
-					this.positionValidFlag = true;
-				} catch (InvalidLoadException ex) {
-					this.positionValidFlag = false;
-				}
+				QuoridorController.loadPosition(filename);
 			} else if (filename.endsWith(".mov")) {
-				throw new UnsupportedOperationException("Someone needs to implement the loadGame method");
+				QuoridorController.loadGame(filename);
 			} else {
 				Assert.fail("Unhandled file type (.dat|.move) for file name: " + filename);
 			}
+			this.positionValidFlag = true;
+		} catch (InvalidLoadException ex) {
+			this.positionValidFlag = false;
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
 		}
@@ -2166,6 +2165,90 @@ public class CucumberStepDefinitions {
 	public void gameShallNoLongerBeRunning() {
 		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		Assert.assertNotEquals(GameStatus.Running, game.getGameStatus());
+	}
+
+	// ***** LoadGame.feature *****
+
+	private Exception capturedException;
+
+	/**
+	 * @param filename Name of file
+	 *
+	 * @author Group-9
+	 */
+	@When("I initiate to load a game in {string}")
+	public void iInitiateToLoadAGame(String filename) {
+		try {
+			QuoridorController.loadGame(filename);
+			this.positionValidFlag = true;
+		} catch (InvalidLoadException ex) {
+			this.capturedException = ex;
+			this.positionValidFlag = false;
+		} catch (IOException ex) {
+			Assert.fail("No IOException should happen:" + ex.getMessage());
+		}
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("Each game move is valid")
+	public void eachGameMoveIsValid() {
+		// For game move to be valid, the positions must be valid!
+		Assert.assertTrue(this.positionValidFlag);
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("The game has a final result")
+	public void theGameHasAFinalResult() {
+		// Not sure how to test this:
+		// the load mechanism will automatically put the game into replay mode
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("The game has no final results")
+	public void theGameHasNoFinalResults() {
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertNotEquals(GameStatus.BlackWon, game.getGameStatus());
+		Assert.assertNotEquals(GameStatus.WhiteWon, game.getGameStatus());
+		Assert.assertNotEquals(GameStatus.Draw, game.getGameStatus());
+	}
+
+	/**
+	 * Used in LoadGame.feature and EnterReplayMode.feature
+	 *
+	 * @author Group-9
+	 */
+	@Then("The game shall be in replay mode")
+	public void theGameShallBeInReplayMode() {
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertNotEquals(GameStatus.Replay, game.getGameStatus());
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@And("The game to load has an invalid move")
+	public void theGameToLoadHasAnInvalidMove() {
+		Assert.assertFalse(this.positionValidFlag);
+	}
+
+	/**
+	 *
+	 * @author Group-9
+	 */
+	@Then("The game shall notify the user that the game file is invalid")
+	public void theGameShallNotifyTheUserThatTheGameFileIsInvalid() {
+		// The GUI will capture the exception and display it as an error popup
+		Assert.assertNotNull(this.capturedException);
 	}
 
 	// ***********************************************
