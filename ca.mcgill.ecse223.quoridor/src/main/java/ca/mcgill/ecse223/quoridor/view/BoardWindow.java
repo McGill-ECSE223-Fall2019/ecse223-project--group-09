@@ -490,6 +490,9 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     
     private void onJumpToFinalButtonClicked() {
     	JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
+    	
+    	// TODO stopped here
+    
     }
     
     private void onContinueButtonClicked() {
