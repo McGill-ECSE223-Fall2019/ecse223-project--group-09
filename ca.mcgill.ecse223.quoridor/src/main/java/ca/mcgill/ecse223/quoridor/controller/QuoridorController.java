@@ -1015,8 +1015,8 @@ public static TOWall grabWall() {
 	 * @author Mohamed Mohamed
 	 *
 	 */
-	public static boolean stepBackward() {
-
+	public static boolean stepBackward(boolean isTesting) {
+		
 
 		Game game=null;
 
