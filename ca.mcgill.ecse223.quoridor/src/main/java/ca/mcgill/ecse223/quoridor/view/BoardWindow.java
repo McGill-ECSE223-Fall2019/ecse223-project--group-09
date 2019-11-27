@@ -491,16 +491,9 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     }
     
     private void onJumpToFinalButtonClicked() {
-<<<<<<< HEAD
-    	JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
-    	
-    	// TODO stopped here
-    
-=======
     	QuoridorController.jumpToFinalPosition();
     	this.repaint();
     	//JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
->>>>>>> 4ec828a469dd8778243cccf7cbb85d4f1fa0642f
     }
     
     private void onContinueButtonClicked() {
