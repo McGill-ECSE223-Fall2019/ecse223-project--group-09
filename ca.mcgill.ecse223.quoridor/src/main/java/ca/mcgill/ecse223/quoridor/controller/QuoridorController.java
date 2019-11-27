@@ -1045,6 +1045,7 @@ public static TOWall grabWall() {
 		//	prevPosition.setBlackPosition(aNewBlackPosition);
 		//	prevPosition.setWhitePosition(prevPosition.get)
 			game.setCurrentPosition(prevPosition);
+			
 			Move currentMove= game.getCurrentMove();
 			int currMove = game.getMoves().indexOf(currentMove);
 			if(currMove==0) {

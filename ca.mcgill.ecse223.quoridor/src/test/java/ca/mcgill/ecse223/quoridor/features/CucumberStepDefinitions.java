@@ -1914,6 +1914,7 @@ public class CucumberStepDefinitions {
 	        //System.err.println(movno+" moveno "+rndno+" roundnum");
 	        Move aMove = game.getMove(QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno));
 	        game.setCurrentMove(aMove);
+	        System.err.print(game.getMoves().indexOf(aMove)+" index before");
 	       // System.err.println(aMove+"\n\n my move BEFORE \n");
 	      //  System.err.print(b);
 	     //   System.err.print(nextMove.toString()+"\n \n is the move from me \n"+aMove.toString()+" is from alixe "+movno+" is movnum"+rndno+" is the roundNum");
@@ -1936,10 +1937,11 @@ public class CucumberStepDefinitions {
 	    	
 	    	//Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-1);
 	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove();
-	    	int nextMoveIndex = moves.indexOf(move) + 1;
+	    	int nextMoveIndex = moves.indexOf(move) ;//+ 1;
 	    	System.err.println("nmov: "+ nmov);
 	    	System.err.println("nrnd: "+ nrnd);
 	    	int aIndex = QuoridorController.getIndexFromMoveAndRoundNumber(nmov, nrnd);
+	    	System.err.println(nextMoveIndex+" your index "+aIndex+" what it is");
 //	    	System.err.println("index: "+index);
 //	    	Move nmove = moves.get(index);
     	
