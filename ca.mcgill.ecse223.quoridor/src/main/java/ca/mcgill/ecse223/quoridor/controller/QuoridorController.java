@@ -3574,6 +3574,9 @@ public static TOWall grabWall() {
 			if (aMove != firstMove) {
 				GamePosition gamePos = game.getPosition(0);
 				
+				System.err.println("white tile: " + gamePos.getWhitePosition().getTile());
+				System.err.println("black tile: "+ gamePos.getBlackPosition().getTile());
+				
 				System.err.println("Pos(0) white row: "+ gamePos.getWhitePosition().getTile().getRow());
 				System.err.println("Pos(0) white col: "+ gamePos.getWhitePosition().getTile().getColumn());
 				

@@ -1763,7 +1763,7 @@ public class CucumberStepDefinitions {
 		
 		
 		Move aMove;
-
+		int gposIndex = 1;
 	
 		List<Map<String, String>> valueMaps = dataTable.asMaps();
 		//keys: mv, rnd, move
@@ -1773,14 +1773,17 @@ public class CucumberStepDefinitions {
 			String move = map.get("move");
 		//	System.err.println("\n"+mov+" move "+rnd+" round "+move+" move ");
 			GamePosition gpos = game.getCurrentPosition();
-
+			
+			System.err.println("remaining white walls: "+ gpos.getWhiteWallsInStock().size());
+				
 			GamePosition ngpos;
-			int gposIndex = 1;
+			
 
 			int col = QuoridorController.letterToNumberColumn(move.charAt(0));
 			int row = Character.getNumericValue(move.charAt(1));
-			System.err.println("\n");
+
 			Tile target = QuoridorController.getTileFromRowAndColumn(row, col);
+			
 			
 			if(move.length() == 3) {
 				Wall nwall;
@@ -1792,12 +1795,15 @@ public class CucumberStepDefinitions {
 					dir = Direction.Vertical;
 				}
 				
+				Tile wtile = gpos.getWhitePosition().getTile();
+				Tile btile = gpos.getBlackPosition().getTile();
+				
 				if (rnd == 1) {
+					System.err.println("index of wall: "+ (player1.numberOfWalls()-whiteWallUsed));
 					nwall = gpos.getWhiteWallsInStock(player1.numberOfWalls()-whiteWallUsed);
 					whiteWallUsed++;
-					ngpos = new GamePosition(gposIndex, gpos.getWhitePosition(), gpos.getBlackPosition(), player2, game);
-//					gpos.removeWhiteWallsInStock(nwall);
-					ngpos.removeWhiteWallsInStock(nwall);
+					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, wtile), new PlayerPosition(player2, btile), player2, game);
+					gpos.removeWhiteWallsInStock(nwall);
 					aMove = new WallMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
 //					QuoridorController.switchCurrentPlayer();
 					game.setCurrentMove(aMove);
@@ -1808,19 +1814,20 @@ public class CucumberStepDefinitions {
 				} else {
 					nwall = gpos.getBlackWallsInStock(player2.numberOfWalls()-blackWallUsed);
 					blackWallUsed++;
-
-					ngpos = new GamePosition(gposIndex, gpos.getWhitePosition(), gpos.getBlackPosition(), player1, game);
-//					gpos.removeBlackWallsInStock(nwall);
-					ngpos.removeBlackWallsInStock(nwall);
+					gpos.removeBlackWallsInStock(nwall);
+					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, wtile), new PlayerPosition(player2, btile), player1, game);
 					aMove = new WallMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
 //					QuoridorController.switchCurrentPlayer();
 					game.setCurrentMove(aMove);
 					game.setCurrentPosition(ngpos);
+					
 				}
 			} else {
 				if (rnd == 1) {
 					
-					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, target), gpos.getBlackPosition(), player2, game);
+					Tile btile = gpos.getBlackPosition().getTile();
+					
+					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, target), new PlayerPosition(player2, btile), player2, game);
 //					gpos.setWhitePosition(new PlayerPosition(player1, target));
 					aMove = new StepMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game);
 //					QuoridorController.switchCurrentPlayer();
@@ -1830,7 +1837,9 @@ public class CucumberStepDefinitions {
 					
 				} else {
 					
-					ngpos = new GamePosition(gposIndex, gpos.getWhitePosition(), new PlayerPosition(player2, target), player1, game);
+					Tile wtile = gpos.getWhitePosition().getTile();
+					
+					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, wtile), new PlayerPosition(player2, target), player1, game);
 //					gpos.setBlackPosition(new PlayerPosition(player2, target));
 					aMove = new StepMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game);
 //					QuoridorController.switchCurrentPlayer();
@@ -1842,12 +1851,24 @@ public class CucumberStepDefinitions {
 				
 			}
 			
+			for (Wall wall : gpos.getBlackWallsInStock()) {
+				ngpos.addBlackWallsInStock(wall);
+			}
+			for (Wall wall : gpos.getWhiteWallsInStock()) {
+				ngpos.addWhiteWallsInStock(wall);
+			}
+			
 			game.addMoveAt(aMove, QuoridorController.getIndexFromMoveAndRoundNumber(mov, rnd));
 
 			game.addPositionAt(ngpos, gposIndex);
 //			System.err.println("Move: "+ aMove.getMoveNumber()+ " Round: "+ aMove.getRoundNumber());
+			
+			System.err.println("index before increment: "+gposIndex);
+			System.err.println("ngpos id: "+ ngpos.getId());
+			
 			gposIndex++;
 			
+			System.err.println("index after increment: "+gposIndex);
 
 			
 //			System.err.println("Move: "+ aMove.getMoveNumber()+ " Round: "+ aMove.getRoundNumber());
@@ -1870,7 +1891,9 @@ public class CucumberStepDefinitions {
 	public void whitePlayerPositionShallBe(int wrow, int wcol) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
-		System.err.println("wrow = "+ wrow);
+		int WRow = (10-wrow);
+		
+		System.err.println("wrow = "+ WRow);
 		System.err.println("wcol = "+ wcol);
 		
 		System.err.println("current move number: "+ game.getCurrentMove().getMoveNumber());
@@ -1884,7 +1907,7 @@ public class CucumberStepDefinitions {
 		
 		
 //		System.err.print(wrow+" "+wcol+" should be the position and i have"+posWRow+" "+posWCol);
-		Assert.assertTrue(wrow == posWRow);
+		Assert.assertTrue(WRow == posWRow);
 		Assert.assertTrue(wcol == posWCol);
 		
 	}
@@ -1893,16 +1916,18 @@ public class CucumberStepDefinitions {
 	public void blackPlayerPostionShallBe(int brow, int bcol) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
+		int BRow = (10-brow);
+		
 		int posBRow = game.getCurrentPosition().getBlackPosition().getTile().getRow();	
 		int posBCol = game.getCurrentPosition().getBlackPosition().getTile().getColumn();
 		
 		System.err.println("posBRow = "+ posBRow);
 		System.err.println("posBCol = "+ posBCol);
 		
-		System.err.println("brow = "+ brow);
+		System.err.println("brow = "+ BRow);
 		System.err.println("bcol = "+ bcol);
 		
-		Assert.assertTrue(brow == posBRow);
+		Assert.assertTrue(BRow == posBRow);
 		Assert.assertTrue(bcol == posBCol);
 	}
 	

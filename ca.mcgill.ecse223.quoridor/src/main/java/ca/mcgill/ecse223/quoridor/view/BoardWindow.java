@@ -485,22 +485,23 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     }
     
     private void onJumpToStartButtonClicked() {
-    	QuoridorController.jumpToStartPosition();
+    	if(!QuoridorController.jumpToStartPosition()) {
+    		JOptionPane.showMessageDialog(this, "You are already at the start!");
+    	}
+    	
     	this.repaint();
     	//JOptionPane.showMessageDialog(this, "Jump to start position is not implemented yet!");
     }
     
     private void onJumpToFinalButtonClicked() {
-<<<<<<< HEAD
-    	JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
     	
-    	// TODO stopped here
-    
-=======
-    	QuoridorController.jumpToFinalPosition();
+
+    	if (QuoridorController.jumpToFinalPosition()) {
+    		JOptionPane.showMessageDialog(this, "You are already at the end!");
+    	}
     	this.repaint();
     	//JOptionPane.showMessageDialog(this, "Jump to final position is not implemented yet!");
->>>>>>> 4ec828a469dd8778243cccf7cbb85d4f1fa0642f
+
     }
     
     private void onContinueButtonClicked() {
