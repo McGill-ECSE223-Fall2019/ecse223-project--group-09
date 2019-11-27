@@ -1030,6 +1030,31 @@ public static TOWall grabWall() {
 		}else {
 
 			GamePosition currentPosition= game.getCurrentPosition();
+
+//			System.err.println("i set the move to be the first but the game has :"+game.getMoves().size()+" moves BUT "+game.getPositions().size()+" gamepositions");
+//
+//			if(game.getMoves().indexOf(game.getCurrentMove())==0) {
+//				//there is one move
+//				game.setCurrentPosition(game.getPosition(1));
+//				game.setCurrentMove(game.getMove(0));
+//				return;
+//
+//			}else {//not the first move
+
+			
+			
+//			game.getPositions().lastIndexOf(currentPosition);
+//			int currMove = game.getMoves().indexOf(game.getCurrentMove());
+//			game.setCurrentMove(game.getMove(currMove-1));
+				
+
+
+
+			//game.getPositions().lastIndexOf(currentPosition);
+//			int currMove = game.getMoves().indexOf(game.getCurrentMove());
+//			game.setCurrentMove(game.getMove(currMove-1));
+//
+
 			int currPos = game.getPositions().indexOf(currentPosition);
 			if (currPos==0) {
 				return false;//already at the first position
@@ -1056,7 +1081,7 @@ public static TOWall grabWall() {
 	 * @author Mohamed Mohamed
 	 *
 	 */
-	public static boolean stepForward() {
+	public static boolean stepForward(boolean isTesting) {
 
 		Game game=null;
 
@@ -3512,21 +3537,24 @@ public static TOWall grabWall() {
 	 *
 	 * @return
 	 */
-
-	public static void jumpToFinalPosition() {
+	
+	public static boolean jumpToFinalPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Move lastMove;
-		GamePosition gamePos;
-
+		boolean isAtFinalPos = false;
+		Move aMove = game.getCurrentMove();
 		if (game.getGameStatus() == GameStatus.Replay) {
-			lastMove = game.getMove(game.numberOfMoves()-1);
-			game.setCurrentMove(lastMove);
-			gamePos = game.getPositions().get(game.numberOfPositions()-1);
-			game.setCurrentPosition(gamePos);
-
+			Move lastMove = game.getMove(game.numberOfMoves()-1);
+			if (aMove != lastMove) {
+				game.setCurrentMove(lastMove);
+				GamePosition gamePos = game.getPositions().get(game.numberOfPositions()-1);
+				game.setCurrentPosition(gamePos);
+				isAtFinalPos = true;
+			} 
+			
 		} else {
 			System.out.println("The game is not in replay mode");
 		}
+		 return isAtFinalPos;
 
 	}
 	/**
@@ -3535,17 +3563,33 @@ public static TOWall grabWall() {
 	 * @return
 	 */
 
-	public static void jumpToStartPosition() {
+	
+	public static boolean jumpToStartPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Move firstMove;
-		GamePosition gamePos;
-
-		if (game.getGameStatus() == GameStatus.Replay){
-			firstMove = game.getMove(getIndexFromMoveAndRoundNumber(1, 1));
-			gamePos = game.getPosition(0);
-			game.setCurrentPosition(gamePos);
-			game.setCurrentMove(firstMove);
+		boolean isAtFirstPos = false;
+		Move aMove = game.getCurrentMove();
+		
+		if (game.getGameStatus() == GameStatus.Replay){		
+			Move firstMove = game.getMove(0);
+			if (aMove != firstMove) {
+				GamePosition gamePos = game.getPosition(0);
+				
+				System.err.println("Pos(0) white row: "+ gamePos.getWhitePosition().getTile().getRow());
+				System.err.println("Pos(0) white col: "+ gamePos.getWhitePosition().getTile().getColumn());
+				
+				System.err.println("Pos(0) black row: "+ gamePos.getBlackPosition().getTile().getRow());
+				System.err.println("Pos(0) black col: "+ gamePos.getBlackPosition().getTile().getColumn());
+				
+				game.setCurrentPosition(gamePos);
+				game.setCurrentMove(firstMove);
+				isAtFirstPos = true;
+			}
+		} else {
+			System.out.println("The game is not in replay mode");
 		}
+	
+		return isAtFirstPos;
+
 	}
 
 	/**
@@ -3728,5 +3772,7 @@ public static TOWall grabWall() {
 			throw new AssertionError("Unhandled target direction: " + dest.getDirection());
 		}
 	}
+
+	
 
 }// end QuoridorController
