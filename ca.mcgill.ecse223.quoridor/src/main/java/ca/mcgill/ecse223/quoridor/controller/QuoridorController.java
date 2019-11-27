@@ -1116,7 +1116,7 @@ public static TOWall grabWall() {
 			}
 			GamePosition nextPos= game.getPosition(currPos+1);
 			game.setCurrentPosition(nextPos);
-			game.setCurrentMove(game.getMove(currPos+1));
+			//game.setCurrentMove(game.getMove(currPos+1));
 
 
 			Move currentMove= game.getCurrentMove();
