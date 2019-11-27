@@ -1029,59 +1029,31 @@ public static TOWall grabWall() {
 			return false;
 		}else {
 
-//			//get the previous gamePosition
 			GamePosition currentPosition= game.getCurrentPosition();
-//			System.err.println("i set the move to be the first but the game has :"+game.getMoves().size()+" moves BUT "+game.getPositions().size()+" gamepositions");
-//
-//			if(game.getMoves().indexOf(game.getCurrentMove())==0) {
-//				//there is one move
-//				game.setCurrentPosition(game.getPosition(1));
-//				game.setCurrentMove(game.getMove(0));
-//				return;
-//
-//			}else {//not the first move
-
-
-			//game.getPositions().lastIndexOf(currentPosition);
-//			int currMove = game.getMoves().indexOf(game.getCurrentMove());
-//			game.setCurrentMove(game.getMove(currMove-1));
-//
 			int currPos = game.getPositions().indexOf(currentPosition);
 			if (currPos==0) {
-				return false;
+				return false;//already at the first position
 			}
+			
 			GamePosition prevPosition= game.getPosition(currPos-1);
-			//prevPosition.setBlackPosition(prevPosition.getBlackPosition());
-			//prevPosition.setWhitePosition(prevPosition.getWhitePosition());
-		//	prevPosition.setBlackPosition(aNewBlackPosition);
-		//	prevPosition.setWhitePosition(prevPosition.get)
 			game.setCurrentPosition(prevPosition);
 			
 			Move currentMove= game.getCurrentMove();
 			int currMove = game.getMoves().indexOf(currentMove);
-			if(currMove==0) {
+			if(currMove==0) {//already at the first move
 				//do nothing
 			}else{
 				game.setCurrentMove(game.getMove(currMove-1));
 			}
-
-
-
-
-
-			//the next move shall be the previous one moveNum and Round
-		//	System.err.print(game.getMove(currMove-1)+" returned move "+game.getMoves().size()+" num of moves ");
-		//	}
+		
 		}
 		return true;
 
 	}
 
-
 	/**
 	 *
 	 * @author Mohamed Mohamed
-	 * @return
 	 *
 	 */
 	public static boolean stepForward() {
@@ -1096,21 +1068,9 @@ public static TOWall grabWall() {
 			return false;
 		}else {
 
-			//get the previous gamePosition
+
 			GamePosition currentPosition= game.getCurrentPosition();
-
-//			if(currentPosition.equals(game.getPosition(game.getPositions().size()-1))) {
-//				//if this is the last move cannot step forward
-//				return;
-//			}
-
-			//game.getPositions().lastIndexOf(currentPosition);
-//			int currMove = game.getPositions().indexOf(currentPosition);
-//			if(currMove==game.getPositions().size()-1) {
-//				return false;
-//			}
 			int currPos=game.getPositions().indexOf(currentPosition);
-			System.err.print(currPos+" is the index");
 			if(currPos>=game.getPositions().size()-1) {
 				return false;
 			}
@@ -1121,12 +1081,11 @@ public static TOWall grabWall() {
 
 			Move currentMove= game.getCurrentMove();
 			int currMove = game.getMoves().indexOf(currentMove);
-			if(currMove==game.getMoves().size()-1) {
+			if(currMove>=game.getMoves().size()-1) {
 				//do nothing
 			}else{
 				game.setCurrentMove(game.getMove(currMove+1));
 			}
-			//the next move shall be the previous one moveNum and Round
 
 		}
 		return true;
