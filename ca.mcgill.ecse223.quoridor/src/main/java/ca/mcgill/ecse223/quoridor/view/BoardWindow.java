@@ -273,6 +273,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         
         boolean inReplay=false;
         
+        this.replayList.clear();
+        this.replayList.addAll(QuoridorController.getMovesAsStrings());
 
         final EnumSet<Color> winners = QuoridorController.getWinner();
         if (!winners.isEmpty()) {

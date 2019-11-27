@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -3774,6 +3775,39 @@ public static TOWall grabWall() {
 		default:
 			throw new AssertionError("Unhandled target direction: " + dest.getDirection());
 		}
+	}
+
+	/**
+	 * Returns the list of moves as string. Think it would look cool for the game...
+	 *
+	 * @return the list of moves as string.
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<String> getMovesAsStrings() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return Collections.emptyList();
+		}
+
+		return quoridor.getCurrentGame().getMoves().stream()
+				.map(move -> {
+					String movestr;
+					if (move.getPlayer().hasGameAsWhite()) {
+						movestr = "White player: ";
+					} else {
+						movestr = "Black player: ";
+					}
+
+					final Tile t = move.getTargetTile();
+					movestr += (char) (t.getColumn() + 'a' - 1);
+					movestr += (char) (t.getRow() + '1' - 1);
+					if (move instanceof WallMove) {
+						movestr += Character.toLowerCase(((WallMove) move).getWallDirection().name().charAt(0));
+					}
+					return movestr;
+				})
+				.collect(Collectors.toList());
 	}
 
 }// end QuoridorController
