@@ -3649,7 +3649,11 @@ public static TOWall grabWall() {
 
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game aGame = quoridor.getCurrentGame();
-		if(aGame.getGameStatus() == GameStatus.Running) {
+		switch(aGame.getGameStatus()) {
+		case Running:
+		case WhiteWon:
+		case BlackWon:
+		case Draw:
 			System.out.println("ENTER REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Replay);
 		}
@@ -3664,6 +3668,9 @@ public static TOWall grabWall() {
 		if(aGame.getGameStatus() == GameStatus.Replay) {
 			System.out.println("EXIT REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Running);
+
+			// In case someone tries to exit replay mode after game ended
+			initiateCheckGameResult();
 		}
 	}
 

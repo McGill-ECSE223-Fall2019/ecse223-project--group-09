@@ -45,7 +45,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
     // ***** Result Screen Constants *****
 
-    private static final String[] OPTIONS = { "Restart Game", "Quit Game" };
+    private static final String[] OPTIONS = { "Restart Game", "Enter Replay Mode", "Quit Game" };
 
     // ***** Rendering State Variables *****
 
@@ -328,7 +328,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
                 this.dispose();
                 OpeningWindow.launchWindow().newGameButtonActionPerformed();
                 break;
-            case 1: // Quit game
+            case 1: // Enter replay mode
+                // Act like as if we clicked on the same button!
+                this.onEnterReplayModeButtonClicked();
+                // Then restart the thread that fetches the info
+                this.startFetchInfoThread();
+                break;
+            case 2: // Quit game
                 this.onQuitGameButtonClicked();
                 break;
         }
@@ -392,6 +398,9 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         this.jumpToStart.setVisible(false);
         this.jumpToFinal.setVisible(false);
         this.cont.setVisible(false);
+
+        // Force information re-fetch
+        this.fetchCurrentPlayerInfoFromController();
     }
 
     /**
