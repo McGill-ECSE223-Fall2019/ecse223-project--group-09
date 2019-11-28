@@ -2242,7 +2242,6 @@ public class CucumberStepDefinitions {
 		Assert.assertNotEquals(GameStatus.Running, game.getGameStatus());
 	}
 
-<<<<<<< HEAD
 	//****** IdentifyGameDrawn.feature ******
 
 	/**
@@ -2255,7 +2254,6 @@ public class CucumberStepDefinitions {
 	
 	}
 
-=======
 
 	// ***** LoadGame.feature *****
 
@@ -2342,7 +2340,6 @@ public class CucumberStepDefinitions {
 	}
 
 
->>>>>>> ee52af77b27db37696994adde36a2442ed64599c
 	// ***********************************************
 	// Clean up
 	// ***********************************************
@@ -2451,17 +2448,5 @@ public class CucumberStepDefinitions {
 
 		game.setCurrentPosition(gamePosition);
 	}
-<<<<<<< HEAD
 
 }//end CucumberStepDefinitions
-=======
-	
-	
-	
-	
-	
-	
-	
-	
-}
->>>>>>> ee52af77b27db37696994adde36a2442ed64599c
