@@ -1296,13 +1296,13 @@ public static TOWall grabWall() {
 			}
 		}
 
+		// Switch the player
+		oldState.setPlayerToMove(newPlayer);
+
 		// Check the game result, and if game status is changed, we are done
 		if (initiateCheckGameResult()) {
 			return;
 		}
-
-		// Switch player only if game should continue
-		oldState.setPlayerToMove(newPlayer);
 
 		// Start the clock of this new player
 		runClockForPlayer(newPlayer);
@@ -3006,7 +3006,7 @@ public static TOWall grabWall() {
 					isWhitePlayer = false;
 				}
 
-				if (g.getGameStatus() != GameStatus.Running) {
+				if (g != null && g.getGameStatus() != GameStatus.Running) {
 					// Make sure time only decreases when game is being played
 					return;
 				}
