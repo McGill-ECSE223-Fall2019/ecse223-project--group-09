@@ -463,7 +463,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     
     private void onStepForwardButtonClicked() {
 
-    	if(!QuoridorController.stepForward()) {
+    	if(!QuoridorController.stepForward(false)) {
         	JOptionPane.showMessageDialog(this, "You are already at the end!");
         }
     	
@@ -476,7 +476,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     
     private void onStepBackwardButtonClicked() {
         
-        if(!QuoridorController.stepBackward()) {
+        if(!QuoridorController.stepBackward(false)) {
         	JOptionPane.showMessageDialog(this, "You are already at the start!");
         }
         System.out.print("\n"+QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().toString()+"\n");
