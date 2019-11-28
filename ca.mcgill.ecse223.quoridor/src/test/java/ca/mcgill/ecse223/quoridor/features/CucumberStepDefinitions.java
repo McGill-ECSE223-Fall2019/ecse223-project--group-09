@@ -2254,7 +2254,53 @@ public class CucumberStepDefinitions {
 	
 	}
 
+	// ***** EnterReplayMode feature *****
+	/*Given The game is not running
+		When I initiate replay mode
+		Then The game shall be in replay mode 
+	*/
+	@Given("The game is not running")
+	public void gameNotRunning() {
+		throw new PendingException();
+	}
+	
+	@When("I initiate replay mode")
+	public void initiateReplayMode() {
+		throw new PendingException();
+	}
+	
+	@Then("The game shall be in replay mode ")
+	public void gameShallBeInReplayMode() {
+		throw new PendingException();
+	}
+	
+	// ***** ResignGame.feature*****
+	/*
+	Given The player to move is "<player>"
+    When Player initates to resign
+    Then Game result shall be "<result>"
+    And The game shall no longer be running*/
 
+	@Given("The player to move is {String}")
+	public void playerToMove() {
+		throw new PendingException();
+	}
+	
+	@When("Player initates to resign")
+	public void playerInitatesResign() {
+		throw new PendingException();
+	}
+	
+	@Then("Game result shall be {String}")
+	public void GameResultShallBe() {
+		throw new PendingException();
+	}
+	
+	@And("The game shall no longer be running")
+	public void GameShallNoLongerBeRunning() {
+		throw new PendingException();
+	}
+	
 	// ***** LoadGame.feature *****
 
 	private Exception capturedException;
