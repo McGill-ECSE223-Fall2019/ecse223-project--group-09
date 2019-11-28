@@ -3810,4 +3810,21 @@ public static TOWall grabWall() {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Returns index of the current move
+	 *
+	 * @return index of the current move, -1 if no move exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getIndexOfCurrentMove() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return -1;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		return game.indexOfMove(game.getCurrentMove());
+	}
+
 }// end QuoridorController
