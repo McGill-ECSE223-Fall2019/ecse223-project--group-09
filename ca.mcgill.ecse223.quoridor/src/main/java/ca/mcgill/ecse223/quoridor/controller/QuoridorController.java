@@ -3743,7 +3743,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Group-9
 	 */
-	public static boolean initiateCheckGameResult(Reader source) throws InvalidLoadException {
+	public static boolean initiateCheckGameResult(/*Reader source*/) /*throws InvalidLoadException*/ {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!quoridor.hasCurrentGame()) {
 			// Nothing to process
