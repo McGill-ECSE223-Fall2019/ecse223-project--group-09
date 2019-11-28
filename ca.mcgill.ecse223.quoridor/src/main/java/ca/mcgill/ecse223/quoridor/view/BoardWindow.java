@@ -45,11 +45,12 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 
     // ***** Result Screen Constants *****
 
-    private static final String[] OPTIONS = { "Restart Game", "Quit Game" };
+    private static final String[] OPTIONS = { "Restart Game", "Enter Replay Mode", "Quit Game" };
 
     // ***** Rendering State Variables *****
 
-    private final DefaultListModel<String> replayList = new DefaultListModel<>();
+    private final DefaultListModel<String> replayListData = new DefaultListModel<>();
+    private final JList<String> replayList = new JList<>(this.replayListData);
     private final Timer PLAYER_INFO_TIMER;
 
     // ***** Additional UI Components *****
@@ -117,8 +118,19 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        final JScrollPane listMoves = new JScrollPane(new JList<>(replayList), JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        replayList.setDragEnabled(false);
+        replayList.setEnabled(false);
+        replayList.setSelectionBackground(java.awt.Color.cyan);
+
+        final JScrollPane listMoves = new JScrollPane(replayList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED) {
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(220, 110);
+            }
+        };
+        listMoves.setWheelScrollingEnabled(false);
+
         final JPanel container = new JPanel();
         container.add(listMoves);
         container.setBorder(new EmptyBorder(10, 2, 5, 2));
@@ -272,7 +284,18 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         this.grabWallButton.setEnabled(canGrab);
         
         boolean inReplay=false;
-        
+
+        this.replayListData.clear();
+        for (final String s : QuoridorController.getMovesAsStrings()) {
+            // addAll only introduced post java-9, which is too new lol
+            this.replayListData.addElement(s);
+        }
+
+        final int idx = QuoridorController.getIndexOfCurrentMove();
+        if (idx >= 0) {
+            this.replayList.setSelectedIndex(idx);
+            this.replayList.ensureIndexIsVisible(idx);
+        }
 
         final EnumSet<Color> winners = QuoridorController.getWinner();
         if (!winners.isEmpty()) {
@@ -328,7 +351,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
                 this.dispose();
                 OpeningWindow.launchWindow().newGameButtonActionPerformed();
                 break;
-            case 1: // Quit game
+            case 1: // Enter replay mode
+                // Act like as if we clicked on the same button!
+                this.onEnterReplayModeButtonClicked();
+                // Then restart the thread that fetches the info
+                this.startFetchInfoThread();
+                break;
+            case 2: // Quit game
                 this.onQuitGameButtonClicked();
                 break;
         }
@@ -392,6 +421,9 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         this.jumpToStart.setVisible(false);
         this.jumpToFinal.setVisible(false);
         this.cont.setVisible(false);
+
+        // Force information re-fetch
+        this.fetchCurrentPlayerInfoFromController();
     }
 
     /**
@@ -495,9 +527,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     
     private void onJumpToFinalButtonClicked() {
 
-    	
-
-    	if (QuoridorController.jumpToFinalPosition()) {
+    	if (!QuoridorController.jumpToFinalPosition()) {
     		JOptionPane.showMessageDialog(this, "You are already at the end!");
     	}
     	this.repaint();

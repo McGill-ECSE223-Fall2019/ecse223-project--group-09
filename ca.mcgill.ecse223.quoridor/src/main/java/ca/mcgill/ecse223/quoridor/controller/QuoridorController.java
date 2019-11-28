@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1296,13 +1297,13 @@ public static TOWall grabWall() {
 			}
 		}
 
+		// Switch the player
+		oldState.setPlayerToMove(newPlayer);
+
 		// Check the game result, and if game status is changed, we are done
 		if (initiateCheckGameResult()) {
 			return;
 		}
-
-		// Switch player only if game should continue
-		oldState.setPlayerToMove(newPlayer);
 
 		// Start the clock of this new player
 		runClockForPlayer(newPlayer);
@@ -3006,7 +3007,7 @@ public static TOWall grabWall() {
 					isWhitePlayer = false;
 				}
 
-				if (g.getGameStatus() != GameStatus.Running) {
+				if (g != null && g.getGameStatus() != GameStatus.Running) {
 					// Make sure time only decreases when game is being played
 					return;
 				}
@@ -3550,22 +3551,23 @@ public static TOWall grabWall() {
 
 	/**
 	 * @author alixe delabrousse
+	 * 
+	 * this method sets the current position to the final position of the game.
 	 *
-	 * @return
+	 * @return boolean isAtFinalPos - checks if the game is already at the final position
 	 */
 	
 	public static boolean jumpToFinalPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		boolean isAtFinalPos = false;
 		Move aMove = game.getCurrentMove();
+		
 		if (game.getGameStatus() == GameStatus.Replay) {
 			Move lastMove = game.getMove(game.numberOfMoves()-1);
-			if (aMove != lastMove) {
-				game.setCurrentMove(lastMove);
-				GamePosition gamePos = game.getPositions().get(game.numberOfPositions()-1);
-				game.setCurrentPosition(gamePos);
-				isAtFinalPos = true;
-			} 
+			if (aMove != lastMove) isAtFinalPos = true;
+			game.setCurrentMove(lastMove);
+			GamePosition gamePos = game.getPositions().get(game.numberOfPositions()-1);
+			game.setCurrentPosition(gamePos);
 			
 		} else {
 			System.out.println("The game is not in replay mode");
@@ -3576,7 +3578,11 @@ public static TOWall grabWall() {
 	/**
 	 * @author alixe delabrousse
 	 *
-	 * @return
+	 * this method sets the current position to the start position
+	 * the white player starts in at position (1, 5) whereas the black player starts at (9, 5)
+	 * (row, column)
+	 *
+	 * @return boolean - to check if the game is already at the start position
 	 */
 
 	
@@ -3587,28 +3593,16 @@ public static TOWall grabWall() {
 		
 		if (game.getGameStatus() == GameStatus.Replay){		
 			Move firstMove = game.getMove(0);
-			if (aMove != firstMove) {
-				GamePosition gamePos = game.getPosition(0);
-				
-				System.err.println("white tile: " + gamePos.getWhitePosition().getTile());
-				System.err.println("black tile: "+ gamePos.getBlackPosition().getTile());
-				
-				System.err.println("Pos(0) white row: "+ gamePos.getWhitePosition().getTile().getRow());
-				System.err.println("Pos(0) white col: "+ gamePos.getWhitePosition().getTile().getColumn());
-				
-				System.err.println("Pos(0) black row: "+ gamePos.getBlackPosition().getTile().getRow());
-				System.err.println("Pos(0) black col: "+ gamePos.getBlackPosition().getTile().getColumn());
-				
-				game.setCurrentPosition(gamePos);
-				game.setCurrentMove(firstMove);
-				isAtFirstPos = true;
-			}
+			if (aMove != firstMove) isAtFirstPos = true;
+			GamePosition gamePos = game.getPosition(0);
+			game.setCurrentPosition(gamePos);
+			game.setCurrentMove(firstMove);
+			
 		} else {
 			System.out.println("The game is not in replay mode");
 		}
 	
 		return isAtFirstPos;
-
 	}
 
 	/**
@@ -3649,7 +3643,11 @@ public static TOWall grabWall() {
 
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game aGame = quoridor.getCurrentGame();
-		if(aGame.getGameStatus() == GameStatus.Running) {
+		switch(aGame.getGameStatus()) {
+		case Running:
+		case WhiteWon:
+		case BlackWon:
+		case Draw:
 			System.out.println("ENTER REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Replay);
 		}
@@ -3664,6 +3662,9 @@ public static TOWall grabWall() {
 		if(aGame.getGameStatus() == GameStatus.Replay) {
 			System.out.println("EXIT REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Running);
+
+			// In case someone tries to exit replay mode after game ended
+			initiateCheckGameResult();
 		}
 	}
 
@@ -3743,7 +3744,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Group-9
 	 */
-	public static boolean initiateCheckGameResult(Reader source) throws InvalidLoadException {
+	public static boolean initiateCheckGameResult(/*Reader source*/) /*throws InvalidLoadException*/ {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!quoridor.hasCurrentGame()) {
 			// Nothing to process
@@ -3885,6 +3886,64 @@ public static TOWall grabWall() {
 		default:
 			throw new AssertionError("Unhandled target direction: " + dest.getDirection());
 		}
+	}
+
+	/**
+	 * Returns the list of moves as string. Think it would look cool for the game...
+	 *
+	 * @return the list of moves as string.
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<String> getMovesAsStrings() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return Collections.emptyList();
+		}
+
+		// Store moves as a list of string
+		final List<String> resultList = new LinkedList<>();
+
+		final List<Move> listOfMoves = quoridor.getCurrentGame().getMoves();
+		for (int i = 0; i < listOfMoves.size(); ++i) {
+			final Move move = listOfMoves.get(i);
+
+			// Build-up the move as string
+			final StringBuilder movestr = new StringBuilder();
+			if (move.getPlayer().hasGameAsWhite()) {
+				movestr.append("White player: ");
+			} else {
+				movestr.append("Black player: ");
+			}
+
+			final Tile t = move.getTargetTile();
+			movestr.append((char) (t.getColumn() + 'a' - 1));
+			movestr.append((char) (t.getRow() + '1' - 1));
+
+			if (move instanceof WallMove) {
+				movestr.append(Character.toLowerCase(((WallMove) move).getWallDirection().name().charAt(0)));
+			}
+
+			resultList.add(movestr.toString());
+		}
+		return resultList;
+	}
+
+	/**
+	 * Returns index of the current move
+	 *
+	 * @return index of the current move, -1 if no move exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getIndexOfCurrentMove() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return -1;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		return game.indexOfMove(game.getCurrentMove());
 	}
 
 }// end QuoridorController
