@@ -3739,7 +3739,6 @@ public static TOWall grabWall() {
 			// Nothing to process
 			return false;
 		}
-<<<<<<< HEAD
 		
 		// TODO: check if player repeated move three times (draw condition)		
 		
@@ -3840,10 +3839,6 @@ public static TOWall grabWall() {
 			return true; 
 		}
 
-=======
-
-		// TODO: check if player repeated move three times (draw condition)
->>>>>>> ee52af77b27db37696994adde36a2442ed64599c
 		// then call setWinner(p) on the correct player
 
 		GamePosition gpos = game.getCurrentPosition();
