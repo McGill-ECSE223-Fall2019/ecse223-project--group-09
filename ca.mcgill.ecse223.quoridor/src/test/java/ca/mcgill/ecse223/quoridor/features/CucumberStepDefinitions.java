@@ -2271,7 +2271,7 @@ public class CucumberStepDefinitions {
     Then Game result shall be "<result>"
     And The game shall no longer be running*/
 
-	@Given("The player to move is {String}")
+	@Given("The player to move is {string}")
 	public void playerToMove() {
 		throw new PendingException();
 	}
