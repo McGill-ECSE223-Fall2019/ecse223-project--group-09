@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -3892,6 +3893,64 @@ public static TOWall grabWall() {
 		default:
 			throw new AssertionError("Unhandled target direction: " + dest.getDirection());
 		}
+	}
+
+	/**
+	 * Returns the list of moves as string. Think it would look cool for the game...
+	 *
+	 * @return the list of moves as string.
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<String> getMovesAsStrings() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return Collections.emptyList();
+		}
+
+		// Store moves as a list of string
+		final List<String> resultList = new LinkedList<>();
+
+		final List<Move> listOfMoves = quoridor.getCurrentGame().getMoves();
+		for (int i = 0; i < listOfMoves.size(); ++i) {
+			final Move move = listOfMoves.get(i);
+
+			// Build-up the move as string
+			final StringBuilder movestr = new StringBuilder();
+			if (move.getPlayer().hasGameAsWhite()) {
+				movestr.append("White player: ");
+			} else {
+				movestr.append("Black player: ");
+			}
+
+			final Tile t = move.getTargetTile();
+			movestr.append((char) (t.getColumn() + 'a' - 1));
+			movestr.append((char) (t.getRow() + '1' - 1));
+
+			if (move instanceof WallMove) {
+				movestr.append(Character.toLowerCase(((WallMove) move).getWallDirection().name().charAt(0)));
+			}
+
+			resultList.add(movestr.toString());
+		}
+		return resultList;
+	}
+
+	/**
+	 * Returns index of the current move
+	 *
+	 * @return index of the current move, -1 if no move exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getIndexOfCurrentMove() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return -1;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		return game.indexOfMove(game.getCurrentMove());
 	}
 
 }// end QuoridorController
