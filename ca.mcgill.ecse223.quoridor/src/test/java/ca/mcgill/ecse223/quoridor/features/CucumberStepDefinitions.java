@@ -506,7 +506,7 @@ public class CucumberStepDefinitions {
 	}
 
 
-	// ***** SavePosition.feature *****
+	// ***** SavePosition.feature && SaveGame.feature *****
 
 	private String fileName;
 	private boolean fileOverwriteFlag;
@@ -2116,7 +2116,7 @@ public class CucumberStepDefinitions {
 		Assert.assertFalse(sm.moveDown());
 	}
 
-	// ***** IdentifyGameWon.feature *****
+	// ***** IdentifyGameWon.feature && IdentifyGameDrawn.feature ***** 
 
 	/**
 	 * @param color Color of player
@@ -2240,6 +2240,18 @@ public class CucumberStepDefinitions {
 	public void gameShallNoLongerBeRunning() {
 		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		Assert.assertNotEquals(GameStatus.Running, game.getGameStatus());
+	}
+
+	//****** IdentifyGameDrawn.feature ******
+
+	/**
+	 * @param Player player
+	 * @param int row, int col
+	 * @author Ada Andrei (260866279)
+	 */
+	@And ("The last move of {string} is pawn move to <row>:<col>")
+	public void lastMoveOfPlayerIsPawnMove(Player player, int row, int col) {
+	
 	}
 
 
@@ -2436,12 +2448,5 @@ public class CucumberStepDefinitions {
 
 		game.setCurrentPosition(gamePosition);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-}
+
+}//end CucumberStepDefinitions
