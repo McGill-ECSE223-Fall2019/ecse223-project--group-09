@@ -2281,15 +2281,6 @@ public class CucumberStepDefinitions {
 		throw new PendingException();
 	}
 	
-	@Then("Game result shall be {String}")
-	public void GameResultShallBe() {
-		throw new PendingException();
-	}
-	
-	@And("The game shall no longer be running")
-	public void GameShallNoLongerBeRunning() {
-		throw new PendingException();
-	}
 	
 	// ***** LoadGame.feature *****
 
