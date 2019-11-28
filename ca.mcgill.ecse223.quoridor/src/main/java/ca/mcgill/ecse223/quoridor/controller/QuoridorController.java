@@ -3790,24 +3790,32 @@ public static TOWall grabWall() {
 			return Collections.emptyList();
 		}
 
-		return quoridor.getCurrentGame().getMoves().stream()
-				.map(move -> {
-					String movestr;
-					if (move.getPlayer().hasGameAsWhite()) {
-						movestr = "White player: ";
-					} else {
-						movestr = "Black player: ";
-					}
+		// Store moves as a list of string
+		final List<String> resultList = new LinkedList<>();
 
-					final Tile t = move.getTargetTile();
-					movestr += (char) (t.getColumn() + 'a' - 1);
-					movestr += (char) (t.getRow() + '1' - 1);
-					if (move instanceof WallMove) {
-						movestr += Character.toLowerCase(((WallMove) move).getWallDirection().name().charAt(0));
-					}
-					return movestr;
-				})
-				.collect(Collectors.toList());
+		final List<Move> listOfMoves = quoridor.getCurrentGame().getMoves();
+		for (int i = 0; i < listOfMoves.size(); ++i) {
+			final Move move = listOfMoves.get(i);
+
+			// Build-up the move as string
+			final StringBuilder movestr = new StringBuilder();
+			if (move.getPlayer().hasGameAsWhite()) {
+				movestr.append("White player: ");
+			} else {
+				movestr.append("Black player: ");
+			}
+
+			final Tile t = move.getTargetTile();
+			movestr.append((char) (t.getColumn() + 'a' - 1));
+			movestr.append((char) (t.getRow() + '1' - 1));
+
+			if (move instanceof WallMove) {
+				movestr.append(Character.toLowerCase(((WallMove) move).getWallDirection().name().charAt(0)));
+			}
+
+			resultList.add(movestr.toString());
+		}
+		return resultList;
 	}
 
 	/**
