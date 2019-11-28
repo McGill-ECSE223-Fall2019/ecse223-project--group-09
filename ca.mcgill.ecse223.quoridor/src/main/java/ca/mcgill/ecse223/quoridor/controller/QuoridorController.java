@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1296,13 +1297,13 @@ public static TOWall grabWall() {
 			}
 		}
 
+		// Switch the player
+		oldState.setPlayerToMove(newPlayer);
+
 		// Check the game result, and if game status is changed, we are done
 		if (initiateCheckGameResult()) {
 			return;
 		}
-
-		// Switch player only if game should continue
-		oldState.setPlayerToMove(newPlayer);
 
 		// Start the clock of this new player
 		runClockForPlayer(newPlayer);
@@ -3006,7 +3007,7 @@ public static TOWall grabWall() {
 					isWhitePlayer = false;
 				}
 
-				if (g.getGameStatus() != GameStatus.Running) {
+				if (g != null && g.getGameStatus() != GameStatus.Running) {
 					// Make sure time only decreases when game is being played
 					return;
 				}
@@ -3642,7 +3643,11 @@ public static TOWall grabWall() {
 
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game aGame = quoridor.getCurrentGame();
-		if(aGame.getGameStatus() == GameStatus.Running) {
+		switch(aGame.getGameStatus()) {
+		case Running:
+		case WhiteWon:
+		case BlackWon:
+		case Draw:
 			System.out.println("ENTER REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Replay);
 		}
@@ -3657,6 +3662,9 @@ public static TOWall grabWall() {
 		if(aGame.getGameStatus() == GameStatus.Replay) {
 			System.out.println("EXIT REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Running);
+
+			// In case someone tries to exit replay mode after game ended
+			initiateCheckGameResult();
 		}
 	}
 
@@ -3736,7 +3744,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Group-9
 	 */
-	public static boolean initiateCheckGameResult(Reader source) throws InvalidLoadException, IOException {
+	public static boolean initiateCheckGameResult(/*Reader source*/) /*throws InvalidLoadException*/ {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!quoridor.hasCurrentGame()) {
 			// Nothing to process
@@ -3751,103 +3759,99 @@ public static TOWall grabWall() {
 		
 		// TODO: check if player repeated move three times (draw condition)		
 		
-		final BufferedReader buffer = new BufferedReader(source);
+		// final Player whitePlayer = new Player(new Time(0, 3, 0), quoridor.getUser(0), 9, Direction.Horizontal);
+		// final Player blackPlayer = new Player(new Time(0, 3, 0), quoridor.getUser(1), 1, Direction.Horizontal);
+		// whitePlayer.setNextPlayer(blackPlayer);
+		// blackPlayer.setNextPlayer(whitePlayer);
 
-		final Player whitePlayer = new Player(new Time(0, 3, 0), quoridor.getUser(0), 9, Direction.Horizontal);
-		final Player blackPlayer = new Player(new Time(0, 3, 0), quoridor.getUser(1), 1, Direction.Horizontal);
-		whitePlayer.setNextPlayer(blackPlayer);
-		blackPlayer.setNextPlayer(whitePlayer);
+		// if (!quoridor.hasCurrentGame()) {
+		// 	game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
+		// } else {
+		// 	game = quoridor.getCurrentGame();
+		// 	game.setGameStatus(GameStatus.Running);
+		// 	game.setMoveMode(MoveMode.PlayerMove);
+		// }
+		// game.setWhitePlayer(whitePlayer);
+		// game.setBlackPlayer(blackPlayer);
 
-		if (!quoridor.hasCurrentGame()) {
-			game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
-		} else {
-			game = quoridor.getCurrentGame();
-			game.setGameStatus(GameStatus.Running);
-			game.setMoveMode(MoveMode.PlayerMove);
-		}
-		game.setWhitePlayer(whitePlayer);
-		game.setBlackPlayer(blackPlayer);
+		// final GamePosition initialPosition;
 
-		final GamePosition initialPosition;
+		// // Meaningfull moves only start at index 1 (which
+		// // actually matches up with the corresponding round number)
+		// final String[] whitePlayerMoves;
+		// final String[] blackPlayerMoves;
 
-		// Meaningfull moves only start at index 1 (which
-		// actually matches up with the corresponding round number)
-		final String[] whitePlayerMoves;
-		final String[] blackPlayerMoves;
+		// {
 
-		{
-			// This is the only reading we actually need to do
-			final String line1 = buffer.readLine();
-			final String line2 = buffer.readLine();
-			final boolean whiteStarts;
+		// 	final boolean whiteStarts;
 
-			// Check which player goes first
-			switch (line1.charAt(0)) {
-				case 'W':
-					// Sanity check line2 must start with 'B'
-					if (line2.charAt(0) != 'B') {
-						throw new InvalidLoadException("Bad player color specification: W -> " + line2.charAt(0));
-					}
-					whiteStarts = true;
-					initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
-					break;
-				case 'B':
-					// Sanity check line2 must start with 'W'
-					if (line2.charAt(0) != 'W') {
-						throw new InvalidLoadException("Bad player color specification: B -> " + line2.charAt(0));
-					}
-					whiteStarts = false;
-					initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, blackPlayer, game);
-					break;
-				default:
-					throw new InvalidLoadException("Bad player color specification: " + line1.charAt(0));
-			}
+		// 	// Check which player goes first
+		// 	switch (line1.charAt(0)) {
+		// 		case 'W':
+		// 			// Sanity check line2 must start with 'B'
+		// 			if (line2.charAt(0) != 'B') {
+		// 				throw new InvalidLoadException("Bad player color specification: W -> " + line2.charAt(0));
+		// 			}
+		// 			whiteStarts = true;
+		// 			initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
+		// 			break;
+		// 		case 'B':
+		// 			// Sanity check line2 must start with 'W'
+		// 			if (line2.charAt(0) != 'W') {
+		// 				throw new InvalidLoadException("Bad player color specification: B -> " + line2.charAt(0));
+		// 			}
+		// 			whiteStarts = false;
+		// 			initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, blackPlayer, game);
+		// 			break;
+		// 		default:
+		// 			throw new InvalidLoadException("Bad player color specification: " + line1.charAt(0));
+		// 	}
 
-			// Perform default splitting
-			final String[] seq1 = line1.split("\\s*[:,]\\s*");
-			final String[] seq2 = line2.split("\\s*[:,]\\s*");
+		// 	// Perform default splitting
+		// 	final String[] seq1 = line1.split("\\s*[:,]\\s*");
+		// 	final String[] seq2 = line2.split("\\s*[:,]\\s*");
 
-			if (whiteStarts) {
-				whitePlayerMoves = seq1;
-				blackPlayerMoves = seq2;
-			} else {
-				whitePlayerMoves = seq2;
-				blackPlayerMoves = seq1;
-			}
-		}
+		// 	if (whiteStarts) {
+		// 		whitePlayerMoves = seq1;
+		// 		blackPlayerMoves = seq2;
+		// 	} else {
+		// 		whitePlayerMoves = seq2;
+		// 		blackPlayerMoves = seq1;
+		// 	}
+		// }
 
-		int whiteCounter = 0;
-		int blackCounter = 0; 
-		String[] threePosWhite;
-		String[] threePosBlack;
+		// int whiteCounter = 0;
+		// int blackCounter = 0; 
+		// String[] threePosWhite;
+		// String[] threePosBlack;
 
-		//check for duplicate position
-		for (int i=0; i<whitePlayerMoves.length; i++) {
-			for (int j=i+1; j<whitePlayerMoves.length; j++) {
-				if (whitePlayerMoves[i].equals(whitePlayerMoves[j])) {
-					//if there are less than 3 deflections, update the counter
-					if ((j-i) <= 3) { 
-						whiteCounter++; 
-					}
-				}	
-			}
-		}
+		// //check for duplicate position
+		// for (int i=0; i<whitePlayerMoves.length; i++) {
+		// 	for (int j=i+1; j<whitePlayerMoves.length; j++) {
+		// 		if (whitePlayerMoves[i].equals(whitePlayerMoves[j])) {
+		// 			//if there are less than 3 deflections, update the counter
+		// 			if ((j-i) <= 3) { 
+		// 				whiteCounter++; 
+		// 			}
+		// 		}	
+		// }
 
-		//check for duplicate positions
-		for (int k= 0; k<blackPlayerMoves.length; k++) {
-			for (int l=k+1; l<blackPlayerMoves.length; l++) {
-				if (blackPlayerMoves[k].equals(blackPlayerMoves[l])) {
-					//if there are less than 3 deflections, update the counter
-					if ((k-l) <= 3) {
-						blackCounter++; 
-					}
-				}	
-			}
-		}
+		// //check for duplicate positions
+		// for (int k= 0; k<blackPlayerMoves.length; k++) {
+		// 	for (int l=k+1; l<blackPlayerMoves.length; l++) {
+		// 		if (blackPlayerMoves[k].equals(blackPlayerMoves[l])) {
+		// 			//if there are less than 3 deflections, update the counter
+		// 			if ((k-l) <= 3) {
+		// 				blackCounter++; 
+		// 			}
+		// 		}	
+		// 	}
+		// }
 
-		if (whiteCounter==3 | blackCounter == 3) {
-			return true; 
-		}
+		// if (whiteCounter==3 | blackCounter == 3) {
+		// 	return true; 
+		// }
+		
 
 		// then call setWinner(p) on the correct player
 
@@ -3882,6 +3886,64 @@ public static TOWall grabWall() {
 		default:
 			throw new AssertionError("Unhandled target direction: " + dest.getDirection());
 		}
+	}
+
+	/**
+	 * Returns the list of moves as string. Think it would look cool for the game...
+	 *
+	 * @return the list of moves as string.
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<String> getMovesAsStrings() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return Collections.emptyList();
+		}
+
+		// Store moves as a list of string
+		final List<String> resultList = new LinkedList<>();
+
+		final List<Move> listOfMoves = quoridor.getCurrentGame().getMoves();
+		for (int i = 0; i < listOfMoves.size(); ++i) {
+			final Move move = listOfMoves.get(i);
+
+			// Build-up the move as string
+			final StringBuilder movestr = new StringBuilder();
+			if (move.getPlayer().hasGameAsWhite()) {
+				movestr.append("White player: ");
+			} else {
+				movestr.append("Black player: ");
+			}
+
+			final Tile t = move.getTargetTile();
+			movestr.append((char) (t.getColumn() + 'a' - 1));
+			movestr.append((char) (t.getRow() + '1' - 1));
+
+			if (move instanceof WallMove) {
+				movestr.append(Character.toLowerCase(((WallMove) move).getWallDirection().name().charAt(0)));
+			}
+
+			resultList.add(movestr.toString());
+		}
+		return resultList;
+	}
+
+	/**
+	 * Returns index of the current move
+	 *
+	 * @return index of the current move, -1 if no move exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getIndexOfCurrentMove() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return -1;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		return game.indexOfMove(game.getCurrentMove());
 	}
 
 }// end QuoridorController

@@ -1669,7 +1669,6 @@ public class CucumberStepDefinitions {
 	public void wallMoveCandidateExistsAt(String dir, int row, int col) {
 		QuoridorController.grabWall();
 
-		// TEST IS NOT PASSING, I THINK ISSUE IS WITH Y-AXIS INVERSION
 		final WallMove move = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
 		move.setTargetTile(QuoridorController.getTileFromRowAndColumn(row, col));
 		move.setWallDirection("vertical".equalsIgnoreCase(dir) ? Direction.Vertical : Direction.Horizontal);
