@@ -495,9 +495,7 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     
     private void onJumpToFinalButtonClicked() {
 
-    	
-
-    	if (QuoridorController.jumpToFinalPosition()) {
+    	if (!QuoridorController.jumpToFinalPosition()) {
     		JOptionPane.showMessageDialog(this, "You are already at the end!");
     	}
     	this.repaint();

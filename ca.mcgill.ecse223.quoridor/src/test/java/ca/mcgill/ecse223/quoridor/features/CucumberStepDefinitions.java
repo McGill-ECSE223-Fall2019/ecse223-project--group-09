@@ -1891,9 +1891,9 @@ public class CucumberStepDefinitions {
 	public void whitePlayerPositionShallBe(int wrow, int wcol) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
-		int WRow = (10-wrow);
+//		int WRow = (10-wrow);
 		
-		System.err.println("wrow = "+ WRow);
+		System.err.println("wrow = "+ wrow);
 		System.err.println("wcol = "+ wcol);
 		
 		System.err.println("current move number: "+ game.getCurrentMove().getMoveNumber());
@@ -1907,7 +1907,7 @@ public class CucumberStepDefinitions {
 		
 		
 //		System.err.print(wrow+" "+wcol+" should be the position and i have"+posWRow+" "+posWCol);
-		Assert.assertTrue(WRow == posWRow);
+		Assert.assertTrue(wrow == posWRow);
 		Assert.assertTrue(wcol == posWCol);
 		
 	}
@@ -1916,7 +1916,7 @@ public class CucumberStepDefinitions {
 	public void blackPlayerPostionShallBe(int brow, int bcol) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
-		int BRow = (10-brow);
+//		int BRow = (10-brow);
 		
 		int posBRow = game.getCurrentPosition().getBlackPosition().getTile().getRow();	
 		int posBCol = game.getCurrentPosition().getBlackPosition().getTile().getColumn();
@@ -1924,10 +1924,10 @@ public class CucumberStepDefinitions {
 		System.err.println("posBRow = "+ posBRow);
 		System.err.println("posBCol = "+ posBCol);
 		
-		System.err.println("brow = "+ BRow);
+		System.err.println("brow = "+ brow);
 		System.err.println("bcol = "+ bcol);
 		
-		Assert.assertTrue(BRow == posBRow);
+		Assert.assertTrue(brow == posBRow);
 		Assert.assertTrue(bcol == posBCol);
 	}
 	
@@ -2412,8 +2412,8 @@ public class CucumberStepDefinitions {
 		// Tile indices start from 0 -> tiles with indices 4 and 8*9+4=76 are the starting
 		// positions
 
-		Tile player1StartPos = QuoridorController.getTileFromRowAndColumn(1, 5);
-		Tile player2StartPos = QuoridorController.getTileFromRowAndColumn(9, 5);
+		Tile player1StartPos = quoridor.getBoard().getTile(4);
+		Tile player2StartPos = quoridor.getBoard().getTile(76);
 
 		Game game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
 		game.setWhitePlayer(players.get(0));

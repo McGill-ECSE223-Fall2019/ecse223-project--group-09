@@ -3534,22 +3534,23 @@ public static TOWall grabWall() {
 
 	/**
 	 * @author alixe delabrousse
+	 * 
+	 * this method sets the current position to the final position of the game.
 	 *
-	 * @return
+	 * @return boolean isAtFinalPos - checks if the game is already at the final position
 	 */
 	
 	public static boolean jumpToFinalPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		boolean isAtFinalPos = false;
 		Move aMove = game.getCurrentMove();
+		
 		if (game.getGameStatus() == GameStatus.Replay) {
 			Move lastMove = game.getMove(game.numberOfMoves()-1);
-			if (aMove != lastMove) {
-				game.setCurrentMove(lastMove);
-				GamePosition gamePos = game.getPositions().get(game.numberOfPositions()-1);
-				game.setCurrentPosition(gamePos);
-				isAtFinalPos = true;
-			} 
+			if (aMove != lastMove) isAtFinalPos = true;
+			game.setCurrentMove(lastMove);
+			GamePosition gamePos = game.getPositions().get(game.numberOfPositions()-1);
+			game.setCurrentPosition(gamePos);
 			
 		} else {
 			System.out.println("The game is not in replay mode");
@@ -3560,7 +3561,11 @@ public static TOWall grabWall() {
 	/**
 	 * @author alixe delabrousse
 	 *
-	 * @return
+	 * this method sets the current position to the start position
+	 * the white player starts in at position (1, 5) whereas the black player starts at (9, 5)
+	 * (row, column)
+	 *
+	 * @return boolean - to check if the game is already at the start position
 	 */
 
 	
@@ -3571,28 +3576,16 @@ public static TOWall grabWall() {
 		
 		if (game.getGameStatus() == GameStatus.Replay){		
 			Move firstMove = game.getMove(0);
-			if (aMove != firstMove) {
-				GamePosition gamePos = game.getPosition(0);
-				
-				System.err.println("white tile: " + gamePos.getWhitePosition().getTile());
-				System.err.println("black tile: "+ gamePos.getBlackPosition().getTile());
-				
-				System.err.println("Pos(0) white row: "+ gamePos.getWhitePosition().getTile().getRow());
-				System.err.println("Pos(0) white col: "+ gamePos.getWhitePosition().getTile().getColumn());
-				
-				System.err.println("Pos(0) black row: "+ gamePos.getBlackPosition().getTile().getRow());
-				System.err.println("Pos(0) black col: "+ gamePos.getBlackPosition().getTile().getColumn());
-				
-				game.setCurrentPosition(gamePos);
-				game.setCurrentMove(firstMove);
-				isAtFirstPos = true;
-			}
+			if (aMove != firstMove) isAtFirstPos = true;
+			GamePosition gamePos = game.getPosition(0);
+			game.setCurrentPosition(gamePos);
+			game.setCurrentMove(firstMove);
+			
 		} else {
 			System.out.println("The game is not in replay mode");
 		}
 	
 		return isAtFirstPos;
-
 	}
 
 	/**
