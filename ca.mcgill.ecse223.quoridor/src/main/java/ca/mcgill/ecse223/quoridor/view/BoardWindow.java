@@ -284,9 +284,12 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         this.grabWallButton.setEnabled(canGrab);
         
         boolean inReplay=false;
-        
+
         this.replayListData.clear();
-        this.replayListData.addAll(QuoridorController.getMovesAsStrings());
+        for (final String s : QuoridorController.getMovesAsStrings()) {
+            // addAll only introduced post java-9, which is too new lol
+            this.replayListData.addElement(s);
+        }
 
         final int idx = QuoridorController.getIndexOfCurrentMove();
         if (idx >= 0) {
