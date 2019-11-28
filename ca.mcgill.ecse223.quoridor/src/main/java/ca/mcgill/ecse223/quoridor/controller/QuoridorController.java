@@ -1296,12 +1296,13 @@ public static TOWall grabWall() {
 			}
 		}
 
-		oldState.setPlayerToMove(newPlayer);
-
 		// Check the game result, and if game status is changed, we are done
 		if (initiateCheckGameResult()) {
 			return;
 		}
+
+		// Switch player only if game should continue
+		oldState.setPlayerToMove(newPlayer);
 
 		// Start the clock of this new player
 		runClockForPlayer(newPlayer);
