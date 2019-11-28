@@ -3821,6 +3821,7 @@ public static TOWall grabWall() {
 						whiteCounter++; 
 					}
 				}	
+			}
 		}
 
 		//check for duplicate positions
@@ -3852,7 +3853,6 @@ public static TOWall grabWall() {
 		}
 
 		return false;
-	}
 	}
 
 	/**
