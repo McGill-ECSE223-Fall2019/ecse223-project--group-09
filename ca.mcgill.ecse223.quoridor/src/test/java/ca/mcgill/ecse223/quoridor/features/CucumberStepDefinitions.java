@@ -1771,18 +1771,21 @@ public class CucumberStepDefinitions {
 			Integer mov = Integer.decode(map.get("mv"));
 			Integer rnd = Integer.decode(map.get("rnd"));
 			String move = map.get("move");
-		//	System.err.println("\n"+mov+" move "+rnd+" round "+move+" move ");
+//			System.err.println("\n"+mov+" move "+rnd+" round "+move+" move ");
 			GamePosition gpos = game.getCurrentPosition();
 			
-			System.err.println("remaining white walls: "+ gpos.getWhiteWallsInStock().size());
+//			System.err.println("remaining white walls: "+ gpos.getWhiteWallsInStock().size());
 				
 			GamePosition ngpos;
 			
 
 			int col = QuoridorController.letterToNumberColumn(move.charAt(0));
-			int row = Character.getNumericValue(move.charAt(1));
+			int row = ( 10 - Character.getNumericValue(move.charAt(1)));
 
 			Tile target = QuoridorController.getTileFromRowAndColumn(row, col);
+			
+//			System.err.println("HERREEE: row tile 4 is : " + game.getQuoridor().getBoard().getTile(4).getRow());
+//			System.err.println("HEEERREE: row tile 76 is: "+ game.getQuoridor().getBoard().getTile(76).getRow());
 			
 			
 			if(move.length() == 3) {
@@ -1863,8 +1866,8 @@ public class CucumberStepDefinitions {
 			game.addPositionAt(ngpos, gposIndex);
 //			System.err.println("Move: "+ aMove.getMoveNumber()+ " Round: "+ aMove.getRoundNumber());
 			
-			System.err.println("index before increment: "+gposIndex);
-			System.err.println("ngpos id: "+ ngpos.getId());
+			System.err.println("white row: " +ngpos.getWhitePosition().getTile().getRow());
+			System.err.println("black row: "+ ngpos.getBlackPosition().getTile().getRow());
 			
 			gposIndex++;
 			
@@ -1891,9 +1894,9 @@ public class CucumberStepDefinitions {
 	public void whitePlayerPositionShallBe(int wrow, int wcol) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
-//		int WRow = (10-wrow);
+		int WRow = (10-wrow);
 		
-		System.err.println("wrow = "+ wrow);
+		System.err.println("wrow = "+ WRow);
 		System.err.println("wcol = "+ wcol);
 		
 		System.err.println("current move number: "+ game.getCurrentMove().getMoveNumber());
@@ -1907,7 +1910,7 @@ public class CucumberStepDefinitions {
 		
 		
 //		System.err.print(wrow+" "+wcol+" should be the position and i have"+posWRow+" "+posWCol);
-		Assert.assertTrue(wrow == posWRow);
+		Assert.assertTrue(WRow == posWRow);
 		Assert.assertTrue(wcol == posWCol);
 		
 	}
@@ -1916,7 +1919,7 @@ public class CucumberStepDefinitions {
 	public void blackPlayerPostionShallBe(int brow, int bcol) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
-//		int BRow = (10-brow);
+		int BRow = (10-brow);
 		
 		int posBRow = game.getCurrentPosition().getBlackPosition().getTile().getRow();	
 		int posBCol = game.getCurrentPosition().getBlackPosition().getTile().getColumn();
@@ -1924,10 +1927,10 @@ public class CucumberStepDefinitions {
 		System.err.println("posBRow = "+ posBRow);
 		System.err.println("posBCol = "+ posBCol);
 		
-		System.err.println("brow = "+ brow);
+		System.err.println("brow = "+ BRow);
 		System.err.println("bcol = "+ bcol);
 		
-		Assert.assertTrue(brow == posBRow);
+		Assert.assertTrue(BRow == posBRow);
 		Assert.assertTrue(bcol == posBCol);
 	}
 	
@@ -1966,23 +1969,11 @@ public class CucumberStepDefinitions {
 	    @And("The next move is {int}.{int}")
 	    public void the_next_move_is_(int movno, int rndno) throws Throwable {
 	    	Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-	    	
-//	    	Move move= game.getCurrentMove();
-//	    	int index = game.getMoves().indexOf(move);
-//	    	
-//	    	if(game.getMoves().size()==index) {
-//	    		Move nextMove= game.getMove(index+1);
-//	    	}else {
-//	    		Move nextMove= game.getMove(index);
-//	    	}	
 	     
 	        //System.err.println(movno+" moveno "+rndno+" roundnum");
 	        Move aMove = game.getMove(QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno));
 	        game.setCurrentMove(aMove);
-	       // System.err.println(aMove+"\n\n my move BEFORE \n");
-	      //  System.err.print(b);
-	     //   System.err.print(nextMove.toString()+"\n \n is the move from me \n"+aMove.toString()+" is from alixe "+movno+" is movnum"+rndno+" is the roundNum");
-	      //  Assert.assertEquals(nextMove, aMove);
+
 	
 	    }
 	    
