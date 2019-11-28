@@ -1296,12 +1296,13 @@ public static TOWall grabWall() {
 			}
 		}
 
-		oldState.setPlayerToMove(newPlayer);
-
 		// Check the game result, and if game status is changed, we are done
 		if (initiateCheckGameResult()) {
 			return;
 		}
+
+		// Switch player only if game should continue
+		oldState.setPlayerToMove(newPlayer);
 
 		// Start the clock of this new player
 		runClockForPlayer(newPlayer);
@@ -2995,6 +2996,21 @@ public static TOWall grabWall() {
 		final TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
+				final Game g;
+				final boolean isWhitePlayer;
+				if (player.hasGameAsWhite()) {
+					g = player.getGameAsWhite();
+					isWhitePlayer = true;
+				} else {
+					g = player.getGameAsBlack();
+					isWhitePlayer = false;
+				}
+
+				if (g.getGameStatus() != GameStatus.Running) {
+					// Make sure time only decreases when game is being played
+					return;
+				}
+
 				final Time remTime = player.getRemainingTime();
 				if (remTime.getHours() > 0 || remTime.getMinutes() > 0 || remTime.getSeconds() > 0) {
 					// Subtract time by milliseconds per tick:
@@ -3007,10 +3023,10 @@ public static TOWall grabWall() {
 					// This means the player ran out of time!
 
 					// the other player wins!
-					if (player.hasGameAsBlack()) {
-						QuoridorController.setWinner(player.getGameAsBlack().getWhitePlayer());
+					if (!isWhitePlayer) {
+						QuoridorController.setWinner(g.getWhitePlayer());
 					} else {
-						QuoridorController.setWinner(player.getGameAsWhite().getBlackPlayer());
+						QuoridorController.setWinner(g.getBlackPlayer());
 					}
 
 					// stop the task
@@ -3849,7 +3865,6 @@ public static TOWall grabWall() {
 		}
 
 		return false;
-	}
 	}
 
 	/**
