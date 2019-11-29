@@ -3930,20 +3930,20 @@ public static TOWall grabWall() {
 	}
 
 	/**
-	 * Returns index of the current move
+	 * Returns index of the current game position
 	 *
-	 * @return index of the current move, -1 if no move exists
+	 * @return index of the current game position, -1 if no game position exists
 	 *
 	 * @author Paul Teng (260862906)
 	 */
-	public static int getIndexOfCurrentMove() {
+	public static int getIndexOfCurrentFrame() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!quoridor.hasCurrentGame()) {
 			return -1;
 		}
 
 		final Game game = quoridor.getCurrentGame();
-		return game.indexOfMove(game.getCurrentMove());
+		return game.indexOfPosition(game.getCurrentPosition()) - 1;
 	}
 
 }// end QuoridorController

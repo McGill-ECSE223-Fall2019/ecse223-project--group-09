@@ -291,8 +291,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
             this.replayListData.addElement(s);
         }
 
-        final int idx = QuoridorController.getIndexOfCurrentMove();
-        if (idx >= 0) {
+        final int idx = QuoridorController.getIndexOfCurrentFrame();
+        if (idx < 0) {
+            this.replayList.clearSelection();
+        } else {
             this.replayList.setSelectedIndex(idx);
             this.replayList.ensureIndexIsVisible(idx);
         }
