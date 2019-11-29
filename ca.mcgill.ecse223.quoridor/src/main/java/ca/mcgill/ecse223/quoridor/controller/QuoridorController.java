@@ -1465,9 +1465,8 @@ public static TOWall grabWall() {
 	 * @author Group 9
 	 */
 	/* package */ static boolean validatePawnPlacement(GamePosition gpos, final int row, final int col) {
-		if (!getWinnerForGame(gpos.getGame()).isEmpty()) {
-			// Game already has a winner or it was a draw:
-			// all moves are invalid since game ended
+		if (gpos.getGame().getGameStatus() != GameStatus.Running) {
+			// pawn should not be movable by player
 			return false;
 		}
 
@@ -1827,6 +1826,7 @@ public static TOWall grabWall() {
 		QuoridorController.StartClock();
 
 		// Then we just replay the whole game!
+		int lastIdx = 0;
 		String action;
 		while ((action = br.readLine()) != null) {
 			// In case anyone, myself included, cannot read the regex above,
@@ -1837,8 +1837,12 @@ public static TOWall grabWall() {
 				throw new InvalidLoadException("Illegal action in game save: `" + action + '`');
 			}
 
-			// // Uncomment this if we do need the moveNumber
-			// final int moveNumber = Integer.parseInt(matcher.group(1));
+			// Make sure move number is incrementing correctly
+			final int moveNumber = Integer.parseInt(matcher.group(1));
+			if (lastIdx + 1 != moveNumber) {
+				throw new InvalidLoadException("Inconsistent move number count: " + action);
+			}
+			lastIdx = moveNumber;
 
 			{
 				// Play white player's move first

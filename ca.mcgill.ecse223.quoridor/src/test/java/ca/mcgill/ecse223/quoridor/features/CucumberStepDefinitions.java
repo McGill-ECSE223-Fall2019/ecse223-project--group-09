@@ -329,7 +329,7 @@ public class CucumberStepDefinitions {
 	public void gameShallBecomeReadyToStart() {
 
 		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Assert.assertNotEquals(GameStatus.ReadyToStart, game.getGameStatus());
+		Assert.assertEquals(GameStatus.ReadyToStart, game.getGameStatus());
 
 	}
 
@@ -658,6 +658,7 @@ public class CucumberStepDefinitions {
 			}
 			this.positionValidFlag = true;
 		} catch (InvalidLoadException ex) {
+			this.capturedException = ex;
 			this.positionValidFlag = false;
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
@@ -2249,20 +2250,17 @@ public class CucumberStepDefinitions {
 		When I initiate replay mode
 		Then The game shall be in replay mode 
 	*/
-	@Given("The game is not running")
-	public void gameNotRunning() {
-		throw new PendingException();
-	}
+	
+	// "The game is not running" is already mapped above
+	// TA gave this to us
 	
 	@When("I initiate replay mode")
 	public void initiateReplayMode() {
 		throw new PendingException();
 	}
 	
-	@Then("The game shall be in replay mode ")
-	public void gameShallBeInReplayMode() {
-		throw new PendingException();
-	}
+	// "The game shall be in replay mode" is already mapped below
+	// mapped for LoadGame.feature
 	
 	// ***** ResignGame.feature*****
 	/*
@@ -2271,10 +2269,8 @@ public class CucumberStepDefinitions {
     Then Game result shall be "<result>"
     And The game shall no longer be running*/
 
-	@Given("The player to move is {string}")
-	public void playerToMove() {
-		throw new PendingException();
-	}
+	// "The player to move is {string}" is already mapped above
+	// from the SwitchCurrentPlayer.feature
 	
 	@When("Player initates to resign")
 	public void playerInitatesResign() {
@@ -2344,7 +2340,7 @@ public class CucumberStepDefinitions {
 	@Then("The game shall be in replay mode")
 	public void theGameShallBeInReplayMode() {
 		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Assert.assertNotEquals(GameStatus.Replay, game.getGameStatus());
+		Assert.assertEquals(GameStatus.Replay, game.getGameStatus());
 	}
 
 	/**
