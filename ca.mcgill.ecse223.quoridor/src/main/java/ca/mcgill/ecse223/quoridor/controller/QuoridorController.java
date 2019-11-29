@@ -11,6 +11,7 @@ import java.io.Writer;
 import java.sql.Time;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -3744,7 +3745,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Group-9
 	 */
-	public static boolean initiateCheckGameResult(/*Reader source*/) /*throws InvalidLoadException*/ {
+	public static boolean initiateCheckGameResult() {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!quoridor.hasCurrentGame()) {
 			// Nothing to process
@@ -3758,100 +3759,35 @@ public static TOWall grabWall() {
 		}
 		
 		// TODO: check if player repeated move three times (draw condition)		
-		
-		
-		// final Player whitePlayer = new Player(new Time(0, 3, 0), quoridor.getUser(0), 9, Direction.Horizontal);
-		// final Player blackPlayer = new Player(new Time(0, 3, 0), quoridor.getUser(1), 1, Direction.Horizontal);
-		// whitePlayer.setNextPlayer(blackPlayer);
-		// blackPlayer.setNextPlayer(whitePlayer);
 
-		// if (!quoridor.hasCurrentGame()) {
-		// 	game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
-		// } else {
-		// 	game = quoridor.getCurrentGame();
-		// 	game.setGameStatus(GameStatus.Running);
-		// 	game.setMoveMode(MoveMode.PlayerMove);
-		// }
-		// game.setWhitePlayer(whitePlayer);
-		// game.setBlackPlayer(blackPlayer);
+		int whiteCounter =0, blackCounter = 0; 
 
-		// final GamePosition initialPosition;
+		//check for duplicate position
+		 for (int i=0; i<getMovesAsStrings().size();i++) {
+		 	for (int j=i+1; j<getMovesAsStrings().size(); j++) {
+		 		if (String.valueOf(i) == String.valueOf(j)) {
+		 			//if there are less than 3 deflections, update the counter
+		 			if ((j-i) <= 3) { 
+		 				whiteCounter++; 
+		 			}
+		 		}	
+		 }
 
-		// // Meaningfull moves only start at index 1 (which
-		// // actually matches up with the corresponding round number)
-		// final String[] whitePlayerMoves;
-		// final String[] blackPlayerMoves;
+		 //check for duplicate positions
+		 for (int k=0; k<getMovesAsStrings().size(); k++) {
+		 	for (int l=k+1; l<getMovesAsStrings().size(); l++) {
+		 		if (String.valueOf(k) == String.valueOf(l)) {
+					//if there are less than 3 deflections, update the counter
+					if ((k-l) <= 3) {
+		 				blackCounter++; 
+					}
+				}	
+			}
+		 }
 
-		// {
-
-		// 	final boolean whiteStarts;
-
-		// 	// Check which player goes first
-		// 	switch (line1.charAt(0)) {
-		// 		case 'W':
-		// 			// Sanity check line2 must start with 'B'
-		// 			if (line2.charAt(0) != 'B') {
-		// 				throw new InvalidLoadException("Bad player color specification: W -> " + line2.charAt(0));
-		// 			}
-		// 			whiteStarts = true;
-		// 			initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
-		// 			break;
-		// 		case 'B':
-		// 			// Sanity check line2 must start with 'W'
-		// 			if (line2.charAt(0) != 'W') {
-		// 				throw new InvalidLoadException("Bad player color specification: B -> " + line2.charAt(0));
-		// 			}
-		// 			whiteStarts = false;
-		// 			initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, blackPlayer, game);
-		// 			break;
-		// 		default:
-		// 			throw new InvalidLoadException("Bad player color specification: " + line1.charAt(0));
-		// 	}
-
-		// 	// Perform default splitting
-		// 	final String[] seq1 = line1.split("\\s*[:,]\\s*");
-		// 	final String[] seq2 = line2.split("\\s*[:,]\\s*");
-
-		// 	if (whiteStarts) {
-		// 		whitePlayerMoves = seq1;
-		// 		blackPlayerMoves = seq2;
-		// 	} else {
-		// 		whitePlayerMoves = seq2;
-		// 		blackPlayerMoves = seq1;
-		// 	}
-		// }
-
-		// int whiteCounter = 0;
-		// int blackCounter = 0; 
-		// String[] threePosWhite;
-		// String[] threePosBlack;
-
-		// //check for duplicate position
-		// for (int i=0; i<whitePlayerMoves.length; i++) {
-		// 	for (int j=i+1; j<whitePlayerMoves.length; j++) {
-		// 		if (whitePlayerMoves[i].equals(whitePlayerMoves[j])) {
-		// 			//if there are less than 3 deflections, update the counter
-		// 			if ((j-i) <= 3) { 
-		// 				whiteCounter++; 
-		// 			}
-		// 		}	
-		// }
-
-		// //check for duplicate positions
-		// for (int k= 0; k<blackPlayerMoves.length; k++) {
-		// 	for (int l=k+1; l<blackPlayerMoves.length; l++) {
-		// 		if (blackPlayerMoves[k].equals(blackPlayerMoves[l])) {
-		// 			//if there are less than 3 deflections, update the counter
-		// 			if ((k-l) <= 3) {
-		// 				blackCounter++; 
-		// 			}
-		// 		}	
-		// 	}
-		// }
-
-		// if (whiteCounter==3 | blackCounter == 3) {
-		// 	return true; 
-		// }
+		if (whiteCounter==3 | blackCounter == 3) {
+			return true; 
+		}
 		
 
 		// then call setWinner(p) on the correct player
@@ -3866,6 +3802,8 @@ public static TOWall grabWall() {
 			return true;
 		}
 
+		return false;
+	}
 		return false;
 	}
 
