@@ -1464,9 +1464,8 @@ public static TOWall grabWall() {
 	 * @author Group 9
 	 */
 	/* package */ static boolean validatePawnPlacement(GamePosition gpos, final int row, final int col) {
-		if (!getWinnerForGame(gpos.getGame()).isEmpty()) {
-			// Game already has a winner or it was a draw:
-			// all moves are invalid since game ended
+		if (gpos.getGame().getGameStatus() != GameStatus.Running) {
+			// pawn should not be movable by player
 			return false;
 		}
 
