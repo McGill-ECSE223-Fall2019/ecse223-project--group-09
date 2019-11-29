@@ -296,8 +296,8 @@ public class BoardWindow extends JFrame implements GameBoardListener {
             this.replayList.clearSelection();
         } else {
             this.replayList.setSelectedIndex(idx);
-            this.replayList.ensureIndexIsVisible(idx);
         }
+        this.replayList.ensureIndexIsVisible(Math.max(0, idx));
 
         final EnumSet<Color> winners = QuoridorController.getWinner();
         if (!winners.isEmpty()) {
