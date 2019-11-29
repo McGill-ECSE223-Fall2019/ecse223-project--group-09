@@ -3758,6 +3758,7 @@ public static TOWall grabWall() {
 		
 		// TODO: check if player repeated move three times (draw condition)		
 		
+		
 		// final Player whitePlayer = new Player(new Time(0, 3, 0), quoridor.getUser(0), 9, Direction.Horizontal);
 		// final Player blackPlayer = new Player(new Time(0, 3, 0), quoridor.getUser(1), 1, Direction.Horizontal);
 		// whitePlayer.setNextPlayer(blackPlayer);
