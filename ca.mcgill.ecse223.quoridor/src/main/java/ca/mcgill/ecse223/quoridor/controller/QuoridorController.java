@@ -3774,8 +3774,9 @@ public static TOWall grabWall() {
 		 			if ((j-i) <= 3) { 
 		 				whiteCounter++; 
 		 			}
-		 		}	
-		 }
+		 		}
+			}
+		}
 
 		 //check for duplicate positions
 		 for (int k=0; k<getMovesAsStrings().size(); k++) {
@@ -3787,7 +3788,7 @@ public static TOWall grabWall() {
 					}
 				}	
 			}
-		 }
+		}
 
 		if (whiteCounter==3 | blackCounter == 3) {
 			return true; 
@@ -3806,8 +3807,6 @@ public static TOWall grabWall() {
 			return true;
 		}
 
-		return false;
-	}
 		return false;
 	}
 
