@@ -1898,16 +1898,16 @@ public class CucumberStepDefinitions {
 		
 		int WRow = (10-wrow);
 		
-		System.err.println("wrow = "+ WRow);
-		System.err.println("wcol = "+ wcol);
+	//	System.err.println("wrow = "+ WRow);
+	//	System.err.println("wcol = "+ wcol);
 		
 		System.err.println("current move number: "+ game.getCurrentMove().getMoveNumber()+"current round number: "+ game.getCurrentMove().getRoundNumber());
 		
 		int posWRow = game.getCurrentPosition().getWhitePosition().getTile().getRow();	
 		int posWCol = game.getCurrentPosition().getWhitePosition().getTile().getColumn();
 		
-		System.err.print("White position shall be wrow = "+ WRow+"wcol = "+ wcol);
-		System.err.println(" and you have posWRow = "+posWRow+"posWCol = "+ posWCol);
+		System.err.print("White position shall be wrow = "+ WRow+" wcol = "+ wcol);
+		System.err.println(" and you have posWRow = "+posWRow+" posWCol = "+ posWCol);
 		
 		
 //		System.err.print(wrow+" "+wcol+" should be the position and i have"+posWRow+" "+posWCol);
@@ -1945,14 +1945,13 @@ public class CucumberStepDefinitions {
 		int posWWallNo = game.getCurrentPosition().getWhiteWallsInStock().size();
 		System.err.print("AND white wall has "+wwallno+" on stock, and you have "+posWWallNo);
 		Assert.assertTrue(wwallno == posWWallNo);
-		
 	}
 	
 	@And("Black has {int} on stock")
 	public void blackHasOnStock(int bwallno) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		
 		int posWWallNo = game.getCurrentPosition().getBlackWallsInStock().size();
+		System.err.print("AND black wall has "+bwallno+" on stock, and you have "+posWWallNo);
 		Assert.assertTrue(bwallno == posWWallNo);
 	}
 	
@@ -1972,25 +1971,29 @@ public class CucumberStepDefinitions {
 	    public void the_next_move_is_(int movno, int rndno) throws Throwable {
 	    	Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 	    	
-	    	System.err.println("AND the next move is "+movno+" and "+rndno);
-	     
 	        Move aMove = game.getMove(QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno));
 	        game.setCurrentMove(aMove);
+	        // added stuff
+	        int index = game.indexOfMove(aMove);
+	        System.err.println("AND the next move is "+movno+" and "+rndno+" which is index: "+index);
+	        game.setCurrentPosition(game.getPosition(index));
 	
 	    }
-	    
+	    boolean testingStep=false;
 	    @When("Step backward is initiated")
 	    public void step_backward_is_initiated() throws Throwable {
 	        //call the stepBackward method;
 	    	QuoridorController.stepBackward(false);
+	    	testingStep=true;
 	    	
 	    }
 	    
+	  
 	    @Then("The next move shall be {int}.{int}")
 	    public void the_next_move_shall_be_(int nmov, int nrnd) throws Throwable {
 	     	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
 	    	int numOfMoves=moves.size();
-	    	System.err.println("num of moves: "+ numOfMoves);
+	    	//System.err.println("num of moves: "+ numOfMoves);
 	    	
 	    	//Move move= QuoridorApplication.getQuoridor().getCurrentGame().getMove(numOfMoves-1);
 	    	Move move= QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove();
@@ -1999,8 +2002,11 @@ public class CucumberStepDefinitions {
 	    	//System.err.println("nrnd: "+ nrnd);
 	    	int aIndex = QuoridorController.getIndexFromMoveAndRoundNumber(nmov, nrnd);
 	    	System.err.println("THEN the next move shall be "+nmov+" and "+nrnd+" index: "+aIndex+" your index: "+nextMoveIndex );
-	    	Assert.assertTrue(nextMoveIndex == aIndex);
-
+	    	if(testingStep=false) {	
+	    		Assert.assertTrue(nextMoveIndex == aIndex);
+	    	}else {
+	    		Assert.assertTrue(nextMoveIndex-1 == aIndex);//step backward and step forward the next move is the current move
+	    	}
 
 	    	Move nmove = moves.get(aIndex);
 
@@ -2017,6 +2023,7 @@ public class CucumberStepDefinitions {
 	    @When("Step forward is initiated")
 	    public void step_forward_is_initiated() throws Throwable {
 	    	QuoridorController.stepForward(false);
+	    	testingStep=false;
 	    }
 
 
