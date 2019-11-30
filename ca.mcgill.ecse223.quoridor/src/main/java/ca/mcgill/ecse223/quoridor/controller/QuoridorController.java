@@ -413,9 +413,13 @@ public static TOWall grabWall() {
 		final Quoridor quoridor = QuoridorApplication.getQuoridor(); // get quoridor
 		Game game = quoridor.getCurrentGame();// get current game from quoridor
 		Player currentPlayer = getCurrentPlayer(); // get the player of the turn
-		GamePosition gpos = game.getCurrentPosition();
 		TOPlayer toCurrentPlayer = getPlayerOfCurrentTurn(); // create associated transfer object
 		List<Wall> walls= currentPlayer.getWalls(); //this gets the complete list of 10 walls
+
+		// Clone game position before removing wall from stock
+		// (so wall count is not broken)
+		GamePosition gpos = deriveNextPosition(game.getCurrentPosition());
+		game.setCurrentPosition(gpos);
 
 		Wall grabbedWall = null; // current grabbed wall (null if no more walls left on stock)
 		TOWall toGrabbedWall;
@@ -1183,11 +1187,6 @@ public static TOWall grabWall() {
 		//case where we do not know if the wall is valid or not and depends on previous circumstances.
 		boolean isValid = validateWallPlacement(row, column, orientation); // this returns true if it is a valid wallmove.
 		if (isValid==true) {
-			// Clone the current game position
-			final GamePosition newState = deriveNextPosition(gamePosition);
-			game.setCurrentPosition(newState);
-			gamePosition = newState;
-
 			//reset the position of the wallMove
 			WallMove currentMove= game.getWallMoveCandidate();
 			currentMove.setTargetTile(board.getTile((row-1)*9 +column-1));
