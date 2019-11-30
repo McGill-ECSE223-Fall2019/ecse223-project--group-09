@@ -16,6 +16,7 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1296,6 +1297,7 @@ public static TOWall grabWall() {
 			}
 		}
 
+		// Switch the player
 		oldState.setPlayerToMove(newPlayer);
 
 		// Check the game result, and if game status is changed, we are done
@@ -1462,9 +1464,8 @@ public static TOWall grabWall() {
 	 * @author Group 9
 	 */
 	/* package */ static boolean validatePawnPlacement(GamePosition gpos, final int row, final int col) {
-		if (!getWinnerForGame(gpos.getGame()).isEmpty()) {
-			// Game already has a winner or it was a draw:
-			// all moves are invalid since game ended
+		if (gpos.getGame().getGameStatus() != GameStatus.Running) {
+			// pawn should not be movable by player
 			return false;
 		}
 
@@ -1824,6 +1825,7 @@ public static TOWall grabWall() {
 		QuoridorController.StartClock();
 
 		// Then we just replay the whole game!
+		int lastIdx = 0;
 		String action;
 		while ((action = br.readLine()) != null) {
 			// In case anyone, myself included, cannot read the regex above,
@@ -1834,8 +1836,12 @@ public static TOWall grabWall() {
 				throw new InvalidLoadException("Illegal action in game save: `" + action + '`');
 			}
 
-			// // Uncomment this if we do need the moveNumber
-			// final int moveNumber = Integer.parseInt(matcher.group(1));
+			// Make sure move number is incrementing correctly
+			final int moveNumber = Integer.parseInt(matcher.group(1));
+			if (lastIdx + 1 != moveNumber) {
+				throw new InvalidLoadException("Inconsistent move number count: " + action);
+			}
+			lastIdx = moveNumber;
 
 			{
 				// Play white player's move first
@@ -2995,6 +3001,21 @@ public static TOWall grabWall() {
 		final TimerTask task = new TimerTask() {
 			@Override
 			public void run() {
+				final Game g;
+				final boolean isWhitePlayer;
+				if (player.hasGameAsWhite()) {
+					g = player.getGameAsWhite();
+					isWhitePlayer = true;
+				} else {
+					g = player.getGameAsBlack();
+					isWhitePlayer = false;
+				}
+
+				if (g != null && g.getGameStatus() != GameStatus.Running) {
+					// Make sure time only decreases when game is being played
+					return;
+				}
+
 				final Time remTime = player.getRemainingTime();
 				if (remTime.getHours() > 0 || remTime.getMinutes() > 0 || remTime.getSeconds() > 0) {
 					// Subtract time by milliseconds per tick:
@@ -3007,10 +3028,10 @@ public static TOWall grabWall() {
 					// This means the player ran out of time!
 
 					// the other player wins!
-					if (player.hasGameAsBlack()) {
-						QuoridorController.setWinner(player.getGameAsBlack().getWhitePlayer());
+					if (!isWhitePlayer) {
+						QuoridorController.setWinner(g.getWhitePlayer());
 					} else {
-						QuoridorController.setWinner(player.getGameAsWhite().getBlackPlayer());
+						QuoridorController.setWinner(g.getBlackPlayer());
 					}
 
 					// stop the task
@@ -3534,22 +3555,23 @@ public static TOWall grabWall() {
 
 	/**
 	 * @author alixe delabrousse
+	 * 
+	 * this method sets the current position to the final position of the game.
 	 *
-	 * @return
+	 * @return boolean isAtFinalPos - checks if the game is already at the final position
 	 */
 	
 	public static boolean jumpToFinalPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		boolean isAtFinalPos = false;
 		Move aMove = game.getCurrentMove();
+		
 		if (game.getGameStatus() == GameStatus.Replay) {
 			Move lastMove = game.getMove(game.numberOfMoves()-1);
-			if (aMove != lastMove) {
-				game.setCurrentMove(lastMove);
-				GamePosition gamePos = game.getPositions().get(game.numberOfPositions()-1);
-				game.setCurrentPosition(gamePos);
-				isAtFinalPos = true;
-			} 
+			if (aMove != lastMove) isAtFinalPos = true;
+			game.setCurrentMove(lastMove);
+			GamePosition gamePos = game.getPositions().get(game.numberOfPositions()-1);
+			game.setCurrentPosition(gamePos);
 			
 		} else {
 			System.out.println("The game is not in replay mode");
@@ -3560,7 +3582,11 @@ public static TOWall grabWall() {
 	/**
 	 * @author alixe delabrousse
 	 *
-	 * @return
+	 * this method sets the current position to the start position
+	 * the white player starts in at position (1, 5) whereas the black player starts at (9, 5)
+	 * (row, column)
+	 *
+	 * @return boolean - to check if the game is already at the start position
 	 */
 
 	
@@ -3571,28 +3597,16 @@ public static TOWall grabWall() {
 		
 		if (game.getGameStatus() == GameStatus.Replay){		
 			Move firstMove = game.getMove(0);
-			if (aMove != firstMove) {
-				GamePosition gamePos = game.getPosition(0);
-				
-				System.err.println("white tile: " + gamePos.getWhitePosition().getTile());
-				System.err.println("black tile: "+ gamePos.getBlackPosition().getTile());
-				
-				System.err.println("Pos(0) white row: "+ gamePos.getWhitePosition().getTile().getRow());
-				System.err.println("Pos(0) white col: "+ gamePos.getWhitePosition().getTile().getColumn());
-				
-				System.err.println("Pos(0) black row: "+ gamePos.getBlackPosition().getTile().getRow());
-				System.err.println("Pos(0) black col: "+ gamePos.getBlackPosition().getTile().getColumn());
-				
-				game.setCurrentPosition(gamePos);
-				game.setCurrentMove(firstMove);
-				isAtFirstPos = true;
-			}
+			if (aMove != firstMove) isAtFirstPos = true;
+			GamePosition gamePos = game.getPosition(0);
+			game.setCurrentPosition(gamePos);
+			game.setCurrentMove(firstMove);
+			
 		} else {
 			System.out.println("The game is not in replay mode");
 		}
 	
 		return isAtFirstPos;
-
 	}
 
 	/**
@@ -3633,7 +3647,11 @@ public static TOWall grabWall() {
 
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game aGame = quoridor.getCurrentGame();
-		if(aGame.getGameStatus() == GameStatus.Running) {
+		switch(aGame.getGameStatus()) {
+		case Running:
+		case WhiteWon:
+		case BlackWon:
+		case Draw:
 			System.out.println("ENTER REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Replay);
 		}
@@ -3648,6 +3666,9 @@ public static TOWall grabWall() {
 		if(aGame.getGameStatus() == GameStatus.Replay) {
 			System.out.println("EXIT REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Running);
+
+			// In case someone tries to exit replay mode after game ended
+			initiateCheckGameResult();
 		}
 	}
 
@@ -3727,7 +3748,7 @@ public static TOWall grabWall() {
 	 *
 	 * @author Group-9
 	 */
-	public static boolean initiateCheckGameResult(Reader source) throws InvalidLoadException, IOException {
+	public static boolean initiateCheckGameResult(/*Reader source*/) /*throws InvalidLoadException*/ {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		if (!quoridor.hasCurrentGame()) {
 			// Nothing to process
@@ -3841,6 +3862,101 @@ public static TOWall grabWall() {
 
 
 		// TODO: check if player repeated move three times (draw condition)
+		
+		// final Player whitePlayer = new Player(new Time(0, 3, 0), quoridor.getUser(0), 9, Direction.Horizontal);
+		// final Player blackPlayer = new Player(new Time(0, 3, 0), quoridor.getUser(1), 1, Direction.Horizontal);
+		// whitePlayer.setNextPlayer(blackPlayer);
+		// blackPlayer.setNextPlayer(whitePlayer);
+
+		// if (!quoridor.hasCurrentGame()) {
+		// 	game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
+		// } else {
+		// 	game = quoridor.getCurrentGame();
+		// 	game.setGameStatus(GameStatus.Running);
+		// 	game.setMoveMode(MoveMode.PlayerMove);
+		// }
+		// game.setWhitePlayer(whitePlayer);
+		// game.setBlackPlayer(blackPlayer);
+
+		// final GamePosition initialPosition;
+
+		// // Meaningfull moves only start at index 1 (which
+		// // actually matches up with the corresponding round number)
+		// final String[] whitePlayerMoves;
+		// final String[] blackPlayerMoves;
+
+		// {
+
+		// 	final boolean whiteStarts;
+
+		// 	// Check which player goes first
+		// 	switch (line1.charAt(0)) {
+		// 		case 'W':
+		// 			// Sanity check line2 must start with 'B'
+		// 			if (line2.charAt(0) != 'B') {
+		// 				throw new InvalidLoadException("Bad player color specification: W -> " + line2.charAt(0));
+		// 			}
+		// 			whiteStarts = true;
+		// 			initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, whitePlayer, game);
+		// 			break;
+		// 		case 'B':
+		// 			// Sanity check line2 must start with 'W'
+		// 			if (line2.charAt(0) != 'W') {
+		// 				throw new InvalidLoadException("Bad player color specification: B -> " + line2.charAt(0));
+		// 			}
+		// 			whiteStarts = false;
+		// 			initialPosition = createInitialGamePosition(whitePlayer, blackPlayer, blackPlayer, game);
+		// 			break;
+		// 		default:
+		// 			throw new InvalidLoadException("Bad player color specification: " + line1.charAt(0));
+		// 	}
+
+		// 	// Perform default splitting
+		// 	final String[] seq1 = line1.split("\\s*[:,]\\s*");
+		// 	final String[] seq2 = line2.split("\\s*[:,]\\s*");
+
+		// 	if (whiteStarts) {
+		// 		whitePlayerMoves = seq1;
+		// 		blackPlayerMoves = seq2;
+		// 	} else {
+		// 		whitePlayerMoves = seq2;
+		// 		blackPlayerMoves = seq1;
+		// 	}
+		// }
+
+		// int whiteCounter = 0;
+		// int blackCounter = 0; 
+		// String[] threePosWhite;
+		// String[] threePosBlack;
+
+		// //check for duplicate position
+		// for (int i=0; i<whitePlayerMoves.length; i++) {
+		// 	for (int j=i+1; j<whitePlayerMoves.length; j++) {
+		// 		if (whitePlayerMoves[i].equals(whitePlayerMoves[j])) {
+		// 			//if there are less than 3 deflections, update the counter
+		// 			if ((j-i) <= 3) { 
+		// 				whiteCounter++; 
+		// 			}
+		// 		}	
+		// }
+
+		// //check for duplicate positions
+		// for (int k= 0; k<blackPlayerMoves.length; k++) {
+		// 	for (int l=k+1; l<blackPlayerMoves.length; l++) {
+		// 		if (blackPlayerMoves[k].equals(blackPlayerMoves[l])) {
+		// 			//if there are less than 3 deflections, update the counter
+		// 			if ((k-l) <= 3) {
+		// 				blackCounter++; 
+		// 			}
+		// 		}	
+		// 	}
+		// }
+
+		// if (whiteCounter==3 | blackCounter == 3) {
+		// 	return true; 
+		// }
+		
+
 		// then call setWinner(p) on the correct player
 
 		GamePosition gpos = game.getCurrentPosition();
@@ -3854,8 +3970,7 @@ public static TOWall grabWall() {
 		}
 
 		return false;
-	}
-	}
+	}}
 
 	/**
 	 * Checks to see if the tile matches the provided destination
@@ -3877,6 +3992,62 @@ public static TOWall grabWall() {
 		}
 	}
 
-	
+	/**
+	 * Returns the list of moves as string. Think it would look cool for the game...
+	 *
+	 * @return the list of moves as string.
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static List<String> getMovesAsStrings() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return Collections.emptyList();
+		}
+
+		// Store moves as a list of string
+		final List<String> resultList = new LinkedList<>();
+
+		final List<Move> listOfMoves = quoridor.getCurrentGame().getMoves();
+		for (int i = 0; i < listOfMoves.size(); ++i) {
+			final Move move = listOfMoves.get(i);
+
+			// Build-up the move as string
+			final StringBuilder movestr = new StringBuilder();
+			if (move.getPlayer().hasGameAsWhite()) {
+				movestr.append("White player: ");
+			} else {
+				movestr.append("Black player: ");
+			}
+
+			final Tile t = move.getTargetTile();
+			movestr.append((char) (t.getColumn() + 'a' - 1));
+			movestr.append((char) (t.getRow() + '1' - 1));
+
+			if (move instanceof WallMove) {
+				movestr.append(Character.toLowerCase(((WallMove) move).getWallDirection().name().charAt(0)));
+			}
+
+			resultList.add(movestr.toString());
+		}
+		return resultList;
+	}
+
+	/**
+	 * Returns index of the current game position
+	 *
+	 * @return index of the current game position, -1 if no game position exists
+	 *
+	 * @author Paul Teng (260862906)
+	 */
+	public static int getIndexOfCurrentFrame() {
+		final Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (!quoridor.hasCurrentGame()) {
+			return -1;
+		}
+
+		final Game game = quoridor.getCurrentGame();
+		return game.indexOfPosition(game.getCurrentPosition()) - 1;
+	}
 
 }// end QuoridorController

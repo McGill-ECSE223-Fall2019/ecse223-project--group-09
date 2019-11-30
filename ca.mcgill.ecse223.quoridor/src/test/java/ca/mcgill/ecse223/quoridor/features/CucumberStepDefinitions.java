@@ -329,7 +329,7 @@ public class CucumberStepDefinitions {
 	public void gameShallBecomeReadyToStart() {
 
 		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Assert.assertNotEquals(GameStatus.ReadyToStart, game.getGameStatus());
+		Assert.assertEquals(GameStatus.ReadyToStart, game.getGameStatus());
 
 	}
 
@@ -658,6 +658,7 @@ public class CucumberStepDefinitions {
 			}
 			this.positionValidFlag = true;
 		} catch (InvalidLoadException ex) {
+			this.capturedException = ex;
 			this.positionValidFlag = false;
 		} catch (IOException ex) {
 			Assert.fail("No IOException should happen:" + ex.getMessage());
@@ -1669,7 +1670,6 @@ public class CucumberStepDefinitions {
 	public void wallMoveCandidateExistsAt(String dir, int row, int col) {
 		QuoridorController.grabWall();
 
-		// TEST IS NOT PASSING, I THINK ISSUE IS WITH Y-AXIS INVERSION
 		final WallMove move = QuoridorApplication.getQuoridor().getCurrentGame().getWallMoveCandidate();
 		move.setTargetTile(QuoridorController.getTileFromRowAndColumn(row, col));
 		move.setWallDirection("vertical".equalsIgnoreCase(dir) ? Direction.Vertical : Direction.Horizontal);
@@ -1772,18 +1772,21 @@ public class CucumberStepDefinitions {
 			Integer mov = Integer.decode(map.get("mv"));
 			Integer rnd = Integer.decode(map.get("rnd"));
 			String move = map.get("move");
-		//	System.err.println("\n"+mov+" move "+rnd+" round "+move+" move ");
+//			System.err.println("\n"+mov+" move "+rnd+" round "+move+" move ");
 			GamePosition gpos = game.getCurrentPosition();
 			
-			System.err.println("remaining white walls: "+ gpos.getWhiteWallsInStock().size());
+//			System.err.println("remaining white walls: "+ gpos.getWhiteWallsInStock().size());
 				
 			GamePosition ngpos;
 			
 
 			int col = QuoridorController.letterToNumberColumn(move.charAt(0));
-			int row = Character.getNumericValue(move.charAt(1));
+			int row = ( 10 - Character.getNumericValue(move.charAt(1)));
 
 			Tile target = QuoridorController.getTileFromRowAndColumn(row, col);
+			
+//			System.err.println("HERREEE: row tile 4 is : " + game.getQuoridor().getBoard().getTile(4).getRow());
+//			System.err.println("HEEERREE: row tile 76 is: "+ game.getQuoridor().getBoard().getTile(76).getRow());
 			
 			
 			if(move.length() == 3) {
@@ -1864,8 +1867,8 @@ public class CucumberStepDefinitions {
 			game.addPositionAt(ngpos, gposIndex);
 //			System.err.println("Move: "+ aMove.getMoveNumber()+ " Round: "+ aMove.getRoundNumber());
 			
-			System.err.println("index before increment: "+gposIndex);
-			System.err.println("ngpos id: "+ ngpos.getId());
+			System.err.println("white row: " +ngpos.getWhitePosition().getTile().getRow());
+			System.err.println("black row: "+ ngpos.getBlackPosition().getTile().getRow());
 			
 			gposIndex++;
 			
@@ -2237,6 +2240,40 @@ public class CucumberStepDefinitions {
 	}
 
 
+	// ***** EnterReplayMode feature *****
+	/*Given The game is not running
+		When I initiate replay mode
+		Then The game shall be in replay mode 
+	*/
+	
+	// "The game is not running" is already mapped above
+	// TA gave this to us
+	
+	@When("I initiate replay mode")
+	public void initiateReplayMode() {
+		throw new PendingException();
+	}
+	
+	// "The game shall be in replay mode" is already mapped below
+	// mapped for LoadGame.feature
+	
+	// ***** ResignGame.feature*****
+	/*
+	Given The player to move is "<player>"
+    When Player initates to resign
+    Then Game result shall be "<result>"
+    And The game shall no longer be running*/
+
+
+	// "The player to move is {string}" is already mapped above
+	// from the SwitchCurrentPlayer.feature
+	
+	@When("Player initates to resign")
+	public void playerInitatesResign() {
+		throw new PendingException();
+	}
+	
+	
 	// ***** LoadGame.feature *****
 
 	private Exception capturedException;
@@ -2299,7 +2336,7 @@ public class CucumberStepDefinitions {
 	@Then("The game shall be in replay mode")
 	public void theGameShallBeInReplayMode() {
 		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-		Assert.assertNotEquals(GameStatus.Replay, game.getGameStatus());
+		Assert.assertEquals(GameStatus.Replay, game.getGameStatus());
 	}
 
 	/**
@@ -2406,8 +2443,8 @@ public class CucumberStepDefinitions {
 		// Tile indices start from 0 -> tiles with indices 4 and 8*9+4=76 are the starting
 		// positions
 
-		Tile player1StartPos = QuoridorController.getTileFromRowAndColumn(1, 5);
-		Tile player2StartPos = QuoridorController.getTileFromRowAndColumn(9, 5);
+		Tile player1StartPos = quoridor.getBoard().getTile(4);
+		Tile player2StartPos = quoridor.getBoard().getTile(76);
 
 		Game game = new Game(GameStatus.Running, MoveMode.PlayerMove, quoridor);
 		game.setWhitePlayer(players.get(0));
