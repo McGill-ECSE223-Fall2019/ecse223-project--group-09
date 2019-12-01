@@ -1758,19 +1758,21 @@ public class CucumberStepDefinitions {
 	private boolean testingStepFeature=false;
 	//***** JumpToFinal.feature*****
 	
+	
+	
 	Move nextMove = null;
+	
+	/**
+	 * 
+	 * @author Alixe Delabrousse and Mohamed Mohamed
+	 * 
+	 * @param dataTable
+	 */
 	
 	@Given("The following moves have been played in game:")
 	public void theFollowingMovesHaveBeenPlayedInGame(DataTable dataTable) {
 		
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
-
-		System.err.println("Pos(0) init moves is: wrow = "+game.getPosition(0).getWhitePosition().getTile().getRow());
-		System.err.println("Pos(0) init moves is: wcol = "+game.getPosition(0).getWhitePosition().getTile().getColumn());
-		System.err.println("Pos(0) init moves is: brow = "+game.getPosition(0).getBlackPosition().getTile().getRow());
-		System.err.println("Pos(0) init moves is: bcol = "+game.getPosition(0).getBlackPosition().getTile().getColumn());
-		System.err.println("Pos(0) init moves is: wwalls = "+game.getPosition(0).getWhiteWallsInStock().size());
-		System.err.println("Pos(0) init moves is: bwalls = "+game.getPosition(0).getBlackWallsInStock().size());
 		
 		Player player1 = game.getWhitePlayer();
 		Player player2 = game.getBlackPlayer();
@@ -1788,10 +1790,9 @@ public class CucumberStepDefinitions {
 			Integer mov = Integer.decode(map.get("mv"));
 			Integer rnd = Integer.decode(map.get("rnd"));
 			String move = map.get("move");
-//			System.err.println("\n"+mov+" move "+rnd+" round "+move+" move ");
+
 			GamePosition gpos = game.getCurrentPosition();
-			
-//			System.err.println("remaining white walls: "+ gpos.getWhiteWallsInStock().size());
+
 				
 			GamePosition ngpos;
 			
@@ -1801,10 +1802,7 @@ public class CucumberStepDefinitions {
 
 			Tile target = QuoridorController.getTileFromRowAndColumn(row, col);
 			
-//			System.err.println("HERREEE: row tile 4 is : " + game.getQuoridor().getBoard().getTile(4).getRow());
-//			System.err.println("HEEERREE: row tile 76 is: "+ game.getQuoridor().getBoard().getTile(76).getRow());
-			
-			
+
 			if(move.length() == 3) {
 				Wall nwall;
 				
@@ -1819,13 +1817,11 @@ public class CucumberStepDefinitions {
 				Tile btile = gpos.getBlackPosition().getTile();
 				
 				if (rnd == 1) {
-					System.err.println("index of wall: "+ (player1.numberOfWalls()-whiteWallUsed));
 					nwall = gpos.getWhiteWallsInStock(player1.numberOfWalls()-whiteWallUsed);
 					whiteWallUsed++;
 					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, wtile), new PlayerPosition(player2, btile), player2, game);
 					gpos.removeWhiteWallsInStock(nwall);
 					aMove = new WallMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
-//					QuoridorController.switchCurrentPlayer();
 					game.setCurrentMove(aMove);
 					game.setCurrentPosition(ngpos);
 
@@ -1837,7 +1833,6 @@ public class CucumberStepDefinitions {
 					gpos.removeBlackWallsInStock(nwall);
 					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, wtile), new PlayerPosition(player2, btile), player1, game);
 					aMove = new WallMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game, dir, nwall);
-//					QuoridorController.switchCurrentPlayer();
 					game.setCurrentMove(aMove);
 					game.setCurrentPosition(ngpos);
 					
@@ -1863,10 +1858,7 @@ public class CucumberStepDefinitions {
 					Tile btile = gpos.getBlackPosition().getTile();
 					
 					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, target), new PlayerPosition(player2, btile), player2, game);
-//					gpos.setWhitePosition(new PlayerPosition(player1, target));
 					aMove = new StepMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game);
-//					QuoridorController.switchCurrentPlayer();
-//					game.setCurrentPosition(ngpos);
 					game.setCurrentMove(aMove);
 					game.setCurrentPosition(ngpos);
 					
@@ -1875,9 +1867,7 @@ public class CucumberStepDefinitions {
 					Tile wtile = gpos.getWhitePosition().getTile();
 					
 					ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, wtile), new PlayerPosition(player2, target), player1, game);
-//					gpos.setBlackPosition(new PlayerPosition(player2, target));
 					aMove = new StepMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game);
-//					QuoridorController.switchCurrentPlayer();
 					game.setCurrentMove(aMove);
 					game.setCurrentPosition(ngpos);
 
@@ -1894,23 +1884,17 @@ public class CucumberStepDefinitions {
 			game.addMoveAt(aMove, QuoridorController.getIndexFromMoveAndRoundNumber(mov, rnd));
 
 			game.addPositionAt(ngpos, gposIndex);
-//			System.err.println("Move: "+ aMove.getMoveNumber()+ " Round: "+ aMove.getRoundNumber());
-			
-			System.err.println("white row: " +ngpos.getWhitePosition().getTile().getRow());
-			System.err.println("black row: "+ ngpos.getBlackPosition().getTile().getRow());
-			
-			gposIndex++;
-			
-			System.err.println("index after increment: "+gposIndex);
 
-			
-//			System.err.println("Move: "+ aMove.getMoveNumber()+ " Round: "+ aMove.getRoundNumber());
-		
+			gposIndex++;
 		
 
 		}
 		
 	}
+	
+	/**
+	 * @author Alixe Delabrousse (260868412)
+	 */
 	
 
 	@When("Jump to final position is initiated")
@@ -1920,61 +1904,73 @@ public class CucumberStepDefinitions {
 		
 	}
 	
+	/**
+	 * 
+	 * @author Alixe Delabrousse and Mohamed Mohamed
+	 * 
+	 * @param wrow
+	 * @param wcol
+	 */
+
 	@And("White player's position shall be \\({int},{int})")
 	public void whitePlayerPositionShallBe(int wrow, int wcol) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
 		
-		int WRow = (10-wrow);
-		
-	//	System.err.println("wrow = "+ WRow);
-	//	System.err.println("wcol = "+ wcol);
-		
-		System.err.println("current move number: "+ game.getCurrentMove().getMoveNumber()+"current round number: "+ game.getCurrentMove().getRoundNumber());
+		int WRow = (10-wrow); // In our implementation of the board, the rows have been reversed
 		
 		int posWRow = game.getCurrentPosition().getWhitePosition().getTile().getRow();	
 		int posWCol = game.getCurrentPosition().getWhitePosition().getTile().getColumn();
 		
-		System.err.print("White position shall be wrow = "+ WRow+" wcol = "+ wcol);
-		System.err.println(" and you have posWRow = "+posWRow+" posWCol = "+ posWCol);
-		
-		
-//		System.err.print(wrow+" "+wcol+" should be the position and i have"+posWRow+" "+posWCol);
 		Assert.assertTrue(WRow == posWRow);
 		Assert.assertTrue(wcol == posWCol);
 		
 	}
 	
+	/**
+	 * 
+	 * @author Mohamed Mohamed and Alixe Delabrousse
+	 * 
+	 * @param brow
+	 * @param bcol
+	 */
+	
 	@And("Black player's position shall be \\({int},{int})")
 	public void blackPlayerPostionShallBe(int brow, int bcol) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		
-		int BRow = (10-brow);
+		int BRow = (10-brow); // In our implementation of the board, the rows have been reversed
 		
 		int posBRow = game.getCurrentPosition().getBlackPosition().getTile().getRow();	
 		int posBCol = game.getCurrentPosition().getBlackPosition().getTile().getColumn();
-		
-		System.err.println("posBRow = "+ posBRow);
-		System.err.println("posBCol = "+ posBCol);
-		
-		System.err.println("brow = "+ BRow);
-		System.err.println("bcol = "+ bcol);
-		
+
 		Assert.assertTrue(BRow == posBRow);
 		Assert.assertTrue(bcol == posBCol);
 	}
 	
 	
-	
+	/**
+	 * 
+	 * @author Mohamed Mohamed and Alixe Delabrousse
+	 * 
+	 * @param wwallno
+	 */
 	
 	@And("White has {int} on stock")
 	public void whiteHasOnStock(int wwallno) {
 		
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		int posWWallNo = game.getCurrentPosition().getWhiteWallsInStock().size();
-		System.err.print("AND white wall has "+wwallno+" on stock, and you have "+posWWallNo);
 		Assert.assertTrue(wwallno == posWWallNo);
+		
 	}
+	
+	/**
+	 * 
+	 * @author Alixe Delabrousse and Mohamed Mohamed
+	 * 
+	 * @param bwallno
+	 */
 	
 	@And("Black has {int} on stock")
 	public void blackHasOnStock(int bwallno) {
@@ -1987,6 +1983,10 @@ public class CucumberStepDefinitions {
 	//****** JumpToStart.feature******
 	
 
+	/**
+	 * @author Alixe Delabrousse
+	 */
+	
 	@When("Jump to start position is initiated")
 	public void jumpToStartPosInitiated() {
 		QuoridorController.jumpToStartPosition();
@@ -1995,6 +1995,15 @@ public class CucumberStepDefinitions {
 
 	//********STEP BACKWARD FEATURE***********
 	
+	
+		/**
+		 * 
+		 * @author Alixe Delabrousse and Mohamed Mohamed
+		 * 
+		 * @param movno
+		 * @param rndno
+		 * @throws Throwable
+		 */
 
 	    @And("The next move is {int}.{int}")
 	    public void the_next_move_is_(int movno, int rndno) throws Throwable {
@@ -2004,16 +2013,20 @@ public class CucumberStepDefinitions {
 	        
 	        // added stuff
 	        int index = game.indexOfMove(aMove);
-	      // if(index!=0) {
+	
 	        game.setCurrentMove(game.getMove(index));
 	        System.err.println("AND the next move is "+movno+" and "+rndno+" which is index: "+index);
 	        game.setCurrentPosition(game.getPosition(index));
-//	       }else {
-//	    	   game.setCurrentMove(game.getMove(index-1));
-//	    	   game.setCurrentPosition(game.getPosition(index-1));
-//	       }
+
 	    }
 	    boolean testingStep=false;
+	    
+	    /**
+	     * @author Mohamed Mohamed
+	     * 
+	     * @throws Throwable
+	     */
+	    
 	    @When("Step backward is initiated")
 	    public void step_backward_is_initiated() throws Throwable {
 	        //call the stepBackward method;
@@ -2024,6 +2037,11 @@ public class CucumberStepDefinitions {
 	  
 	    //********STEP FORWARD FEATURE***********    
 	    
+	    /**
+	     * @author Mohamed Mohamed
+	     * 
+	     * @throws Throwable
+	     */
 
 	    @When("Step forward is initiated")
 	    public void step_forward_is_initiated() throws Throwable {
@@ -2032,6 +2050,15 @@ public class CucumberStepDefinitions {
 	    	QuoridorController.stepForward(false);
 	    	
 	    }
+	    
+	    /**
+	     * 
+	     * @author Alixe Delabrousse and Mohamed Mohamed
+	     * 
+	     * @param nmov
+	     * @param nrnd
+	     * @throws Throwable
+	     */
 	    
 	    @Then("The next move shall be {int}.{int}")
 	    public void the_next_move_shall_be_(int nmov, int nrnd) throws Throwable {
@@ -2054,17 +2081,7 @@ public class CucumberStepDefinitions {
 	    		Move nmove = moves.get(aIndex);
 		    	Assert.assertEquals(move, nmove);
 	    	}
-	    	
-
-
-	    	
-
 	    }
- 
-	    
-	    
-	
-	 
 
 
 	// ***** ReportFinalResult.feature *****

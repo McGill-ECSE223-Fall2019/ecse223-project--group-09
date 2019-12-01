@@ -1856,6 +1856,12 @@ public static TOWall grabWall() {
 			}
 			lastIdx = moveNumber;
 
+			// Only continue if game is running
+			// (if a winner is already determined, we ignore)
+			if (game.getGameStatus() != GameStatus.Running) {
+				break;
+			}
+
 			{
 				// Play white player's move first
 				final String wpMove = matcher.group(2);
@@ -1868,10 +1874,6 @@ public static TOWall grabWall() {
 
 					final int drow = wpRow - t.getRow();
 					final int dcol = wpCol - t.getColumn();
-
-					if (Math.abs(drow) + Math.abs(dcol) > 2) {
-						throw new InvalidLoadException("Invalid pawn move for white player: " + action);
-					}
 
 					boolean result = false;
 
@@ -1920,6 +1922,12 @@ public static TOWall grabWall() {
 				}
 			}
 
+			// Only continue if game is running
+			// (if a winner is already determined, we ignore)
+			if (game.getGameStatus() != GameStatus.Running) {
+				break;
+			}
+
 			{
 				// Play black player's move next
 				final String bpMove = matcher.group(3);
@@ -1932,10 +1940,6 @@ public static TOWall grabWall() {
 
 					final int drow = bpRow - t.getRow();
 					final int dcol = bpCol - t.getColumn();
-
-					if (Math.abs(drow) + Math.abs(dcol) > 2) {
-						throw new InvalidLoadException("Invalid pawn move for black player: " + action);
-					}
 
 					boolean result = false;
 
@@ -3546,7 +3550,7 @@ public static TOWall grabWall() {
 	}
 
 	/**
-	 * returns the index of a specific move inside the list of moves of the game, by its move number and round number
+	 * Returns the index of a specific move inside the list of moves of the game, by its move number and round number
 	 *
 	 * @param movno
 	 * @param rndno
@@ -3569,7 +3573,9 @@ public static TOWall grabWall() {
 	/**
 	 * @author alixe delabrousse
 	 * 
+	 * When the game is in replay mode, 
 	 * this method sets the current position to the final position of the game.
+	 * If the game is already at the last position, it stays in the same position.
 	 *
 	 * @return boolean isAtFinalPos - checks if the game is already at the final position
 	 */
@@ -3594,12 +3600,14 @@ public static TOWall grabWall() {
 	}
 	/**
 	 * @author alixe delabrousse
+	 * 
+	 * When the game is in replay mode,
+	 * this method sets the current position to the start position.
+	 * The white player starts in at position (1, 5) whereas the black player starts at (9, 5)
+	 * ((row, column)).
+	 * If the position of the game is already at the start position, it stays at this position.
 	 *
-	 * this method sets the current position to the start position
-	 * the white player starts in at position (1, 5) whereas the black player starts at (9, 5)
-	 * (row, column)
-	 *
-	 * @return boolean - to check if the game is already at the start position
+	 * @return boolean isAtFirstPos - to check if the game is already at the start position
 	 */
 
 	
@@ -3624,6 +3632,9 @@ public static TOWall grabWall() {
 
 	/**
 	 * @author alixe delabrousse
+	 * 
+	 * This method returns the corresponding column number from its letter.
+	 * 
 	 * @param letter
 	 * @return
 	 */
