@@ -242,7 +242,8 @@ public class CucumberStepDefinitions {
 	public void whitePawnBeAtInitialPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		Board board = QuoridorApplication.getQuoridor().getBoard();
-		Assert.assertEquals(new Tile(1,5,board), game.getCurrentPosition().getWhitePosition().getTile());
+		Assert.assertEquals(/*QuoridorController.getTileFromRowAndColumn(1, 5)*/1, game.getCurrentPosition().getWhitePosition().getTile().getRow());
+		Assert.assertEquals(5, game.getCurrentPosition().getWhitePosition().getTile().getColumn());
 	}
 
 	/**
@@ -252,7 +253,8 @@ public class CucumberStepDefinitions {
 	public void blackPawnBeAtInitialPosition() {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		Board board = QuoridorApplication.getQuoridor().getBoard();
-		Assert.assertEquals(new Tile(9,5,board), game.getCurrentPosition().getBlackPosition().getTile());
+		Assert.assertEquals(9, game.getCurrentPosition().getBlackPosition().getTile().getRow());
+		Assert.assertEquals(5, game.getCurrentPosition().getBlackPosition().getTile().getColumn());
 	}
 
 	/**
@@ -279,6 +281,7 @@ public class CucumberStepDefinitions {
 	@And("White's clock shall be counting down")
 	public void whiteClockShallBeCoutingDown() {
 		QuoridorController.StartClock();
+		Assert.assertTrue(QuoridorController.clockIsRunningForPlayer(color.WHITE));
 	}
 
 	/**
@@ -286,7 +289,8 @@ public class CucumberStepDefinitions {
 	 */
 	@And("It shall be shown that this is White's turn")
 	public void ShownThatIsWhiteTurn() {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertEquals(game.getWhitePlayer(),QuoridorController.getCurrentPlayer());
 	}
 
 	// ***** StartNewGame.feature *****
@@ -296,7 +300,8 @@ public class CucumberStepDefinitions {
 	 */
 	@When("A new game is being initialized")
 	public void aNewGameIsBeingInitialized() {
-		throw new PendingException();
+		//throw new PendingException();
+		QuoridorController.createGame();;
 	}
 
 	/**
@@ -348,7 +353,7 @@ public class CucumberStepDefinitions {
 	@Given("The game is ready to start")
 	public void gameIsReadyToStart() {
 		initQuoridorAndBoard();
-		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
+		ArrayList<Player> players = createUsersAndPlayers("user1o", "user2o");
 		createAndStartGame(players);
 		
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
@@ -378,7 +383,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The board shall be initialized")
 	public void boardShallBeInitialized() {
-		initQuoridorAndBoard();
+		QuoridorController.initiateBoard();
 	}
 
 	// ***** ProvideOrSelectUserName.feature *****
@@ -2444,6 +2449,7 @@ public class CucumberStepDefinitions {
 
 	private void initQuoridorAndBoard() {
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
+		if (quoridor.hasBoard()) return;
 		Board board = new Board(quoridor);
 		// Creating tiles by rows, i.e., the column index changes with every tile
 		// creation
@@ -2483,6 +2489,9 @@ public class CucumberStepDefinitions {
 		// while the second half belongs to player 2
 		for (int i = 0; i < 2; i++) {
 			for (int j = 1; j <= 10; j++) {
+				if (Wall.hasWithId(i * 10 + j)) {
+					Wall.getWithId(i * 10 + j).delete();
+				}
 				new Wall(i * 10 + j, players[i]);
 			}
 		}
