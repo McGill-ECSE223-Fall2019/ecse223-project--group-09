@@ -1021,8 +1021,8 @@ public static TOWall grabWall() {
 	 * @author Mohamed Mohamed
 	 *
 	 */
-	public static boolean stepBackward() {
-
+	public static boolean stepBackward(boolean isTesting) {
+		
 
 		Game game=null;
 
@@ -1037,29 +1037,7 @@ public static TOWall grabWall() {
 
 			GamePosition currentPosition= game.getCurrentPosition();
 
-//			System.err.println("i set the move to be the first but the game has :"+game.getMoves().size()+" moves BUT "+game.getPositions().size()+" gamepositions");
-//
-//			if(game.getMoves().indexOf(game.getCurrentMove())==0) {
-//				//there is one move
-//				game.setCurrentPosition(game.getPosition(1));
-//				game.setCurrentMove(game.getMove(0));
-//				return;
-//
-//			}else {//not the first move
 
-			
-			
-//			game.getPositions().lastIndexOf(currentPosition);
-//			int currMove = game.getMoves().indexOf(game.getCurrentMove());
-//			game.setCurrentMove(game.getMove(currMove-1));
-				
-
-
-
-			//game.getPositions().lastIndexOf(currentPosition);
-//			int currMove = game.getMoves().indexOf(game.getCurrentMove());
-//			game.setCurrentMove(game.getMove(currMove-1));
-//
 
 			int currPos = game.getPositions().indexOf(currentPosition);
 			if (currPos==0) {
@@ -1067,6 +1045,40 @@ public static TOWall grabWall() {
 			}
 			
 			GamePosition prevPosition= game.getPosition(currPos-1);
+			//adjustin the number of walls.
+				
+//				int index=game.indexOfPosition(prevPosition);
+//				if(index==0) {
+//					if(prevPosition.getWhiteWallsInStock().size()==9) {
+//						//add a wall
+//						Wall wall= new Wall(1, game.getWhitePlayer());
+//						prevPosition.addWhiteWallsInStock(wall);
+//					}
+//					
+//					if(prevPosition.getBlackWallsInStock().size()==9) {
+//				//add a wall
+//					Wall wall= new Wall(1, game.getBlackPlayer());
+//					prevPosition.addBlackWallsInStock(wall);
+//				}
+//				
+//			}else {//this is not the first gameposition
+//				GamePosition before=game.getPosition(currPos-2);
+//				int numOfWallsNow=prevPosition.getWhiteWallsInStock().size();
+//					int numOfWallsBef=before.getWhiteWallsInStock().size();
+//					if (numOfWallsNow!=numOfWallsBef) {
+//						Wall wall= new Wall(numOfWallsBef, game.getWhitePlayer());
+//						//prevPosition.addWhiteWallsInStock(wall);
+//				}
+//				
+//				int numOfBWallsNow=prevPosition.getWhiteWallsInStock().size();
+//				int numOfBWallsBef=before.getWhiteWallsInStock().size();
+//				if (numOfBWallsNow!=numOfBWallsBef) {
+//					Wall wall= new Wall(numOfBWallsBef, game.getBlackPlayer());
+//					prevPosition.addBlackWallsInStock(wall);
+//					}					
+//			}
+				
+			
 			game.setCurrentPosition(prevPosition);
 			
 			Move currentMove= game.getCurrentMove();
@@ -1087,7 +1099,7 @@ public static TOWall grabWall() {
 	 * @author Mohamed Mohamed
 	 *
 	 */
-	public static boolean stepForward() {
+	public static boolean stepForward(boolean isTesting) {
 
 		Game game=null;
 
@@ -1103,6 +1115,7 @@ public static TOWall grabWall() {
 			GamePosition currentPosition= game.getCurrentPosition();
 			int currPos=game.getPositions().indexOf(currentPosition);
 			if(currPos>=game.getPositions().size()-1) {
+				System.err.println("i came here so whatever ");
 				return false;
 			}
 			GamePosition nextPos= game.getPosition(currPos+1);

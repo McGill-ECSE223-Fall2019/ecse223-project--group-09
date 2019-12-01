@@ -497,12 +497,13 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     
     private void onStepForwardButtonClicked() {
 
-    	if(!QuoridorController.stepForward()) {
+    	if(!QuoridorController.stepForward(false)) {
         	JOptionPane.showMessageDialog(this, "You are already at the end!");
         }
     	
-    	System.out.print("\n"+QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().toString()+"\n");
-    	System.out.print("\n was the fist move \n"+QuoridorApplication.getQuoridor().getCurrentGame().getPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()-1)+"\n");
+    	//System.out.print("\n"+QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().toString()+"\n");
+    	//System.out.print("\n was the fist move \n"+QuoridorApplication.getQuoridor().getCurrentGame().getPosition(QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()-1)+"\n");
+    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size()+" num of white walls on stock");
     	this.repaint();	
      			
      	
@@ -510,11 +511,14 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     
     private void onStepBackwardButtonClicked() {
         
-        if(!QuoridorController.stepBackward()) {
+        if(!QuoridorController.stepBackward(false)) {
         	JOptionPane.showMessageDialog(this, "You are already at the start!");
         }
-        System.out.print("\n"+QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().toString()+"\n");
-        System.out.print("\n was the fist move \n"+QuoridorApplication.getQuoridor().getCurrentGame().getPosition(0)+"\n");
+        //System.out.print("\n"+QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().toString()+"\n");
+       // System.out.print("\n was the fist move \n"+QuoridorApplication.getQuoridor().getCurrentGame().getPosition(0)+"\n");
+        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size()+" num of white walls on stock");
+        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId()+" id should be 0 at start");
+        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()+" is the player to move \n");
         this.repaint();
     }
     
@@ -577,7 +581,9 @@ public class BoardWindow extends JFrame implements GameBoardListener {
     		
 //     		System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
 //        	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
-     		System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
+     		System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size()+" num of white walls on stock");
+     		System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId()+" id should be 0 at start");
+     		System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getPlayerToMove().hasGameAsWhite()+" is the player to move \n");
      		this.repaint();//the wall has been drawn and now you to 
     		gridPanel.setWallCandidate(null); //set the candidate to null once the wall is dropped 
     			
@@ -632,8 +638,10 @@ public class BoardWindow extends JFrame implements GameBoardListener {
 //        System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
 //    	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
     
-    	System.out.print(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition()+"\n\n is the current game position"+QuoridorApplication.getQuoridor().getCurrentGame().getPositions().size()+" is size \n\n");
-    //	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
+        
+        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getWhiteWallsInStock().size()+" num of white walls on stock");
+        System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentPosition().getId()+" id should be 0 at start");
+        //	System.out.println(QuoridorApplication.getQuoridor().getCurrentGame().getCurrentMove()+"\n\n is the move"+QuoridorApplication.getQuoridor().getCurrentGame().getMoves().size()+" is the size\n\n");
     }
 
     @Override
