@@ -223,7 +223,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("The initialization of the board is initiated")
 	public void initializationOfTheBoardInitiated() {
-		throw new PendingException();
+		initQuoridorAndBoard();
 	}
 
 	/**
@@ -271,7 +271,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("White's clock shall be counting down")
 	public void whiteClockShallBeCoutingDown() {
-		throw new PendingException();
+		QuoridorController.StartClock();
 	}
 
 	/**
@@ -2280,10 +2280,22 @@ public class CucumberStepDefinitions {
 	// "The game is not running" is already mapped above
 	// TA gave this to us
 	
+	private boolean replayModeFlag;
+	
 	@When("I initiate replay mode")
 	public void initiateReplayMode() {
-		throw new PendingException();
+		//throw new PendingException();
+//		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		try {
+			QuoridorController.enterReplayMode();
+			this.replayModeFlag = true;
+		}finally {
+			
+		}
+		//Assert.assertNotEquals(GameStatus.Replay, game.getGameStatus());
 	}
+	
+	
 	
 	// "The game shall be in replay mode" is already mapped below
 	// mapped for LoadGame.feature
@@ -2301,7 +2313,10 @@ public class CucumberStepDefinitions {
 	
 	@When("Player initates to resign")
 	public void playerInitatesResign() {
-		throw new PendingException();
+		
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		QuoridorController.playerResigns();
+		//Assert.assertNotEquals(GameStatus.Replay, game.getGameStatus());
 	}
 	
 	

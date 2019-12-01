@@ -3656,7 +3656,6 @@ public static TOWall grabWall() {
 	}
 
 	public static void enterReplayMode(){
-		System.out.println("YESS");
 
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game aGame = quoridor.getCurrentGame();
@@ -3672,7 +3671,6 @@ public static TOWall grabWall() {
 	}
 
 	public static void exitReplayMode(){
-		System.out.println("NOOOO");
 
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
 		Game aGame = quoridor.getCurrentGame();
