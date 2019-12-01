@@ -1972,23 +1972,37 @@ public class CucumberStepDefinitions {
 	    	Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 	    	
 	        Move aMove = game.getMove(QuoridorController.getIndexFromMoveAndRoundNumber(movno, rndno));
-	        game.setCurrentMove(aMove);
+	        
 	        // added stuff
 	        int index = game.indexOfMove(aMove);
+	      // if(index!=0) {
+	        game.setCurrentMove(game.getMove(index));
 	        System.err.println("AND the next move is "+movno+" and "+rndno+" which is index: "+index);
 	        game.setCurrentPosition(game.getPosition(index));
-	
+//	       }else {
+//	    	   game.setCurrentMove(game.getMove(index-1));
+//	    	   game.setCurrentPosition(game.getPosition(index-1));
+//	       }
 	    }
 	    boolean testingStep=false;
 	    @When("Step backward is initiated")
 	    public void step_backward_is_initiated() throws Throwable {
 	        //call the stepBackward method;
 	    	QuoridorController.stepBackward(false);
-	    	testingStep=true;
 	    	
 	    }
 	    
 	  
+	    //********STEP FORWARD FEATURE***********    
+	    
+
+	    @When("Step forward is initiated")
+	    public void step_forward_is_initiated() throws Throwable {
+	    	System.err.println("WHEN step forward is initiated the boolean is: "+testingStep);
+	    	QuoridorController.stepForward(false);
+	    	
+	    }
+	    
 	    @Then("The next move shall be {int}.{int}")
 	    public void the_next_move_shall_be_(int nmov, int nrnd) throws Throwable {
 	     	List<Move> moves=QuoridorApplication.getQuoridor().getCurrentGame().getMoves();
@@ -2001,12 +2015,8 @@ public class CucumberStepDefinitions {
 	    	
 	    	//System.err.println("nrnd: "+ nrnd);
 	    	int aIndex = QuoridorController.getIndexFromMoveAndRoundNumber(nmov, nrnd);
-	    	System.err.println("THEN the next move shall be "+nmov+" and "+nrnd+" index: "+aIndex+" your index: "+nextMoveIndex );
-	    	if(testingStep=false) {	
-	    		Assert.assertTrue(nextMoveIndex == aIndex);
-	    	}else {
-	    		Assert.assertTrue(nextMoveIndex-1 == aIndex);//step backward and step forward the next move is the current move
-	    	}
+	    	System.err.println("THEN the next move shall be "+nmov+" and "+nrnd+" index: "+aIndex+" your index: "+nextMoveIndex+" and the boolean is: "+testingStep );
+	    	Assert.assertTrue(nextMoveIndex-1 == aIndex);
 
 	    	Move nmove = moves.get(aIndex);
 
@@ -2017,14 +2027,7 @@ public class CucumberStepDefinitions {
 	    
 	    
 	
-	  //********STEP FORWARD FEATURE***********    
-	    
-
-	    @When("Step forward is initiated")
-	    public void step_forward_is_initiated() throws Throwable {
-	    	QuoridorController.stepForward(false);
-	    	testingStep=false;
-	    }
+	 
 
 
 	// ***** ReportFinalResult.feature *****
