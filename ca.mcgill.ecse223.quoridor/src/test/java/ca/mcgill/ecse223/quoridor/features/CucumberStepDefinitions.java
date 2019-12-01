@@ -1825,6 +1825,21 @@ public class CucumberStepDefinitions {
 					game.setCurrentPosition(ngpos);
 					
 				}
+
+				for (Wall wall : gpos.getBlackWallsInStock()) {
+					ngpos.addBlackWallsInStock(wall);
+				}
+				for (Wall wall : gpos.getWhiteWallsInStock()) {
+					ngpos.addWhiteWallsInStock(wall);
+				}
+
+				// Add the removed wall back
+				if (rnd == 1) {
+					gpos.addWhiteWallsInStock(nwall);
+				} else {
+					gpos.addBlackWallsInStock(nwall);
+				}
+
 			} else {
 				if (rnd == 1) {
 					
@@ -1851,16 +1866,14 @@ public class CucumberStepDefinitions {
 
 				}
 
-				
+				for (Wall wall : gpos.getBlackWallsInStock()) {
+					ngpos.addBlackWallsInStock(wall);
+				}
+				for (Wall wall : gpos.getWhiteWallsInStock()) {
+					ngpos.addWhiteWallsInStock(wall);
+				}
 			}
-			
-			for (Wall wall : gpos.getBlackWallsInStock()) {
-				ngpos.addBlackWallsInStock(wall);
-			}
-			for (Wall wall : gpos.getWhiteWallsInStock()) {
-				ngpos.addWhiteWallsInStock(wall);
-			}
-			
+
 			game.addMoveAt(aMove, QuoridorController.getIndexFromMoveAndRoundNumber(mov, rnd));
 
 			game.addPositionAt(ngpos, gposIndex);
