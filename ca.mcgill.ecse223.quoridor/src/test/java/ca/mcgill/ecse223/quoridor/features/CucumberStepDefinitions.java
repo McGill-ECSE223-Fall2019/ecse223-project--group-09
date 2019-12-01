@@ -223,7 +223,7 @@ public class CucumberStepDefinitions {
 	 */
 	@When("The initialization of the board is initiated")
 	public void initializationOfTheBoardInitiated() {
-		initQuoridorAndBoard();
+		QuoridorController.initiateBoard();
 	}
 
 	/**
@@ -231,7 +231,8 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("It shall be white player to move")
 	public void whitePlayerToMove() {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertEquals(game.getWhitePlayer(), game.getCurrentPosition().getPlayerToMove());
 	}
 
 	/**
@@ -239,7 +240,9 @@ public class CucumberStepDefinitions {
 	 */
 	@And("White's pawn shall be in its initial position")
 	public void whitePawnBeAtInitialPosition() {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Board board = QuoridorApplication.getQuoridor().getBoard();
+		Assert.assertEquals(new Tile(1,5,board), game.getCurrentPosition().getWhitePosition().getTile());
 	}
 
 	/**
@@ -247,7 +250,9 @@ public class CucumberStepDefinitions {
 	 */
 	@And("Black's pawn shall be in its initial position")
 	public void blackPawnBeAtInitialPosition() {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Board board = QuoridorApplication.getQuoridor().getBoard();
+		Assert.assertEquals(new Tile(9,5,board), game.getCurrentPosition().getBlackPosition().getTile());
 	}
 
 	/**
@@ -255,7 +260,8 @@ public class CucumberStepDefinitions {
 	 */
 	@And("All of White's walls shall be in stock")
 	public void allWhiteWallsBeInStock() {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertEquals(10, game.getCurrentPosition().getWhiteWallsInStock().size());
 	}
 
 	/**
@@ -263,7 +269,8 @@ public class CucumberStepDefinitions {
 	 */
 	@And("All of Black's walls shall be in stock")
 	public void allBlackWallsBeInStock() {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertEquals(10, game.getCurrentPosition().getBlackWallsInStock().size());
 	}
 
 	/**
@@ -333,25 +340,28 @@ public class CucumberStepDefinitions {
 
 	}
 
-	/*
-	 * Given The game is ready to start When I start the clock Then The game shall
-	 * be running And The board shall be initialized
-	 */
+	//***** START CLOCK SCENARIO *****//
 
 	/**
 	 * @author Barry Chen
 	 */
 	@Given("The game is ready to start")
 	public void gameIsReadyToStart() {
-		throw new PendingException();
+		initQuoridorAndBoard();
+		ArrayList<Player> players = createUsersAndPlayers("user1", "user2");
+		createAndStartGame(players);
+		
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		game.setGameStatus(GameStatus.ReadyToStart);
 	}
+
 
 	/**
 	 * @author Barry Chen
 	 */
 	@When("I start the clock")
 	public void startTheClock() {
-		throw new PendingException();
+		QuoridorController.StartClock();
 	}
 
 	/**
@@ -359,7 +369,8 @@ public class CucumberStepDefinitions {
 	 */
 	@Then("The game shall be running")
 	public void gameShallBeRunning() {
-		throw new PendingException();
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Assert.assertEquals(GameStatus.Running, game.getGameStatus());
 	}
 
 	/**
@@ -367,7 +378,7 @@ public class CucumberStepDefinitions {
 	 */
 	@And("The board shall be initialized")
 	public void boardShallBeInitialized() {
-		throw new PendingException();
+		initQuoridorAndBoard();
 	}
 
 	// ***** ProvideOrSelectUserName.feature *****
@@ -2285,7 +2296,6 @@ public class CucumberStepDefinitions {
 	@When("I initiate replay mode")
 	public void initiateReplayMode() {
 		//throw new PendingException();
-//		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
 		try {
 			QuoridorController.enterReplayMode();
 			this.replayModeFlag = true;
