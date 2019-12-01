@@ -1856,6 +1856,12 @@ public static TOWall grabWall() {
 			}
 			lastIdx = moveNumber;
 
+			// Only continue if game is running
+			// (if a winner is already determined, we ignore)
+			if (game.getGameStatus() != GameStatus.Running) {
+				break;
+			}
+
 			{
 				// Play white player's move first
 				final String wpMove = matcher.group(2);
@@ -1868,10 +1874,6 @@ public static TOWall grabWall() {
 
 					final int drow = wpRow - t.getRow();
 					final int dcol = wpCol - t.getColumn();
-
-					if (Math.abs(drow) + Math.abs(dcol) > 2) {
-						throw new InvalidLoadException("Invalid pawn move for white player: " + action);
-					}
 
 					boolean result = false;
 
@@ -1920,6 +1922,12 @@ public static TOWall grabWall() {
 				}
 			}
 
+			// Only continue if game is running
+			// (if a winner is already determined, we ignore)
+			if (game.getGameStatus() != GameStatus.Running) {
+				break;
+			}
+
 			{
 				// Play black player's move next
 				final String bpMove = matcher.group(3);
@@ -1932,10 +1940,6 @@ public static TOWall grabWall() {
 
 					final int drow = bpRow - t.getRow();
 					final int dcol = bpCol - t.getColumn();
-
-					if (Math.abs(drow) + Math.abs(dcol) > 2) {
-						throw new InvalidLoadException("Invalid pawn move for black player: " + action);
-					}
 
 					boolean result = false;
 
