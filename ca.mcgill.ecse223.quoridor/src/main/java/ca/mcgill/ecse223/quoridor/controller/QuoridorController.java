@@ -3550,7 +3550,7 @@ public static TOWall grabWall() {
 	}
 
 	/**
-	 * returns the index of a specific move inside the list of moves of the game, by its move number and round number
+	 * Returns the index of a specific move inside the list of moves of the game, by its move number and round number
 	 *
 	 * @param movno
 	 * @param rndno
@@ -3573,7 +3573,9 @@ public static TOWall grabWall() {
 	/**
 	 * @author alixe delabrousse
 	 * 
+	 * When the game is in replay mode, 
 	 * this method sets the current position to the final position of the game.
+	 * If the game is already at the last position, it stays in the same position.
 	 *
 	 * @return boolean isAtFinalPos - checks if the game is already at the final position
 	 */
@@ -3598,12 +3600,14 @@ public static TOWall grabWall() {
 	}
 	/**
 	 * @author alixe delabrousse
+	 * 
+	 * When the game is in replay mode,
+	 * this method sets the current position to the start position.
+	 * The white player starts in at position (1, 5) whereas the black player starts at (9, 5)
+	 * ((row, column)).
+	 * If the position of the game is already at the start position, it stays at this position.
 	 *
-	 * this method sets the current position to the start position
-	 * the white player starts in at position (1, 5) whereas the black player starts at (9, 5)
-	 * (row, column)
-	 *
-	 * @return boolean - to check if the game is already at the start position
+	 * @return boolean isAtFirstPos - to check if the game is already at the start position
 	 */
 
 	
@@ -3628,6 +3632,9 @@ public static TOWall grabWall() {
 
 	/**
 	 * @author alixe delabrousse
+	 * 
+	 * This method returns the corresponding column number from its letter.
+	 * 
 	 * @param letter
 	 * @return
 	 */
