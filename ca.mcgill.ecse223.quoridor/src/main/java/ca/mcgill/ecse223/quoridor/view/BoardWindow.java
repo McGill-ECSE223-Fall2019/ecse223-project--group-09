@@ -226,7 +226,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         panel.add(jumpToStart);
         panel.add(jumpToFinal);
         
-        panel.add(cont);
         
 
         // Add breathing room between the resign
@@ -400,7 +399,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         this.stepForward.setVisible(true);
         this.jumpToStart.setVisible(true);
         this.jumpToFinal.setVisible(true);
-        this.cont.setVisible(true);
         
     }
     
@@ -422,7 +420,6 @@ public class BoardWindow extends JFrame implements GameBoardListener {
         this.stepForward.setVisible(false);
         this.jumpToStart.setVisible(false);
         this.jumpToFinal.setVisible(false);
-        this.cont.setVisible(false);
 
         // Force information re-fetch
         this.fetchCurrentPlayerInfoFromController();
