@@ -2299,7 +2299,9 @@ public class CucumberStepDefinitions {
 		
 		Player player1 = game.getWhitePlayer();
 		Player player2 = game.getBlackPlayer();
-
+		// Board is inverted
+		game.getBlackPlayer().getDestination().setTargetNumber(9);
+		game.getWhitePlayer().getDestination().setTargetNumber(1);
 		Move aMove;
 		int gposIndex = 1;
 	
