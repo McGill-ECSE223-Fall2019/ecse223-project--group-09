@@ -2293,6 +2293,10 @@ public class CucumberStepDefinitions {
 
 	//****** IdentifyGameDrawn.feature ******
 
+	/**
+	 * @param DataTable dataTable
+	 * @author Ada Andrei (260866279)
+	 */
 	@Given("The following moves were executed:")
 	public void theFollowingMovesWereExecuted(DataTable dataTable) {
 		Game game = QuoridorApplication.getQuoridor().getCurrentGame();

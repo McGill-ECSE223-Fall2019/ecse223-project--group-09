@@ -274,7 +274,7 @@ public class QuoridorController {
 	/**
 	 * This method allows the user to create a new username.
 	 *
-	 * @param String user;
+	 * @param String user, Color COLOR
 	 *
 	 * @author Ada Andrei
 	 */
@@ -3784,8 +3784,6 @@ public static TOWall grabWall() {
 			return false;
 		}
 		
-		// TODO: check if player repeated move three times (draw condition)		
-
 		int whiteCounter =0, blackCounter = 0; 
 
 		List<String> moves = getMovesAsStrings(); 
@@ -3839,10 +3837,9 @@ public static TOWall grabWall() {
 	}
 
 	/**
-	 * 
-	 * @param dest
-	 * @param tile
-	 * @return
+	 * This is the save game method. 
+	 * @param String filePath, boolean overwriteIfExists
+	 * @return boolean
 	 */
 
 	public static boolean saveGame(String filePath, boolean overwriteIfExists) throws IOException {
