@@ -43,15 +43,19 @@ public class GameFileFilter extends FileFilter implements IOPerformer {
     }
 
     /**
-     * This will be filled in by whoever is asssigned to the later save game feature
-     * (hence no author)
+     * This saves the game. 
      *
      * @param file The file being written to
      * @throws IOException any IOException that happens...
+     * 
+     * @Ada Andrei (260866279)
      */
     @Override
     public void performSave(File file) throws IOException {
-        throw new UnsupportedOperationException("Wait for Phase 2 Save game");
+        // If file does not exist, overwrite flag is ignored,
+        // If file does exist, reaching here means we want overwriting
+        // (hence true for overwrite-flag parameter)
+        QuoridorController.saveGame(file.getAbsolutePath(), true);
     }
 
     /**

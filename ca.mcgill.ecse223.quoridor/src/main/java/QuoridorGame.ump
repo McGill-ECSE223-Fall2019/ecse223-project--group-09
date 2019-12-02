@@ -1,3 +1,4 @@
+namespace ca.mcgill.ecse223.quoridor.model;
 
 use ca.mcgill.ecse223.quoridor.model.Direction;
 

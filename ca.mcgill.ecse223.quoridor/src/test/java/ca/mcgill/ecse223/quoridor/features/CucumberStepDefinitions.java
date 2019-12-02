@@ -555,13 +555,13 @@ public class CucumberStepDefinitions {
 	@Then("A file with {string} shall be created in the filesystem")
 	public void fileWithFilenameIsCreatedInTheFilesystem(String filename) {
 		try {
+			// Passing false as argument since file does not exist:
+			// we are not overwriting any file (but this argument
+			// is ignored in this case)
 			if (this.fileName.endsWith(".dat")) {
-				// Passing false as argument since file does not exist:
-				// we are not overwriting any file (but this argument
-				// is ignored in this case)
 				Assert.assertTrue(QuoridorController.savePosition(this.fileName, false));
 			} else if (this.fileName.endsWith(".mov")) {
-				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+				Assert.assertTrue(QuoridorController.saveGame(this.fileName, false));
 			} else {
 				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
 			}
@@ -596,11 +596,11 @@ public class CucumberStepDefinitions {
 	@And("The user confirms to overwrite existing file")
 	public void userConfirmsToOverwriteExistingFile() {
 		try {
+			// Pass true since we are overwriting a file
 			if (this.fileName.endsWith(".dat")) {
-				// Pass true since we are overwriting a file
 				this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, true);
 			} else if (this.fileName.endsWith(".mov")) {
-				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+				this.fileOverwriteFlag = QuoridorController.saveGame(this.fileName, true);
 			} else {
 				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
 			}
@@ -628,11 +628,11 @@ public class CucumberStepDefinitions {
 	@And("The user cancels to overwrite existing file")
 	public void userCancelsToOverwriteExistingFile() {
 		try {
+			// Pass false since we are not overwriting a file
 			if (this.fileName.endsWith(".dat")) {
-				// Pass false since we are not overwriting a file
 				this.fileOverwriteFlag = QuoridorController.savePosition(this.fileName, false);
 			} else if (this.fileName.endsWith(".mov")) {
-				throw new UnsupportedOperationException("Someone needs to implement the saveGame method");
+				this.fileOverwriteFlag = QuoridorController.saveGame(this.fileName, false);
 			} else {
 				Assert.fail("Unhandled file type (.dat|.mov) for file name: " + this.fileName);
 			}
@@ -2294,13 +2294,87 @@ public class CucumberStepDefinitions {
 	//****** IdentifyGameDrawn.feature ******
 
 	/**
-	 * @param Player player
+	 * @param DataTable dataTable
+	 * @author Ada Andrei (260866279)
+	 */
+	@Given("The following moves were executed:")
+	public void theFollowingMovesWereExecuted(DataTable dataTable) {
+		Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		
+		Player player1 = game.getWhitePlayer();
+		Player player2 = game.getBlackPlayer();
+		// Board is inverted
+		game.getBlackPlayer().getDestination().setTargetNumber(9);
+		game.getWhitePlayer().getDestination().setTargetNumber(1);
+		Move aMove;
+		int gposIndex = 1;
+	
+		List<Map<String, String>> valueMaps = dataTable.asMaps();
+		//keys: mv, rnd, move
+		for (Map<String, String> map : valueMaps) {
+			Integer mov = Integer.decode(map.get("move"));
+			Integer rnd = Integer.decode(map.get("turn"));
+
+			GamePosition gpos = game.getCurrentPosition();
+
+				
+			GamePosition ngpos;
+			
+
+			int col = Integer.parseInt(map.get("col"));
+			int row = Integer.parseInt(map.get("row"));
+
+			Tile target = QuoridorController.getTileFromRowAndColumn(row, col);
+			
+			if (rnd == 1) {
+				
+				Tile btile = gpos.getBlackPosition().getTile();
+				
+				ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, target), new PlayerPosition(player2, btile), player2, game);
+				aMove = new StepMove(mov, rnd, player1, QuoridorController.getTileFromRowAndColumn(row, col), game);
+				game.setCurrentMove(aMove);
+				game.setCurrentPosition(ngpos);
+				
+			} else {
+				
+				Tile wtile = gpos.getWhitePosition().getTile();
+				
+				ngpos = new GamePosition(gposIndex, new PlayerPosition(player1, wtile), new PlayerPosition(player2, target), player1, game);
+				aMove = new StepMove(mov, rnd, player2, QuoridorController.getTileFromRowAndColumn(row, col), game);
+				game.setCurrentMove(aMove);
+				game.setCurrentPosition(ngpos);
+
+			}
+
+			for (Wall wall : gpos.getBlackWallsInStock()) {
+				ngpos.addBlackWallsInStock(wall);
+			}
+			for (Wall wall : gpos.getWhiteWallsInStock()) {
+				ngpos.addWhiteWallsInStock(wall);
+			}
+			++gposIndex;
+
+		}
+	}
+
+	/**
+	 * @param String player
 	 * @param int row, int col
 	 * @author Ada Andrei (260866279)
 	 */
-	@And ("The last move of {string} is pawn move to <row>:<col>")
-	public void lastMoveOfPlayerIsPawnMove(Player player, int row, int col) {
-	
+	@And ("The last move of {string} is pawn move to {int}:{int}")
+	public void lastMoveOfPlayerIsPawnMove(String player, int row, int col) {
+		final Game game = QuoridorApplication.getQuoridor().getCurrentGame();
+		Player p;
+		if ("white".equals(player)) {
+			p = game.getWhitePlayer();
+		} else {
+			p = game.getBlackPlayer();
+		}		
+
+		Move move = new StepMove(1,1, p, QuoridorController.getTileFromRowAndColumn(row,col), game);
+		
+
 	}
 
 

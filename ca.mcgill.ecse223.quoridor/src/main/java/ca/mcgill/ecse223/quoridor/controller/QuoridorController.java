@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -273,7 +274,7 @@ public class QuoridorController {
 	/**
 	 * This method allows the user to create a new username.
 	 *
-	 * @param String user;
+	 * @param String user, Color COLOR
 	 *
 	 * @author Ada Andrei
 	 */
@@ -3791,38 +3792,42 @@ public static TOWall grabWall() {
 			return false;
 		}
 		
-		// TODO: check if player repeated move three times (draw condition)		
-
 		int whiteCounter =0, blackCounter = 0; 
 
-		//check for duplicate position
-		 for (int i=0; i<getMovesAsStrings().size();i++) {
-		 	for (int j=i+1; j<getMovesAsStrings().size(); j++) {
-		 		if (String.valueOf(i) == String.valueOf(j)) {
-		 			//if there are less than 3 deflections, update the counter
-		 			if ((j-i) <= 3) { 
-		 				whiteCounter++; 
-		 			}
-		 		}
-			}
-		}
+		List<String> moves = getMovesAsStrings(); 
 
-		 //check for duplicate positions
-		 for (int k=0; k<getMovesAsStrings().size(); k++) {
-		 	for (int l=k+1; l<getMovesAsStrings().size(); l++) {
-		 		if (String.valueOf(k) == String.valueOf(l)) {
-					//if there are less than 3 deflections, update the counter
-					if ((k-l) <= 3) {
-		 				blackCounter++; 
+		int lastIndexWhite = moves.size()-1; 
+		int lastIndexBlack = moves.size()-2;
+		if (moves.size() >= 2) {//check if list is empty
+
+			//check for duplicate position
+			for (int i=moves.size()-5; i>=0;i= i-4) {
+		 		if (moves.get(lastIndexWhite).equals(moves.get(i))) {
+					whiteCounter++; 
+					if (whiteCounter ==2) {
+						break; 
 					}
-				}	
+		 		} else break;
+			}
+
+			//check for duplicate positions
+			for (int j=moves.size() -6; j>=0;j=j-4) {
+		 		if (moves.get(lastIndexBlack).equals(moves.get(j))) {
+					blackCounter++; 
+					if (whiteCounter ==2) {
+						break; 
+					}
+				}else break; 
+			}	
+
+			if (whiteCounter==2 || blackCounter == 2) {
+				game.setGameStatus(GameStatus.Draw); 
+				QuoridorController.stopClockForCurrentPlayer();
+				game.setWallMoveCandidate(null);
+				return true; 
 			}
 		}
-
-		if (whiteCounter==3 | blackCounter == 3) {
-			return true; 
-		}
-		
+	
 
 		// then call setWinner(p) on the correct player
 
@@ -3839,6 +3844,57 @@ public static TOWall grabWall() {
 		return false;
 	}
 
+	/**
+	 * This is the save game method. 
+	 * @param String filePath, boolean overwriteIfExists
+	 * @return boolean
+	 */
+
+	public static boolean saveGame(String filePath, boolean overwriteIfExists) throws IOException {
+		final File file = new File(filePath);
+		if (file.exists() && !overwriteIfExists) {
+			// File exists but user does not want to
+			// overwrite the file, so we are done
+			return false;
+		}
+		
+		try (final Writer writer = new FileWriter(file)) {
+			final Quoridor quoridor = QuoridorApplication.getQuoridor();
+			if (!quoridor.hasCurrentGame()) {
+				return true;
+			}
+
+			// StringBuilder sb = new StringBuilder();
+			final List<Move> listOfMoves = quoridor.getCurrentGame().getMoves();
+			for (int m =1, i = 0; i < listOfMoves.size(); m++, i += 2) {
+				final Move move = listOfMoves.get(i);
+				final Move move2 = listOfMoves.get(i + 1);
+
+				writer.append(Integer.toString(m)).append(". ");
+
+				Tile t = move.getTargetTile();
+				writer.append((char) (t.getColumn() + 'a' - 1));
+				writer.append((char) (t.getRow() + '1' - 1));
+
+				if (move instanceof WallMove) {
+					writer.append(Character.toLowerCase(((WallMove) move).getWallDirection().name().charAt(0)));
+				}
+
+				writer.append(' ');
+
+				t = move2.getTargetTile();
+				writer.append((char) (t.getColumn() + 'a' - 1));
+				writer.append((char) (t.getRow() + '1' - 1));
+
+				if (move2 instanceof WallMove) {
+					writer.append(Character.toLowerCase(((WallMove) move2).getWallDirection().name().charAt(0)));
+				}
+
+				writer.append(System.lineSeparator());
+			}
+		}
+		return true;
+	}
 	/**
 	 * Checks to see if the tile matches the provided destination
 	 *
