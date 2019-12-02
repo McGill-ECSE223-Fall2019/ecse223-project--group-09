@@ -19,7 +19,7 @@ import ca.mcgill.ecse223.quoridor.view.event.GameBoardListener;
  *
  * @author Paul Teng (260862906)
  */
-public class GridPanel extends JPanel {
+public final class GridPanel extends JPanel {
 
     // ***** Additional UI Components *****
     private final TileMapPanel tileMap = new TileMapPanel();
@@ -88,7 +88,7 @@ public class GridPanel extends JPanel {
      *
      * @see TileMapPanel#setWhitePlayer(TOPlayer)
      */
-    public final void setWhitePlayer(TOPlayer whitePlayer) {
+    public void setWhitePlayer(TOPlayer whitePlayer) {
         this.tileMap.setWhitePlayer(whitePlayer);
     }
 
@@ -102,7 +102,7 @@ public class GridPanel extends JPanel {
      *
      * @see TileMapPanel#setBlackPlayer(TOPlayer)
      */
-    public final void setBlackPlayer(TOPlayer blackPlayer) {
+    public void setBlackPlayer(TOPlayer blackPlayer) {
         this.tileMap.setBlackPlayer(blackPlayer);
     }
 
@@ -115,7 +115,7 @@ public class GridPanel extends JPanel {
      *
      * @see TileMapPanel#setWhiteWalls(List)
      */
-    public final void setWhiteWalls(final List<TOWall> walls) {
+    public void setWhiteWalls(final List<TOWall> walls) {
         this.tileMap.setWhiteWalls(walls);
     }
 
@@ -128,7 +128,7 @@ public class GridPanel extends JPanel {
      *
      * @see TileMapPanel#setBlackWalls(List)
      */
-    public final void setBlackWalls(final List<TOWall> walls) {
+    public void setBlackWalls(final List<TOWall> walls) {
         this.tileMap.setBlackWalls(walls);
     }
 
@@ -141,7 +141,7 @@ public class GridPanel extends JPanel {
      *
      * @see TileMapPanel#setWallCandidate(TOWallCandidate)
      */
-    public final void setWallCandidate(final TOWallCandidate wallCandidate) {
+    public void setWallCandidate(final TOWallCandidate wallCandidate) {
         this.tileMap.setWallCandidate(wallCandidate);
     }
 
@@ -152,7 +152,7 @@ public class GridPanel extends JPanel {
      *
      * @author Paul Teng (260862906)
      */
-    public final TOWallCandidate getWallCandidate() {
+    public TOWallCandidate getWallCandidate() {
         return this.tileMap.getWallCandidate();
     }
 
@@ -165,7 +165,7 @@ public class GridPanel extends JPanel {
      *
      * @see TileMapPanel#setJunctionOrientation(Orientation)
      */
-    public final void setJunctionOrientation(final Orientation junctionOrientation) {
+    public void setJunctionOrientation(final Orientation junctionOrientation) {
         this.tileMap.setJunctionOrientation(junctionOrientation);
     }
 
@@ -178,7 +178,7 @@ public class GridPanel extends JPanel {
      *
      * @see TileMapPanel#addGameBoardListener(GameBoardListener)
      */
-    public final void addGameBoardListener(final GameBoardListener lis) {
+    public void addGameBoardListener(final GameBoardListener lis) {
         this.tileMap.addGameBoardListener(lis);
     }
 
@@ -191,7 +191,22 @@ public class GridPanel extends JPanel {
      *
      * @see TileMapPanel#removeGameBoardListener(GameBoardListener)
      */
-    public final void removeGameBoardListener(final GameBoardListener lis) {
+    public void removeGameBoardListener(final GameBoardListener lis) {
         this.tileMap.removeGameBoardListener(lis);
+    }
+
+    /**
+     * Decides if future input events to the installed game board listeners should
+     * be swallowed (meaning no events get fired, listeners are not dispatched).
+     * 
+     * Note: This only includes input events, you can still force it by calling the
+     * corresponding dispatch-event methods.
+     *
+     * @param flag true if events should be swallowed, false otherwise
+     *
+     * @author Paul Teng (260862906)
+     */
+    public void setBlockListenerEvents(final boolean flag) {
+        this.tileMap.setBlockListenerEvents(flag);
     }
 }

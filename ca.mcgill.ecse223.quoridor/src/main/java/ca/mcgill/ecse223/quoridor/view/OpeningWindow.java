@@ -28,6 +28,10 @@ import ca.mcgill.ecse223.quoridor.view.filter.*;
 
 public class OpeningWindow extends JFrame {
 
+	// game-setup-dialog component
+	// (static so state is saved across instances)
+	private final static GameSetupDialog GAME_SETUP_DIALOG = new GameSetupDialog();
+
 	// UI Elements
 
 	JButton newGameButton;
@@ -123,25 +127,25 @@ public class OpeningWindow extends JFrame {
 	 * This will be called when the newGameButton is clicked.
 	 *
 	 *
-	 * @Ada Andrei
+	 * @author Ada Andrei
+	 * @author Paul Teng (260862906) [ReportFinalResult.feature]
 	 */
 	public void newGameButtonActionPerformed() {
 		try {
-			GameSetupDialog gameSetupDialog = new GameSetupDialog();
-			gameSetupDialog.replaceNameHints(QuoridorController.getUsernames());
+			GAME_SETUP_DIALOG.replaceNameHints(QuoridorController.getUsernames());
 			final String namePlayer1;
 			final String namePlayer2;
 
 			while (true) {
-				if (gameSetupDialog.showSetupDialog(this) != GameSetupDialog.START_GAME_OPTION) {
+				if (GAME_SETUP_DIALOG.showSetupDialog(this) != GameSetupDialog.START_GAME_OPTION) {
 					// We are done, player hit cancel or sth like that
 					return;
 				}
 
 				// Only continue if all players have name selected
-				if (gameSetupDialog.allPlayersHaveName()) {
-					namePlayer1 = gameSetupDialog.getSelectedPlayerName(0);
-					namePlayer2 = gameSetupDialog.getSelectedPlayerName(1);
+				if (GAME_SETUP_DIALOG.allPlayersHaveName()) {
+					namePlayer1 = GAME_SETUP_DIALOG.getSelectedPlayerName(0);
+					namePlayer2 = GAME_SETUP_DIALOG.getSelectedPlayerName(1);
 					break;
 				}
 			}
@@ -150,13 +154,12 @@ public class OpeningWindow extends JFrame {
 
 			QuoridorController.createOrSelectUsername(namePlayer1, Color.WHITE);
 			QuoridorController.createOrSelectUsername(namePlayer2, Color.BLACK);
-			Time time = gameSetupDialog.getThinkingTime();
+			Time time = GAME_SETUP_DIALOG.getThinkingTime();
 			QuoridorController.setTime(time.getMinutes(), time.getSeconds());
 
 			QuoridorController.startNewGame();
 			QuoridorController.initiateBoard();
 
-			//TODO: more stuff about board, etc.
 			// Dispose the current window
 			this.dispose();
 
@@ -181,7 +184,9 @@ public class OpeningWindow extends JFrame {
         final FileFilter filter = this.chooser.getFileFilter();
         final File file = this.chooser.getSelectedFile();
         try {
-            ((IOPerformer) filter).performLoad(file);
+			// If we succeed, then we display the game board
+			((IOPerformer) filter).performLoad(file);
+			BoardWindow.launchWindow("Game was successfully loaded from file: " + file + "\nGet ready!");
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Load operation failed:\n" + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (InvalidLoadException ex) {
@@ -276,12 +281,14 @@ public class OpeningWindow extends JFrame {
 		}
 	}
 
-	public static void launchWindow() {
+	public static OpeningWindow launchWindow() {
 		final OpeningWindow openWindow = new OpeningWindow();
 
 		openWindow.setSize(400, 550);
 		openWindow.setDefaultCloseOperation(3);
 		openWindow.setLocationRelativeTo(null);
 		openWindow.setVisible(true);
+
+		return openWindow;
 	}
 }

@@ -98,7 +98,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition1__()
+  private boolean __autotransition13__()
   {
     boolean wasEventProcessed = false;
     
@@ -121,7 +121,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition2__()
+  private boolean __autotransition14__()
   {
     boolean wasEventProcessed = false;
     
@@ -144,7 +144,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition3__()
+  private boolean __autotransition15__()
   {
     boolean wasEventProcessed = false;
     
@@ -411,7 +411,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition4__()
+  private boolean __autotransition16__()
   {
     boolean wasEventProcessed = false;
     
@@ -434,7 +434,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition5__()
+  private boolean __autotransition17__()
   {
     boolean wasEventProcessed = false;
     
@@ -457,7 +457,7 @@ public class PawnBehavior
     return wasEventProcessed;
   }
 
-  private boolean __autotransition6__()
+  private boolean __autotransition18__()
   {
     boolean wasEventProcessed = false;
     
@@ -774,9 +774,9 @@ public class PawnBehavior
     {
       case Horizontal:
         if (pawnSMPlayingHorizontalHorizontal == PawnSMPlayingHorizontalHorizontal.Null) { setPawnSMPlayingHorizontalHorizontal(PawnSMPlayingHorizontalHorizontal.AtCenter); }
-        __autotransition1__();
-        __autotransition2__();
-        __autotransition3__();
+        __autotransition13__();
+        __autotransition14__();
+        __autotransition15__();
         break;
     }
   }
@@ -824,9 +824,9 @@ public class PawnBehavior
     {
       case Vertical:
         if (pawnSMPlayingVerticalVertical == PawnSMPlayingVerticalVertical.Null) { setPawnSMPlayingVerticalVertical(PawnSMPlayingVerticalVertical.AtCenter); }
-        __autotransition4__();
-        __autotransition5__();
-        __autotransition6__();
+        __autotransition16__();
+        __autotransition17__();
+        __autotransition18__();
         break;
     }
   }
@@ -1148,7 +1148,7 @@ public class PawnBehavior
         final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
         final Tile target = QuoridorController.getTileFromRowAndColumn(
                 this.getCurrentPawnRow() + drow, this.getCurrentPawnColumn() + dcol);
-        QuoridorController.forcePlayStepMove(moves, moves / 2, this.getPlayer(), target, gpos);
+        QuoridorController.forcePlayStepMove(moves / 2 + 1, this.getPlayer().hasGameAsWhite() ? 1 : 2, this.getPlayer(), target, gpos);
   }
 
   // line 322 "../../../../../PawnStateMachine.ump"
@@ -1157,7 +1157,7 @@ public class PawnBehavior
         final GamePosition gpos = this.getCurrentGame().getCurrentPosition();
         final Tile target = QuoridorController.getTileFromRowAndColumn(
                 this.getCurrentPawnRow() + drow, this.getCurrentPawnColumn() + dcol);
-        QuoridorController.forcePlayJumpMove(moves, moves / 2, this.getPlayer(), target, gpos);
+        QuoridorController.forcePlayJumpMove(moves / 2 + 1, this.getPlayer().hasGameAsWhite() ? 1 : 2, this.getPlayer(), target, gpos);
   }
 
 
