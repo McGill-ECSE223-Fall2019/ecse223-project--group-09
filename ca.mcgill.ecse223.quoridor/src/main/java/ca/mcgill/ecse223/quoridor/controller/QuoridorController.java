@@ -3665,7 +3665,10 @@ public static TOWall grabWall() {
 		}
 
 	}
-
+	
+	public static GamePosition saveGamePos;
+	public static int index = 0;
+			
 	public static void enterReplayMode(){
 
 		Quoridor quoridor = QuoridorApplication.getQuoridor();
@@ -3678,6 +3681,9 @@ public static TOWall grabWall() {
 			System.out.println("ENTER REPLAY MODE");
 			aGame.setGameStatus(GameStatus.Replay);
 		}
+		//aGame.getCurrentMove()
+		saveGamePos = aGame.getCurrentPosition();
+		index = aGame.indexOfMove(aGame.getCurrentMove());
 
 	}
 
@@ -3687,10 +3693,12 @@ public static TOWall grabWall() {
 		Game aGame = quoridor.getCurrentGame();
 		if(aGame.getGameStatus() == GameStatus.Replay) {
 			System.out.println("EXIT REPLAY MODE");
+			aGame.setCurrentPosition(saveGamePos);
 			aGame.setGameStatus(GameStatus.Running);
-
+			
 			// In case someone tries to exit replay mode after game ended
 			initiateCheckGameResult();
+			
 		}
 	}
 
